@@ -95,7 +95,7 @@ The suite includes an automated environment installer (`Python Library Downloade
 ## ⚠️ Game Settings & Requirements
 
 * **Target Game:** Football Life 2026 (PES 2021 base engine).
-* **Display Requirement:** The game **MUST** be run in **Borderless Windowed** mode in your game settings for transparent overlays to render correctly over the match window.
+* **Display Requirement:** The game **MUST** be run in **Borderless Windowed** mode in your game settings for transparent overlays to render correctly over the match window. To make the game full-screen (removing window borders), use the "BorderlessGaming.exe" software.
 
 ---
 
