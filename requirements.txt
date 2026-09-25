@@ -1,0 +1,10 @@
+customtkinter
+keyboard
+matplotlib
+numpy
+panda3d
+pillow
+pymem
+pyqt6
+pyqt6-webengine
+ursina
