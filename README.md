@@ -45,7 +45,7 @@ The system is engineered using a two-tier decoupled architecture:
 ![System Architecture]
 
 1. **Mother Application (`MyMods.py`):**
-   * A full-featured GUI built with CustomTkinter for customizing options, hotkeys, and individual mod behaviors.
+   * A full-featured GUI built with PyQt for customizing options, hotkeys, and individual mod behaviors.
    * Includes built-in quick instructions per mod and quick-access buttons to full YouTube video tutorials.
 2. **Bridge Engine (`ModBridge.py`):**
    * A high-performance, background memory engine that performs non-invasive hook operations and draws transparent overlay overlays over the game.
