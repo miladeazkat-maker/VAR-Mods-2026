@@ -109,7 +109,7 @@ The suite includes an automated environment installer (`Python Library Downloade
 Clone this repository and install dependencies using `requirements.txt`:
 
 ```bash
-git clone [https://github.com/YourUsername/VAR-Mods-2026.git](https://github.com/YourUsername/VAR-Mods-2026.git)
+git clone [https://github.com/miladeazkat-maker/VAR-Mods-2026.git](https://github.com/YourUsername/VAR-Mods-2026.git)
 cd VAR-Mods-2026
 pip install -r requirements.txt
 
