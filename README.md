@@ -1,4 +1,4 @@
-# ⚽ VAR-Mods-2026: Next-Gen Broadcast & Analytics Suite
+# ⚽ VAR-Mods-2026: Next-Gen Broadcast & Analytics Suite For Football Life 2026
 
 ![Project Banner](assets/banner.png)
 
