@@ -6,9 +6,9 @@ class PitchConfig:
 
     GOAL_HALF_WIDTH = 3.66             # Z = +/- 3.66m
     GOAL_HEIGHT = 2.44                 # Y = 2.44m
-    POST_RADIUS = 0.12                 # شعاع فیزیکی تیرک
-    BALL_RADIUS = 0.11                 # شعاع توپ
-    POST_COLLISION_RADIUS = 0.32       # آستانه تشخیص برخورد با تیرک (کالیبره Shot Engine)
+    POST_RADIUS = 0.12                 # radius physical post
+    BALL_RADIUS = 0.11                 # radius ball
+    POST_COLLISION_RADIUS = 0.32       # threshold detection technical noteandtechnical note with post (calibrated Shot Engine)
 
     PENALTY_BOX_X = HALF_LENGTH - 16.5 # 36.0m
     PENALTY_BOX_HALF_Z = 20.16
@@ -25,53 +25,53 @@ class PitchConfig:
     CENTER_ZONE_Z = 8.5
     TIGHT_ANGLE_DEG = 17.0
 
-    # آستانه‌های هندسی ویژه سانتر و کات‌بک (کالیبره Pass Engine)
-    CROSS_LATERAL_THRESHOLD = 20.1      # قدرمطلق Z باید بیشتر از 20.1 باشد
-    CROSS_LONGITUDINAL_THRESHOLD = 29.0 # قدرمطلق X باید بیشتر از 29 باشد
-    CUTBACK_ORIGIN_X_THRESHOLD = 35.0   # قدرمطلق X مبدا باید بیشتر از 35 باشد
-    CUTBACK_MAX_HEIGHT = 1.80           # حداکثر ارتفاع کات‌بک
+    # threshold‌technical note technical note andtechnical note cross and technical note‌technical note (calibrated Pass Engine)
+    CROSS_LATERAL_THRESHOLD = 20.1      # technical noteintechnical note Z must technical note from 20.1 withtechnical note
+    CROSS_LONGITUDINAL_THRESHOLD = 29.0 # technical noteintechnical note X must technical note from 29 withtechnical note
+    CUTBACK_ORIGIN_X_THRESHOLD = 35.0   # technical noteintechnical note X technical note must technical note from 35 withtechnical note
+    CUTBACK_MAX_HEIGHT = 1.80           # technical note height technical note‌technical note
 
-    HEIGHT_GROUND_MAX = 0.70            # مرز سانتر/پاس زمینی
-    HEIGHT_AERIAL_MIN = 1.60            # مرز سانتر/پاس هوایی
+    HEIGHT_GROUND_MAX = 0.70            # boundary cross/pass pitchtechnical note
+    HEIGHT_AERIAL_MIN = 1.60            # boundary cross/pass technical noteandtechnical note
 
 # =====================================================================
-# ۴. پیکربندی فیزیک شوت (ShotConfig — کالیبره‌شده، دست‌نخورده)
+# 4. technical note technical note shot (ShotConfig — calibrated‌technical note unchanged)
 # =====================================================================
 class ShotConfig:
-    MAX_TRACK_TIME = 3.0               # حداکثر زمان تعقیب پرواز شوت به ثانیه
-    WORLD_TO_METER_SCALE = 1.0         # مقیاس مختصات به متر
-    MIN_VALID_SHOT_SPEED = 18.0        # حداقل سرعت شوت معتبر (km/h)
-    MAX_PLAUSIBLE_SPEED = 185.0        # حداکثر سرعت فیزیکی شوت (km/h)
+    MAX_TRACK_TIME = 3.0               # technical note time technical note technical noteandfrom shot to second
+    WORLD_TO_METER_SCALE = 1.0         # technical noteortechnical note coordinates to technical note
+    MIN_VALID_SHOT_SPEED = 18.0        # technical note technical note shot valid (km/h)
+    MAX_PLAUSIBLE_SPEED = 185.0        # technical note technical note physical shot (km/h)
 
-    HEADER_HEIGHT_MIN = 1.45           # حداقل ارتفاع شروع برای بررسی ضربه سر
-    HEADER_HEIGHT_OPTIMAL = 1.65       # ارتفاع استاندارد برای ضربه سر
-    VOLLEY_HEIGHT_MIN = 0.45           # حداقل ارتفاع والی
-    VOLLEY_HEIGHT_MAX = 1.40           # حداکثر ارتفاع والی
+    HEADER_HEIGHT_MIN = 1.45           # technical note height start for check technical noteto technical note
+    HEADER_HEIGHT_OPTIMAL = 1.65       # height istechnical note for technical noteto technical note
+    VOLLEY_HEIGHT_MIN = 0.45           # technical note height andtechnical note
+    VOLLEY_HEIGHT_MAX = 1.40           # technical note height andtechnical note
 
-    GK_MAX_REACH_HEIGHT = 2.70         # حداکثر ارتفاع پرش دروازه‌بان برای مهار
-    OUTFIELD_MAX_REACH_HEIGHT = 2.20   # حداکثر ارتفاع دسترسی مدافع برای بلوک
+    GK_MAX_REACH_HEIGHT = 2.70         # technical note height technical note inandfromtechnical note‌withtechnical note for technical note
+    OUTFIELD_MAX_REACH_HEIGHT = 2.20   # technical note height technical note technical note for technical noteandtechnical note
 
-    STATIONARY_RADIUS = 0.22           # شعاع حداکثر حرکت برای توپ ساکن
-    STATIONARY_DURATION_MIN = 0.75     # حداقل زمان سکون برای ضربات ایستگاهی (ثانیه)
+    STATIONARY_RADIUS = 0.22           # radius technical note technical note for ball technical note
+    STATIONARY_DURATION_MIN = 0.75     # technical note time technical noteandtechnical note for technical notewithtechnical note technical note (second)
 
-    # --- نسخهٔ ۱۰٫۱۴ — لایهٔ Trigger → Contact/Shooter → Tracking → Registration ---
-    # (مشخصات کاربر: «۱ افزایش شمارنده = ۱ کاندید شوت» + ریکاوری بر پایهٔ
-    #  فریم/زمان بازی، نه تایم‌اوت کوتاه دیواری)
-    SHOT_CONTACT_SCOPE = 26            # جستجوی فوری لحظهٔ ضربه (فریم — کالیبره ابزار مستقل)
-    SHOT_PENDING_SCOPE = 120           # جستجوی عمیق در تلاش‌های بعدی (بافر ۳۲۰ فریمی)
-    SHOT_RECOVERY_MAX_FRAMES = 260     # پنجرهٔ ریکاوری بر پایهٔ فریم (هماهنگ با بافر ۳۲۰)
-    SHOT_RECOVERY_MAX_MATCH_SEC = 6.0  # پنجرهٔ ریکاوری بر پایهٔ زمان بازی
-    SHOT_FINALIZED_KEEP = 64           # سقف نگهداری شناسهٔ کاندیدهای ثبت‌شده (Dedup)
+    # --- versiontechnical note 10technical note14 — layertechnical note Trigger → Contact/Shooter → Tracking → Registration ---
+    # (specification user: «1 increment counter = 1 technical note shot» + technical noteandtechnical note technical note technical note
+    #  frame/time withtechnical note technical note untiltechnical note‌technical noteandtechnical note technical noteanduntiltechnical note technical noteandtechnical note)
+    SHOT_CONTACT_SCOPE = 26            # technical noteandtechnical note immediate momenttechnical note technical noteto (frame — calibrated tool independent)
+    SHOT_PENDING_SCOPE = 120           # technical noteandtechnical note technical note in technical note‌technical note aftertechnical note (buffer 320 frametechnical note)
+    SHOT_RECOVERY_MAX_FRAMES = 260     # windowtechnical note technical noteandtechnical note technical note technical note frame (technical note with buffer 320)
+    SHOT_RECOVERY_MAX_MATCH_SEC = 6.0  # windowtechnical note technical noteandtechnical note technical note technical note time withtechnical note
+    SHOT_FINALIZED_KEEP = 64           # technical note technical note technical note technical note register‌technical note (Dedup)
 
-    CORRIDOR_BASE_WIDTH = 1.8          # عرض دالان در مبدا ضربه
-    CURVE_MIN_TRAJECTORY_LEN = 4.5     # حداقل طول مسیر برای بررسی کات توپ
-    CURVE_RATIO_THRESHOLD = 0.052      # آستانه تشخیص شوت کات‌دار
+    CORRIDOR_BASE_WIDTH = 1.8          # width technical note in technical note technical noteto
+    CURVE_MIN_TRAJECTORY_LEN = 4.5     # technical note length path for check technical note ball
+    CURVE_RATIO_THRESHOLD = 0.052      # threshold detection shot technical note‌technical note
 
 # =====================================================================
-# ۵. پیکربندی مرکزی امتیازدهی Momentum (بدون Magic Number در منطق)
+# 5. technical note technical note scoretechnical note Momentum (without Magic Number in technical note)
 # =====================================================================
 class MomentumScoringConfig:
-    # --- Pass: threat_score پاس منبع امتیاز است ---
+    # --- Pass: threat_score pass source score is ---
     PASS_SUCCESS_MULTIPLIER = 1.00
     PASS_FAILURE_MULTIPLIER = 0.20
 
@@ -79,156 +79,156 @@ class MomentumScoringConfig:
     CHANCE_WEIGHT = 35.0
     BIG_CHANCE_WEIGHT = 75.0
 
-    # --- Shot: مبنای اصلی final_threat است؛ pre_shot_threat فقط ذخیره می‌شود ---
-    # نسخهٔ ۱۰٫۱۲ (درخواست کاربر): «شوت‌ها نقش مهمی در مومنتوم دارند؛ بجز
-    # شوت‌های منجر به گل، بقیه باید امتیاز مهمی داشته باشند» —
-    #   * SHOT_APPLY_CONFIDENCE = False → امتیاز مومنتوم شوت دقیقاً برابر
-    #     Final Threat ابزار مستقل است (ضریب اطمینان ۰٫۵۵-۰٫۹۵ دیگر آن را
-    #     تا ۴۵٪ کم نمی‌کند — علت اصلی «امتیاز خیلی کمتر از ابزار شوت»)؛
-    #   * SHOT_MIN_IMPACT = کف معنادار برای شوت‌های «نه گل» (حتی شوت دور
-    #     از چارچوب هم سهم قابل‌مشاهده دارد)؛
-    #   * شوت گل‌شده همچنان × GOAL_LINKED_SHOT_RATIO می‌شود تا گل هرگز دو
-    #     بار حساب نشود (استثنای صریح کاربر).
-    SHOT_WEIGHT = 1.00                 # ضریب اعمالی روی final_threat
-    SHOT_APPLY_CONFIDENCE = False      # شوت: ضریب اطمینان طبقه‌بند اعمال نشود
-    SHOT_MIN_IMPACT = 45.0             # کف امتیاز مومنتوم شوت‌های غیرگل
-    GOAL_LINKED_SHOT_RATIO = 0.30      # سهم شوتِ گل‌شده (جلوگیری از دو بار حساب شدن با Goal)
-    PENALTY_SHOT_LINKED_RATIO = 0.40   # سهم شوتی که نوع آن «پنالتی» تشخیص داده شده
-    SHOT_LINKED_CHANCE_RATIO = 0.30    # کاهش سهم Chance در صورت لینک به Shot
-    # پنجرهٔ تشخیص «شوت تکراری» — نسخهٔ ۱۰٫۱۴: منسوخ؛ Dedup فقط با شناسهٔ
-    # کاندید انجام می‌شود (candidate_id) و این دو ثابت دیگر استفاده نمی‌شوند
+    # --- Shot: technical note original final_threat istechnical note pre_shot_threat only save technical note‌technical noteandtechnical note ---
+    # versiontechnical note 10technical note12 (request user): «shot‌technical note technical note technical note in technical noteandtechnical noteandtechnical note technical note technical note
+    # shot‌technical note technical note to technical note technical note must score technical note technical note withtechnical note» —
+    #   * SHOT_APPLY_CONFIDENCE = False → score technical noteandtechnical noteandtechnical note shot exactly technical note
+    #     Final Threat tool independent is (technical note technical note 0technical note55-0technical note95 technical note technical note technical note
+    #     until 45technical note technical note technical note‌technical note — technical note original «score technical note technical note from tool shot»)technical note
+    #   * SHOT_MIN_IMPACT = technical note technical note for shot‌technical note «technical note technical note» (technical note shot technical noteandtechnical note
+    #     from technical noteandtechnical note technical note technical note technical note‌technical note technical note)technical note
+    #   * shot technical note‌technical note technical note × GOAL_LINKED_SHOT_RATIO technical note‌technical noteandtechnical note until technical note never technical noteand
+    #     withtechnical note technical note technical noteandtechnical note (istechnical note technical note user).
+    SHOT_WEIGHT = 1.00                 # technical note technical note technical noteandtechnical note final_threat
+    SHOT_APPLY_CONFIDENCE = False      # shot: technical note technical note technical note‌technical note technical note technical noteandtechnical note
+    SHOT_MIN_IMPACT = 45.0             # technical note score technical noteandtechnical noteandtechnical note shot‌technical note technical note
+    GOAL_LINKED_SHOT_RATIO = 0.30      # technical note shottechnical note technical note‌technical note (technical noteandtechnical note from technical noteand withtechnical note technical note technical note with Goal)
+    PENALTY_SHOT_LINKED_RATIO = 0.40   # technical note shottechnical note technical note technical noteandtechnical note technical note «penalty» detection data technical note
+    SHOT_LINKED_CHANCE_RATIO = 0.30    # technical note technical note Chance in technical noteandtechnical note technical note to Shot
+    # windowtechnical note detection «shot technical note» — versiontechnical note 10technical note14: technical noteandtechnical note Dedup only with technical note
+    # technical note technical note technical note‌technical noteandtechnical note (candidate_id) and technical note technical noteand technical note technical note istechnical note technical note‌technical noteandtechnical note
     SHOT_DUP_MATCH_WINDOW = 1.0
     SHOT_DUP_POS_RADIUS = 2.5
 
-    # --- Goal (پاسخ تأخیری گل — Goal Response / Goal Pulse) ---
+    # --- Goal (passtechnical note delaytechnical note technical note — Goal Response / Goal Pulse) ---
     GOAL_WEIGHT = 100.0
-    # فاصلهٔ اوج پاسخ گل از لحظهٔ گل — فقط بر حسب ثانیهٔ بازی (Game Time)
+    # distancetechnical note technical noteandtechnical note passtechnical note technical note from momenttechnical note technical note — only technical note technical note secondtechnical note withtechnical note (Game Time)
     GOAL_PEAK_DELAY = 5.0
-    # طول فلات اوج (پهنا) پاسخ گل پیش از شروع decay نمایی — ثانیهٔ بازی
+    # length technical note technical noteandtechnical note (technical note) passtechnical note technical note technical note from start decay technical note — secondtechnical note withtechnical note
     GOAL_RESPONSE_WIDTH = 4.0
 
     # --- Penalty ---
-    PENALTY_WEIGHT = 20.0              # وزن خود رخداد Penalty Kick
-    PENALTY_GOAL_WEIGHT = 60.0         # وزن Penalty Goal بدون گل ثبت‌شده موازی
-    PENALTY_GOAL_DELTA_WEIGHT = 15.0   # وزن Penalty Goal وقتی Goal همین رخداد قبلا ثبت شده
-    PENALTY_GOAL_DEDUP_WINDOW = 5.0    # پنجره زمانی (ثانیه بازی) تشخیص Goal موازی
+    PENALTY_WEIGHT = 20.0              # weight technical noteandtechnical note technical note Penalty Kick
+    PENALTY_GOAL_WEIGHT = 60.0         # weight Penalty Goal without technical note register‌technical note technical noteandfromtechnical note
+    PENALTY_GOAL_DELTA_WEIGHT = 15.0   # weight Penalty Goal when Goal technical note technical note beforetechnical note registeredtechnical note
+    PENALTY_GOAL_DEDUP_WINDOW = 5.0    # window timetechnical note (second withtechnical note) detection Goal technical noteandfromtechnical note
     PENALTY_MISS_WEIGHT = 25.0
-    PENALTY_MISS_NEGATIVE = True       # پنالتی از دست رفته = momentum منفی برای زننده
-    PENALTY_KICK_LINKED_RATIO = 0.25   # کاهش وزن Penalty Kick پس از ثبت Penalty Goal/Miss
+    PENALTY_MISS_NEGATIVE = True       # penalty from technical note technical note = momentum technical note for technical note
+    PENALTY_KICK_LINKED_RATIO = 0.25   # technical note weight Penalty Kick technical note from register Penalty Goal/Miss
 
     # --- Pressure Episode ---
     PRESSURE_BASE_WEIGHT = 6.0
     PRESSURE_DURATION_FACTOR = 0.8
     PRESSURE_INTENSITY_FACTOR = 2.5
     PRESSURE_MAX_WEIGHT = 18.0
-    PRESSURE_MIN_DURATION = 4.0        # حداقل طول اپیزود فشار (ثانیه بازی)
-    PRESSURE_MIN_AVG = 1.2             # حداقل میانگین تعداد فشاردهنده
-    PRESSURE_RADIUS = 3.0              # شعاع فشار حول حامل توپ
-    PRESSURE_CARRIER_RADIUS = 2.5      # شعاع تشخیص حامل توپ
-    PRESSURE_RELIEF_TIME = 2.0         # زمان رفع فشار برای بستن اپیزود
+    PRESSURE_MIN_DURATION = 4.0        # technical note length technical noteandtechnical note pressure (second withtechnical note)
+    PRESSURE_MIN_AVG = 1.2             # technical note technical noteortechnical note count pressuretechnical note
+    PRESSURE_RADIUS = 3.0              # radius pressure technical noteandtechnical note technical note ball
+    PRESSURE_CARRIER_RADIUS = 2.5      # radius detection technical note ball
+    PRESSURE_RELIEF_TIME = 2.0         # time technical note pressure for technical note technical noteandtechnical note
 
     # --- Transition / Counterattack / Line Break ---
     TRANSITION_WEIGHT = 8.0
     COUNTERATTACK_WEIGHT = 18.0
-    COUNTERATTACK_WINDOW = 8.0         # حداکثر زمان رسیدن به یک‌سوم برای ضدحمله
-    TRANSITION_WINDOW = 10.0           # حداکثر زمان عبور به نیمه هجومی برای انتقال
+    COUNTERATTACK_WINDOW = 8.0         # technical note time technical note to third for counterattack
+    TRANSITION_WINDOW = 10.0           # technical note time technical noteandtechnical note to technical note technical noteandtechnical note for transition
     LINE_BREAK_WEIGHT = 12.0
     LINE_BREAK_COOLDOWN = 8.0
 
     # --- Zone Entries ---
     FINAL_THIRD_ENTRY_WEIGHT = 3.0
     BOX_ENTRY_WEIGHT = 6.0
-    ZONE_EVENT_COOLDOWN = 12.0         # جلوگیری از اشباع نمودار با ورودهای مکرر
+    ZONE_EVENT_COOLDOWN = 12.0         # technical noteandtechnical note from technical notewithtechnical note chart with andtechnical noteandtechnical note technical note
     CORNER_WEIGHT = 8.0
     CORNER_COOLDOWN = 25.0
     GOAL_KICK_WEIGHT = 2.0
     GOAL_KICK_COOLDOWN = 25.0
 
-    # --- Possession Change (بیشتر برای زنجیره رویدادهاست نه امتیاز) ---
+    # --- Possession Change (technical note for chain technical noteandtechnical notedatais technical note score) ---
     POSSESSION_CHANGE_WEIGHT = 0.0
 
     # --- Reliability / Confidence ---
     CERTAIN_MULTIPLIER = 1.00
     PROBABLE_MULTIPLIER = 0.85
     INFERRED_MULTIPLIER = 0.65
-    APPLY_CONFIDENCE = True            # ضرب نهایی در confidence رویداد
+    APPLY_CONFIDENCE = True            # technical note technical note in confidence technical noteandtechnical note
 
-    # --- Decay (بر اساس GAME TIME) ---
-    MOMENTUM_HALF_LIFE = 180.0         # نیم‌عمر = ۳ دقیقه زمان مسابقه
+    # --- Decay (technical note technical note GAME TIME) ---
+    MOMENTUM_HALF_LIFE = 180.0         # technical note‌technical note = 3 minute match time
 
-    # --- Presentation / Normalization (فقط لایه نمایش) ---
+    # --- Presentation / Normalization (only layer display) ---
     DISPLAY_RANGE = 100.0
     DISPLAY_NORMALIZATION = "fixed"    # fixed | peak | raw
-    DISPLAY_SOFT_SCALE = 120.0         # مقیاس soft-clip در حالت fixed
-    # Gaussian smoothing واقعی (نه میانگین متحرک) — فقط روی لایه نمایش؛
-    # مقدار بر حسب ثانیهٔ زمان بازی است و مستقل از نرخ نمونه‌برداری اعمال می‌شود.
-    # نسخه ۴: 16.0s — نوک قله‌ها مثل «نمودار زنگوله‌ای» نرم و گرد می‌شود؛
-    # ریز‌نوسان‌ها در موج پیوسته حل می‌شوند؛ RAW دست‌نخورده می‌ماند
-    # نسخهٔ ۱۰٫۲۷: 16.0 → 20.0 — همان تنظیم «زنگوله‌ای» نسخهٔ 2017؛
-    # قله‌ها/دره‌ها نرم‌تر و پهن‌تر می‌شوند (RAW همچنان دست‌نخورده)
-    GAUSSIAN_SIGMA = 20.0     # v10.27 — ۱۶→۲۰ (هموارسازی موتور — منحنی نرم‌تر)
+    DISPLAY_SOFT_SCALE = 120.0         # technical noteortechnical note soft-clip currentlytechnical note fixed
+    # Gaussian smoothing real (technical note technical noteortechnical note technical note) — only technical noteandtechnical note layer displaytechnical note
+    # value technical note technical note secondtechnical note time withtechnical note is and independent from technical note sampling technical note technical note‌technical noteandtechnical note.
+    # version 4: 16.0s — technical noteandtechnical note peak‌technical note technical note «chart bell-shaped» smooth and technical note technical note‌technical noteandtechnical note
+    # technical note‌technical noteandtechnical note‌technical note in technical noteandtechnical note technical noteandtechnical note technical note technical note‌technical noteandtechnical note RAW unchanged technical note‌technical note
+    # versiontechnical note 10technical note27: 16.0 → 20.0 — same technical note «bell-shaped» versiontechnical note 2017technical note
+    # peak‌technical note/valley‌technical note smooth‌technical note and technical note‌technical note technical note‌technical noteandtechnical note (RAW technical note unchanged)
+    GAUSSIAN_SIGMA = 20.0     # v10.27 — 16→20 (technical noteandtechnical notefromtechnical note technical noteandtechnical noteandtechnical note — technical note smooth‌technical note)
 
     # --- History Sampling ---
-    HISTORY_SAMPLE_INTERVAL = 0.10     # هر 0.1 ثانیه زمان بازی یک نمونه
+    HISTORY_SAMPLE_INTERVAL = 0.10     # technical note 0.1 second time withtechnical note technical note sample
 
-    # --- نسخه ۱۰٫۲: چسباندن شکاف توقف‌ها (حذف قطعهٔ افقی بعد از گل) ---
-    # اگر بین دو نمونهٔ متوالی، ساعت بازی بیش از این مقدار پرش کند
-    # (توقف جشن گل/Replay با ساعتِ در حال حرکت)، بازهٔ مرده از محور
-    # «نمایش» حذف می‌شود: نمونهٔ بعدی دقیقاً یک interval بعد از آخرین
-    # نمونهٔ واقعی می‌نشیند (دو قسمت نمودار به هم می‌چسبند) و درزِ محل
-    # اتصال با یک پاره‌خط مستقیم صاف می‌شود. تولید خودِ منحنی تغییر
-    # نمی‌کند (رسم = نسخهٔ قبلی).
-    MOMENTUM_GLUE_GAP = 4.0            # آستانهٔ تشخیص شکاف توقف (ثانیهٔ زمان بازی)
+    # --- version 10technical note2: technical notewithtechnical note gap stop‌technical note (technical note technical note technical note after from technical note) ---
+    # if technical note technical noteand sampletechnical note technical noteandtechnical note game clock technical note from technical note value technical note technical note
+    # (stop technical note technical note/Replay with technical note currently technical note)technical note withtechnical note technical note from technical noteandtechnical note
+    # «display» technical note technical note‌technical noteandtechnical note: sampletechnical note aftertechnical note exactly technical note interval after from latest
+    # sampletechnical note real technical note‌technical note (technical noteand technical noteside chart to technical note technical note‌technical note) and intechnical note technical note
+    # technical note with technical note technical note‌line direct technical note technical note‌technical noteandtechnical note. technical noteandtechnical note technical noteandtechnical note technical note change
+    # technical note‌technical note (technical note = versiontechnical note beforetechnical note).
+    MOMENTUM_GLUE_GAP = 4.0            # thresholdtechnical note detection gap stop (secondtechnical note time withtechnical note)
 
-    # --- نسخه ۱۰٫۲: آیکون توپ گل (tex/ball_icon.png کنار کد) ---
-    BALL_ICON_SIZE_PT = 22.0           # قطر نمایشی آیکون توپ روی نمودار (Point)
+    # --- version 10technical note2: icon ball technical note (tex/ball_icon.png technical note code) ---
+    BALL_ICON_SIZE_PT = 22.0           # technical note displaytechnical note icon ball technical noteandtechnical note chart (Point)
 
     # --- Match Restart Detection ---
-    MATCH_RESTART_DELTA = 5.0          # افت ناگهانی زمان بازی = ری‌استارت مسابقه
+    MATCH_RESTART_DELTA = 5.0          # decrease technical note time withtechnical note = restart technical note
 
-    # --- تشخیص HT / بازی جدید (نسخه ۳) ---
-    # نمودار در پایان نیمه اول و «پایان کل مسابقه» هرگز خودکار پاک نمی‌شود؛
-    # فقط شروع «بازی جدید» (تایمر از صفر + PLAYING) یا دکمهٔ «ریست مسابقه»
-    # ریست کامل انجام می‌دهد. بین دو نیمه شکاف نمایشی با دو خط سرتاسری
-    # و برچسب HT روی محور X درج می‌شود.
-    # نسخه ۴: عرض شکاف یک‌سوم نسخه ۳ → 300 ثانیه (۵ دقیقه از کل مسابقه)
-    HT_GAP_DISPLAY_SECONDS = 300.0     # نسخه ۴: عرض شکاف = ۵ دقیقه (یک‌سوم ۹۰۰ ثانیهٔ قبلی)
-    HT_MIN_FIRST_HALF_PLAYED = 1500.0  # حداقل زمان بازی‌شدهٔ نیمه اول برای تشخیص HT
-    HT_RESUME_TOLERANCE = 600.0        # از سرگیری نزدیک به پایان نیمه اول = HT (نه بازی جدید)
-    NEW_GAME_MAX_START = 180.0         # از سرگیری زیر این مقدار = بازی جدید (تایمر از صفر)
+    # --- detection HT / new match (version 3) ---
+    # chart in end first half and «end total technical note» never automatic technical note technical note‌technical noteandtechnical note
+    # only start «new match» (untiltechnical note from technical note + PLAYING) or buttontechnical note «reset technical note»
+    # reset complete technical note technical note‌technical note. technical note technical noteand technical note gap displaytechnical note with technical noteand line technical noteuntiltechnical note
+    # and technical note HT technical noteandtechnical note technical noteandtechnical note X intechnical note technical note‌technical noteandtechnical note.
+    # version 4: width gap third version 3 → 300 second (5 minute from total technical note)
+    HT_GAP_DISPLAY_SECONDS = 300.0     # version 4: width gap = 5 minute (third 900 secondtechnical note beforetechnical note)
+    HT_MIN_FIRST_HALF_PLAYED = 1500.0  # technical note time withtechnical note‌technical note first half for detection HT
+    HT_RESUME_TOLERANCE = 600.0        # resume technical note to end first half = HT (technical note new match)
+    NEW_GAME_MAX_START = 180.0         # resume technical note technical note value = new match (untiltechnical note from technical note)
 
-    # --- نسخه ۱۰٫۳: قانون سخت HT (Match Lifecycle State Machine) ---
-    # تصمیم نهایی HT دیگر فقط به تولرانس متکی نیست؛ این قانون سخت همیشه
-    # داخل Logic اعمال می‌شود:
-    #   HT فقط وقتی معتبر است که «نیمه اول واقعاً تمام شده باشد»:
+    # --- version 10technical note3: rule technical note HT (Match Lifecycle State Machine) ---
+    # technical note technical note HT technical note only to technical noteandtechnical note technical note is nottechnical note technical note rule technical note always
+    # inside Logic technical note technical note‌technical noteandtechnical note:
+    #   HT only when valid is technical note «first half andtechnical note technical note technical note withtechnical note»:
     #     previous_match_time >= 45*60 (2700s)
-    #     AND current_match_time حوالی 45:00 (پنجرهٔ [2700-slack، 2700+tolerance])
+    #     AND current_match_time technical noteandtechnical note 45:00 (windowtechnical note [2700-slacktechnical note 2700+tolerance])
     #     AND current_state == PLAYING
-    #   تایمر ≈ صفر (NEW_GAME_MAX_START) همیشه «بازی جدید» است، هرگز HT —
-    #   حتی اگر بازی قبلی روی هر دقیقه‌ای متوقف شده باشد (نشانهٔ قوی).
-    HT_HARD_MIN_FIRST_HALF = 2700.0    # 45*60 — حداقل زمان دیده‌شدهٔ نیمه اول برای HT واقعی
-    HT_RESUME_LOWER_SLACK = 30.0       # از سرگیری باید «حوالی 45:00» باشد (نه وسط بازی)
+    #   untiltechnical note ≈ technical note (NEW_GAME_MAX_START) always «new match» istechnical note never HT —
+    #   technical note if withtechnical note beforetechnical note technical noteandtechnical note technical note minute‌technical note technical notestop technical note withtechnical note (technical note technical noteandtechnical note).
+    HT_HARD_MIN_FIRST_HALF = 2700.0    # 45*60 — technical note time technical note‌technical note first half for HT real
+    HT_RESUME_LOWER_SLACK = 30.0       # resume must «technical noteandtechnical note 45:00» withtechnical note (technical note andtechnical note withtechnical note)
 
-    # --- نسخهٔ ۱۰٫۱۵ — وقت اضافه (بندهای ج/د چهار نوع ریست کاربر) ---
-    # پنجرهٔ «حوالی ۹۰:۰۰ / ۱۰۵:۰۰» برای شروع ET1/ET2 بعد از ریست تایمر:
-    # اولین نمونهٔ زندهٔ ET ممکن است کمی بعد از مرز فرود بیاید (تأخیر خط لوله
-    # یا بازیِ ادامه‌یافته در سکوت ما) — ۱۲ دقیقه پنجرهٔ کافی و ایمن است.
+    # --- versiontechnical note 10technical note15 — extra time (technical note technical note/technical note technical note technical noteandtechnical note reset user) ---
+    # windowtechnical note «technical noteandtechnical note 90:00 / 105:00» for start ET1/ET2 after from reset untiltechnical note:
+    # firsttechnical note sampletechnical note livetechnical note ET possible is technical note after from boundary technical noteandtechnical note technical noteortechnical note (delay line technical noteandtechnical note
+    # or withtechnical note resume‌technical notedecreasetechnical note in silence technical note) — 12 minute windowtechnical note technical note and technical note is.
     ET_RESET_TOLERANCE = 720.0
 
 # =====================================================================
-# ۶. هوک مالکیت توپ (PossessionHooker — نسخه واحد)
+# 6. hook possession (PossessionHooker — version andtechnical note)
 # =====================================================================
-# نسخهٔ ۱۰٫۱۸ — چرخهٔ حیات جدید هوک مالکیت (مشخصات صریح کاربر):
-#   * هوک «فقط» در فاز شکار آدرس نصب است: به محض صفر شدن تایمر (شروع
-#     بازی جدید) نصب می‌شود؛ قبل از آن خط اسمبلی دست‌نخورده می‌ماند؛
-#   * اولین آدرس Capture‌شده‌ای که «مقدار ۲» (میزبان) در آن باشد، آدرس
-#     تشخیص میزبان/مهمان است؛ آدرس‌های بدون مقدار ۲ رد و اسلات صفر می‌شود؛
-#   * بعد از تأیید، هوک «برداشته» می‌شود و همان آدرس تا پایان مسابقه
-#     خوانده می‌شود (هوک نصب‌مانده دیگر ساختار را جابه‌جا نمی‌کند و
-#     capture‌های گذرا/غلط نمی‌سازد)؛
-#   * هر بار تایمر صفر شد، چرخهٔ شکار دوباره آغاز می‌شود.
+# versiontechnical note 10technical note18 — cycletechnical note technical noteortechnical note new hook possession (specification technical note user):
+#   * hook «only» in technical notefrom technical note address technical note is: to technical note technical note technical note untiltechnical note (start
+#     new match) technical note technical note‌technical noteandtechnical note before from technical note line technical note unchanged technical note‌technical note
+#   * firsttechnical note address Capture‌technical note‌technical note technical note «value 2» (Home) in technical note withtechnical note address
+#     detection Home/Away istechnical note address‌technical note without value 2 technical note and technical note technical note technical note‌technical noteandtechnical note
+#   * after from confirmationtechnical note hook «technical note» technical note‌technical noteandtechnical note and same address until match end
+#     technical noteandtechnical note technical note‌technical noteandtechnical note (hook technical note‌technical note technical note structure technical note technical noteto‌technical note technical note‌technical note and
+#     capture‌technical note technical note/technical note technical note‌technical notefromtechnical note)technical note
+#   * technical note withtechnical note untiltechnical note technical note technical note cycletechnical note technical note again technical notefrom technical note‌technical noteandtechnical note.
 # =====================================================================
-POSS_CAPTURE_LOG = False     # نسخهٔ ۱۰٫۲۴ — پیش‌فرض خاموش (حذف لاگ کنسول؛ برای عیب‌یابی True شود)
+POSS_CAPTURE_LOG = False     # versiontechnical note 10technical note24 — default technical noteandtechnical note (technical note log technical noteandtechnical note for technical note‌ortechnical note True technical noteandtechnical note)
 
 
 def _poss_capture_log(msg: str):
@@ -246,16 +246,16 @@ class PossessionHooker:
         self.cave_address = None
         self.target_address = None
         self.captured_address = None
-        self.captured_wall = None        # نسخهٔ ۱۰٫۱۸ — لحظهٔ تأیید capture
+        self.captured_wall = None        # versiontechnical note 10technical note18 — momenttechnical note confirmation capture
         self.is_hooked = False
 
     def hook(self, h_process, base_addr: int):
-        if self.is_hooked:               # نسخهٔ ۱۰٫۱۸ — نصب دوباره ممنوع
+        if self.is_hooked:               # versiontechnical note 10technical note18 — technical note again technical notemenutechnical note
             return
         self.target_address = base_addr + 0x9DFA86
         self.cave_address = allocate_near_target(h_process, self.target_address)
         if not self.cave_address:
-            raise Exception("خطا در تخصیص حافظه برای هوک مالکیت.")
+            raise Exception("Error in text memory for hook possession.")
 
         cave_code_start = self.cave_address + 0x20
         return_addr = self.target_address + 7
@@ -290,18 +290,18 @@ class PossessionHooker:
 
     def reset_capture(self, h_process=None):
         """
-        نسخه ۱۰٫۴ — re-arm اسلات چسبان Capture مالکیت (الگوی reset_capture هوک گل).
+        version 10text4 — re-arm text textwithtext Capture possession (textandtext reset_capture goal hook).
 
-        مسئله: این هوک آدرس rdi+0x58 را فقط «یک‌بار» (اولین اجرای دستور بعد
-        از اتصال) در اسلات داخل بازی می‌نویسد و سمت پایتون هم همان را برای
-        همیشه cache می‌کند. در بارگذاری «بازی جدید»، بازی ساختار آمار/مالکیت
-        را در آدرس تازه می‌سازد؛ Capture قدیمی به آدرس مرده می‌خواند →
-        مالکیت None/منجمد → بدون تغییر مالکیت، هیچ پاس/شوت/رخدادی ثبت
-        نمی‌شود (علامت گزارش‌شدهٔ «از بازی دوم به بعد فقط گل‌ها»).
+        text: text hook address rdi+0x58 text only «text‌withtext» (firsttext text instruction after
+        from text) in text inside withtext text‌textandtext and side textandtext text same text for
+        always cache text‌text. in withtext «new match»text withtext structure text/possession
+        text in address fresh text‌textfromtext Capture legacy to address text text‌textandtext →
+        possession None/frozen → unchanged possessiontext text pass/shot/text register
+        text‌textandtext (text text‌text «from withtext second to after only text‌text»).
 
-        این متد اسلات داخل بازی را صفر می‌کند (تا دستور مالکیت در اولین اجرای
-        بعدی دوباره Capture کند) و کش سمت پایتون را پاک می‌کند. صدا زدن با
-        h_process=None فقط کش پایتون را پاک می‌کند (امن برای تست).
+        text text text inside withtext text text text‌text (until instruction possession in firsttext text
+        aftertext again Capture text) and text side textandtext text text text‌text. text text with
+        h_process=None only text textandtext text text text‌text (text for test).
         """
         try:
             if h_process and self.cave_address:
@@ -318,25 +318,25 @@ class PossessionHooker:
             kernel32.ReadProcessMemory(h_process, ctypes.c_void_p(self.cave_address), ctypes.byref(buf), 8, None)
             if buf.value == 0:
                 return None
-            # --- نسخهٔ ۱۰٫۱۸ — اعتبارسنجی کاربر: فقط آدرسی که در لحظهٔ
-            # capture «مقدار ۲» (میزبان) در آن است پذیرفته می‌شود؛ بقیه
-            # رد و اسلات صفر می‌شود تا نوشتار بعدی دوباره Capture کند.
+            # --- versiontechnical note 10technical note18 — technical notewithtechnical noteagetechnical note user: only addresstechnical note technical note in momenttechnical note
+            # capture «value 2» (Home) in technical note is technical note technical note‌technical noteandtechnical note technical note
+            # technical note and technical note technical note technical note‌technical noteandtechnical note until technical noteandtechnical noteuntiltechnical note aftertechnical note again Capture technical note.
             candidate = buf.value
             val = ctypes.c_uint8(0)
             kernel32.ReadProcessMemory(h_process, ctypes.c_void_p(candidate), ctypes.byref(val), 1, None)
             if val.value != 2:
                 _poss_capture_log(
-                    f"capture رد شد (val={val.value}) addr=0x{candidate:X} "
-                    "— اسلات صفر شد؛ انتظار نوشتار بعدی")
+                    f"capture text text (val={val.value}) addr=0x{candidate:X} "
+                    "— text text text text textandtextuntiltext aftertext")
                 self.reset_capture(h_process)
                 return None
             self.captured_address = candidate
             self.captured_wall = time.time()
             _poss_capture_log(
-                f"آدرس میزبان/مهمان تأیید شد: 0x{candidate:X} (مقدار ۲ = میزبان) "
-                "— هوک برداشته می‌شود؛ تا پایان مسابقه همین آدرس خوانده می‌شود")
-            # کاربر: بعد از تشخیص، هوک حذف شود — خط اسمبلی به حالت اصلی
-            # برمی‌گردد و فقط خواندنِ همان آدرس ادامه دارد.
+                f"address Home/Away confirmation text: 0x{candidate:X} (value 2 = Home) "
+                "— hook text text‌textandtext until match end text address textandtext text‌textandtext")
+            # user: after from detectiontechnical note hook technical note technical noteandtechnical note — line technical note to technical note original
+            # technical note‌technical note and only readtechnical note same address resume technical note.
             self.unhook(h_process)
 
         val = ctypes.c_uint8(0)
@@ -346,12 +346,12 @@ class PossessionHooker:
         return None
 
 # =====================================================================
-# ۷. هوک جدید زمان مسابقه (TimeHooker)
+# 7. hook new match time (TimeHooker)
 # ---------------------------------------------------------------------
-# دستور بازی:  FL_2026.exe+20F1CDA - 89 86 40010000 - mov [rsi+00000140],eax
-#   Seconds = [rsi+0x140]   (همان جایی که eax نوشته می‌شود)
-#   Minutes = [rsi+0x13C]   (دقیقا ۴ بایت قبل)
-# Cave: اجرای دستور اصلی + capture RSI در یک memory slot داخلی
+# instruction withtechnical note:  FL_2026.exe+20F1CDA - 89 86 40010000 - mov [rsi+00000140],eax
+#   Seconds = [rsi+0x140]   (same technical note technical note eax technical noteandtechnical note technical note‌technical noteandtechnical note)
+#   Minutes = [rsi+0x13C]   (technical note 4 byte before)
+# Cave: technical note instruction original + capture RSI in technical note memory slot internal
 # =====================================================================
 class TimeHooker:
     HOOK_OFFSET = 0x20F1CDA
@@ -362,9 +362,9 @@ class TimeHooker:
     def __init__(self):
         self.cave_address = None
         self.target_address = None
-        self.data_address = None      # slot نگهداری RSI اسنپ‌شده
+        self.data_address = None      # slot technical note RSI technical noteagetechnical note‌technical note
         self.is_hooked = False
-        self.last_valid_wall = 0.0    # آخرین باری که زمان معتبر خوانده شد (فقط دیباگ)
+        self.last_valid_wall = 0.0    # latest withtechnical note technical note time valid technical noteandtechnical note technical note (only technical notewithtechnical note)
         # [suite v2.1.5] bridge-managed time hook: the bytes belong to the
         # bridge, this object only READS the shared RSI slot and releases
         # its reference on unhook. Never writes game bytes in this mode.
@@ -374,29 +374,29 @@ class TimeHooker:
     def hook(self, h_process, base_addr: int):
         self.target_address = base_addr + self.HOOK_OFFSET
 
-        # راستی‌آزمایی امضای دستور اصلی قبل از هرگونه نوشتن
+        # technical noteistechnical note‌technical note technical note instruction original before from technical noteandtechnical note write
         curr = safe_read(h_process, self.target_address, len(self.ORIG_BYTES))
         if curr is None:
-            raise Exception("خواندن حافظه Time Hook ممکن نشد.")
+            raise Exception("read memory Time Hook possible text.")
         if curr == self.ORIG_BYTES:
-            pass  # حالت عادی
+            pass  # technical note technical note
         elif curr[0] == 0xE9:
-            raise Exception("Time Hook قبلا نصب شده است (اجرای قبلی Restore نشده). بازی را ری‌استارت کنید.")
+            raise Exception("Time Hook beforetext text text is (text beforetext Restore text). withtext text restart text.")
         else:
             raise Exception(
-                "امضای دستور زمان مطابقت ندارد: " + curr.hex().upper() +
-                " (آفست 0x20F1CDA نیاز به بازبینی دارد)"
+                "text instruction time text text: " + curr.hex().upper() +
+                " (text 0x20F1CDA textortext to withtext text)"
             )
 
         self.cave_address = allocate_near_target(h_process, self.target_address, 128)
         if not self.cave_address:
-            raise Exception("خطا در تخصیص حافظه برای Time Hook.")
+            raise Exception("Error in text memory for Time Hook.")
 
-        self.data_address = self.cave_address + 0x40   # slot 8 بایتی RSI
+        self.data_address = self.cave_address + 0x40   # slot 8 bytetechnical note RSI
         code_start = self.cave_address + 0x20
 
         # ---------- Cave ----------
-        # mov [rsi+0x140], eax      ; دستور اصلی بازی       (6)
+        # mov [rsi+0x140], eax      ; instruction original withtechnical note       (6)
         # push rax                  ;                        (1)
         # pushfq                    ;                        (1)
         # mov rax, rsi              ;                        (3)
@@ -417,15 +417,15 @@ class TimeHooker:
         cave += struct.pack('<i', rel_jmp_back)
 
         if not safe_write(h_process, self.cave_address, b'\x00' * 8):
-            raise Exception("پاک‌سازی slot زمان ناموفق بود.")
+            raise Exception("cleanup slot time failed textandtext.")
         if not safe_write(h_process, code_start, bytes(cave)):
-            raise Exception("نوشتن کد Time Hook در Cave ناموفق بود.")
+            raise Exception("write code Time Hook in Cave failed textandtext.")
 
         patch = b'\xE9' + struct.pack('<i', code_start - (self.target_address + 5)) + b'\x90'
         if safe_write(h_process, self.target_address, patch):
             self.is_hooked = True
         else:
-            raise Exception("نصب Patch Time Hook روی بازی ناموفق بود.")
+            raise Exception("text Patch Time Hook textandtext withtext failed textandtext.")
 
     def unhook(self, h_process):
         # [suite v2.1.5] bridge-managed hook: the site bytes belong to the
@@ -447,16 +447,16 @@ class TimeHooker:
     @staticmethod
     def compute_total_seconds(minutes: int, seconds: int) -> float:
         """
-        تولید پایدار total_match_seconds:
-        - اگر ثانیه به‌صورت ثانیه‌شماری معمولی (0..59) باشد -> minutes*60 + seconds
-        - اگر بازی ثانیه را به‌صورت شمارنده/کل ثانیه ذخیره کرده باشد (> 59) -> خودِ آن مقدار
+        textandtext text total_match_seconds:
+        - if second to‌textandtext second‌text textandtext (0..59) withtext -> minutes*60 + seconds
+        - if withtext second text to‌textandtext counter/total second save text withtext (> 59) -> textandtext text value
         """
         if seconds <= 59:
             return float(minutes * 60 + seconds)
         return float(seconds)
 
     def read_time_registers(self, h_process) -> Optional[Tuple[int, int]]:
-        """خواندن (Minutes, Seconds) از ساختار زمان بازی از طریق RSI اسنپ‌شده"""
+        """read (Minutes, Seconds) from structure time withtext from text RSI textagetext‌text"""
         if not self.is_hooked or not self.data_address:
             return None
         raw = safe_read(h_process, self.data_address, 8)
@@ -464,7 +464,7 @@ class TimeHooker:
             return None
         rsi_val = struct.unpack('<Q', raw)[0]
         if not rsi_val or rsi_val < 0x10000:
-            return None  # هنوز capture نشده
+            return None  # still capture technical note
 
         raw_m = safe_read(h_process, rsi_val + self.MINUTES_OFFSET, 4)
         raw_s = safe_read(h_process, rsi_val + self.SECONDS_OFFSET, 4)
@@ -474,7 +474,7 @@ class TimeHooker:
         minutes = struct.unpack('<I', raw_m)[0]
         seconds = struct.unpack('<I', raw_s)[0]
 
-        # گاردهای عقلایی بودن مقادیر
+        # technical note technical note technical noteandtechnical note technical note
         if minutes > 300 or seconds > 10800:
             return None
 
@@ -482,75 +482,75 @@ class TimeHooker:
         return minutes, seconds
 
 # =====================================================================
-# ۷.۵ هوک ثبت گل از حافظه (GoalHooker — نسخه ۶ — Sticky First-Capture)
+# 7.5 hook register technical note from memory (GoalHooker — version 6 — Sticky First-Capture)
 # ---------------------------------------------------------------------
-# دستور بازی (گل میزبان):
+# instruction withtechnical note (technical note Home):
 #   FL_2026.exe+19ECBE2 - 44 89 89 58010000 - mov [rcx+00000158],r9d
-# شمارندهٔ گل میهمان: «دقیقاً ۴ بایت جلوتر» از محل شمارندهٔ میزبان
+# countertechnical note technical note Away: «exactly 4 byte technical noteandtechnical note» from technical note countertechnical note Home
 #   → byte [rcx+0x15C]
-# هر دو «متغیر یک‌بایتی» هستند (شمارندهٔ گل هر تیم؛ مقادیر 0,1,2,...)
+# technical note technical noteand «technical note technical note‌bytetechnical note» technical note (countertechnical note technical note technical note teamtechnical note technical note 0,1,2,...)
 #
-# مکانیزم (نسخه ۶ — رفع باگ «فقط یک گل ثبت می‌شد»):
-#   Cave دستور اصلی را عیناً اجرا می‌کند + RCX (پایهٔ ساختار آمار مسابقه)
-#   را «فقط یک‌بار» — در اولین اجرای دستور بعد از اتصال (وقتی slot هنوز
-#   صفر است) — در slot ذخیره می‌کند و دیگر هرگز بازنویسی نمی‌کند:
+# technical note (version 6 — technical note withtechnical note «only technical note technical note register technical note‌technical note»):
+#   Cave instruction original technical note technical note technical note technical note‌technical note + RCX (technical note structure technical note technical note)
+#   technical note «only technical note‌withtechnical note» — in firsttechnical note technical note instruction after from technical note (when slot still
+#   technical note is) — in slot save technical note‌technical note and technical note never withtechnical noteandtechnical note technical note‌technical note:
 #       cmp qword [slot], 0  /  jne skip  /  mov [slot], rax  /  skip:
-#   دلیل: بازی همین دستور را برای ساختارهای آمار دیگر (صفحات آمار،
-#   پخش مجدد، ساختارهای موقت) هم اجرا می‌کند؛ در نسخه‌های قبل هر اجرا
-#   slot را بازنویسی می‌کرد و بعد از اولین گل، slot با یک RCX بیگانه
-#   خراب می‌شد → دیگر هیچ گلی ثبت نمی‌شد. اکنون شمارنده‌ها برای
-#   «همهٔ گل‌های بعدی هر دو تیم» همیشه از همان ساختار درست خوانده
-#   می‌شوند. Worker دو بایت شمارنده را Poll می‌کند:
+#   technical note: withtechnical note technical note instruction technical note for structuretechnical note technical note technical note (technical note technical note
+#   technical note technical note structuretechnical note technical noteandtechnical note) technical note technical note technical note‌technical note in version‌technical note before technical note technical note
+#   slot technical note withtechnical noteandtechnical note technical note‌technical note and after from firsttechnical note technical note slot with technical note RCX technical note
+#   broken technical note‌technical note → technical note technical note technical note register technical note‌technical note. technical noteandtechnical note counter‌technical note for
+#   «technical note technical note‌technical note aftertechnical note technical note technical noteand team» always from same structure correct technical noteandtechnical note
+#   technical note‌technical noteandtechnical note. Worker technical noteand byte counter technical note Poll technical note‌technical note:
 #       Home = byte [rcx+0x158]   |   Away = byte [rcx+0x15C]
-#   هر «افزایش» شمارنده = یک گل (نه اجرای دستور!). در پخش مجدد گل،
-#   شمارنده جهش نمی‌زند؛ بنابراین گل هرگز دوبار ثبت نمی‌شود.
+#   technical note «increment» counter = technical note technical note (technical note technical note instruction!). in technical note technical note technical note
+#   counter jump technical note‌technical note technical notefortechnical note technical note never technical noteandwithtechnical note register technical note‌technical noteandtechnical note.
 #
-# هوک دوم (اختیاری و خودکار): اگر ۷ بایت بعد از هوک میزبان دقیقاً
-#   «mov [rcx+0000015C],r9d» باشد (نوشتن شمارندهٔ میهمان بلافاصله بعد از
-#   میزبان)، آن دستور هم هوک می‌شود تا RCX حتی قبل از اولین گل میزبان
-#   (مثلاً وقتی میهمان اولین گل را می‌زند) capture شده باشد.
+# hook second (optional and automatic): if 7 byte after from hook Home exactly
+#   «mov [rcx+0000015C],r9d» withtechnical note (write countertechnical note Away technical notedistance after from
+#   Home)technical note technical note instruction technical note hook technical note‌technical noteandtechnical note until RCX technical note before from firsttechnical note technical note Home
+#   (technical note when Away firsttechnical note technical note technical note technical note‌technical note) capture technical note withtechnical note.
 #
-# اتصال مجدد (Adopt): اگر هوک نسخهٔ ۶ قبلاً در بازی نصب باشد، به‌جای
-#   خطا پذیرفته می‌شود و slot صفر می‌شود تا capture تازهٔ این جلسه
-#   انجام شود (هوک فقط در اولین اتصال «انجام» می‌شود؛ اتصال‌های بعدی
-#   فقط از نصب موجود استفاده می‌کنند).
+# technical note technical note (Adopt): if hook versiontechnical note 6 beforetechnical note in withtechnical note technical note withtechnical note to‌technical note
+#   Error technical note technical note‌technical noteandtechnical note and slot technical note technical note‌technical noteandtechnical note until capture freshtechnical note technical note technical note
+#   technical note technical noteandtechnical note (hook only in firsttechnical note technical note «technical note» technical note‌technical noteandtechnical note technical note‌technical note aftertechnical note
+#   only from technical note technical noteandtechnical noteandtechnical note istechnical note technical note‌technical note).
 # =====================================================================
 class GoalHooker:
     HOOK_OFFSET = 0x19ECBE2
     ORIG_BYTES = b'\x44\x89\x89\x58\x01\x00\x00'            # mov [rcx+158h],r9d
     AWAY_EXPECTED_BYTES = b'\x44\x89\x89\x5C\x01\x00\x00'   # mov [rcx+15Ch],r9d
     HOME_COUNTER_OFFSET = 0x158
-    AWAY_COUNTER_OFFSET = 0x15C      # دقیقاً ۴ بایت جلوتر (مشخصات کاربر)
-    MAX_COUNTER_VALUE = 20           # گارد عقلایی بودن بایت شمارنده
-    MAX_GOAL_JUMP = 3                # سقف ایمنی برای جهش چندگانه در یک Poll
-    # --- نسخه ۶: چیدمان Cave با capture یک‌بارمصرف ---
-    CAVE_ALLOC_SIZE = 128            # حجم تخصیص Cave (کد + slot)
-    CODE_OFFSET = 0x20               # شروع کد در Cave
-    DATA_SLOT_OFFSET = 0x60          # slot ۸ بایتی RCX (بعد از کدِ ۴۱ بایتی)
-    CAVE_CODE_SIZE = 41              # طول دقیق کد تولیدی (_build_capture_code)
+    AWAY_COUNTER_OFFSET = 0x15C      # exactly 4 byte technical noteandtechnical note (specification user)
+    MAX_COUNTER_VALUE = 20           # technical note technical note technical noteandtechnical note byte counter
+    MAX_GOAL_JUMP = 3                # technical note technical note for jump technical note in technical note Poll
+    # --- version 6: technical note Cave with capture technical note‌withtechnical note ---
+    CAVE_ALLOC_SIZE = 128            # technical note technical note Cave (code + slot)
+    CODE_OFFSET = 0x20               # start code in Cave
+    DATA_SLOT_OFFSET = 0x60          # slot 8 bytetechnical note RCX (after from codetechnical note 41 bytetechnical note)
+    CAVE_CODE_SIZE = 41              # length technical note code technical noteandtechnical note (_build_capture_code)
 
     def __init__(self):
         self.cave_address = None
-        self.data_home = None          # slot 8 بایتی RCX (فقط اولین capture نوشته می‌شود — نسخه ۶)
+        self.data_home = None          # slot 8 bytetechnical note RCX (only firsttechnical note capture technical noteandtechnical note technical note‌technical noteandtechnical note — version 6)
         self.target_address = None
-        # --- هوک دوم (میهمان) ---
+        # --- hook second (Away) ---
         self.away_installed = False
         self.away_target_address = None
         self.away_cave_address = None
         self.away_data = None
         self.is_hooked = False
-        self.adopted = False           # نسخه ۶: اتصال به نصب موجود (بدون نصب مجدد)
+        self.adopted = False           # version 6: technical note to technical note technical noteandtechnical noteandtechnical note (without technical note technical note)
 
     # -------------------------------------------------------------
     @staticmethod
     def counter_event(prev: Optional[int], new: Optional[int]) -> Tuple[str, int]:
         """
-        تصمیم خالص از روی دو خواندن متوالی شمارنده (قابل تست بدون بازی):
-          prev=None , new=None → ("WAIT", 0)      هنوز چیزی capture نشده
-          prev=None , new=v    → ("BASELINE", 0)  اولین خواندن معتبر
-          new > prev           → ("GOAL", n)      n گل جدید (سقف MAX_GOAL_JUMP)
-          new < prev           → ("RESET", 0)     شروع بازی جدید / ری‌سنک
-          برابر                → ("NOCHANGE", 0)
+        text text from textandtext textand read textandtext counter (testable without withtext):
+          prev=None , new=None → ("WAIT", 0)      still text capture text
+          prev=None , new=v    → ("BASELINE", 0)  firsttext read valid
+          new > prev           → ("GOAL", n)      n text new (text MAX_GOAL_JUMP)
+          new < prev           → ("RESET", 0)     new match start / resync
+          text                → ("NOCHANGE", 0)
         """
         if new is None:
             return ("WAIT", 0) if prev is None else ("NOCHANGE", 0)
@@ -564,31 +564,31 @@ class GoalHooker:
 
     # -------------------------------------------------------------
     def _install_cave(self, h_process, target: int, orig: bytes) -> Tuple[Optional[int], Optional[int]]:
-        """نصب یک Cave الگو-TimeHooker روی target: اجرای دستور اصلی + capture یک‌بارمصرف RCX"""
+        """text text Cave textand-TimeHooker textandtext target: text instruction original + capture text‌withtext RCX"""
         cave_address = allocate_near_target(h_process, target, self.CAVE_ALLOC_SIZE)
         if not cave_address:
             return None, None
-        data_address = cave_address + self.DATA_SLOT_OFFSET   # slot 8 بایتی RCX (بعد از کد)
+        data_address = cave_address + self.DATA_SLOT_OFFSET   # slot 8 bytetechnical note RCX (after from code)
         code_start = cave_address + self.CODE_OFFSET
 
-        # ---------- Cave (نسخه ۶ — Sticky First-Capture) ----------
-        # mov [rcx+disp32], r9d        ; دستور اصلی بازی            (7)
+        # ---------- Cave (version 6 — Sticky First-Capture) ----------
+        # mov [rcx+disp32], r9d        ; instruction original withtechnical note            (7)
         # push rax                     ;                             (1)
         # push rcx                     ;                             (1)
         # pushfq                       ;                             (1)
         # mov rax, rcx                 ;                             (3)
-        # cmp qword [slot],0           ; slot صفر است؟               (8)
-        # jne skip                     ; نه → capture قبلاً انجام شده  (2)
-        # mov [slot], rax              ; بله → فقط همین‌بار capture   (10)
+        # cmp qword [slot],0           ; slot technical note istechnical note               (8)
+        # jne skip                     ; technical note → capture beforetechnical note technical note technical note  (2)
+        # mov [slot], rax              ; technical note → only technical note‌withtechnical note capture   (10)
         # skip:
         # popfq                        ;                             (1)
         # pop rcx                      ;                             (1)
         # pop rax                      ;                             (1)
         # jmp rel32 → target+7         ;                             (5)
-        # مجموع = 41 بایت (CAVE_CODE_SIZE)
+        # technical noteandtechnical note = 41 byte (CAVE_CODE_SIZE)
         code = self._build_capture_code(orig, data_address, target, code_start)
 
-        # slot صفر → اولین اجرای دستور بعد از اتصال capture می‌شود
+        # slot technical note → firsttechnical note technical note instruction after from technical note capture technical note‌technical noteandtechnical note
         if not safe_write(h_process, cave_address, b'\x00' * self.CAVE_ALLOC_SIZE):
             return None, None
         if not safe_write(h_process, code_start, code):
@@ -604,12 +604,12 @@ class GoalHooker:
     def _build_capture_code(orig: bytes, slot: int, target: int,
                             code_start: int) -> bytes:
         """
-        نسخه ۶ — تولید بایت‌کد Cave با capture «یک‌بارمصرف»:
-        RCX فقط وقتی در slot نوشته می‌شود که slot هنوز صفر باشد
-        (اولین اجرای دستور بعد از اتصال). در اجراهای بعدی شرط jne
-        مسیر store را رد می‌کند → slot هرگز با RCX بیگانه بازنویسی
-        نمی‌شود → شمارنده‌های هر دو تیم تا آخر مسابقه از ساختار درست
-        خوانده می‌شوند. (خالص و قابل تست بدون بازی)
+        version 6 — textandtext byte‌code Cave with capture «text‌withtext»:
+        RCX only when in slot textandtext text‌textandtext text slot still text withtext
+        (firsttext text instruction after from text). in text aftertext text jne
+        path store text text text‌text → slot never with RCX text withtextandtext
+        text‌textandtext → counter‌text text textand team until text text from structure correct
+        textandtext text‌textandtext. (text and testable without withtext)
         """
         code = bytearray(orig)                                  # (7)
         code += bytes([0x50, 0x51, 0x9C])                       # push rax, push rcx, pushfq
@@ -618,29 +618,29 @@ class GoalHooker:
         code += bytes([0x48, 0x83, 0x3D, 0, 0, 0, 0, 0])        # cmp qword [rip+disp32], 0
         jne_pos = len(code)                                     # 21
         code += bytes([0x75, 0x00])                             # jne rel8 → skip
-        code += bytes([0x48, 0xA3]) + struct.pack('<Q', slot)   # mov [slot], rax (فقط اولین‌بار)
+        code += bytes([0x48, 0xA3]) + struct.pack('<Q', slot)   # mov [slot], rax (only firsttechnical note‌withtechnical note)
         pop_pos = len(code)                                     # 33 → skip:
         code += bytes([0x9D, 0x59, 0x58])                       # popfq, pop rcx, pop rax
         code += bytes([0xE9])                                   # jmp rel32
-        # rel32 نسبت به انتهای دستور jmp: انتهای فعلی + ۴ بایت rel32
+        # rel32 ratio to technical note instruction jmp: technical note technical note + 4 byte rel32
         code += struct.pack('<i', (target + 7) - (code_start + len(code) + 4))
         # --- fixups ---
-        # disp32 مقایسه rip-relative: از انتهای دستور cmp سنجیده می‌شود
+        # disp32 technical note rip-relative: from technical note instruction cmp agetechnical note technical note‌technical noteandtechnical note
         struct.pack_into('<i', code, cmp_pos + 3, slot - (code_start + cmp_pos + 8))
-        # rel8 پرش jne روی دستور store ده‌بایتی
+        # rel8 technical note jne technical noteandtechnical note instruction store technical note‌bytetechnical note
         code[jne_pos + 1] = (pop_pos - (jne_pos + 2)) & 0xFF
         if len(code) != GoalHooker.CAVE_CODE_SIZE:
-            raise Exception(f"طول کد Cave نامعتبر: {len(code)}")
+            raise Exception(f"length code Cave invalid: {len(code)}")
         return bytes(code)
 
     # -------------------------------------------------------------
     @staticmethod
     def _parse_existing_cave_code(code: bytes, orig: bytes) -> Optional[int]:
         """
-        نسخه ۶ — تشخیص Cave «نسخهٔ ۶» نصب‌شده از جلسهٔ قبلی و استخراج
-        آدرس slot از دستور mov [abs64], rax. اگر بایت‌ها الگوی نسخهٔ ۶
-        نباشد (مثلاً Cave قدیمی نسخهٔ ۴/۵ که capture همیشگی دارد) None
-        برمی‌گردد تا اتصال مجدد با آن مجاز نشود (باید بازی ری‌استارت شود).
+        version 6 — detection Cave «versiontext 6» text‌text from text beforetext and istext
+        address slot from instruction mov [abs64], rax. if byte‌text textandtext versiontext 6
+        textwithtext (text Cave legacy versiontext 4/5 text capture text text) None
+        text‌text until text text with text textfrom textandtext (must withtext restart textandtext).
         """
         if len(code) < GoalHooker.CAVE_CODE_SIZE:
             return None
@@ -658,42 +658,42 @@ class GoalHooker:
     def hook(self, h_process, base_addr: int):
         self.target_address = base_addr + self.HOOK_OFFSET
 
-        # راستی‌آزمایی امضای دستور اصلی قبل از هرگونه نوشتن
+        # technical noteistechnical note‌technical note technical note instruction original before from technical noteandtechnical note write
         curr = safe_read(h_process, self.target_address, len(self.ORIG_BYTES))
         if curr is None:
-            raise Exception("خواندن حافظه Goal Hook ممکن نشد.")
+            raise Exception("read memory Goal Hook possible text.")
         if curr == self.ORIG_BYTES:
-            # --- حالت عادی: نصب تازه Cave (تنها بار «انجام شدن» هوک) ---
+            # --- technical note technical note: technical note fresh Cave (technical note withtechnical note «technical note technical note» hook) ---
             self.cave_address, self.data_home = self._install_cave(
                 h_process, self.target_address, self.ORIG_BYTES)
             if not self.cave_address:
-                raise Exception("خطا در تخصیص حافظه برای Goal Hook (میزبان).")
+                raise Exception("Error in text memory for Goal Hook (Home).")
         elif curr[0] == 0xE9:
-            # --- نسخه ۶: Adopt — هوک نسخهٔ ۶ قبلاً نصب شده (جلسهٔ قبل
-            # Restore نشده). به‌جای خطا، نصب موجود پذیرفته می‌شود؛
-            # slot هم صفر می‌شود تا capture تازهٔ «این اتصال» انجام شود
-            # (رفتار «هوک فقط در دفعهٔ اولِ اتصال» حفظ می‌ماند).
+            # --- version 6: Adopt — hook versiontechnical note 6 beforetechnical note technical note technical note (technical note before
+            # Restore technical note). to‌technical note Errortechnical note technical note technical noteandtechnical noteandtechnical note technical note technical note‌technical noteandtechnical note
+            # slot technical note technical note technical note‌technical noteandtechnical note until capture freshtechnical note «technical note technical note» technical note technical noteandtechnical note
+            # (technical noteuntiltechnical note «hook only in technical note firsttechnical note technical note» technical note technical note‌technical note).
             rel = struct.unpack('<i', curr[1:5])[0]
             code_start = self.target_address + 5 + rel
             existing = safe_read(h_process, code_start, self.CAVE_CODE_SIZE)
             slot = self._parse_existing_cave_code(existing, self.ORIG_BYTES) if existing else None
             if slot is None:
                 raise Exception(
-                    "Goal Hook قدیمی (نسخهٔ ۴/۵) در بازی نصب است و قابل Adopt نیست؛ "
-                    "برای فعال‌شدن capture یک‌بارمصرف نسخهٔ ۶، بازی را یک‌بار ری‌استارت کنید.")
+                    "Goal Hook legacy (versiontext 4/5) in withtext text is and text Adopt is nottext "
+                    "for active‌text capture text‌withtext versiontext 6text withtext text text‌withtext restart text.")
             self.cave_address = code_start - self.CODE_OFFSET
             self.data_home = slot
             self.adopted = True
-            safe_write(h_process, self.data_home, b'\x00' * 8)   # capture تازه این جلسه
-            clog(f"[GoalHook] نصب موجود Adopt شد (slot={slot:#x}) — slot صفر شد "
-                  f"تا اولین نوشتار گل این جلسه capture شود")
+            safe_write(h_process, self.data_home, b'\x00' * 8)   # capture fresh technical note technical note
+            clog(f"[GoalHook] text textandtextandtext Adopt text (slot={slot:#x}) — slot text text "
+                  f"until firsttext textandtextuntiltext text text text capture textandtext")
         else:
             raise Exception(
-                "امضای دستور گل میزبان مطابقت ندارد: " + curr.hex().upper() +
-                " (آفست 0x19ECBE2 نیاز به بازبینی دارد)"
+                "text instruction text Home text text: " + curr.hex().upper() +
+                " (text 0x19ECBE2 textortext to withtext text)"
             )
 
-        # --- هوک دوم (میهمان): فقط اگر امضا دقیقاً ۷ بایت بعد باشد ---
+        # --- hook second (Away): only if technical note exactly 7 byte after withtechnical note ---
         try:
             nxt = safe_read(h_process, self.target_address + 7, len(self.AWAY_EXPECTED_BYTES))
             if nxt == self.AWAY_EXPECTED_BYTES:
@@ -705,7 +705,7 @@ class GoalHooker:
                     self.away_cave_address = a_cave
                     self.away_data = a_data
             elif nxt and nxt[0] == 0xE9:
-                # Adopt هوک میهمانِ نسخهٔ ۶ از جلسهٔ قبلی
+                # Adopt hook Awaytechnical note versiontechnical note 6 from technical note beforetechnical note
                 rel = struct.unpack('<i', nxt[1:5])[0]
                 a_code_start = (self.target_address + 7) + 5 + rel
                 a_existing = safe_read(h_process, a_code_start, self.CAVE_CODE_SIZE)
@@ -716,9 +716,9 @@ class GoalHooker:
                     self.away_cave_address = a_code_start - self.CODE_OFFSET
                     self.away_data = a_slot
                     safe_write(h_process, self.away_data, b'\x00' * 8)
-                    clog(f"[GoalHook] هوک میهمان موجود Adopt شد (slot={a_slot:#x})")
+                    clog(f"[GoalHook] hook Away textandtextandtext Adopt text (slot={a_slot:#x})")
         except Exception:
-            self.away_installed = False   # غیرحیاتی — Poll از طریق slot میزبان کار می‌کند
+            self.away_installed = False   # technical noteortechnical note — Poll from technical note slot Home technical note technical note‌technical note
 
         self.is_hooked = True
 
@@ -739,11 +739,11 @@ class GoalHooker:
     # -------------------------------------------------------------
     def reset_capture(self, h_process):
         """
-        نسخه ۶ — صفر کردن slotهای capture برای «اجازهٔ capture مجدد».
-        فقط مسیر «ریست مسابقه / بازی جدید» این متد را صدا می‌زند تا
-        اولین نوشتارِ گلِ بازیِ جدید، ساختار تازه را capture کند.
-        در جریان عادی مسابقه هرگز فراخوانی نمی‌شود (capture فقط
-        اولین‌بار بعد از اتصال انجام می‌شود).
+        version 6 — text text slottext capture for «textfromtext capture text».
+        only path «reset text / new match» text text text text text‌text until
+        firsttext textandtextuntiltext text withtext newtext structure fresh text capture text.
+        in textortext text text never textandtext text‌textandtext (capture only
+        firsttext‌withtext after from text text text‌textandtext).
         """
         try:
             if h_process and self.data_home:
@@ -767,9 +767,9 @@ class GoalHooker:
 
     def poll(self, h_process) -> Dict[str, Any]:
         """
-        خواندن وضعیت هوک + دو شمارندهٔ گل از ساختار آمار.
-        خروجی: {"hooked", "captured", "secondary", "rcx", "home", "away"}
-        home/away یا int (0..MAX_COUNTER_VALUE) یا None هستند.
+        read andtext hook + textand countertext text from structure text.
+        output: {"hooked", "captured", "secondary", "rcx", "home", "away"}
+        home/away or int (0..MAX_COUNTER_VALUE) or None text.
         """
         out = {"hooked": self.is_hooked, "captured": False, "secondary": self.away_installed,
                "rcx": None, "home": None, "away": None}
@@ -780,7 +780,7 @@ class GoalHooker:
         if rcx is None:
             rcx = self._read_rcx_slot(h_process, self.away_data)
         if rcx is None:
-            return out   # هنوز هیچ نوشتاری اجرا نشده
+            return out   # still technical note technical noteandtechnical noteuntiltechnical note technical note technical note
 
         out["captured"] = True
         out["rcx"] = rcx
@@ -798,14 +798,14 @@ class GoalHooker:
         return out
 
 # =====================================================================
-# ۷٫۵ — توابع خالص کمکی لایهٔ Detection (نسخه ۱۰ — قابل تست بدون بازی)
+# 7technical note5 — technical noteandtechnical note technical note technical note layertechnical note Detection (version 10 — testable without withtechnical note)
 # =====================================================================
-GH_HEARTBEAT_INTERVAL = 5.0   # ثانیه — تپش [GoalHookPoll]
+GH_HEARTBEAT_INTERVAL = 5.0   # second — heartbeat [GoalHookPoll]
 
 
 def gh_due_heartbeat(now: float, last: Optional[float],
                      interval: float = GH_HEARTBEAT_INTERVAL) -> bool:
-    """آیا وقت لاگ تپش [GoalHookPoll] رسیده؟ (اولین فراخوانی همیشه بله)"""
+    """textor andtext log heartbeat [GoalHookPoll] text (firsttext textandtext always text)"""
     if last is None:
         return True
     return (now - last) >= interval
@@ -814,9 +814,9 @@ def gh_due_heartbeat(now: float, last: Optional[float],
 def gh_pick_poll_time(total_t: Optional[float],
                       core_t: Optional[float]) -> float:
     """
-    انتخاب زمان مسابقه برای Poll گل (نسخه ۱۰):
-      کلید ساعت این لحظه اگر معتبر (> 0)؛ وگرنه آخرین زمان معتبر core؛
-      وگرنه ۰. Poll گل نباید به‌خاطر ساعتِ موقتاً خراب از دست برود.
+    text match time for Poll text (version 10):
+      totaltext text text moment if valid (> 0)text andtext latest time valid coretext
+      andtext 0. Poll text textmust to‌text text textandtextuntiltext broken from text textandtext.
     """
     if total_t is not None and total_t > 0:
         return float(total_t)
@@ -826,34 +826,34 @@ def gh_pick_poll_time(total_t: Optional[float],
 
 
 # =====================================================================
-# ۷٫۶ — نسخه ۱۰٫۳: Match Lifecycle State Machine (توابع خالص — قابل تست بدون بازی)
+# 7technical note6 — version 10technical note3: Match Lifecycle State Machine (technical noteandtechnical note technical note — testable without withtechnical note)
 # ---------------------------------------------------------------------
-# چرخهٔ کامل:  HALF_1 → (HT واقعی) → HALF_2 → (پایان) → FULL_TIME
-#             هر جای مسیر: تایمر ≈ صفر + PLAYING → NEW_MATCH (ریست کامل)
-# اصل سخت: HT فقط وقتی معتبر است که «نیمه اول واقعاً تمام شده باشد»؛
-# یعنی قبلاً زمان معتبر ≥ 45:00 دیده شده باشد. صرفِ «کاهش زمان» هرگز HT
-# نیست (مثال‌های نقض: 90:00→00:00، 03:00→02:59، 06:00→…) و دقیقه ۶ هر
-# بازی نباید تحت هیچ شرایطی HT تولید کند.
+# cycletechnical note complete:  HALF_1 → (HT real) → HALF_2 → (end) → FULL_TIME
+#             technical note technical note path: untiltechnical note ≈ technical note + PLAYING → NEW_MATCH (reset complete)
+# technical note technical note: HT only when valid is technical note «first half andtechnical note technical note technical note withtechnical note»technical note
+# technical note beforetechnical note time valid ≥ 45:00 technical note technical note withtechnical note. technical note «technical note time» never HT
+# is not (technical note‌technical note technical note: 90:00→00:00technical note 03:00→02:59technical note 06:00→…) and minute 6 technical note
+# withtechnical note technical notemust technical note technical note technical note HT technical noteandtechnical note technical note.
 # =====================================================================
 class MatchPhase(Enum):
     HALF_1 = "HALF_1"
-    HALFTIME = "HALFTIME"      # افت زمان بعد از نیمه اول دیده شد — در انتظار از سرگیری
+    HALFTIME = "HALFTIME"      # decrease time after from first half technical note technical note — in technical note resume
     HALF_2 = "HALF_2"
-    # --- نسخهٔ ۱۰٫۱۵ — وقت اضافه (چهار نوع ریست کاربر؛ بندهای ج و د) ---
-    # ET1: ریست تایمر از بالای ۹۰:۰۰ به ۹۰:۰۰ + Playing + تایمرِ در حال رشد
-    # ET2: ریست تایمر از بالای ۱۰۵:۰۰ به ۱۰۵:۰۰ + Playing + تایمرِ در حال رشد
+    # --- versiontechnical note 10technical note15 — extra time (technical note technical noteandtechnical note reset usertechnical note technical note technical note and technical note) ---
+    # ET1: reset untiltechnical note from withtechnical note 90:00 to 90:00 + Playing + untiltechnical note currently technical note
+    # ET2: reset untiltechnical note from withtechnical note 105:00 to 105:00 + Playing + untiltechnical note currently technical note
     ET1 = "ET1"
     ET2 = "ET2"
-    FULL_TIME = "FULL_TIME"    # مسابقه تمام شد — نمودار حفظ می‌شود (پاک نمی‌شود)
-    NEW_MATCH = "NEW_MATCH"    # گذرا — بعد از ریست کامل به HALF_1 برمی‌گردد
+    FULL_TIME = "FULL_TIME"    # technical note technical note technical note — chart technical note technical note‌technical noteandtechnical note (technical note technical note‌technical noteandtechnical note)
+    NEW_MATCH = "NEW_MATCH"    # technical note — after from reset complete to HALF_1 technical note‌technical note
 
 
 def should_flag_time_drop(prev_t: Optional[float], current_t: float,
                           min_delta: float) -> bool:
     """
-    نسخه ۱۰٫۳ — آیا افت بزرگ زمان بازی باید «علامت» بخورد؟
-    فقط علامت؛ هیچ تصمیمی اینجا گرفته نمی‌شود (تصمیم نهایی هنگام
-    از سرگیری PLAYING با classify_resume_after_drop گرفته می‌شود).
+    version 10text3 — textor decrease text time withtext must «text» textandtext
+    only text text text text text text‌textandtext (text text text
+    resume PLAYING with classify_resume_after_drop text text‌textandtext).
     """
     if prev_t is None or prev_t <= 0:
         return False
@@ -868,59 +868,59 @@ def classify_resume_after_drop(prev_end_t: float, current_t: float,
                                new_game_max_start: float = 180.0,
                                et_reset_tolerance: float = 720.0) -> str:
     """
-    نسخه ۱۰٫۳ — تصمیم قطعی پس از از سرگیری PLAYING (بعد از یک افت بزرگ زمان).
-    خروجی: "HT" | "NEW_MATCH" | "ET1" | "ET2" | "KEPT"
+    version 10text3 — text deterministic text from resume PLAYING (after from text decrease text time).
+    output: "HT" | "NEW_MATCH" | "ET1" | "ET2" | "KEPT"
 
-    قانون ۱ — بازی جدید (قوی‌ترین سیگنال؛ مقدم بر همه):
+    rule 1 — new match (textandtext‌text text text text text):
         current ≈ 0  →  NEW_MATCH
-        (90:xx → 0:00 و 6:xx → 0:00 هرگز HT نیستند؛ بازی جدید ممکن است
-         بعد از توقف روی «هر دقیقه‌ای» شروع شود)
+        (90:xx → 0:00 and 6:xx → 0:00 never HT is nottext new match possible is
+         after from stop textandtext «text minute‌text» start textandtext)
 
-    قانون ۲ — HT (قانون سخت، صریح داخل Logic — نه صرفاً تولرانس):
+    rule 2 — HT (rule text text inside Logic — text text textandtext):
         half == 1
-        AND previous valid game time >= 45*60   (نیمه اول واقعاً تمام شده)
-        AND current حوالی 45:00 باشد:
+        AND previous valid game time >= 45*60   (first half andtext text text)
+        AND current textandtext 45:00 withtext:
              (ht_hard_min - lower_slack) <= current <= (ht_hard_min + tolerance)
-        (45:xx/46:xx → 45:00 = شروع نیمه دوم همان بازی)
+        (45:xx/46:xx → 45:00 = start second half same withtext)
 
-    قانون ۲-ج — شروع وقت اضافه (نسخهٔ ۱۰٫۱۵ — بند ج چهار نوع ریست کاربر):
+    rule 2-text — start extra time (versiontext 10text15 — text text text textandtext reset user):
         half == 2
-        AND previous time بالاتر از ۹۰:۰۰ دیده شده (وقت هدررفتهٔ نیمهٔ دوم)
-        AND current حوالی ۹۰:۰۰ (سقوط تایمر روی ۹۰:۰۰):
+        AND previous time above from 90:00 text text (andtext textintext text second)
+        AND current textandtext 90:00 (drop untiltext textandtext 90:00):
              (90*60 - slack) <= current <= (90*60 + et_reset_tolerance)
-        ⇒ ET1 (نیمهٔ اول وقت اضافه)
+        ⇒ ET1 (text first extra time)
 
-    قانون ۲-د — شروع نیمهٔ دوم وقت اضافه (بند د):
+    rule 2-text — start text second extra time (text text):
         half == 3
-        AND previous time بالاتر از ۱۰۵:۰۰ دیده شده (وقت هدررفتهٔ ET1)
-        AND current حوالی ۱۰۵:۰۰  ⇒  ET2
+        AND previous time above from 105:00 text text (andtext textintext ET1)
+        AND current textandtext 105:00  ⇒  ET2
 
-    قانون ۳ — بقیهٔ حالت‌ها (پایان مسابقه/صفحهٔ آمار/ری‌سنک):
-        KEPT → نمودار حفظ می‌شود؛ هیچ HT و هیچ ریستی ساخته نمی‌شود
-        (6:00 تحت هیچ شرایطی HT تولید نمی‌کند چون prev_end < 2700 است)
+    rule 3 — text text‌text (match end/text text/resync):
+        KEPT → chart text text‌textandtext text HT and text resettext text text‌textandtext
+        (6:00 text text text HT textandtext text‌text because prev_end < 2700 is)
     """
-    # ۱) بازی جدید — تایمر ≈ صفر
+    # 1) new match — untiltechnical note ≈ technical note
     if current_t <= new_game_max_start:
         return "NEW_MATCH"
-    # ۲-د) شروع نیمهٔ دوم وقت اضافه — ریست ۱۰۵ از بالای ۱۰۵ (نسخهٔ ۱۰٫۱۵)
+    # 2-technical note) start technical note second extra time — reset 105 from withtechnical note 105 (versiontechnical note 10technical note15)
     if (half_number == 3
             and prev_end_t > 105.0 * 60.0
             and (105.0 * 60.0 - ht_resume_lower_slack) <= current_t
             and current_t <= 105.0 * 60.0 + et_reset_tolerance):
         return "ET2"
-    # ۲-ج) شروع وقت اضافه — ریست ۹۰ از بالای ۹۰ (نسخهٔ ۱۰٫۱۵)
+    # 2-technical note) start extra time — reset 90 from withtechnical note 90 (versiontechnical note 10technical note15)
     if (half_number == 2
             and prev_end_t > 90.0 * 60.0
             and (90.0 * 60.0 - ht_resume_lower_slack) <= current_t
             and current_t <= 90.0 * 60.0 + et_reset_tolerance):
         return "ET1"
-    # ۲) HT — قانون سخت
+    # 2) HT — rule technical note
     if (half_number == 1
             and prev_end_t >= ht_hard_min
             and (ht_hard_min - ht_resume_lower_slack) <= current_t
             and current_t <= ht_hard_min + ht_resume_tolerance):
         return "HT"
-    # ۳) حفظ نمودار
+    # 3) technical note chart
     return "KEPT"
 
 
@@ -928,11 +928,11 @@ def is_new_match_watchdog(seen_max_t: float, current_t: float,
                           new_game_max_start: float,
                           min_delta: float) -> bool:
     """
-    نسخه ۱۰٫۳ — Watchdog مستقل بازی جدید (بدون نیاز به فلگ افت زمان).
-    وقتی در جریان PLAYING تایمر ≈ صفر است اما مسابقهٔ جاری واقعاً جلو
-    رفته (بیش از پنجرهٔ شروع + دلتا)، یعنی مسابقهٔ قبلی تمام و بازیِ
-    جدید شروع شده — حتی اگر به‌هر دلیلی «افت زمان» علامت نخورده باشد
-    (مثلاً core در منوها از قبل به صفر به‌روز شده باشد).
+    version 10text3 — Watchdog independent new match (without textortext to text decrease time).
+    when in textortext PLAYING untiltext ≈ text is text text current andtext textand
+    text (text from windowtext start + textuntil)text text text beforetext text and withtext
+    new start text — text if to‌text text «decrease time» text textandtext withtext
+    (text core in menutext from before to text to‌textandtext text withtext).
     """
     if current_t > new_game_max_start:
         return False
@@ -940,36 +940,36 @@ def is_new_match_watchdog(seen_max_t: float, current_t: float,
 
 
 # =====================================================================
-# ۷٫۷ — نسخه ۱۰٫۴: لاگ تشخیصی فایل txt + سلامت خط لولهٔ داده (Pipeline Health)
+# 7technical note7 — version 10technical note4: log detectiontechnical note file txt + technical note line technical noteandtechnical note data (Pipeline Health)
 # ---------------------------------------------------------------------
-# هدف: وقتی بعد از شروع «بازی دوم» فقط گل‌ها ثبت می‌شوند و پاس/شوت/رخداد
-# قطع می‌شود، این بخش نشان می‌دهد دقیقاً کدام لایهٔ داده مرده است.
-#   * DebugLogger — فایل txt کنار اسکریپت (thread-safe؛ هرگز exception
-#     بالا نمی‌دهد) با هدر Session، رویدادهای فوری و Heartbeat آستانه‌دار.
-#   * توابع خالص تصمیم (قابل تست بدون بازی): possession_rearm_needed،
-#     freeze_seconds، should_warn_frozen_counter، fmt_ptr.
-# قواعد خواندن لاگ (راهنمای سریع):
+# technical note: when after from start «withtechnical note second» only technical note‌technical note register technical note‌technical noteandtechnical note and pass/shot/technical note
+# technical note technical note‌technical noteandtechnical note technical note section technical note technical note‌technical note exactly codetechnical note layertechnical note data technical note is.
+#   * DebugLogger — file txt technical note technical note (thread-safetechnical note never exception
+#     withtechnical note technical note‌technical note) with technical notein Sessiontechnical note technical noteandtechnical notedatatechnical note immediate and Heartbeat threshold‌technical note.
+#   * technical noteandtechnical note technical note technical note (testable without withtechnical note): possession_rearm_neededtechnical note
+#     freeze_secondstechnical note should_warn_frozen_countertechnical note fmt_ptr.
+# technical noteandtechnical note read log (technical note fast):
 #   HB st=... t=... poss=... nP=... pass=... shot=... | ptr ... | gates ...
-#     - gates bp>0 در همهٔ خط‌ها  → گیت ball/players حلقه را می‌کشد
-#     - poss=- و cap=- همیشگی    → capture مالکیت مرده (POSS_REARM می‌بینیم؟)
-#     - pass/shot ثابت + pPtr/sPtr ثابت بین دو بازی → پوینتر منجمد (STALE؟)
-#     - ghRcx بین دو بازی فرق کند → اثبات جابه‌جایی ساختار آمار در بازی جدید
+#     - gates bp>0 in technical note line‌technical note  → technical note ball/players technical note technical note technical note‌technical note
+#     - poss=- and cap=- technical note    → capture possession technical note (POSS_REARM technical note‌technical note)
+#     - pass/shot technical note + pPtr/sPtr technical note technical note technical noteand withtechnical note → pointer frozen (STALEtechnical note)
+#     - ghRcx technical note technical noteand withtechnical note technical note technical note → technical notewithtechnical note technical noteto‌technical note structure technical note in new match
 # =====================================================================
 DEBUG_LOG_FILENAME = "momentum_debug_log.txt"
 DEBUG_LOG_HEARTBEAT_SEC = 5.0
 DEBUG_LOG_MAX_BYTES = 4 * 1024 * 1024
-POSS_REARM_STALE_SEC = 20.0      # مالکیت نامعتبرِ پایدار در جریان PLAYING → re-arm
-POSS_REARM_THROTTLE_SEC = 60.0   # حداقل فاصلهٔ دو re-arm خودکار
-COUNTER_FROZEN_WARN_SEC = 45.0   # شمارندهٔ پاس/شوت بدون تغییر در جریان PLAYING → STALE؟
+POSS_REARM_STALE_SEC = 20.0      # possession invalidtechnical note technical note in technical noteortechnical note PLAYING → re-arm
+POSS_REARM_THROTTLE_SEC = 60.0   # technical note distancetechnical note technical noteand re-arm automatic
+COUNTER_FROZEN_WARN_SEC = 45.0   # countertechnical note pass/shot unchanged in technical noteortechnical note PLAYING → STALEtechnical note
 
 
 class DebugLogger:
     """
-    نسخه ۱۰٫۴ — لاگ متنی ساده و مقاوم برای تشخیص زنده‌بودن لایه‌های داده.
-      * append با هدر Session (هر اجرای برنامه یک بلاک جدید)
-      * write/event همیشه فوری؛ heartbeat با آستانهٔ زمانی (throttle)
-      * چرخش ساده: عبور از max_bytes → فایل به path+".1" منتقل می‌شود
-      * هیچ‌وقت exception بالا نمی‌دهد (لاگ نباید برنامه را بکشد)
+    version 10text4 — log text text and textandtext for detection live‌textandtext layer‌text data.
+      * append with textin Session (text text text text text new)
+      * write/event always immediatetext heartbeat with thresholdtext timetext (throttle)
+      * text text: textandtext from max_bytes → file to path+".1" text text‌textandtext
+      * text‌andtext exception withtext text‌text (log textmust text text text)
     """
 
     def __init__(self, path: str, enabled: bool = DEBUG_LOG_ENABLED,
@@ -1038,7 +1038,7 @@ class DebugLogger:
         self.write(tag, msg, level="ERROR")
 
     def heartbeat_due(self, now_wall: Optional[float] = None) -> bool:
-        """آیا وقت نوشتن Heartbeat رسیده؟ (آستانه‌دار؛ فراخوانی سبک هر تیک)"""
+        """textor andtext write Heartbeat text (threshold‌text textandtext lightweight text text)"""
         if not self.enabled:
             return False
         now_wall = time.time() if now_wall is None else now_wall
@@ -1058,7 +1058,7 @@ class DebugLogger:
 
 
 def fmt_ptr(v: Optional[int]) -> str:
-    """آدرس حافظه به hex برای لاگ؛ None/صفر → '-' (قابل تست بدون بازی)"""
+    """address memory to hex for logtext None/text → '-' (testable without withtext)"""
     if not v:
         return "-"
     try:
@@ -1068,7 +1068,7 @@ def fmt_ptr(v: Optional[int]) -> str:
 
 
 def freeze_seconds(last_change_wall: Optional[float], now_wall: float) -> float:
-    """چند ثانیه از آخرین «تغییر معتبر» گذشته؟ (بدون سابقه → -1)"""
+    """text second from latest «change valid» text (without text → -1)"""
     if last_change_wall is None:
         return -1.0
     try:
@@ -1080,10 +1080,10 @@ def freeze_seconds(last_change_wall: Optional[float], now_wall: float) -> float:
 def possession_rearm_needed(poss_valid: bool, m_state: str, time_advancing: bool,
                             stale_sec: float, throttle_ok: bool) -> bool:
     """
-    نسخه ۱۰٫۴ — تصمیم re-arm خودکار capture مالکیت (تابع خالص):
-      فقط وقتی: مالکیت نامعتبر + بازی واقعاً در جریان است (PLAYING و ساعت
-      در حال پیش رفت) + مدت نامعتبری از آستانه گذشت + throttle باز باشد.
-      عمداً محافظه‌کار: هیچ re-arm ای در Pause/Replay/منو یا با ساعت مرده.
+    version 10text4 — text re-arm automatic capture possession (untiltext text):
+      only when: possession invalid + withtext andtext in textortext is (PLAYING and text
+      currently text text) + text invalidtext from threshold text + throttle withtext withtext.
+      text textmemory‌text: text re-arm text in Pause/Replay/menu or with text text.
     """
     if poss_valid:
         return False
@@ -1097,8 +1097,8 @@ def possession_rearm_needed(poss_valid: bool, m_state: str, time_advancing: bool
 def should_warn_frozen_counter(freeze_sec: float, m_state: str,
                                warn_after: float = COUNTER_FROZEN_WARN_SEC) -> bool:
     """
-    نسخه ۱۰٫۴ — شمارندهٔ پاس/شوت در جریان PLAYING مدت‌ها بدون تغییر مانده؟
-    (در Pause/Replay انجماد طبیعی است و نباید هشدار بدهد)
+    version 10text4 — countertext pass/shot in textortext PLAYING text‌text unchanged text
+    (in Pause/Replay text text is and textmust Warning text)
     """
     if m_state != "PLAYING":
         return False
@@ -1106,7 +1106,7 @@ def should_warn_frozen_counter(freeze_sec: float, m_state: str,
 
 
 # =====================================================================
-# ۸. موتور استخراج داده‌های بازی (GameEngine — نسخه یکپارچه هر سه فایل)
+# 8. technical noteandtechnical noteandtechnical note istechnical note data‌technical note withtechnical note (GameEngine — version technical note technical note technical note file)
 # =====================================================================
 class BridgeHookClient:
     """
@@ -1358,7 +1358,7 @@ class BridgeHookClient:
         return resp
 
 # =====================================================================
-# ۸. موتور استخراج داده‌های بازی (GameEngine — نسخه یکپارچه هر سه فایل)
+# 8. technical noteandtechnical noteandtechnical note istechnical note data‌technical note withtechnical note (GameEngine — version technical note technical note technical note file)
 # =====================================================================
 class GameEngine:
     BALL_HOOK_OFFSET = 0x176A3A2
@@ -1369,12 +1369,12 @@ class GameEngine:
     SHOT_COUNT_FIRST_OFFSET = 0x3C
     MATCH_STATE_OFFSET = 0x372D148
     MATCH_TIME_OFFSET = 0x0372D114
-    # --- نسخهٔ ۱۰٫۲۷ — کارت قرمز (پوینتر ۳ سطحی — بدون هوک) ---
-    # زنجیرهٔ Cheat Engine کاربر:
-    #   آدرس پایه: "FL_2026.exe"+036F3F88 / آفست اول: 350 / آفست دوم: 4E0
+    # --- versiontechnical note 10technical note27 — red card (pointer 3 leveltechnical note — without hook) ---
+    # chaintechnical note Cheat Engine user:
+    #   address technical note: "FL_2026.exe"+036F3F88 / technical note first: 350 / technical note second: 4E0
     RED_CARD_PTR_OFFSET = 0x036F3F88
     RED_CARD_CHAIN = (0x350, 0x4E0)
-    RED_CARD_COUNTER_MAX = 1000        # گارد ارزش (آدرس مرده → عبث)
+    RED_CARD_COUNTER_MAX = 1000        # technical note technical note (address technical note → technical note)
 
     def __init__(self):
         self.h_process = None
@@ -1398,7 +1398,7 @@ class GameEngine:
         self.time_hook_via_bridge = False
         self.poss_hooker = PossessionHooker()
         self.time_hooker = TimeHooker()
-        # نسخه ۴: هوک ثبت گل از حافظه (جایگزین تشخیص هندسی مسیر توپ/دروازه)
+        # version 4: hook register technical note from memory (fallback detection technical note path ball/inandfromtechnical note)
         self.goal_hooker = GoalHooker()
         self.is_ready = False
 
@@ -1423,7 +1423,7 @@ class GameEngine:
             # the bridge answered: the game is NOT running — detection is
             # the bridge's job, so do NOT scan locally; retry on the next
             # auto-connect tick
-            return False, "بازی باز نیست! ابتدا بازی را اجرا کنید."
+            return False, "The game is not running. Start the game first."
         else:
             for pname in ["FL_2026.exe", "PES2021.exe"]:
                 self.pid = get_pid_by_name(pname)
@@ -1432,35 +1432,35 @@ class GameEngine:
                     break
 
             if not self.pid:
-                return False, "بازی باز نیست! ابتدا بازی را اجرا کنید."
+                return False, "The game is not running. Start the game first."
 
         self.h_process = kernel32.OpenProcess(PROCESS_ALL_ACCESS, False, self.pid)
         if not self.h_process:
-            return False, "دسترسی سیستمی به پروسه مسدود است (Run as Admin)."
+            return False, "text text to textandtext textandtext is (Run as Admin)."
 
         self.base_addr = get_module_base(self.pid, proc_name)
         if not self.base_addr:
-            return False, "ماژول بازی یافت نشد."
+            return False, "textandtext withtext textdecrease text."
 
         base = int(self.base_addr)
         warnings = []
 
-        # نسخهٔ ۱۰٫۱۸ — اتصال تازه = چرخهٔ capture مالکیتِ تازه (وضعیت
-        # اتصال قبلی — آدرس/کِیو هوک پروسهٔ قبلی — کاملاً پاک می‌شود)
+        # versiontechnical note 10technical note18 — technical note fresh = cycletechnical note capture possessiontechnical note fresh (andtechnical note
+        # technical note beforetechnical note — address/technical noteand hook technical noteandtechnical note beforetechnical note — completetechnical note technical note technical note‌technical noteandtechnical note)
         self.poss_hooker = PossessionHooker()
 
-        # --- هوک مالکیت (نسخهٔ ۱۰٫۱۸ — مشخصات صریح کاربر): دیگر «در لحظهٔ
-        # اتصال» نصب نمی‌شود! خط اسمبلی مالکیت باید تا «لحظهٔ صفر تایمر»
-        # دست‌نخورده بماند؛ در آن لحظه چرخهٔ شکار آدرس آغاز می‌شود (نصب هوک
-        # → اولین captureِ دارای مقدار ۲ → برداشتن هوک → خواندن همان آدرس
-        # تا پایان مسابقه). برای اتصالِ وسطِ بازی، اولین تیک PLAYING چرخه
-        # را آغاز می‌کند (worker_loop → _possession_begin_capture_cycle).
+        # --- hook possession (versiontechnical note 10technical note18 — specification technical note user): technical note «in momenttechnical note
+        # technical note» technical note technical note‌technical noteandtechnical note! line technical note possession must until «momenttechnical note technical note untiltechnical note»
+        # unchanged technical note in technical note moment cycletechnical note technical note address technical notefrom technical note‌technical noteandtechnical note (technical note hook
+        # → firsttechnical note capturetechnical note technical note value 2 → technical note hook → read same address
+        # until match end). for technical note andtechnical note withtechnical note firsttechnical note technical note PLAYING cycle
+        # technical note technical notefrom technical note‌technical note (worker_loop → _possession_begin_capture_cycle).
 
-        # --- هوک توپ ---
-        # v2.0.6 — معمارِ جدید کاربر: نصب/ریستِ بایت‌ها فقط کار ModBridge است.
-        # اول از HookBroker درخواست می‌کنیم؛ پل یا هوکِ موجود را «مشترک»
-        # به ما می‌دهد (آدرس بافرش) یا یک‌بار هوک می‌زند. خودِ این پروسه دیگر
-        # هیچ بایتِ هوکی نمی‌نویسد تا وقتی پل در دسترس نباشد (اجرای دستی).
+        # --- ball hook ---
+        # v2.0.6 — technical note new user: technical note/resettechnical note byte‌technical note only technical note ModBridge is.
+        # first from HookBroker request technical note‌technical note technical note or hooktechnical note technical noteandtechnical noteandtechnical note technical note «shared»
+        # to technical note technical note‌technical note (address buffertechnical note) or technical note‌withtechnical note hook technical note‌technical note. technical noteandtechnical note technical note technical noteandtechnical note technical note
+        # technical note bytetechnical note hooktechnical note technical note‌technical noteandtechnical note until when technical note in technical note technical notewithtechnical note (technical note technical note).
         self.ball_hook_adopted = False
         self.ball_hook_via_bridge = False
         self.ball_hook_addr = base + self.BALL_HOOK_OFFSET
@@ -1498,17 +1498,17 @@ class GameEngine:
                 if self.ball_data_addr:
                     self.ball_hook_adopted = True
                 else:
-                    # کِیو ناشناخته است — با هوک خودمان جایگزین می‌شود (شکل پچ
-                    # یکسان است و بایت‌های اصلی در کِیو اجرا می‌شوند — امن)
+                    # technical noteand unknown is — with hook technical noteandtechnical note fallback technical note‌technical noteandtechnical note (technical notetotal technical note
+                    # technical note is and byte‌technical note original in technical noteand technical note technical note‌technical noteandtechnical note — technical note)
                     if not self._install_ball_hook(base):
                         self._partial_cleanup()
-                        return False, "خطا در نصب هوک توپ."
+                        return False, "Error in text ball hook."
             else:
                 if not self._install_ball_hook(base):
                     self._partial_cleanup()
-                    return False, "خطا در نصب هوک توپ."
+                    return False, "Error in text ball hook."
 
-        # --- هوک جدید زمان مسابقه (TimeHooker) ---
+        # --- hook new match time (TimeHooker) ---
         # [suite v2.1.5] — THE SHARED TIME SITE (0x20F1CDA) IS ALSO THE HEAT
         # MAP'S TIME SITE: two independent local hooks on this one site are
         # exactly what "disturbed the time" when both mods ran (the second
@@ -1542,21 +1542,21 @@ class GameEngine:
             try:
                 self.time_hooker.hook(self.h_process, self.base_addr)
             except Exception as e:
-                # نصب نشد -> خطای واضح گزارش می‌شود و به زمان جایگزین (MATCH_TIME_OFFSET) سقوط می‌کنیم
-                warnings.append(f"Time Hook: {e} (از زمان جایگزین استفاده می‌شود)")
+                # technical note technical note -> Errortechnical note andtechnical note technical note technical note‌technical noteandtechnical note and to time fallback (MATCH_TIME_OFFSET) drop technical note‌technical note
+                warnings.append(f"Time Hook: {e} (from time fallback istext text‌textandtext)")
 
-        # --- هوک ثبت گل (GoalHooker — نسخه ۴) ---
-        # غیرحیاتی: اگر امضا مطابقت نکرد فقط هشدار داده می‌شود؛ در این حالت
-        # هیچ مسیر جایگزینی برای ثبت گل وجود ندارد (مسیر هندسی حذف شده است)
+        # --- hook register technical note (GoalHooker — version 4) ---
+        # technical noteortechnical note: if technical note technical note technical note only Warning data technical note‌technical noteandtechnical note in technical note technical note
+        # technical note path fallbacktechnical note for register technical note andtechnical noteandtechnical note technical note (path technical note technical note technical note is)
         try:
             self.goal_hooker.hook(self.h_process, self.base_addr)
         except Exception as e:
-            warnings.append(f"Goal Hook: {e} (ثبت گل غیرفعال)")
+            warnings.append(f"Goal Hook: {e} (register text disabled)")
 
         self.is_ready = True
-        msg = "اتصال و هوک‌ها برقرار شدند."
+        msg = "text and hook‌text text text."
         if warnings:
-            msg += " | هشدار: " + " | ".join(warnings)
+            msg += " | Warning: " + " | ".join(warnings)
         return True, msg
 
     def _game_via_bridge(self, cli):
@@ -1623,11 +1623,11 @@ class GameEngine:
             return None
 
     def _resolve_ball_data_from_cave(self, cave_addr: int) -> int:
-        """v2.0.1 — تعارض هوک توپ: از روی اولین دستور کِیو موجود، آدرس بافر
-        داده‌ای که XMM0 گرفتارشده در آن نوشته می‌شود پیدا می‌شود:
-          کِیو ModBridge : 0F 11 05 rel32 (movups [buf], xmm0) → buf = cave+7+rel32
-          کِیو momentum : کِیو با بایت‌های اصلی movaps شروع می‌شود → داده = cave+64
-        خروجی 0 = امضای ناشناخته."""
+        """v2.0.1 — text ball hook: from textandtext firsttext instruction textand textandtextandtext address buffer
+        data‌text text XMM0 textuntiltext in text textandtext text‌textandtext text text‌textandtext:
+          textand ModBridge : 0F 11 05 rel32 (movups [buf], xmm0) → buf = cave+7+rel32
+          textand momentum : textand with byte‌text original movaps start text‌textandtext → data = cave+64
+        output 0 = text unknown."""
         try:
             code = safe_read(self.h_process, cave_addr, 40)
         except Exception:
@@ -1646,20 +1646,20 @@ class GameEngine:
         return 0
 
     def verify_ball_link(self) -> str:
-        """v2.0.5 — چکِ سبکِ دوره‌ایِ زنده‌بودنِ خطِ دادهٔ توپ (۲ ثانیه یک‌بار):
-        کاربر پرسید «هوک هنوز وصل است؟ نمودار خالی چرا؟». علتِ واقعیِ
-        «نمودارِ خالی/منجمد» در میدان: هوکِ مشترکِ سایت توپ توسط ابزار
-        دیگری (restore خروج GLT / crash-recovery بازیابیِ mem_backup)
-        بازنویسی می‌شود؛ این چک وضعیت را گزارش و در صورت نیاز ترمیم می‌کند.
-        v2.0.6 — وقتی هوک از پل (HookBroker) گرفته شده، بایت‌ها اصلاً مالِ
-        ما نیستند؛ فقط از طریق پل وضعیت را چک می‌کنیم و در صورت نیاز
-        «درخواست» را تکرار می‌کنیم (نصب/اشتراک/بازگردانی همه تصمیمِ پل است).
-        خروجی یکی از:
+        """v2.0.5 — text lightweighttext textandtext‌text live‌textandtext linetext datatext ball (2 second text‌withtext):
+        user text «hook still andtext istext chart empty text». text realtext
+        «charttext empty/frozen» in text: hooktext sharedtext text ball textandtext tool
+        text (restore textandtext GLT / crash-recovery recoverytext mem_backup)
+        withtextandtext text‌textandtext text text andtext text text and in textandtext textortext text text‌text.
+        v2.0.6 — when hook from text (HookBroker) text text byte‌text text text
+        text is nottext only from text text andtext text text text‌text and in textandtext textortext
+        «request» text text text‌text (text/text/withtext text text text is).
+        output text from:
           ok / re-adopt / reinstall / unknown-cave / install-fail /
-          signature-mismatch / read-fail   (مسیر محلی)
+          signature-mismatch / read-fail   (path text)
           ok / re-adopt(bridge) / reinstalled(bridge) / install-fail(bridge)
-          / bridge-lost                    (مسیر پل)
-        هزینه: خواندنِ ۷ بایتِ ریموت هر ~۲ ثانیه — ناچیز."""
+          / bridge-lost                    (path text)
+        text: readtext 7 bytetext textandtext text ~2 second — text."""
         if not (self.h_process and self.base_addr and self.ball_hook_addr):
             return "not-connected"
         base = int(self.base_addr)
@@ -1746,10 +1746,10 @@ class GameEngine:
         return buf
 
     def _ball_site_is_ours(self) -> bool:
-        """v2.0.1 — True فقط وقتی E9 فعلیِ سایت توپ به کِیو خودِ ما اشاره
-        می‌کند؛ در آن حالت و فقط در آن حالت اجازهٔ restore بایت‌های اصلی
-        را داریم (هوک مالک دیگری هرگز خراب نمی‌شود).
-        v2.0.6 — وقتی هوک از پل گرفته شده، بایت‌ها هرگز مالِ ما نیستند."""
+        """v2.0.1 — True only when E9 text text ball to textand textandtext text text
+        text‌text in text text and only in text text textfromtext restore byte‌text original
+        text text (hook text text never broken text‌textandtext).
+        v2.0.6 — when hook from text text text byte‌text never text text is nottext."""
         try:
             if getattr(self, "ball_hook_via_bridge", False):
                 return False          # bytes belong to the bridge — never ours
@@ -1758,9 +1758,9 @@ class GameEngine:
                 return False
             curr = safe_read(self.h_process, self.ball_hook_addr, 7)
             if not curr or curr[0] != 0xE9:
-                return False          # سایت از قبل اصلی است — کاری نیست
+                return False          # technical note from before original is — technical note is not
             if self.ball_hook_adopted:
-                return False          # کِیو مال ما نیست (پذیرفته‌شده)
+                return False          # technical noteand technical note technical note is not (technical note‌technical note)
             rel = struct.unpack('<i', bytes(curr[1:5]))[0]
             return (self.ball_hook_addr + 5 + rel) == self.ball_cave_addr
         except Exception:
@@ -1768,10 +1768,10 @@ class GameEngine:
 
     def _install_ball_hook(self, base: int) -> bool:
         """
-        نسخهٔ ۱۰٫۷ — نصب هوک توپ (استخراج‌شده از initialize؛ رفتار عین قبل).
-        در initialize و در verify_and_repair_hooks (نوسازی شروع دست جدید)
-        استفاده می‌شود. True = نصب موفق. (v2.0.1 — پرچم adopted همیشه ریست
-        می‌شود چون از این لحظه کِیو مال خودِ ماست.)
+        versiontext 10text7 — text ball hook (istext‌text from initializetext textuntiltext text before).
+        in initialize and in verify_and_repair_hooks (textandtextfromtext start text new)
+        istext text‌textandtext. True = text successful. (v2.0.1 — text adopted always reset
+        text‌textandtext because from text moment textand text textandtext textis.)
         """
         self.ball_hook_adopted = False
         self.ball_hook_addr = base + self.BALL_HOOK_OFFSET
@@ -1796,8 +1796,8 @@ class GameEngine:
 
     def link_alive(self) -> bool:
         """
-        نسخهٔ ۱۰٫۷ — کنترل سبک حیات پروسه: خواندن ۱ بایتی از ناحیهٔ وضعیت.
-        None ⇒ پروسه بسته/هندل مرده است (برای اتصال مجدد خودکار).
+        versiontext 10text7 — text lightweight textortext textandtext: read 1 bytetext from text andtext.
+        None ⇒ textandtext text/text text is (for text text automatic).
         """
         try:
             if not self.h_process or not self.base_addr:
@@ -1809,13 +1809,13 @@ class GameEngine:
 
     def verify_and_repair_hooks(self) -> Dict[str, str]:
         """
-        نسخهٔ ۱۰٫۷ — نوسازی سریع هوک‌ها در شروع دست جدید (نیاز صریح کاربر:
-        «هوک‌های انجام‌شده را در کسری از ثانیه حذف و دوباره هوک کن»).
-        برای هر ۴ هوک: امضای بایت هدف راستی‌آزمایی می‌شود؛ اگر بازی restore
-        کرده بود، دوباره نصب می‌شود؛ اگر همین حال نصب است، تثبیت می‌شود.
-        در انتها capture گل و مالکیت re-arm می‌شود تا اولین نوشتارِ بازیِ
-        جدید ساختار تازه را capture کند.
-        خروجی: گزارش وضعیت هر هوک (برای لاگ).
+        versiontext 10text7 — textandtextfromtext fast hook‌text in start text new (textortext text user:
+        «hook‌text text‌text text in text from second text and again hook text»).
+        for text 4 hook: text byte text textistext‌text text‌textandtext if withtext restore
+        text textandtext again text text‌textandtext if text text text istext text text‌textandtext.
+        in text capture text and possession re-arm text‌textandtext until firsttext textandtextuntiltext withtext
+        new structure fresh text capture text.
+        output: text andtext text hook (for log).
         """
         rep = {"ball": "skip", "time": "skip", "goal": "skip", "poss": "skip"}
         if not self.h_process or not self.base_addr:
@@ -1830,8 +1830,8 @@ class GameEngine:
         _bcli = getattr(self, "bridge_client", None)
         _bridge_up = (_bcli is not None and _bcli.available())
 
-        # --- توپ: امضا E9 = هوک زندهٔ خودمان یا دیگری (پارس کِیو + پذیرش
-        # بافر — v2.0.1) | ORIG = نصب مجدد ---
+        # --- ball: technical note E9 = hook livetechnical note technical noteandtechnical note or technical note (technical note technical noteand + technical note
+        # buffer — v2.0.1) | ORIG = technical note technical note ---
         if _bridge_up or getattr(self, "ball_hook_via_bridge", False):
             rep["ball"] = self.verify_ball_link()
         else:
@@ -1845,8 +1845,8 @@ class GameEngine:
                     cave = self.ball_hook_addr + 5 + rel
                     data = self._resolve_ball_data_from_cave(cave)
                     if data:
-                        # مالکیت: فقط وقتی کِیو همان کِیو نصب‌شدهٔ خودمان است و
-                        # قبلاً پذیرفته‌نشده، هوک «مال ما» محسوب می‌شود
+                        # possession: only when technical noteand same technical noteand technical note‌technical note technical noteandtechnical note is and
+                        # beforetechnical note technical note‌technical note hook «technical note technical note» technical noteandtechnical note technical note‌technical noteandtechnical note
                         was_ours = (cave == self.ball_cave_addr
                                     and not self.ball_hook_adopted)
                         self.ball_cave_addr = cave
@@ -1864,7 +1864,7 @@ class GameEngine:
             except Exception as ex:
                 rep["ball"] = f"error:{type(ex).__name__}"
 
-        # --- زمان: ORIG ⇒ نصب مجدد | E9 ⇒ نصب مانده (خوب) ---
+        # --- time: ORIG ⇒ technical note technical note | E9 ⇒ technical note technical note (technical noteandtechnical note) ---
         if _bridge_up or getattr(self.time_hooker, "via_bridge", False):
             rep["time"] = self._bridge_verify_time_hook()
         else:
@@ -1886,15 +1886,15 @@ class GameEngine:
             except Exception as ex:
                 rep["time"] = f"error:{type(ex).__name__}"
 
-        # --- گل: hook() خودش نصب‌مجدد/Adopt را هندل می‌کند + slot صفر می‌شود ---
+        # --- technical note: hook() technical noteandtechnical note technical note‌technical note/Adopt technical note technical note technical note‌technical note + slot technical note technical note‌technical noteandtechnical note ---
         try:
             self.goal_hooker.hook(self.h_process, self.base_addr)
             rep["goal"] = "ok" if self.goal_hooker.is_hooked else "inactive"
         except Exception as ex:
             rep["goal"] = f"error:{type(ex).__name__}"
 
-        # --- مالکیت (نسخهٔ ۱۰٫۱۸ — مدل «شکار آدرس»): اگر آدرس معتبر همین
-        # دست قبلاً تأیید شده، دست نمی‌خوریم؛ وگرنه هوک شکار + اسلات خالی
+        # --- possession (versiontechnical note 10technical note18 — technical note «technical note address»): if address valid technical note
+        # technical note beforetechnical note confirmation technical note technical note technical note‌technical noteandtechnical note andtechnical note hook technical note + technical note empty
         try:
             if self.poss_hooker.captured_address:
                 rep["poss"] = "captured(already)"
@@ -1908,7 +1908,7 @@ class GameEngine:
         except Exception as ex:
             rep["poss"] = f"error:{type(ex).__name__}"
 
-        # --- re-arm capture گل (اولین نوشتارِ گلِ دستِ جدید دوباره capture کند) ---
+        # --- re-arm capture technical note (firsttechnical note technical noteandtechnical noteuntiltechnical note technical note technical note new again capture technical note) ---
         try:
             self.goal_hooker.reset_capture(self.h_process)
         except Exception:
@@ -1962,7 +1962,7 @@ class GameEngine:
             return f"error:{type(ex).__name__}"
 
     def _partial_cleanup(self):
-        """پاک‌سازی init ناقص در صورت خطا"""
+        """cleanup init text in textandtext Error"""
         try:
             if self.poss_hooker and self.h_process:
                 self.poss_hooker.unhook(self.h_process)
@@ -1979,10 +1979,10 @@ class GameEngine:
         except Exception:
             pass
         try:
-            # v2.0.1 — restore فقط وقتی مجاز است که E9 فعلی سایت به کِیو خودِ
-            # ما اشاره کند؛ هوک مالک دیگر (ModBridge) هرگز خراب نمی‌شود
-            # v2.0.6 — هوکِ پل: فقط مرجع‌مان را پس می‌دهیم (hook_release)؛
-            # تصمیمِ بازگردانی بایت‌ها کاملاً با پل است
+            # v2.0.1 — restore only when technical notefrom is technical note E9 technical note technical note to technical noteand technical noteandtechnical note
+            # technical note technical note technical note hook technical note technical note (ModBridge) never broken technical note‌technical noteandtechnical note
+            # v2.0.6 — hooktechnical note technical note: only technical note‌technical note technical note technical note technical note‌technical note (hook_release)technical note
+            # technical note withtechnical note byte‌technical note completetechnical note with technical note is
             if getattr(self, "ball_hook_via_bridge", False):
                 if self.bridge_client is not None:
                     self.bridge_client.hook_release(self.BALL_HOOK_OFFSET)
@@ -1997,9 +1997,9 @@ class GameEngine:
 
     def read_ball(self) -> Optional[Tuple[float, float, float]]:
         """
-        تبدیل اجباری لایه دریافت:
-        Raw Engine: Float0 = طولی, Float1 = ارتفاع, Float2 = عرضی
-        Standard App: X = طولی, Z = عرضی, Y = ارتفاع
+        text textwithtext layer receive:
+        Raw Engine: Float0 = lengthtext, Float1 = height, Float2 = widthtext
+        Standard App: X = lengthtext, Z = widthtext, Y = height
         """
         if not self.ball_data_addr: return None
         raw = safe_read(self.h_process, self.ball_data_addr, 12)
@@ -2018,7 +2018,7 @@ class GameEngine:
         return "STOP"
 
     def read_match_time(self) -> float:
-        """زمان جایگزین (Fallback) — فقط وقتی Time Hook در دسترس نباشد"""
+        """time fallback (Fallback) — only when Time Hook in text textwithtext"""
         raw = safe_read(self.h_process, int(self.base_addr) + self.MATCH_TIME_OFFSET, 4)
         if raw:
             return max(0.0, struct.unpack('<f', raw)[0])
@@ -2026,10 +2026,10 @@ class GameEngine:
 
     def read_game_clock(self) -> Tuple[float, Optional[int], Optional[int]]:
         """
-        منبع واحد زمان مسابقه:
-        ۱) TimeHooker (RSI+0x13C دقیقه / RSI+0x140 ثانیه)  — منبع اصلی
-        ۲) MATCH_TIME_OFFSET (float)                        — فقط Fallback
-        خروجی: (total_match_seconds, game_minutes, game_seconds)
+        source andtext match time:
+        1) TimeHooker (RSI+0x13C minute / RSI+0x140 second)  — source original
+        2) MATCH_TIME_OFFSET (float)                        — only Fallback
+        output: (total_match_seconds, game_minutes, game_seconds)
         """
         regs = self.time_hooker.read_time_registers(self.h_process)
         if regs:
@@ -2064,12 +2064,12 @@ class GameEngine:
 
     def read_red_card_counter(self) -> Optional[int]:
         """
-        نسخهٔ ۱۰٫۲۷ — شمارندهٔ کارت قرمز (بدون هوک — پوینتر ۳ سطحی ۶۴ بیتی):
+        versiontext 10text27 — countertext red card (without hook — pointer 3 leveltext 64 text):
             curr  = u64[base + 0x036F3F88]
             curr  = u64[curr + 0x350]
             value = u8 [curr + 0x4E0]
-        هر «افزایش» مقدار ۱ بایتی = یک کارت قرمز صادرشده (عین نسخهٔ 2017).
-        گارد ارزش: مقدار > RED_CARD_COUNTER_MAX یا پوینتر مرده → None.
+        text «increment» value 1 bytetext = text red card textintext (text versiontext 2017).
+        text text: value > RED_CARD_COUNTER_MAX or pointer text → None.
         """
         if not self.is_ready:
             return None
@@ -2103,7 +2103,7 @@ class GameEngine:
             return None
 
     def read_goal_counters(self) -> Dict[str, Any]:
-        """نسخه ۴ — وضعیت هوک گل + شمارنده‌های گل (Home/Away) از حافظه"""
+        """version 4 — andtext goal hook + counter‌text text (Home/Away) from memory"""
         try:
             return self.goal_hooker.poll(self.h_process)
         except Exception:
@@ -2112,14 +2112,14 @@ class GameEngine:
 
     def reset_possession_capture(self):
         """
-        نسخه ۱۰٫۴ — re-arm اسلات Capture مالکیت برای «بازی جدید».
-        همان الگوی self-heal هوک گل: بازی در بازیِ جدید ساختار آمار را
-        جابه‌جا می‌کند؛ capture قدیمی آدرس مرده را می‌خواند. بعد از این
-        فراخوانی، اولین اجرای دستور مالکیت در بازیِ جدید آدرس تازه را
-        Capture می‌کند.
-        نسخهٔ ۱۰٫۱۸ — بدون هوکِ نصب‌شده، capture هرگز رخ نمی‌دهد؛ پس اگر
-        هوک در حال حاضر نصب نیست (برداشته‌شده بعد از تأیید)، چرخهٔ شکار
-        دوباره آغاز می‌شود (نصب هوک + اسلات خالی).
+        version 10text4 — re-arm text Capture possession for «new match».
+        same textandtext self-heal goal hook: withtext in withtext new structure text text
+        textto‌text text‌text capture legacy address text text text‌textandtext. after from text
+        textandtext firsttext text instruction possession in withtext new address fresh text
+        Capture text‌text.
+        versiontext 10text18 — without hooktext text‌text capture never text text‌text text if
+        hook currently text text is not (text‌text after from confirmation)text cycletext text
+        again textfrom text‌textandtext (text hook + text empty).
         """
         try:
             self.poss_hooker.reset_capture(self.h_process)
@@ -2132,23 +2132,23 @@ class GameEngine:
                 pass
 
     def rearm_possession_capture(self, keep_recent_sec: float = 30.0):
-        """نسخهٔ ۱۰٫۱۸ — re-arm هوشمند برای «شروع دست جدید»:
-        اگر آدرس مالکیت «همین چند ثانیه past» تأیید شده باشد (بعد از
-        لحظهٔ صفر تایمر)، به ساختار همین بازی تعلق دارد و نباید پاک شود
-        (وگرنه چند ثانیه اول بازی بدون مالکیت = نمودار خالی در دقایق ابتدایی).
-        capture قدیمی/کهنه → پاک + چرخهٔ شکار دوباره."""
+        """versiontext 10text18 — re-arm smart for «start text new»:
+        if address possession «text text second past» confirmation text withtext (after from
+        momenttext text untiltext)text to structure text withtext text text and textmust text textandtext
+        (andtext text second first withtext without possession = chart empty in text text).
+        capture legacy/text → text + cycletext text again."""
         ph = self.poss_hooker
         w = getattr(ph, "captured_wall", None)
         if (w is not None and not ph.is_hooked
                 and (time.time() - w) <= keep_recent_sec):
-            return        # capture تازهٔ همین دست — دست نخور
+            return        # capture freshtechnical note technical note technical note — technical note technical noteandtechnical note
         self.reset_possession_capture()
 
     def poss_begin_capture_cycle(self) -> str:
-        """نسخهٔ ۱۰٫۱۸ — آغاز چرخهٔ «شکار آدرس» مالکیت (مشخصات کاربر):
-        نصب هوک + خالی‌کردن اسلات. در لحظهٔ صفر تایمر (شروع بازی جدید) و
-        در اولین تیک PLAYING بعد از اتصالِ وسطِ بازی فراخوانی می‌شود.
-        خروجی: گزارش کوتاه برای لاگ."""
+        """versiontext 10text18 — textfrom cycletext «text address» possession (specification user):
+        text hook + empty‌text text. in momenttext text untiltext (new match start) and
+        in firsttext text PLAYING after from text andtext withtext textandtext text‌textandtext.
+        output: text textanduntiltext for log."""
         if not self.h_process or not self.base_addr:
             return "not-connected"
         ph = self.poss_hooker
@@ -2164,14 +2164,14 @@ class GameEngine:
 
     def debug_diagnostics(self) -> Dict[str, Any]:
         """
-        نسخه ۱۰٫۴ — خواندن RAW لایهٔ داده برای لاگ تشخیصی (بدون اثر جانبی).
-        همهٔ آدرس‌ها int هستند (لاگ با fmt_ptr به hex می‌رود). هدف: مقایسهٔ
-        آدرس‌ها بین «بازی اول» و «بازی دوم» برای اثبات جابه‌جایی ساختارها.
-          pass_ptr  → qword [base+PASS_COUNT_OFFSET]   (شمارنده: byte[ptr+0xD0])
-          shot_ptr  → qword [base+SHOT_COUNT_PTR_OFFSET] (شمارنده: [ptr+0x3C])
-          seat0/seat1 → دو پوینتر اول آرایهٔ بازیکنان
-          state_raw → بایت خام وضعیت مسابقه
-          poss_cap  → آدرس capture شدهٔ مالکیت (rdi+0x58)
+        version 10text4 — read RAW layertext data for log detectiontext (without impact text).
+        text address‌text int text (log with fmt_ptr to hex text‌textandtext). text: text
+        address‌text text «withtext first» and «withtext second» for textwithtext textto‌text structuretext.
+          pass_ptr  → qword [base+PASS_COUNT_OFFSET]   (counter: byte[ptr+0xD0])
+          shot_ptr  → qword [base+SHOT_COUNT_PTR_OFFSET] (counter: [ptr+0x3C])
+          seat0/seat1 → textand pointer first text players
+          state_raw → byte text andtext text
+          poss_cap  → address capture text possession (rdi+0x58)
         """
         out: Dict[str, Any] = {
             "pass_ptr": None, "pass_cnt": None, "pass_ptr_alive": None,
@@ -2183,7 +2183,7 @@ class GameEngine:
             base = int(self.base_addr) if self.base_addr else 0
             if not base or not self.h_process:
                 return out
-            # --- پاس ---
+            # --- pass ---
             raw = safe_read(self.h_process, base + self.PASS_COUNT_OFFSET, 8)
             if raw:
                 p = struct.unpack('<Q', raw)[0]
@@ -2195,7 +2195,7 @@ class GameEngine:
                         out["pass_ptr_alive"] = True
                     else:
                         out["pass_ptr_alive"] = False
-            # --- شوت ---
+            # --- shot ---
             raw = safe_read(self.h_process, base + self.SHOT_COUNT_PTR_OFFSET, 8)
             if raw:
                 p = struct.unpack('<Q', raw)[0]
@@ -2207,7 +2207,7 @@ class GameEngine:
                         out["shot_ptr_alive"] = True
                     else:
                         out["shot_ptr_alive"] = False
-            # --- آرایهٔ بازیکنان (دو صندلی اول) ---
+            # --- technical note players (technical noteand technical note first) ---
             raw0 = safe_read(self.h_process, base + self.PLAYERS_ARRAY_OFFSET, 8)
             if raw0:
                 p0 = struct.unpack('<Q', raw0)[0]
@@ -2219,11 +2219,11 @@ class GameEngine:
                         out["seat1"] = struct.unpack('<Q', b)[0]
                 else:
                     out["players_seat0_alive"] = False
-            # --- وضعیت مسابقه (بایت خام) ---
+            # --- andtechnical note technical note (byte technical note) ---
             raw = safe_read(self.h_process, base + self.MATCH_STATE_OFFSET, 1)
             if raw:
                 out["state_raw"] = struct.unpack('<B', raw)[0]
-            # --- آدرس capture مالکیت ---
+            # --- address capture possession ---
             out["poss_cap"] = getattr(self.poss_hooker, "captured_address", None)
         except Exception:
             pass
@@ -2258,8 +2258,8 @@ class GameEngine:
 
             raw_coords = safe_read(self.h_process, p4 + 0xD0, 12)
             if raw_coords:
-                x = struct.unpack('<f', raw_coords[0:4])[0]   # طولی
-                z = struct.unpack('<f', raw_coords[8:12])[0]  # عرضی
+                x = struct.unpack('<f', raw_coords[0:4])[0]   # lengthtechnical note
+                z = struct.unpack('<f', raw_coords[8:12])[0]  # widthtechnical note
                 players.append({
                     "seat": i + 1,
                     "team": "Home" if i < 11 else "Away",
@@ -2269,9 +2269,9 @@ class GameEngine:
         return players
 
     def cleanup(self):
-        """Restore کامل همهٔ هوک‌ها (Ball / Possession / Time / Goal)
-        (v2.0.1 — هوک توپ فقط اگر مالِ خودمان باشد restore می‌شود)
-        (v2.0.6 — هوکِ پل: هیچ بایتی نوشته نمی‌شود؛ فقط hook_release)"""
+        """Restore complete text hook‌text (Ball / Possession / Time / Goal)
+        (v2.0.1 — ball hook only if text textandtext withtext restore text‌textandtext)
+        (v2.0.6 — hooktext text: text bytetext textandtext text‌textandtext only hook_release)"""
         if getattr(self, "ball_hook_via_bridge", False):
             # the bridge owns the site bytes — we only drop our reference
             try:
@@ -2289,5 +2289,5 @@ class GameEngine:
             self.goal_hooker.unhook(self.h_process)
 
 # =====================================================================
-# ۹. محاسبات هندسی یکپارچه (GeometryEngine — ادغام هر سه فایل)
+# 9. technical notewithtechnical note technical note technical note (GeometryEngine — technical note technical note technical note file)
 # =====================================================================
