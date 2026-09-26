@@ -1,5 +1,8 @@
 # -*- mode: python ; coding: utf-8 -*-
-from PyInstaller.utils.hooks import collect_all, collect_submodules
+from pathlib import Path
+from PyInstaller.utils.hooks import collect_all
+
+ROOT = Path(SPECPATH).resolve().parent.parent
 
 hiddenimports = [
     "PyQt6",
@@ -7,20 +10,23 @@ hiddenimports = [
     "PyQt6.QtGui",
     "PyQt6.QtWidgets",
 ]
-hiddenimports += collect_submodules("PyQt6.QtWidgets")
+try:
+    _, _, qt_hidden = collect_all("PyQt6")
+    hiddenimports += qt_hidden
+except Exception:
+    pass
 
-qt_datas, qt_bins, qt_hidden = collect_all("PyQt6")
+qt_datas, qt_bins, _ = collect_all("PyQt6")
 datas = qt_datas
 binaries = qt_bins
-hiddenimports += qt_hidden
 
 a = Analysis(
-    ["PT/PES_FootballLife_Asset_Downloader.py"],
-    pathex=["."],
+    [str(ROOT / "PT" / "PES_FootballLife_Asset_Downloader.py")],
+    pathex=[str(ROOT)],
     binaries=binaries,
     datas=datas,
     hiddenimports=hiddenimports,
-    excludes=["PyQt5"],
+    excludes=["PyQt5", "PyQt6.QtWebEngineWidgets", "PyQt6.QtWebEngineCore"],
     noarchive=False,
 )
 pyz = PYZ(a.pure)
