@@ -31,8 +31,7 @@ function Build-OneFile($name, $entry, $extraArgs) {
 
 # MyMods is a direct frozen application. It launches ModBridge.exe.
 Build-OneFile "MyMods" (Join-Path $Root "MyMods.py") @(
-  "--hidden-import", "PyQt6.QtMultimedia",
-  "--collect-submodules", "PyQt6"
+  "--hidden-import", "PyQt6.QtMultimedia"
 )
 
 # ModBridge is the only process host. It contains the backend Python sources
@@ -82,12 +81,16 @@ foreach($file in $topFiles) {
   Copy-Item (Join-Path $Root $file) (Join-Path $Stage $file) -Force
 }
 
-$dirs = @("GLT","HeatMap","MomentumMatch","SAOTMod","RefereeView","Background","PT")
+$dirs = @("GLT","HeatMap","MomentumMatch","SAOTMod","RefereeView","Background")
 foreach($dir in $dirs) {
   Copy-Item (Join-Path $Root $dir) (Join-Path $Stage $dir) -Recurse -Force
 }
 
-# No source .py files may ever be present in the staged installation.
+# The installed package must contain only compiled executables plus runtime
+# assets/configuration. All Python source files used by the embedded bridge
+# are bundled inside ModBridge.exe and must never be installed separately.
+Get-ChildItem $Stage -Recurse -File -Filter "*.py" | Remove-Item -Force
+Get-ChildItem $Stage -Recurse -File -Filter "*.pyc" | Remove-Item -Force -ErrorAction SilentlyContinue
 $pythonFiles = @(Get-ChildItem $Stage -Recurse -File -Filter "*.py")
 if($pythonFiles.Count -ne 0) {
   $pythonFiles | ForEach-Object { Write-Host "FORBIDDEN PYTHON FILE: $($_.FullName)" }
@@ -151,6 +154,7 @@ foreach($launcher in $launchers) {
 $report += ""
 $report += "Python source files in install stage: $($pythonFiles.Count)"
 $report += "Portable/shared Python runtime folder present: $(Test-Path (Join-Path $Stage "runtime"))"
+$report += "Installed Python source files: $pythonFiles.Count"
 $report += "Installer: $Installer"
 
 $report | Set-Content (Join-Path $Dist "v1.0.0-size-report.txt") -Encoding UTF8
