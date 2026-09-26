@@ -3,80 +3,112 @@ $ErrorActionPreference = "Stop"
 $Root = Resolve-Path (Join-Path $PSScriptRoot "..")
 $Stage = Join-Path $Root "stage"
 $Dist = Join-Path $Root "dist"
-$Packaging = Join-Path $Root "packaging"
 
 Remove-Item $Stage -Recurse -Force -ErrorAction SilentlyContinue
 Remove-Item $Dist -Recurse -Force -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Force -Path $Stage, $Dist | Out-Null
 
-Write-Host "== Build launcher EXEs =="
-python -m PyInstaller --onefile --noconsole --clean --name "MyMods" "$Packaging\MyMods_launcher.py"
-Copy-Item "$Root\dist\MyMods.exe" "$Stage\MyMods.exe" -Force
-Remove-Item "$Root\dist\MyMods.exe" -Force
+function Build-OneFile($name, $entry, $extraArgs) {
+  Write-Host "== Building $name as a fully self-contained EXE =="
+  $args = @(
+    "--onefile",
+    "--windowed",
+    "--clean",
+    "--noconfirm",
+    "--name", $name,
+    "--exclude-module", "PyQt5"
+  )
+  $args += $extraArgs
+  $args += $entry
+  python -m PyInstaller @args
+  if($LASTEXITCODE -ne 0) { throw "PyInstaller failed for $name." }
 
-python -m PyInstaller --onefile --noconsole --clean --name "ModBridge" "$Packaging\ModBridge_launcher.py"
-Copy-Item "$Root\dist\ModBridge.exe" "$Stage\ModBridge.exe" -Force
-Remove-Item "$Root\dist\ModBridge.exe" -Force
+  $built = Join-Path $Root "dist\$name.exe"
+  if(!(Test-Path $built)) { throw "Expected $built was not created." }
+  Copy-Item $built (Join-Path $Stage "$name.exe") -Force
+  Remove-Item $built -Force
+}
 
-python -m PyInstaller --onefile --noconsole --clean --name "Asset Downloader" "$Packaging\AssetDownloader_launcher.py"
-Copy-Item "$Root\dist\Asset Downloader.exe" "$Stage\Asset Downloader.exe" -Force
+# MyMods is a direct frozen application. It launches ModBridge.exe.
+Build-OneFile "MyMods" (Join-Path $Root "MyMods.py") @(
+  "--hidden-import", "PyQt6.QtMultimedia",
+  "--collect-submodules", "PyQt6"
+)
 
-Write-Host "== Copy release application files =="
-$topFiles = @("MyMods.py","ModBridge.py","LICENSE","requirements.txt")
+# ModBridge is the only process host. It contains the backend Python sources
+# and their assets internally so no backend .py files are installed.
+$bridgeData = @(
+  "--add-data", "$Root\GLT;GLT",
+  "--add-data", "$Root\HeatMap;HeatMap",
+  "--add-data", "$Root\MomentumMatch;MomentumMatch",
+  "--add-data", "$Root\SAOTMod;SAOTMod",
+  "--add-data", "$Root\RefereeView;RefereeView",
+  "--hidden-import", "PyQt6.QtWebEngineWidgets",
+  "--hidden-import", "PyQt6.QtWebEngineCore",
+  "--hidden-import", "PyQt6.QtMultimedia",
+  "--hidden-import", "numpy",
+  "--hidden-import", "matplotlib",
+  "--hidden-import", "pymem",
+  "--hidden-import", "pymem.process",
+  "--hidden-import", "pymem.pattern",
+  "--hidden-import", "moderngl",
+  "--hidden-import", "glfw",
+  "--hidden-import", "panda3d.core",
+  "--hidden-import", "ursina",
+  "--hidden-import", "customtkinter",
+  "--hidden-import", "keyboard",
+  "--hidden-import", "psutil",
+  "--hidden-import", "pywinstyles",
+  "--collect-data", "PyQt6",
+  "--collect-data", "panda3d",
+  "--collect-data", "ursina",
+  "--collect-data", "matplotlib",
+  "--collect-data", "customtkinter",
+  "--collect-data", "pywinstyles"
+)
+Build-OneFile "ModBridge" (Join-Path $Root "ModBridge.py") $bridgeData
+
+# Asset Downloader is fully standalone and uses only its frozen PyQt6 environment.
+$assetData = @(
+  "--hidden-import", "PyQt6.QtCore",
+  "--hidden-import", "PyQt6.QtGui",
+  "--hidden-import", "PyQt6.QtWidgets"
+)
+Build-OneFile "Asset Downloader" (Join-Path $Root "PT\PES_FootballLife_Asset_Downloader.py") $assetData
+
+Write-Host "== Copy only non-Python release assets =="
+$topFiles = @("LICENSE")
 foreach($file in $topFiles) {
   Copy-Item (Join-Path $Root $file) (Join-Path $Stage $file) -Force
 }
-$dirs = @("GLT","HeatMap","MomentumMatch","SAOTMod","RefereeView","PT","Background")
+
+$dirs = @("GLT","HeatMap","MomentumMatch","SAOTMod","RefereeView","Background","PT")
 foreach($dir in $dirs) {
   Copy-Item (Join-Path $Root $dir) (Join-Path $Stage $dir) -Recurse -Force
 }
 
-Write-Host "== Prepare portable Python runtime =="
-$pyVersion = "3.13.13"
-$pyInstaller = Join-Path $env:TEMP "python-$pyVersion-amd64.exe"
-$pyUrl = "https://www.python.org/ftp/python/$pyVersion/python-$pyVersion-amd64.exe"
+# No source .py files may ever be present in the staged installation.
+$pythonFiles = @(Get-ChildItem $Stage -Recurse -File -Filter "*.py")
+if($pythonFiles.Count -ne 0) {
+  $pythonFiles | ForEach-Object { Write-Host "FORBIDDEN PYTHON FILE: $($_.FullName)" }
+  throw "Release staging contains Python source files."
+}
 
-Invoke-WebRequest -Uri $pyUrl -OutFile $pyInstaller
-$Runtime = Join-Path $Stage "runtime"
-Start-Process -FilePath $pyInstaller -Wait -ArgumentList @(
-  "/quiet",
-  "InstallAllUsers=0",
-  "TargetDir=$Runtime",
-  "PrependPath=0",
-  "Include_pip=0",
-  "Include_launcher=0",
-  "Include_test=0",
-  "SimpleInstall=0"
-)
-
-$RuntimePython = Join-Path $Runtime "python.exe"
-$RuntimePythonW = Join-Path $Runtime "pythonw.exe"
-if(!(Test-Path $RuntimePython) -or !(Test-Path $RuntimePythonW)) { throw "Portable Python runtime was not created correctly." }
-
-Write-Host "== Install runtime dependencies =="
-python -m pip install --upgrade pip
-python -m pip install --disable-pip-version-check --no-cache-dir --no-compile --only-binary=:all: --target "$Runtime\Lib\site-packages" -r "$Packaging\runtime-requirements.txt"
-
-Write-Host "== Remove build-only files and caches =="
-Get-ChildItem $Runtime -Recurse -Directory -Filter "__pycache__" | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
-Get-ChildItem $Runtime -Recurse -File -Include "*.pyc","*.pyo","*.pdb" | Remove-Item -Force -ErrorAction SilentlyContinue
-Remove-Item "$Runtime\Scripts" -Recurse -Force -ErrorAction SilentlyContinue
-Remove-Item "$Runtime\Lib\site-packages\pip" -Recurse -Force -ErrorAction SilentlyContinue
-Remove-Item "$Runtime\Lib\site-packages\pip-*.dist-info" -Recurse -Force -ErrorAction SilentlyContinue
-Remove-Item "$Runtime\Lib\site-packages\setuptools" -Recurse -Force -ErrorAction SilentlyContinue
-Remove-Item "$Runtime\Lib\site-packages\setuptools-*.dist-info" -Recurse -Force -ErrorAction SilentlyContinue
-Remove-Item "$Runtime\Lib\site-packages\wheel" -Recurse -Force -ErrorAction SilentlyContinue
-Remove-Item "$Runtime\Lib\site-packages\wheel-*.dist-info" -Recurse -Force -ErrorAction SilentlyContinue
-
-Write-Host "== Validate staged runtime =="
-$env:PYTHONPATH = "$Runtime\Lib\site-packages"
-& $RuntimePython -c "import PyQt6, numpy, PIL, matplotlib, pymem, moderngl, glfw, panda3d, ursina, customtkinter, psutil, pywinstyles; print('Runtime imports OK')"
-& $RuntimePython -m py_compile "$Stage\MyMods.py" "$Stage\ModBridge.py" "$Stage\PT\PES_FootballLife_Asset_Downloader.py"
-$env:PYTHONPATH = $null
-
-# py_compile creates bytecode caches only for validation; do not ship them.
+Write-Host "== Remove caches and developer-only files =="
 Get-ChildItem $Stage -Recurse -Directory -Filter "__pycache__" | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
-Get-ChildItem $Stage -Recurse -File -Include "*.pyc","*.pyo" | Remove-Item -Force -ErrorAction SilentlyContinue
+Get-ChildItem $Stage -Recurse -File -Include "*.pyc","*.pyo","*.pdb" | Remove-Item -Force -ErrorAction SilentlyContinue
+Get-ChildItem $Stage -Recurse -File -Filter "backend_log.txt" | Remove-Item -Force -ErrorAction SilentlyContinue
+Get-ChildItem $Stage -Recurse -File -Filter "debug_log.txt" | Remove-Item -Force -ErrorAction SilentlyContinue
+
+Write-Host "== Smoke test self-contained EXEs =="
+& "$Stage\MyMods.exe" --package-smoke
+if($LASTEXITCODE -ne 0) { throw "MyMods standalone smoke test failed." }
+
+& "$Stage\ModBridge.exe" --package-smoke
+if($LASTEXITCODE -ne 0) { throw "ModBridge standalone smoke test failed." }
+
+& "$Stage\Asset Downloader.exe" --package-smoke
+if($LASTEXITCODE -ne 0) { throw "Asset Downloader standalone smoke test failed." }
 
 Write-Host "== Build Inno Setup installer =="
 $Iscc = (Get-Command iscc.exe -ErrorAction SilentlyContinue).Source
@@ -89,33 +121,36 @@ if(!$Iscc) {
 }
 if(!$Iscc) { throw "Inno Setup compiler was not found." }
 
-& $Iscc "$Packaging\VAR-Mods-2026.iss"
+& $Iscc "$PSScriptRoot\VAR-Mods-2026.iss"
 if($LASTEXITCODE -ne 0) { throw "Inno Setup failed." }
 
 $Installer = Join-Path $Dist "VAR-Mods-2026-v1.0.0-Setup.exe"
 if(!(Test-Path $Installer)) { throw "Expected installer was not created." }
 
 function Get-FolderBytes($path) {
-  return (Get-ChildItem $path -Recurse -File | Measure-Object Length -Sum).Sum
+  $m = Get-ChildItem $path -Recurse -File | Measure-Object Length -Sum
+  return [int64]$m.Sum
 }
 
 $stageSize = Get-FolderBytes $Stage
-$runtimeSize = Get-FolderBytes $Runtime
 $installerSize = (Get-Item $Installer).Length
-$launchers = Get-ChildItem $Stage -Filter "*.exe" | Where-Object { $_.Name -in @("MyMods.exe","ModBridge.exe","Asset Downloader.exe") }
+$launchers = Get-ChildItem $Stage -Filter "*.exe" | Where-Object {
+  $_.Name -in @("MyMods.exe","ModBridge.exe","Asset Downloader.exe")
+}
 
 $report = @(
-  "VAR-Mods-2026 v1.0.0 Release Preview",
+  "VAR-Mods-2026 v1.0.0 Self-Contained Release Preview",
   "Stage size: $([math]::Round($stageSize / 1MB, 2)) MB",
-  "Shared runtime size: $([math]::Round($runtimeSize / 1MB, 2)) MB",
   "Installer size: $([math]::Round($installerSize / 1MB, 2)) MB",
   "",
-  "Application launchers:"
+  "Installed executables (exactly three):"
 )
 foreach($launcher in $launchers) {
   $report += ("  {0}: {1} MB" -f $launcher.Name, [math]::Round($launcher.Length / 1MB, 2))
 }
 $report += ""
+$report += "Python source files in install stage: $($pythonFiles.Count)"
+$report += "Portable/shared Python runtime folder present: $(Test-Path (Join-Path $Stage "runtime"))"
 $report += "Installer: $Installer"
 
 $report | Set-Content (Join-Path $Dist "v1.0.0-size-report.txt") -Encoding UTF8
