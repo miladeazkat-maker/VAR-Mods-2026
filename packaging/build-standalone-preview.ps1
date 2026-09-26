@@ -22,8 +22,9 @@ python -m PyInstaller --clean --noconfirm "$Packaging\AssetDownloader.spec"
 Copy-Item "$Dist\Asset Downloader.exe" "$Stage\Asset Downloader.exe" -Force
 
 Write-Host "== Copy non-code release assets =="
+Write-Host "Python source code is embedded into the frozen executables and is never installed as loose files."
 
-$topFiles = @("LICENSE","requirements.txt")
+$topFiles = @("LICENSE")
 foreach($file in $topFiles) {
   Copy-Item (Join-Path $Root $file) (Join-Path $Stage $file) -Force
 }
@@ -63,11 +64,15 @@ if($executables.Count -ne 3) {
 $requiredExeNames = @("MyMods.exe","ModBridge.exe","Asset Downloader.exe")
 
 Write-Host "Standalone EXE smoke tests:"
-& "$StageMyMods.exe" --package-smoke
+$smokeMyMods = Join-Path $Stage "MyMods.exe"
+$smokeModBridge = Join-Path $Stage "ModBridge.exe"
+$smokeAssetDownloader = Join-Path $Stage "Asset Downloader.exe"
+
+& $smokeMyMods --package-smoke
 if($LASTEXITCODE -ne 0) { throw "MyMods standalone smoke test failed." }
-& "$StageModBridge.exe" --package-smoke
+& $smokeModBridge --package-smoke
 if($LASTEXITCODE -ne 0) { throw "ModBridge embedded-backend smoke test failed." }
-& "$StageAsset Downloader.exe" --package-smoke
+& $smokeAssetDownloader --package-smoke
 if($LASTEXITCODE -ne 0) { throw "Asset Downloader standalone smoke test failed." }
 foreach($name in $requiredExeNames) {
   if(!(Test-Path (Join-Path $Stage $name))) {
