@@ -18,7 +18,7 @@ class GeometryEngine:
 
     @staticmethod
     def point_to_segment_distance(pt: Tuple[float, float], seg_start: Tuple[float, float], seg_end: Tuple[float, float]) -> Tuple[float, float, float]:
-        """نسخه دارای علامت سمت (برای تشخیص پاس شکاف‌دهنده Pass Engine)"""
+        """version text text side (for detection pass gap‌text Pass Engine)"""
         vx = seg_end[0] - seg_start[0]
         vz = seg_end[1] - seg_start[1]
         length_sq = vx * vx + vz * vz
@@ -57,9 +57,9 @@ class GeometryEngine:
         opp_gk: Optional[Dict]
     ) -> Tuple[int, float]:
         """
-        بررسی مخروط شلیک داینامیک: عرض مخروط از Shooter به تیرک‌های دروازه گسترش می‌یابد.
-        (مشترک بین Shot Engine و Opportunity Engine — عرض پایه = ShotConfig.CORRIDOR_BASE_WIDTH)
-        خروجی: (تعداد مدافعان مسدودکننده، زاویه انسداد)
+        check textandtext text text: width textandtext from Shooter to post‌text inandfromtext text text‌ortext.
+        (shared text Shot Engine and Opportunity Engine — width text = ShotConfig.CORRIDOR_BASE_WIDTH)
+        output: (count text textandtext textandtext text)
         """
         sx, sz = shooter_pos
         angle_total = GeometryEngine.goal_view_angle(sx, sz, target_goal_x)
@@ -75,13 +75,13 @@ class GeometryEngine:
             dist_to_shooter = GeometryEngine.dist_2d((sx, sz), (dx, dz))
             dist_to_goal = math.hypot(dx - target_goal_x, dz)
 
-            # مدافع باید جلوتر از شوت‌زننده و به سمت دروازه باشد
+            # technical note must technical noteandtechnical note from shot‌technical note and to side inandfromtechnical note withtechnical note
             dist_to_path, t_prog = GeometryEngine.point_to_segment_2d((dx, dz), (sx, sz), (target_goal_x, 0.0))
             if 0.05 <= t_prog <= 0.95:
                 dynamic_corridor_w = ShotConfig.CORRIDOR_BASE_WIDTH * (1.0 - t_prog) + (PitchConfig.GOAL_HALF_WIDTH * 2.0) * t_prog
                 if dist_to_path <= (dynamic_corridor_w / 2.0):
                     defs_in_corridor += 1
-                    # محاسبه سهم انسداد زاویه‌ای بر حسب رادیان
+                    # technical noteto technical note technical note technical noteandtechnical note‌technical note technical note technical note technical noteortechnical note
                     angular_width = 2.0 * math.atan2(0.5, max(0.8, dist_to_shooter))
                     blocked_angle_sum += angular_width
 
@@ -91,9 +91,9 @@ class GeometryEngine:
     @staticmethod
     def calculate_signed_woodwork_distance(z: float, y: float) -> Tuple[float, bool]:
         """
-        محاسبه فاصله با تیرک در صفحه دروازه:
-        - داخل چارچوب: مقدار منفی (فاصله تا نزدیک‌ترین تیرک یا تیر افقی)
-        - خارج چارچوب: مقدار مثبت (فاصله تا دهانه دروازه)
+        textto distance with post in text inandfromtext:
+        - inside textandtext: value text (distance until nearest post or text text)
+        - text textandtext: value textregister (distance until text inandfromtext)
         """
         in_z = abs(z) <= PitchConfig.GOAL_HALF_WIDTH
         in_y = (0.0 <= y <= PitchConfig.GOAL_HEIGHT)
@@ -111,12 +111,12 @@ class GeometryEngine:
 
     @staticmethod
     def calculate_curve(trajectory: List[Tuple[float, float, float]]) -> Tuple[float, str]:
-        """محاسبه کات توپ با فیلتر نویز و تعیین جهت قطعی انحراف"""
-        if len(trajectory) < 6: return 0.0, "مستقیم"
+        """textto text ball with text textandtext and text text deterministic text"""
+        if len(trajectory) < 6: return 0.0, "direct"
         p_start = trajectory[0]
         p_end = trajectory[-1]
         tot_dist = GeometryEngine.dist_2d((p_start[0], p_start[1]), (p_end[0], p_end[1]))
-        if tot_dist < ShotConfig.CURVE_MIN_TRAJECTORY_LEN: return 0.0, "مستقیم"
+        if tot_dist < ShotConfig.CURVE_MIN_TRAJECTORY_LEN: return 0.0, "direct"
 
         vx = p_end[0] - p_start[0]
         vz = p_end[1] - p_start[1]
@@ -129,30 +129,30 @@ class GeometryEngine:
             deviations.append(dist)
             signed_devs.append(cross)
 
-        # اعمال میانگین میانه برای حذف نویز تک‌فریم
+        # technical note technical noteortechnical note technical noteortechnical note for technical note technical noteandtechnical note technical note‌frame
         sorted_devs = sorted(deviations)
         robust_max_dev = sorted_devs[int(len(sorted_devs) * 0.85)]
         ratio = robust_max_dev / tot_dist
 
         if ratio < ShotConfig.CURVE_RATIO_THRESHOLD:
-            return 0.0, "مستقیم"
+            return 0.0, "direct"
 
         sum_sign = sum(signed_devs)
-        direction = "کات به راست" if sum_sign > 0 else "کات به چپ"
+        direction = "text to textis" if sum_sign > 0 else "text to text"
         return ratio, direction
 
 # =====================================================================
-# ۱۰. ساختارهای داده مدل رخداد (ادغام هر سه فایل)
+# 10. structuretechnical note data technical note technical note (technical note technical note technical note file)
 # =====================================================================
 class EventReliability(Enum):
-    CERTAIN = "CERTAIN"      # قطعی از هوک حافظه یا مرز صریح
-    PROBABLE = "PROBABLE"    # بسیار محتمل بر پایه شواهد مکانی/زمانی
-    INFERRED = "INFERRED"    # استنتاجی و تحلیلی
+    CERTAIN = "CERTAIN"      # deterministic from hook memory or boundary technical note
+    PROBABLE = "PROBABLE"    # technical noteortechnical note technical note technical note technical note technical noteandtechnical note technical note/timetechnical note
+    INFERRED = "INFERRED"    # istechnical noteuntiltechnical note and technical note
 
 @dataclass
 class SnapshotFrame:
-    timestamp: float                       # Wall Clock (فقط برای polling/performance)
-    match_time: float                      # زمان بازی (منبع اصلی Momentum)
+    timestamp: float                       # Wall Clock (only for polling/performance)
+    match_time: float                      # time withtechnical note (source original Momentum)
     ball: Tuple[float, float, float]
     players: List[Dict]
     possession: Optional[str]
@@ -175,7 +175,7 @@ class GameEvent:
 
 @dataclass
 class PassEventData:
-    """مدل کامل پاس (کالیبره Pass Engine) — threat_score منبع امتیاز Momentum"""
+    """text complete pass (calibrated Pass Engine) — threat_score source score Momentum"""
     event_id: int
     match_time: float
     team: str
@@ -207,7 +207,7 @@ class PreviousShotContext:
 
 @dataclass
 class ShotEventData:
-    """مدل کامل شوت (کالیبره Shot Engine) — pre_shot_threat و final_threat تفکیک‌شده"""
+    """text complete shot (calibrated Shot Engine) — pre_shot_threat and final_threat text‌text"""
     event_id: int
     match_time: float
     team: str
@@ -240,13 +240,13 @@ class ShotEventData:
     gk_dist_to_goal: float
     is_inside_box: bool
     is_1v1: bool
-    # --- نسخه ۳ (رفع باگ بحرانی): پرچم گل روی مدل داده —
-    # register_shot_event به shot_data.is_goal دسترسی دارد؛ نبودِ این فیلد
-    # در نسخه ۲ باعث AttributeError و «حذف بی‌صدای همهٔ شوت‌ها» می‌شد
+    # --- version 3 (technical note withtechnical note technical note): technical note technical note technical noteandtechnical note technical note data —
+    # register_shot_event to shot_data.is_goal technical note technical note technical noteandtechnical note technical note technical note
+    # in version 2 withtechnical note AttributeError and «technical note technical note‌technical note technical note shot‌technical note» technical note‌technical note
     is_goal: bool = False
-    # --- نسخهٔ ۱۰٫۱۴ — شناسهٔ یکتای کاندید شوت (= مقدار شمارنده + نسل)؛
-    # مبنای Dedup: «همان کاندید فقط یک بار ثبت می‌شود» — شوت‌های واقعیِ
-    # پشت‌سرهم هرگز با این گارد حذف نمی‌شوند
+    # --- versiontechnical note 10technical note14 — technical note technical noteuntiltechnical note technical note shot (= value counter + technical note)technical note
+    # technical note Dedup: «same technical note only technical note withtechnical note register technical note‌technical noteandtechnical note» — shot‌technical note realtechnical note
+    # technical note‌technical note never with technical note technical note technical note technical note‌technical noteandtechnical note
     candidate_id: Optional[str] = None
     tags: List[str] = field(default_factory=list)
     candidate_scores: Dict[str, float] = field(default_factory=dict)
@@ -272,41 +272,41 @@ class PossessionSequence:
 @dataclass
 class EventImpact:
     """
-    رکورد مرکزی امتیاز Momentum برای هر Event
-    (score خام و sign جدا نگه داشته می‌شوند)
+    textandtext text score Momentum for text Event
+    (score text and sign text text text text‌textandtext)
     """
     source_event_id: int
     event_type: str
     team: str
     match_time: float
-    raw_threat: float            # ورودی خام (threat_score پاس / final_threat شوت / وزن رخداد)
-    base_weight: float           # پس از multiplierهای نوع رویداد (قبل از reliability/confidence)
+    raw_threat: float            # input technical note (threat_score pass / final_threat shot / weight technical note)
+    base_weight: float           # technical note from multipliertechnical note technical noteandtechnical note technical noteandtechnical note (before from reliability/confidence)
     reliability: str
     confidence: float
     reliability_multiplier: float
-    sign: int                    # +1 عادی / -1 برای Penalty Miss (مدل داخلی جدا نگه داشته می‌شود)
-    final_impact: float          # base_weight × rel_mult × confidence × sign  (امضادار)
+    sign: int                    # +1 technical note / -1 for Penalty Miss (technical note internal technical note technical note technical note technical note‌technical noteandtechnical note)
+    final_impact: float          # base_weight × rel_mult × confidence × sign  (technical note)
     note: str = ""
-    # --- Goal Pulse (نسخه ۲) ---
-    # گل به‌جای spike لحظه‌ای، پاسخ تأخیری دارد: اوج در goal_time + GOAL_PEAK_DELAY
+    # --- Goal Pulse (version 2) ---
+    # technical note to‌technical note spike moment‌technical note passtechnical note delaytechnical note technical note: technical noteandtechnical note in goal_time + GOAL_PEAK_DELAY
     is_goal_pulse: bool = False
-    goal_time: float = 0.0       # t_goal (ثانیه بازی) — مارکر گل دقیقاً اینجاست
-    peak_time: float = 0.0       # t_goal + GOAL_PEAK_DELAY (ثانیه بازی)
-    # --- نسخه ۵: نیمهٔ گل + موقعیت نمایشی فریزشدهٔ مارکر ---
-    # goal_disp_time در لحظهٔ ثبت با display_offset جاری محاسبه و فریز
-    # می‌شود؛ حتی اگر بعداً آفست نمایش تغییر کند، مارکر دقیقاً روی
-    # موقعیت درست خودش می‌ماند (رفع جابه‌جایی مارکر گل نیمه دوم نسخه ۴)
+    goal_time: float = 0.0       # t_goal (second withtechnical note) — technical note technical note exactly technical noteis
+    peak_time: float = 0.0       # t_goal + GOAL_PEAK_DELAY (second withtechnical note)
+    # --- version 5: technical note technical note + position displaytechnical note frozentechnical note technical note ---
+    # goal_disp_time in momenttechnical note register with display_offset current technical noteto and frozen
+    # technical note‌technical noteandtechnical note technical note if aftertechnical note technical note display change technical note technical note exactly technical noteandtechnical note
+    # position correct technical noteandtechnical note technical note‌technical note (technical note technical noteto‌technical note technical note technical note second half version 4)
     goal_half: int = 1
     goal_disp_time: float = -1.0
     # --- Debug / Dedup ---
-    linked_ids: List[int] = field(default_factory=list)   # related_event_ids هنگام امتیازدهی
-    parallel_goal_dedup: bool = False                     # Penalty Goal که به Goal موازی تنزیل یافته
+    linked_ids: List[int] = field(default_factory=list)   # related_event_ids technical note scoretechnical note
+    parallel_goal_dedup: bool = False                     # Penalty Goal technical note to Goal technical noteandfromtechnical note technical note technical notedecreasetechnical note
 
 # =====================================================================
-# ۱۱. باس رویداد یکپارچه (Unified Event Bus)
+# 11. withtechnical note technical noteandtechnical note technical note (Unified Event Bus)
 # =====================================================================
 class EventBus:
-    """Event Stream مشترک: Event Engine منتشر می‌کند، Momentum Engine مصرف"""
+    """Event Stream shared: Event Engine text text‌text Momentum Engine text"""
     def __init__(self):
         self._subscribers: List[Any] = []
         self._lock = threading.RLock()
@@ -325,7 +325,7 @@ class EventBus:
                 clog(f"[EventBus] Subscriber error: {ex}")
 
 # =====================================================================
-# ۱۲. Data Store داخلی RuntimeState (Worker → RuntimeState → UI snapshot)
+# 12. Data Store internal RuntimeState (Worker → RuntimeState → UI snapshot)
 # =====================================================================
 class RuntimeState:
     def __init__(self):
@@ -341,7 +341,7 @@ class RuntimeState:
         self.connected: bool = False
         self.last_pass: Optional[PassEventData] = None
         self.last_shot: Optional[ShotEventData] = None
-        # ارجاع به لیست‌های append-only (خواندن امن از UI بدون کپی سنگین)
+        # technical note to technical note‌technical note append-only (read technical note from UI without technical note agetechnical note)
         self.events: List[GameEvent] = []
         self.sequences: List[PossessionSequence] = []
         self.momentum_history: List[Dict[str, float]] = []
@@ -393,8 +393,8 @@ class RuntimeState:
             self.last_shot = None
 
 # =====================================================================
-# ۱۳. موتور کالیبره‌شده شاخص تهدید پاس (PassThreatEngine)
+# 13. technical noteandtechnical noteandtechnical note calibrated‌technical note technical note technical note pass (PassThreatEngine)
 # ---------------------------------------------------------------------
-# منطق تست‌شده ThreatCalculator فایل Pass Engine — بدون هیچ تغییری.
-# این کلاس تنها منبع امتیاز Threat برای رویداد Pass است.
+# technical note test‌technical note ThreatCalculator file Pass Engine — without technical note changetechnical note.
+# technical note totaltechnical note technical note source score Threat for technical noteandtechnical note Pass is.
 # =====================================================================
