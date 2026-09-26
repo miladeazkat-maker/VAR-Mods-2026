@@ -77,7 +77,6 @@ Each mod has its own backend implementation and assets.
     │   │   ├── 08_scene_archive.py
     │   │   ├── 09_team_identity.py
     │   │   ├── 10_app_gui_snapshot.py
-    │   │   ├── 11_app_runtime.py
     │   │   └── 12_selftest_entry.py
     │   └── tex/
     ├── HeatMap/
@@ -104,7 +103,7 @@ MomentumMatch/MomentumMod.py is the backend for Match Momentum.
 
 The original implementation grew into a single source file of more than 22,000 lines. It contained memory access, event models, pass and shot analysis, momentum scoring, TV chart generation, snapshot management, GPU/Win32 overlay renderers, team identity handling, GUI/runtime orchestration, and self-tests.
 
-The implementation is being modularized without changing its runtime contract.
+The implementation is being modularized without changing its runtime contract. The refactor is verified in CI by comparing the normalized abstract syntax tree of the modular source against the original monolith.
 
 ### 3.1 Momentum Modules
 
@@ -269,10 +268,10 @@ The runtime dependencies are maintained in `requirements.txt`. The current suite
 
 The repository includes:
 
-- Python Library Downloader.py
+- Python_Library_Downloader.py
 - Python Library Downloader.exe
 
-The downloader is intended to install the Python runtime dependencies used by the suite.
+The downloader is intended to install the Python runtime dependencies used by the suite. Its package list is kept in sync with requirements.txt.
 
 ### Manual Installation
 
