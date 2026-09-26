@@ -45,13 +45,13 @@ SSL_CTX.verify_mode = ssl.CERT_NONE
 QT_API = None
 QT_AVAILABLE = False
 try:
-    from PyQt5 import QtCore, QtGui, QtWidgets
-    QT_API = "PyQt5"
+    from PyQt6 import QtCore, QtGui, QtWidgets
+    QT_API = "PyQt6"
     QT_AVAILABLE = True
 except Exception:
     try:
-        from PyQt6 import QtCore, QtGui, QtWidgets
-        QT_API = "PyQt6"
+        from PyQt5 import QtCore, QtGui, QtWidgets
+        QT_API = "PyQt5"
         QT_AVAILABLE = True
     except Exception:
         QT_API = None
