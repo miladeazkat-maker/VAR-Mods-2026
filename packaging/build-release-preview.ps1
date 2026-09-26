@@ -22,25 +22,13 @@ python -m PyInstaller --onefile --noconsole --clean --name "Asset Downloader" "$
 Copy-Item "$Root\dist\Asset Downloader.exe" "$Stage\Asset Downloader.exe" -Force
 
 Write-Host "== Copy release application files =="
-$topFiles = @("MyMods.py","ModBridge.py","README.md","LICENSE","requirements.txt")
+$topFiles = @("MyMods.py","ModBridge.py","LICENSE","requirements.txt")
 foreach($file in $topFiles) {
   Copy-Item (Join-Path $Root $file) (Join-Path $Stage $file) -Force
 }
 $dirs = @("GLT","HeatMap","MomentumMatch","SAOTMod","RefereeView","PT","Background")
 foreach($dir in $dirs) {
   Copy-Item (Join-Path $Root $dir) (Join-Path $Stage $dir) -Recurse -Force
-}
-$readmeAssets = @(
-  "banner.png",
-  "saot_preview.png",
-  "glt_preview.png",
-  "heatmap_preview.png",
-  "refereeview_preview.png",
-  "momentum_preview.png"
-)
-New-Item -ItemType Directory -Force -Path (Join-Path $Stage "assets") | Out-Null
-foreach($asset in $readmeAssets) {
-  Copy-Item (Join-Path $Root "assets\$asset") (Join-Path $Stage "assets\$asset") -Force
 }
 
 Write-Host "== Prepare portable Python runtime =="
