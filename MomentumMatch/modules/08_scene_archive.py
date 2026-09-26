@@ -1604,7 +1604,7 @@ def team_json_candidates() -> List[str]:
     """pathtext text leagues_data.json to order firstandtext (versiontext 10text9):
     1) Football_Database/leagues_data.json (text text — path new)
     2) leagues_data.json text text (path legacy — textfromtext)"""
-    base = os.path.dirname(os.path.abspath(__file__))
+    base = _MOMENTUM_DATA_DIR
     return [os.path.join(base, TEAM_DB_DIRNAME, TEAM_COLOR_JSON_FILENAME),
             os.path.join(base, TEAM_COLOR_JSON_FILENAME)]
 
