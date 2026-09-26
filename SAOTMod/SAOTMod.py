@@ -90,11 +90,14 @@ except Exception:
 # ---------------------------------------------------------------------
 # Paths / constants
 # ---------------------------------------------------------------------
-if getattr(sys, "frozen", False):
-    _MOD_DIR = os.path.abspath(os.path.dirname(sys.executable))
+if os.environ.get("VAR_MODS_BACKEND_DIR"):
+    _MOD_DIR = os.path.abspath(os.environ["VAR_MODS_BACKEND_DIR"])
 else:
     _MOD_DIR = os.path.abspath(os.path.dirname(__file__))
-_SUITE_DIR = os.path.dirname(_MOD_DIR)
+_SUITE_DIR = os.environ.get(
+    "VAR_MODS_INSTALL_DIR",
+    os.path.dirname(_MOD_DIR)
+)
 CONFIG_FILE = os.path.join(_SUITE_DIR, "ModsConfig.json")
 IPC_FILE = os.path.join(_SUITE_DIR, "bridge_ipc.json")
 
