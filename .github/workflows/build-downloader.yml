@@ -29,6 +29,11 @@ jobs:
       - name: Install PyInstaller
         run: python -m pip install --upgrade pip pyinstaller
 
+      - name: Smoke test downloader
+        shell: pwsh
+        run: |
+          python -c "import Python_Library_Downloader as d; v, u = d.fetch_latest_python_installer(); info = d.get_host_python_info(require_compatible=True); assert v.startswith('3.13.'), v; assert info and info['major_minor'] == (3, 13), info; assert '--only-binary=moderngl,glcontext' in d.build_pip_command('python', 'moderngl'); assert '--only-binary=glfw' in d.build_pip_command('python', 'glfw'); print('Downloader smoke test passed:', v, info['version'], u)"
+
       - name: Build executable
         shell: pwsh
         run: |
