@@ -119,8 +119,7 @@ The implementation is being modularized without changing its runtime contract.
 | 07_overlay_renderers.py | GPU and Win32 overlay renderers. |
 | 08_scene_archive.py | GPU scene construction, match archives, archive loading, and archive rendering. |
 | 09_team_identity.py | Team detection, team colors, logos, player identity, and related presentation data. |
-| 10_app_gui_snapshot.py | Application UI and snapshot presentation workflow. |
-| 11_app_runtime.py | Monitoring worker, live event polling, match lifecycle, reset handling, and runtime orchestration. |
+| 10_app_gui_snapshot.py | MomentumApp UI, snapshot presentation, live monitoring, event polling, match lifecycle, reset handling, and runtime orchestration. |
 | 12_selftest_entry.py | Regression/self-test suite and the public main() entry point. |
 
 MomentumMod.py remains the public entry point. The modular files are loaded in their original dependency order into the same runtime namespace. This preserves the existing public names and avoids introducing unnecessary import cycles into the memory-hook and rendering code.
