@@ -342,9 +342,8 @@ def main() -> None:
         for item in ast.literal_eval(package_node.value)
         if isinstance(item, (tuple, list))
         and len(item) >= 1
-        and isinstance(item[0], ast.Constant)
-        and isinstance(item[0].value, str)
-        and item[0].value.lower() != "pyinstaller"
+        and isinstance(item[0], str)
+        and item[0].lower() != "pyinstaller"
     }
     missing_deps = sorted(requirements - downloader_packages)
     if missing_deps:
