@@ -117,18 +117,18 @@ def _suite_harden_stdio():
 _suite_harden_stdio()
 
 # ---------------------------------------------------------------------
-# [PT v2.3.0] PT DATA SOURCE — مشترک با Heat Map (همان فایل‌ها):
+# [PT v2.3.0] PT DATA SOURCE — shared with Heat Map (same file‌technical note):
 #   PES MODS/PT/Asset.zip + PES MODS/PT/teams_players_PES2021.txt
-#   (پوشهٔ PT کنار MyMods.py است — یک سطح بالاتر از این اسکریپت)
-# نام/رنگ تیم‌ها از txt ؛ لوگو/پرچم (Teams/{id}.png) از Asset.zip
-# (استخراج تک‌فایلی با کش PT_Cache/). دیتابیس قدیمی leagues_data.json /
-# Football_Database همان‌طور که هست به‌عنوان fallback می‌ماند: PT نبود ⇒
-# رفتار قبلی بدون هیچ تغییری.
+#   (foldertechnical note PT technical note MyMods.py is — technical note level above from technical note technical note)
+# technical note/color team‌technical note from txt technical note logo/technical note (Teams/{id}.png) from Asset.zip
+# (istechnical note technical note‌filetechnical note with technical note PT_Cache/). technical noteuntiltechnical note legacy leagues_data.json /
+# Football_Database same‌technical noteandtechnical note technical note technical note to‌technical noteandtechnical note fallback technical note‌technical note: PT technical noteandtechnical note ⇒
+# technical noteuntiltechnical note beforetechnical note without technical note changetechnical note.
 # ---------------------------------------------------------------------
-# [PT v2.3.3] خوانندهٔ PT «داخل همین فایل» جاسازی شده است — دیگر هیچ
-# نیازی به فایل بیرونی PTData.py نیست. قبل از این نسخه، استقراری که
-# PTData.py را نداشت بی‌صدا همهٔ امکانات PT را از دست می‌داد (بدون نام
-# تیم/رنگ/لوگو). سورس پایین عین PTData.py رسمی است — بدون تغییر.
+# [PT v2.3.3] technical noteandtechnical note PT «inside technical note file» technical notefromtechnical note technical note is — technical note technical note
+# technical noteortechnical note to file outsidetechnical note PTData.py is not. before from technical note versiontechnical note istechnical note technical note
+# PTData.py technical note technical note technical note‌technical note technical note technical note PT technical note from technical note technical note‌technical note (without technical note
+# team/color/logo). technical noteandtechnical note below technical note PTData.py technical note is — unchanged.
 _PTDATA_EMBEDDED_SOURCE = r'''# -*- coding: utf-8 -*-
 """
 PTData.py — PT 数据源（Heat Map / Broadcast 与 Match Momentum 共用）
@@ -638,7 +638,7 @@ if __name__ == "__main__":
 
 
 def _load_embedded_ptdata():
-    """اجرای سورس جاسازی‌شدهٔ PTData در یک ماژول ایزوله — همان API قدیمی."""
+    """text textandtext textfromtext‌text PTData in text textandtext textandtext — same API legacy."""
     import types
     _mod = types.ModuleType("PTData_embedded")
     _g = _mod.__dict__
@@ -669,17 +669,17 @@ if PTData is not None:
 
 
 def pt_active():
-    """PT data source فعال یا None — همهٔ شاخه‌های PT از همین گیت می‌روند"""
+    """PT data source active or None — text text‌text PT from text text text‌textandtext"""
     if PT is not None and PT.available():
         return PT
     return None
 
 
 def _pt_team_label(ident, side) -> str:
-    """[PT v2.3.0] برچسب امن تیم برای نام فایل/آرشیو —
-    حالت PT (ident = int Team ID) ⇒ نام کوتاه واقعی تیم از دیتابیس؛
-    مسیر قدیمی (league, img) ⇒ L{lg}T{img} ؛ هیچ ⇒ Home/Away.
-    (نام فایل فقط نویسه‌های ASCII امن — هم‌سازگار با ویندوز)"""
+    """[PT v2.3.0] text text team for text file/archive —
+    text PT (ident = int Team ID) ⇒ text textanduntiltext real team from textuntiltext
+    path legacy (league, img) ⇒ L{lg}T{img} text text ⇒ Home/Away.
+    (text file only character‌text ASCII text — text‌textfromtext with andtextandtext)"""
     PTx = pt_active()
     if PTx is not None and isinstance(ident, int):
         try:
@@ -750,10 +750,10 @@ except Exception:                  # pragma: no cover — exotic minimal Python
     messagebox = None
 
 # =====================================================================
-# ۰-الف) نسخهٔ ۱۰٫۱۰ — لاگ کنسول/فایل حذف شد (درخواست کاربر)
+# 0-technical note) versiontechnical note 10technical note10 — log technical noteandtechnical note/file technical note technical note (request user)
 # ---------------------------------------------------------------------
-# تمام printهای تشخیصیِ زمان اجرا به‌جای چاپ مستقیم از clog() استفاده
-# می‌کنند. (Self-test و تست‌ها مستقل از این فلگ خودشان logger صریح می‌سازند.)
+# technical note printtechnical note detectiontechnical note time technical note to‌technical note print direct from clog() istechnical note
+# technical note‌technical note. (Self-test and test‌technical note independent from technical note technical note technical noteandtechnical note logger technical note technical note‌technical notefromtechnical note.)
 # v2.0.7 — THIS IS THE BACKEND-ONLY FILE (the standalone GUI build keeps
 # its own copy with False): diagnosis of the field report "charts visible
 # but empty" requires the lifecycle evidence ([NewHand]/[PossHook]/
@@ -764,7 +764,7 @@ DEBUG_LOG_ENABLED = True
 
 
 def clog(*args, **kw):
-    """لاگ کنسولِ زمان اجرا — نسخهٔ ۱۰٫۱۰: غیرفعال (حذف لاگ‌ها)."""
+    """log textandtext time text — versiontext 10text10: disabled (text log‌text)."""
     if DEBUG_LOG_ENABLED:
         try:
             print(*args, **kw)
@@ -772,7 +772,7 @@ def clog(*args, **kw):
             pass
 
 # =====================================================================
-# ۱. ارتقای خودکار دسترسی مدیر سیستم (Run as Administrator)
+# 1. technical note automatic technical note technical note technical note (Run as Administrator)
 # =====================================================================
 def enforce_admin_and_cwd():
     current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -781,7 +781,7 @@ def enforce_admin_and_cwd():
     except Exception:
         pass
     if os.name != "nt":
-        # لینوکس/مک (فقط برای --selftest یا توسعه) — ارتقای UAC ویندوزی لازم نیست
+        # technical noteandtechnical note/technical note (only for --selftest or technical noteandtechnical note) — technical note UAC andtechnical noteandtechnical note technical notefromtechnical note is not
         return
     try:
         is_admin = ctypes.windll.shell32.IsUserAnAdmin()
@@ -796,15 +796,15 @@ def enforce_admin_and_cwd():
 
 enforce_admin_and_cwd()
 
-# --- شیم حداقلی برای اجرای «--selftest» روی سیستم غیر ویندوزی (توسعه/CI) ---
-# در ویندوز هیچ تغییری ایجاد نمی‌کند؛ فقط تعاریف Windows API به‌صورت امن
-# ساختگی می‌شوند تا ایمپورت ماژول کامل بماند (خواندن حافظه فقط ویندوزی است).
+# --- technical note technical note for technical note «--selftest» technical noteandtechnical note technical note technical note andtechnical noteandtechnical note (technical noteandtechnical note/CI) ---
+# in andtechnical noteandtechnical note technical note changetechnical note technical note technical note‌technical note only technical note Windows API to‌technical noteandtechnical note technical note
+# technical note technical note‌technical noteandtechnical note until technical noteandtechnical note technical noteandtechnical note complete technical note (read memory only andtechnical noteandtechnical note is).
 if os.name != "nt":
     class _FakeFunc:
         restype = None
         argtypes = []
         def __call__(self, *a, **k):
-            raise OSError("Windows-only API (selftest به آن نیاز ندارد)")
+            raise OSError("Windows-only API (selftest to text textortext text)")
     class _FakeWinDLL:
         def __getattr__(self, name):
             f = _FakeFunc()
@@ -831,7 +831,7 @@ if os.name != "nt":
     wintypes = _FakeWintypes()                       # type: ignore[assignment]
 
 # =====================================================================
-# ۲. تعاریف ۶۴ بیتی Windows API  (یکپارچه — نسخه واحد برای کل برنامه)
+# 2. technical note 64 technical note Windows API  (technical note — version andtechnical note for total technical note)
 # =====================================================================
 kernel32 = ctypes.WinDLL('kernel32', use_last_error=True)
 
@@ -963,7 +963,7 @@ def safe_write(h_process, addr: int, data: bytes) -> bool:
     return bool(res and written.value == size)
 
 def closest_player(x: float, z: float, players: List[Dict], team_filter: Optional[str] = None) -> Tuple[Optional[Dict], float]:
-    """یافتن نزدیک‌ترین بازیکن به یک نقطه (ابزار مشترک Pass/Shot/Event)"""
+    """textdecreasetext nearest player to text text (tool shared Pass/Shot/Event)"""
     best_p = None
     min_d = 999.0
     for p in players:
@@ -976,5 +976,5 @@ def closest_player(x: float, z: float, players: List[Dict], team_filter: Optiona
     return best_p, min_d
 
 # =====================================================================
-# ۳. پیکربندی یکپارچه هندسه زمین (ادغام PitchConfig هر سه فایل)
+# 3. technical note technical note technical note pitch (technical note PitchConfig technical note technical note file)
 # =====================================================================
