@@ -7881,16 +7881,10 @@ class MasterCyberWindow(QMainWindow):
             pass
         try:
             shell32 = ctypes.windll.shell32
-            if getattr(sys, 'frozen', False):
-                bridge_exe = os.path.join(APP_DIR, "ModBridge.exe")
-                if os.path.exists(bridge_exe):
-                    res = shell32.ShellExecuteW(None, "runas", bridge_exe, None, APP_DIR, 1)
-                    return int(res) > 32
+            bridge_exe = os.path.join(APP_DIR, "ModBridge.exe")
+            if not os.path.exists(bridge_exe):
                 return False
-            bridge_py = os.path.join(APP_DIR, "ModBridge.py")
-            if not os.path.exists(bridge_py):
-                return False
-            res = shell32.ShellExecuteW(None, "runas", sys.executable, f'"{bridge_py}"', APP_DIR, 1)
+            res = shell32.ShellExecuteW(None, "runas", bridge_exe, None, APP_DIR, 1)
             return int(res) > 32
         except Exception:
             return False
