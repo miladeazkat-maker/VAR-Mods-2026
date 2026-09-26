@@ -7865,8 +7865,8 @@ class MasterCyberWindow(QMainWindow):
             self.show_message(
                 "error", "LAUNCH FAILED",
                 "Mod Bridge could not be started.<br>"
-                "The UAC prompt may have been cancelled, or <b>ModBridge.py</b> is missing "
-                "next to MyMods.py.")
+                "The UAC prompt may have been cancelled, or <b>ModBridge.exe</b> is missing "
+                "next to MyMods.exe.")
 
     def launch_bridge(self):
         if sys.platform != "win32":
