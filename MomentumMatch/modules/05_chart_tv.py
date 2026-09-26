@@ -4,17 +4,17 @@ def _fmt_clock(sec: float) -> str:
 
 
 def gaussian_smooth(vals: List[float], sigma_samples: float) -> List[float]:
-    """Gaussian smoothing واقعی — برای دسترسی selftest در سطح ماژول"""
+    """Gaussian smoothing real — for text selftest in level textandtext"""
     return _gauss_smooth_impl(vals, sigma_samples)
 
 
 def _gauss_smooth_impl(vals: List[float], sigma_samples: float) -> List[float]:
     """
-    نسخه ۳ — Gaussian smoothing قطعه‌بندی‌شده (NaN-aware):
-    نمونه‌های NaN (نگهبان‌های شکاف HT) به‌عنوان جداکننده عمل می‌کنند و هر
-    قطعهٔ پیوسته به‌صورت مستقل هموار می‌شود؛ در نتیجه:
-      * NaN در سراسر سری «پخش» نمی‌شود (رفتار قبلی: آلودگی به شعاع کرنل)
-      * منحنی هر نیمه تا لبهٔ شکاف کاملاً هموار و پیوسته است و روی شکاف پل نمی‌زند
+    version 3 — Gaussian smoothing text‌text‌text (NaN-aware):
+    sample‌text NaN (watchdog‌text gap HT) to‌textandtext text text text‌text and text
+    text textandtext to‌textandtext independent textandtext text‌textandtext in text:
+      * NaN in text text «text» text‌textandtext (textuntiltext beforetext: textandtext to radius text)
+      * text text text until texttotext gap completetext textandtext and textandtext is and textandtext gap text text‌text
     """
     n = len(vals)
     s = float(sigma_samples)
@@ -25,7 +25,7 @@ def _gauss_smooth_impl(vals: List[float], sigma_samples: float) -> List[float]:
     if not nan_mask.any():
         return _smooth_segment(arr, s).tolist()
     out = arr.copy()
-    # پیدا کردن قطعه‌های پیوستهٔ non-NaN
+    # technical note technical note technical note‌technical note technical noteandtechnical note non-NaN
     idx = np.where(~nan_mask)[0]
     if idx.size == 0:
         return list(vals)
@@ -38,7 +38,7 @@ def _gauss_smooth_impl(vals: List[float], sigma_samples: float) -> List[float]:
 
 
 def _smooth_segment(seg: "np.ndarray", s: float) -> "np.ndarray":
-    """هموارسازی گاوسی یک قطعهٔ پیوسته (بدون NaN) — edge-padding برای حفظ لبه‌ها"""
+    """textandtextfromtext textandtext text text textandtext (without NaN) — edge-padding for text textto‌text"""
     m = len(seg)
     if m < 5:
         return seg.copy()
@@ -53,20 +53,20 @@ def _smooth_segment(seg: "np.ndarray", s: float) -> "np.ndarray":
 
 
 # =====================================================================
-# نسخه ۱۰٫۲ — بارگذاری آیکون توپ گل از tex/ball_icon.png (کنار کد)
+# version 10technical note2 — withtechnical note icon ball technical note from tex/ball_icon.png (technical note code)
 # ---------------------------------------------------------------------
-# * اگر فایل موجود باشد → draw_momentum_chart به‌جای دایرهٔ سفید،
-#   همین تصویر را با قطر cfg.BALL_ICON_SIZE_PT رسم می‌کند.
-# * اگر فایل نبود/خراب بود → دایرهٔ سفید پیش‌فرض (fallback قطعی).
-# * نتیجه کش می‌شود تا فقط یک بار از دیسک خوانده شود.
+# * if file technical noteandtechnical noteandtechnical note withtechnical note → draw_momentum_chart to‌technical note technical note technical note
+#   technical note technical noteandtechnical note technical note with technical note cfg.BALL_ICON_SIZE_PT technical note technical note‌technical note.
+# * if file technical noteandtechnical note/broken technical noteandtechnical note → technical note technical note default (fallback deterministic).
+# * technical note technical note technical note‌technical noteandtechnical note until only technical note withtechnical note from technical note technical noteandtechnical note technical noteandtechnical note.
 # =====================================================================
 _ball_icon_cache = {"tried": False, "arr": None}
 
 
 def load_ball_icon():
     """
-    آرایهٔ تصویر آیکون توپ (tex/ball_icon.png کنار فایل کد) یا None.
-    خروجی همیشه برای رندر امن است: None یعنی fallback به دایره.
+    text textandtext icon ball (tex/ball_icon.png text file code) or None.
+    output always for render text is: None text fallback to text.
     """
     if _ball_icon_cache["tried"]:
         return _ball_icon_cache["arr"]
@@ -79,31 +79,31 @@ def load_ball_icon():
             arr = _mpimg.imread(path)
             if getattr(arr, "ndim", 0) == 3 and arr.shape[0] > 0 and arr.shape[1] > 0:
                 _ball_icon_cache["arr"] = arr
-                clog(f"[BallIcon] آیکون توپ بارگذاری شد: {path} "
+                clog(f"[BallIcon] icon ball withtext text: {path} "
                       f"({arr.shape[1]}×{arr.shape[0]})")
             else:
-                clog(f"[BallIcon] فرمت تصویر قابل استفاده نیست: {path}")
+                clog(f"[BallIcon] text textandtext usable is not: {path}")
         else:
-            clog(f"[BallIcon] فایل آیکون پیدا نشد: {path} — "
-                  f"از دایرهٔ سفید پیش‌فرض استفاده می‌شود")
+            clog(f"[BallIcon] file icon text text: {path} — "
+                  f"from text text default istext text‌textandtext")
     except Exception as ex:
-        clog(f"[BallIcon] خطای بارگذاری آیکون: {type(ex).__name__}: {ex}")
+        clog(f"[BallIcon] Errortext withtext icon: {type(ex).__name__}: {ex}")
     return _ball_icon_cache["arr"]
 
 
 _red_card_icon_cache = {"arr": None}
 
-RED_CARD_ASPECT_W_H = 0.628            # 27/43 — عین نمونهٔ کاربر
-RED_CARD_FILL_TOP = (250, 49, 60)      # #FA313C — لبهٔ بالا
-RED_CARD_FILL_BOTTOM = (234, 1, 11)    # #EA010B — لبهٔ پایین
+RED_CARD_ASPECT_W_H = 0.628            # 27/43 — technical note sampletechnical note user
+RED_CARD_FILL_TOP = (250, 49, 60)      # #FA313C — technical notetotechnical note withtechnical note
+RED_CARD_FILL_BOTTOM = (234, 1, 11)    # #EA010B — technical notetotechnical note below
 
 
 def build_red_card_icon():
     """
-    نسخهٔ ۱۰٫۲۷ — آیکون کارت قرمز به‌صورت آرایهٔ RGBA float 0..1 — طراحی
-    در کد با PIL (ابرنمونه‌گیری ×۴ + فرود LANCZOS برای لبهٔ نرم؛ عین
-    نسخهٔ 2017). None اگر PIL در دسترس نباشد (رندرها به مربع قرمز
-    Matplotlib fallback می‌کنند).
+    versiontext 10text27 — icon red card to‌textandtext text RGBA float 0..1 — text
+    in code with PIL (textsample‌text ×4 + textandtext LANCZOS for texttotext smoothtext text
+    versiontext 2017). None if PIL in text textwithtext (rendertext to text text
+    Matplotlib fallback text‌text).
     """
     if _red_card_icon_cache["arr"] is not None:
         return _red_card_icon_cache["arr"]
@@ -113,16 +113,16 @@ def build_red_card_icon():
         from PIL import ImageDraw as _IDraw
         from PIL import ImageFilter as _IFilter
 
-        w, h = 66, 105                    # نسبت 0.629 ≈ نمونه (27×43)
-        ss = 4                            # ابرنمونه‌گیری
+        w, h = 66, 105                    # ratio 0.629 ≈ sample (27×43)
+        ss = 4                            # technical notesample‌technical note
         W, H = w * ss, h * ss
-        pad = 3 * ss                      # حاشیه برای سایه
+        pad = 3 * ss                      # technical note for technical note
         radius = max(2, int(round(W * (2.5 / 27.0))))
 
         canvas = Image.new("RGBA", (W + 2 * pad, H + 2 * pad),
                            (0, 0, 0, 0))
 
-        # --- سایهٔ نرم تیره (جابه‌جایی ~1px پایین + بلور) ---
+        # --- technical note smooth technical note (technical noteto‌technical note ~1px below + technical noteandtechnical note) ---
         shadow = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
         _sdr = _IDraw.Draw(shadow)
         _sdr.rounded_rectangle(
@@ -131,7 +131,7 @@ def build_red_card_icon():
         shadow = shadow.filter(_IFilter.GaussianBlur(radius=2 * ss))
         canvas.alpha_composite(shadow)
 
-        # --- بدنهٔ کارت: گرادیان عمودی + ماسک گوشهٔ گرد ---
+        # --- technical note card: technical noteortechnical note technical noteandtechnical note + technical note technical noteandtechnical note technical note ---
         grad_line = Image.new("RGBA", (1, H))
         for y in range(H):
             f = y / max(1, H - 1)
@@ -150,7 +150,7 @@ def build_red_card_icon():
                                             radius=radius, fill=255)
         canvas.paste(grad, (pad, pad), mask)
 
-        # --- فرود ابرنمونه → آرایهٔ float 0..1 ---
+        # --- technical noteandtechnical note technical notesample → technical note float 0..1 ---
         try:
             _lanczos = Image.Resampling.LANCZOS
         except AttributeError:
@@ -158,10 +158,10 @@ def build_red_card_icon():
         icon = canvas.resize((w, h), _lanczos)
         arr = np.asarray(icon.convert("RGBA")).astype(float) / 255.0
         _red_card_icon_cache["arr"] = arr
-        clog(f"[RedCardIcon] آیکون کارت قرمز ساخته شد ({w}×{h})")
+        clog(f"[RedCardIcon] icon red card text text ({w}×{h})")
         return arr
     except Exception as ex:
-        clog(f"[RedCardIcon] خطای ساخت آیکون: {type(ex).__name__}: {ex}")
+        clog(f"[RedCardIcon] Errortext text icon: {type(ex).__name__}: {ex}")
         return None
 
 
@@ -169,36 +169,36 @@ def draw_momentum_chart(ax, momentum: "MomentumEngine", cfg: "MomentumScoringCon
                         disp_value, goal_glyph_ok: bool = True,
                         home_color: str = '#e63946', away_color: str = '#f5f5f5'):
     """
-    رندر کامل نمودار روی ax — هم در App و هم در selftest (headless).
-    نسخه ۹ — اصل ساده: Memory Goal Counter → add_hook_goal_marker()
-      → فوراً Schedule Render → draw_momentum_chart() → خط + توپ
-      * Goal Marker «خط عمودی + آیکون توپ» فقط و فقط از hook_goal_markers
-        ساخته می‌شود (منبع قطعی: Memory Goal Counter → Goal Marker → Chart).
-        برای هر آیتم hook_goal_markers دقیقاً یک مارکر رسم می‌شود و هیچ
-        Dedup بین گل‌ها انجام نمی‌شود — حتی اگر دو گل نزدیک هم باشند یا
-        از یک تیم باشند.
-      * نسخه ۹ (مهم): در این تابع هیچ return زودهنگامی وجود ندارد —
-        بلوک len(hist) < 2 فقط پیام «در انتظار شروع مسابقه...» می‌گذارد؛
-        لایه‌های وابسته به history (منحنی/HT/تیک/Legend) با گارد محلی
-        len(hist) >= 2 رد می‌شوند تا بخش Goal Marker «همیشه» اجرا شود.
-      * Goal Impact / Event Bus / Shot / history / dedup هیچ نقشی در
-        رسم مارکر ندارند (مسیر پالس کاملاً مستقل:
+    render complete chart textandtext ax — text in App and text in selftest (headless).
+    version 9 — text text: Memory Goal Counter → add_hook_goal_marker()
+      → textandtext Schedule Render → draw_momentum_chart() → line + ball
+      * Goal Marker «line textandtext + icon ball» only and only from hook_goal_markers
+        text text‌textandtext (source deterministic: Memory Goal Counter → Goal Marker → Chart).
+        for text text hook_goal_markers exactly text text text text‌textandtext and text
+        Dedup text text‌text text text‌textandtext — text if textand text text text withtext or
+        from text team withtext.
+      * version 9 (text): in text untiltext text return textandtext andtextandtext text —
+        textandtext len(hist) < 2 only message «Waiting for match start...» text‌text
+        layer‌text andtext to history (text/HT/text/Legend) with text text
+        len(hist) >= 2 text text‌textandtext until section Goal Marker «always» text textandtext.
+      * Goal Impact / Event Bus / Shot / history / dedup text text in
+        text text text (path text completetext independent:
         Counter → Goal Event → Goal Impact → Momentum Pulse).
-      * disp_time هر مارکر همان مقدار فریزشده هنگام ثبت در
-        add_hook_goal_marker است؛ ترتیب رسم = ترتیب ثبت (بدون sort).
-      * Home: آیکون بالا/خط سفید به سمت پایین تا خط صفر | Away: برعکس؛
-        خط از خط وسط رد نمی‌شود و هیچ متنی روی نمودار نوشته نمی‌شود
-      * شکاف HT: دو خط عمودی سرتاسری + برچسب HT + شکاف‌های اضافی resync
-      * هر Artist مارکر با gid قطعی تگ می‌شود (goal_line_{i}_shell /
-        goal_line_{i}_core / goal_ball_{i}) تا Self-Test بتواند assert
-        کند: len(hook_goal_markers) == number_of_goal_icons
+      * disp_time text text same value frozentext text register in
+        add_hook_goal_marker istext order text = order register (without sort).
+      * Home: icon withtext/line text to side below until line text | Away: textimagetext
+        line from line andtext text text‌textandtext and text text textandtext chart textandtext text‌textandtext
+      * gap HT: textand line textandtext textuntiltext + text HT + gap‌text text resync
+      * text Artist text with gid deterministic text text‌textandtext (goal_line_{i}_shell /
+        goal_line_{i}_core / goal_ball_{i}) until Self-Test textandtext assert
+        text: len(hook_goal_markers) == number_of_goal_icons
                               == number_of_goal_marker_lines
-      * مشخصات قطعی رسم مارکر (v9): clip_on=False برای همهٔ Artistها،
-        zorder 100 (shell) / 101 (core) / 102 (ball)؛ توپ عمداً
-        marker="o" ماتplotlib است — هیچ وابستگی به فونت/گلیف ندارد و
-        goal_glyph_ok در Goal Marker بی‌تأثیر است.
-      * لاگ‌های تفکیکی زنجیره: [GraphGoalRender] بعد از Snapshot و
-        [GoalMarkerRender] قبل از حلقهٔ رسم — برای تشخیص دقیق محل خرابی
+      * specification deterministic text text (v9): clip_on=False for text Artisttext
+        zorder 100 (shell) / 101 (core) / 102 (ball)text ball text
+        marker="o" textplotlib is — text andtext to textandtext/text text and
+        goal_glyph_ok in Goal Marker text‌text is.
+      * log‌text text chain: [GraphGoalRender] after from Snapshot and
+        [GoalMarkerRender] before from text text — for detection text text failure
         (Hook → Engine → Snapshot → Render → Matplotlib)
     """
     with momentum._lock:
@@ -207,13 +207,13 @@ def draw_momentum_chart(ax, momentum: "MomentumEngine", cfg: "MomentumScoringCon
         ht_break = momentum.ht_break
         extra_breaks = list(momentum.extra_breaks)
         hook_markers = [dict(m) for m in momentum.hook_goal_markers]
-        # نسخهٔ ۱۰٫۲۷ — مارکرهای کارت قرمز (getattr: سازگاری با موتورهای شبه)
+        # versiontechnical note 10technical note27 — technical note red card (getattr: technical notefromtechnical note with technical noteandtechnical noteandtechnical note technical noteto)
         rc_markers = [dict(m) for m in
                       (getattr(momentum, "red_card_markers", None) or [])]
 
-    # نسخه ۸ — Snapshot اتمیک گرفته شد؛ از اینجا به بعد فقط و فقط از
-    # hook_markers استفاده می‌شود (هیچ دسترسی مستقیم به
-    # momentum.hook_goal_markers در ادامهٔ تابع وجود ندارد).
+    # version 8 — Snapshot technical note technical note technical note from technical note to after only and only from
+    # hook_markers istechnical note technical note‌technical noteandtechnical note (technical note technical note direct to
+    # momentum.hook_goal_markers in resumetechnical note untiltechnical note andtechnical noteandtechnical note technical note).
     clog(
         "[GraphGoalRender] "
         f"hook_markers={len(hook_markers)} | "
@@ -228,9 +228,9 @@ def draw_momentum_chart(ax, momentum: "MomentumEngine", cfg: "MomentumScoringCon
     ax.tick_params(colors='#94a3b8', labelsize=8)
     for sp in ('bottom', 'top', 'right', 'left'):
         ax.spines[sp].set_color(grid)
-    ax.set_xlabel("زمان مسابقه (Game Clock)", color='#94a3b8', fontsize=8)
+    ax.set_xlabel("match time (Game Clock)", color='#94a3b8', fontsize=8)
     ax.set_ylabel("Net Momentum\n(Home ↑ / Away ↓)", color='#ffd166', fontsize=8)
-    # نسخه ۳: حاشیه بالا/پایین برای آیکون توپ گل‌ها — نسخه ۴: کمی بزرگ‌تر (آیکون ۱۳)
+    # version 3: technical note withtechnical note/below for icon ball technical note‌technical note — version 4: technical note technical note‌technical note (icon 13)
     ax.set_ylim(-rng - 18, rng + 27)
     ax.axhline(0, color='#7f8fa6', linewidth=1.0, alpha=0.8)
     ax.grid(True, linestyle='--', alpha=0.22, color=grid)
@@ -239,7 +239,7 @@ def draw_momentum_chart(ax, momentum: "MomentumEngine", cfg: "MomentumScoringCon
         ax.text(
             0.5,
             0.5,
-            "در انتظار شروع مسابقه...",
+            "Waiting for match start...",
             transform=ax.transAxes,
             ha="center",
             va="center",
@@ -247,20 +247,20 @@ def draw_momentum_chart(ax, momentum: "MomentumEngine", cfg: "MomentumScoringCon
             fontsize=11
         )
 
-        # مهم:
-        # اینجا RETURN ممنوع است.
+        # technical note:
+        # technical note RETURN technical notemenutechnical note is.
         #
-        # Goal Marker مستقل از history است و پایین‌تر
-        # باید حتماً Render شود.
+        # Goal Marker independent from history is and below‌technical note
+        # must technical note Render technical noteandtechnical note.
 
-    # --- نسخه ۹: منحنی/HT فقط با history کافی — بدون هیچ return ---
-    # (قبلاً اینجا با return زودهنگام کل تابع رد می‌شد؛ اکنون فقط این
-    #  لایه‌های وابسته به history گارد می‌شوند تا Goal Marker که پایین‌تر
-    #  است «همیشه» اجرا شود — حتی با صفر یا یک نمونه)
+    # --- version 9: technical note/HT only with history technical note — without technical note return ---
+    # (beforetechnical note technical note with return technical noteandtechnical note total untiltechnical note technical note technical note‌technical note technical noteandtechnical note only technical note
+    #  layer‌technical note andtechnical note to history technical note technical note‌technical noteandtechnical note until Goal Marker technical note below‌technical note
+    #  is «always» technical note technical noteandtechnical note — technical note with technical note or technical note sample)
     t_axis = None
     t_end = 0.0
     if len(hist) >= 2:
-        # --- downsampling برای عملکرد (RAW منبع، فقط فاصله‌گذاری) ---
+        # --- downsampling for technical note (RAW sourcetechnical note only distance‌technical note) ---
         step = max(1, len(hist) // 3000)
         samples = hist[::step]
         if samples[-1] is not hist[-1]:
@@ -269,28 +269,28 @@ def draw_momentum_chart(ax, momentum: "MomentumEngine", cfg: "MomentumScoringCon
         t_axis = [s.get("disp_time", s["game_time"]) for s in samples]
         net_disp = [disp_value(s["net"]) for s in samples]
 
-        # --- Gaussian smoothing واقعی (نه میانگین متحرک) — فقط لایه نمایش ---
-        # نسخه ۳: sigma بزرگ‌تر (GAUSSIAN_SIGMA=7s) → منحنی پیوستهٔ خمیده بدون دندانه؛
-        # هموارسازی قطعه‌بندی‌شده است → NaNهای شکاف HT پخش نمی‌شوند و پل نمی‌زنند
+        # --- Gaussian smoothing real (technical note technical noteortechnical note technical note) — only layer display ---
+        # version 3: sigma technical note‌technical note (GAUSSIAN_SIGMA=7s) → technical note technical noteandtechnical note technical note without technical note
+        # technical noteandtechnical notefromtechnical note technical note‌technical note‌technical note is → NaNtechnical note gap HT technical note technical note‌technical noteandtechnical note and technical note technical note‌technical note
         dts = [(b["game_time"] - a["game_time"]) for a, b in zip(samples, samples[1:])
                if b["game_time"] > a["game_time"]]
         eff_dt = (sum(dts) / len(dts)) if dts else cfg.HISTORY_SAMPLE_INTERVAL
         sigma_samples = cfg.GAUSSIAN_SIGMA / max(0.02, eff_dt)
         net_disp = _gauss_smooth_impl(net_disp, sigma_samples)
 
-        # --- Net Area آینه‌ای: Home بالا | Away پایین ---
-        # نسخهٔ ۱۰٫۶ — رنگ هر تیم از leagues_data.json + بایت استاتیک شمارهٔ رنگ
-        # خوانده می‌شود (پیش‌فرض: قرمز/سفیدِ همیشه‌قبلی)؛ شکل نمودار تغییری نکرده.
+        # --- Net Area technical note‌technical note: Home withtechnical note | Away below ---
+        # versiontechnical note 10technical note6 — color technical note team from leagues_data.json + byte istechnical note numbertechnical note color
+        # technical noteandtechnical note technical note‌technical noteandtechnical note (default: technical note/technical note always‌beforetechnical note)technical note technical notetotal chart changetechnical note technical note.
         ax.fill_between(t_axis, net_disp, 0, where=[(v >= 0) for v in net_disp],
-                        interpolate=True, color=home_color, alpha=0.80, label='میزبان (Home)')
+                        interpolate=True, color=home_color, alpha=0.80, label='Home (Home)')
         ax.fill_between(t_axis, net_disp, 0, where=[(v < 0) for v in net_disp],
-                        interpolate=True, color=away_color, alpha=0.90, label='میهمان (Away)')
-        # نسخه ۳: منحنی ضخیم‌تر با اتصال/درز گرد → حس «یک خط ممتد»
+                        interpolate=True, color=away_color, alpha=0.90, label='Away (Away)')
+        # version 3: technical note technical note‌technical note with technical note/intechnical note technical note → technical note «technical note line technical note»
         ax.plot(t_axis, net_disp, color='#ffd166', linewidth=2.0, alpha=0.95,
                 solid_capstyle='round', solid_joinstyle='round', antialiased=True)
 
-        # --- شکاف HT: دو خط عمودی سرتاسری + برچسب HT (نسخه ۳) ---
-        # نسخه ۵: شکاف‌های اضافی resync_clock هم با دو خط سرتاسری (بدون برچسب)
+        # --- gap HT: technical noteand line technical noteandtechnical note technical noteuntiltechnical note + technical note HT (version 3) ---
+        # version 5: gap‌technical note technical note resync_clock technical note with technical noteand line technical noteuntiltechnical note (without technical note)
         if ht_break:
             g1, g2 = ht_break
             for gb in (g1, g2):
@@ -307,14 +307,14 @@ def draw_momentum_chart(ax, momentum: "MomentumEngine", cfg: "MomentumScoringCon
     # ================================================================
     # GOAL MARKER — SINGLE SOURCE OF TRUTH
     # ================================================================
-    # فقط و فقط:
+    # only and only:
     # MomentumEngine.hook_goal_markers
     #
-    # هر آیتم = دقیقاً یک خط + یک توپ
-    # هیچ Dedup
-    # هیچ Event Impact
-    # هیچ Shot
-    # هیچ History شرطی
+    # technical note technical note = exactly technical note line + technical note ball
+    # technical note Dedup
+    # technical note Event Impact
+    # technical note Shot
+    # technical note History technical note
     # ================================================================
 
     goal_points = []
@@ -335,7 +335,7 @@ def draw_momentum_chart(ax, momentum: "MomentumEngine", cfg: "MomentumScoringCon
     y_top = rng + 16.0
     y_bot = -rng - 12.0
 
-    # نسخه ۱۰٫۲ — آیکون توپ یک بار در هر رندر بارگذاری می‌شود (کش داخلی)
+    # version 10technical note2 — icon ball technical note withtechnical note in technical note render withtechnical note technical note‌technical noteandtechnical note (technical note internal)
     _ball_icon_ref = load_ball_icon()
 
     clog(
@@ -349,7 +349,7 @@ def draw_momentum_chart(ax, momentum: "MomentumEngine", cfg: "MomentumScoringCon
         y_goal = y_top if team == "Home" else y_bot
 
         # ------------------------------------------------------------
-        # خط عمودی — shell
+        # line technical noteandtechnical note — shell
         # ------------------------------------------------------------
         shell = ax.plot(
             [gx, gx],
@@ -363,7 +363,7 @@ def draw_momentum_chart(ax, momentum: "MomentumEngine", cfg: "MomentumScoringCon
         )[0]
 
         # ------------------------------------------------------------
-        # خط عمودی — core
+        # line technical noteandtechnical note — core
         # ------------------------------------------------------------
         core = ax.plot(
             [gx, gx],
@@ -377,13 +377,13 @@ def draw_momentum_chart(ax, momentum: "MomentumEngine", cfg: "MomentumScoringCon
         )[0]
 
         # ------------------------------------------------------------
-        # توپ — نسخه ۱۰٫۲: آیکون PNG (tex/ball_icon.png کنار کد)
-        # اگر فایل آیکون موجود باشد، تصویر با قطر cfg.BALL_ICON_SIZE_PT
-        # (بزرگ‌تر از دایرهٔ قبلی) رسم می‌شود؛ در غیر این صورت دایرهٔ
-        # Matplotlib (قطعی و مستقل از فونت) با سایز کمی بزرگ‌تر (۱۷).
-        # برای حفظ قرارداد Self-Test، در حالت آیکون هم یک Line2D نامرئی
-        # با همان gid «goal_ball_{i}» ثبت می‌شود (تکیه‌گاه موقعیت/شمارش)،
-        # و خود آیکون با gid «goal_ballimg_{i}» اضافه می‌شود.
+        # ball — version 10technical note2: icon PNG (tex/ball_icon.png technical note code)
+        # if file icon technical noteandtechnical noteandtechnical note withtechnical note technical noteandtechnical note with technical note cfg.BALL_ICON_SIZE_PT
+        # (technical note‌technical note from technical note beforetechnical note) technical note technical note‌technical noteandtechnical note in technical note technical note technical noteandtechnical note technical note
+        # Matplotlib (deterministic and independent from technical noteandtechnical note) with technical note technical note technical note‌technical note (17).
+        # for technical note technical note Self-Testtechnical note currentlytechnical note icon technical note technical note Line2D technical note
+        # with same gid «goal_ball_{i}» register technical note‌technical noteandtechnical note (technical note‌technical note position/technical note)technical note
+        # and technical noteandtechnical note icon with gid «goal_ballimg_{i}» technical note technical note‌technical noteandtechnical note.
         # ------------------------------------------------------------
         if _ball_icon_ref is not None:
             ball = ax.plot(
@@ -402,8 +402,8 @@ def draw_momentum_chart(ax, momentum: "MomentumEngine", cfg: "MomentumScoringCon
             _ih = int(_ball_icon_ref.shape[0])
             _iw = int(_ball_icon_ref.shape[1])
             _fig_dpi = float(ax.figure.dpi) if (ax.figure is not None and ax.figure.dpi) else 100.0
-            # تبدیل قطر مطلوب Point → zoom مناسب هر اندازه تصویر:
-            #   اندازهٔ نمایشی (px خروجی) = px تصویر × zoom  و  px = pt × dpi / 72
+            # technical note technical note technical noteandtechnical note Point → zoom technical note technical note technical notefromtechnical note technical noteandtechnical note:
+            #   technical notefromtechnical note displaytechnical note (px output) = px technical noteandtechnical note × zoom  and  px = pt × dpi / 72
             _zoom = (cfg.BALL_ICON_SIZE_PT / 72.0) * _fig_dpi / float(max(_iw, _ih))
             _img = OffsetImage(_ball_icon_ref, zoom=_zoom,
                                resample=True, interpolation="bilinear")
@@ -416,8 +416,8 @@ def draw_momentum_chart(ax, momentum: "MomentumEngine", cfg: "MomentumScoringCon
             ax.add_artist(_abox)
             _abox.set_gid(f"goal_ballimg_{gi}")
         else:
-            # فعلاً عمداً از glyph فونت استفاده نکن.
-            # دایره‌ی Matplotlib قطعی و مستقل از فونت است.
+            # technical note technical note from glyph technical noteandtechnical note istechnical note technical note.
+            # technical note‌technical note Matplotlib deterministic and independent from technical noteandtechnical note is.
             ball = ax.plot(
                 [gx],
                 [y_goal],
@@ -432,19 +432,19 @@ def draw_momentum_chart(ax, momentum: "MomentumEngine", cfg: "MomentumScoringCon
             )[0]
 
         # ------------------------------------------------------------
-        # GID برای تست
+        # GID for test
         # ------------------------------------------------------------
         shell.set_gid(f"goal_line_{gi}_shell")
         core.set_gid(f"goal_line_{gi}_core")
         ball.set_gid(f"goal_ball_{gi}")
 
     # ================================================================
-    # نسخهٔ ۱۰٫۲۷ — RED CARD MARKER (عین GOAL MARKER — آیکون کارت به‌جای توپ)
+    # versiontechnical note 10technical note27 — RED CARD MARKER (technical note GOAL MARKER — icon card to‌technical note ball)
     # ================================================================
-    # فقط و فقط: MomentumEngine.red_card_markers
-    # هر آیتم = دقیقاً یک خط (shell + core) + یک آیکون کارت قرمز.
-    # gid ها: rc_line_{i}_shell / rc_line_{i}_core / rc_card_{i} (تکیه‌گاه)
-    # و rc_cardimg_{i} (آیکون) — همان قرارداد تست‌پذیری گلی (عین 2017).
+    # only and only: MomentumEngine.red_card_markers
+    # technical note technical note = exactly technical note line (shell + core) + technical note icon red card.
+    # gid technical note: rc_line_{i}_shell / rc_line_{i}_core / rc_card_{i} (technical note‌technical note)
+    # and rc_cardimg_{i} (icon) — same technical note test‌technical note technical note (technical note 2017).
     # ================================================================
     rc_points = []
     for mk in rc_markers:
@@ -462,7 +462,7 @@ def draw_momentum_chart(ax, momentum: "MomentumEngine", cfg: "MomentumScoringCon
         y_rc = y_top if team == "Home" else y_bot
 
         # ------------------------------------------------------------
-        # خط عمودی — shell + core (عین گل)
+        # line technical noteandtechnical note — shell + core (technical note technical note)
         # ------------------------------------------------------------
         rc_sh = ax.plot([gx, gx], [y_rc, 0.0], color="#0d1420",
                         linewidth=5.0, alpha=1.0, zorder=100,
@@ -472,9 +472,9 @@ def draw_momentum_chart(ax, momentum: "MomentumEngine", cfg: "MomentumScoringCon
                         solid_capstyle="butt", clip_on=False)[0]
 
         # ------------------------------------------------------------
-        # آیکون کارت قرمز — اندازهٔ نقطه‌ای از نسبت‌های نمونهٔ کاربر:
-        # ارتفاع ≈ 1.05 × قطر آیکون توپ، عرض از نسبت ابعاد 0.628.
-        # اگر PIL نبود → مربع قرمز Matplotlib (قطعی و مستقل از فونت).
+        # icon red card — technical notefromtechnical note technical note‌technical note from ratio‌technical note sampletechnical note user:
+        # height ≈ 1.05 × technical note icon balltechnical note width from ratio technical note 0.628.
+        # if PIL technical noteandtechnical note → technical note technical note Matplotlib (deterministic and independent from technical noteandtechnical note).
         # ------------------------------------------------------------
         if _rc_icon_ref is not None:
             rc_anchor = ax.plot([gx], [y_rc], marker="o", markersize=15.0,
@@ -487,7 +487,7 @@ def draw_momentum_chart(ax, momentum: "MomentumEngine", cfg: "MomentumScoringCon
             _fig_dpi = (float(ax.figure.dpi)
                         if (ax.figure is not None and ax.figure.dpi)
                         else 100.0)
-            # ارتفاع نمایشی (Point): نسبتِ کارت‌به‌توپ عین نمونه (≈1.05×)
+            # height displaytechnical note (Point): ratiotechnical note card‌to‌ball technical note sample (≈1.05×)
             _h_pt = float(getattr(cfg, "BALL_ICON_SIZE_PT", 22.0)) \
                 * (TV_RC_H_FRAC / TV_BALL_FRAC)
             _zoom = (_h_pt / 72.0) * _fig_dpi / float(max(1, _ih))
@@ -510,7 +510,7 @@ def draw_momentum_chart(ax, momentum: "MomentumEngine", cfg: "MomentumScoringCon
         rc_anchor.set_gid(f"rc_card_{ci}")
 
     # ---------------------------------------------------------------
-    # محور X حتماً باید Goal را پوشش بدهد
+    # technical noteandtechnical note X technical note must Goal technical note technical noteandtechnical note technical note
     # ---------------------------------------------------------------
     if goal_points:
         max_goal_x = max(gx for gx, _ in goal_points)
@@ -534,18 +534,18 @@ def draw_momentum_chart(ax, momentum: "MomentumEngine", cfg: "MomentumScoringCon
 
         ax.set_xlim(0.0, x_right)
 
-    # --- بازه محور X (نسخه ۹ — فقط با history کافی) ---
-    # پوشش گل‌ها توسط بلوک Goal Marker بالا انجام شده است؛ اینجا فقط
-    # پوشش منحنی تضمین می‌شود و تضمین می‌کنیم پوشش گل کوچک‌تر نشود
-    # (max با سمت راست فعلی محور)
+    # --- withtechnical note technical noteandtechnical note X (version 9 — only with history technical note) ---
+    # technical noteandtechnical note technical note‌technical note technical noteandtechnical note technical noteandtechnical note Goal Marker withtechnical note technical note technical note istechnical note technical note only
+    # technical noteandtechnical note technical note technical note technical note‌technical noteandtechnical note and technical note technical note‌technical note technical noteandtechnical note technical note technical noteandtechnical note‌technical note technical noteandtechnical note
+    # (max with side technical noteis technical note technical noteandtechnical note)
     if len(hist) >= 2:
         x_right = max(60.0, t_end + 45.0, ax.get_xlim()[1])
         ax.set_xlim(max(0.0, t_axis[0]), x_right)
 
-    # --- تیک‌های ۱۵ دقیقه‌ای Game Clock (نسخه ۳: نگاشت واقعی زمان مسابقه) ---
-    # زمان‌های نیمه اول بدون offset؛ زمان‌های نیمه دوم با offset → تیک 60'
-    # درست بعد از شکاف HT می‌افتد و هیچ تیکی داخل شکاف قرار نمی‌گیرد
-    # (نسخه ۹: فقط با history کافی — بدون return، گارد محلی)
+    # --- technical note‌technical note 15 minute‌technical note Game Clock (version 3: technical note real match time) ---
+    # time‌technical note first half without offsettechnical note time‌technical note second half with offset → technical note 60'
+    # correct after from gap HT technical note‌decreasetechnical note and technical note technical note inside gap technical note technical note‌technical note
+    # (version 9: only with history technical note — without returntechnical note technical note technical note)
     if len(hist) >= 2:
         total_clock = hist[-1]["game_time"] + display_offset
         ticks, labels = [], []
@@ -564,12 +564,12 @@ def draw_momentum_chart(ax, momentum: "MomentumEngine", cfg: "MomentumScoringCon
             ax.set_xticks(ticks)
             ax.set_xticklabels(labels)
 
-    # --- Legend: میزبان / میهمان / Goal (خط سفید + آیکون توپ) ---
-    # (نسخه ۹: فقط با history کافی — حالت انتظار خالی بدون Legend می‌ماند)
+    # --- Legend: Home / Away / Goal (line technical note + icon ball) ---
+    # (version 9: only with history technical note — technical note technical note empty without Legend technical note‌technical note)
     if len(hist) >= 2:
         handles = [
-            Patch(facecolor=home_color, alpha=0.80, label='میزبان (Home)'),
-            Patch(facecolor=away_color, alpha=0.90, label='میهمان (Away)'),
+            Patch(facecolor=home_color, alpha=0.80, label='Home (Home)'),
+            Patch(facecolor=away_color, alpha=0.90, label='Away (Away)'),
         ]
         if goal_points:
             handles.append(Line2D([0], [0], color='#ffffff', linewidth=1.9,
@@ -581,48 +581,48 @@ def draw_momentum_chart(ax, momentum: "MomentumEngine", cfg: "MomentumScoringCon
 
 
 # =====================================================================
-# ۲۵٫ب — رندر «TV Momentum»: نمودار مومنتوم روی تصویر پنل (نسخهٔ ۱۰٫۷)
+# 25technical note — render «TV Momentum»: chart technical noteandtechnical noteandtechnical note technical noteandtechnical note technical noteandtechnical note technical note (versiontechnical note 10technical note7)
 # ---------------------------------------------------------------------
-# * پس‌زمینه: تصاویر PNG پوشهٔ tex کنار اسکریپت:
-#     نیمه اول  → Half_Match_Moment.png   |  نیمه دوم → Full_Match_Moment.png
-#     وقت اضافه → Extra_Match_Moment.png
-# * هندسهٔ تصویر (مستطیل نمودار، خط صفر، خطوط عمودی HT/FT/ET) «از خود
-#   تصویر» تشخیص داده می‌شود (ناحیهٔ خاکستری یکدست ‎#3a3a3a + خطوط سفید)؛
-#   اگر تشخیص ناموفق بود، مقادیر اندازه‌گیری‌شده از همین فایل‌ها به‌عنوان
-#   fallback استفاده می‌شود.
-# * قواعد رسم (دقیقاً طبق مشخصات کاربر):
-#     - نمودار از همان اول با اندازهٔ کامل رسم می‌شود (جمع نمی‌شود)
-#     - محور عمودی ‎-120..+120‎ — بدون هیچ عدد/تیک/لجند/متن
-#     - خط افقی میانهٔ مستطیل = خط صفر
-#     - خط صفر و خطوط عمودی تصویر «محو نمی‌شوند» (بعد از fill دوباره
-#       روی آن‌ها کشیده می‌شود) — لایهٔ خود نمودار ۱۰۰٪ شفاف است
-#     - رنگ fill = رنگ نمودار خودمان؛ استروک زرد در این تب حذف شده
-#     - درخشش نئونی ضعیف دور لبهٔ fill
-#     - گپ بین دو نیمه حذف — دو نیمه از محل خط مرکز به هم می‌چسبند
-#     - مارکر گل = خط عمودی باریک + توپ (اندازه‌ها عین نمونهٔ کاربر)
-#     - لوگو/پرچم تیم‌ها: ناحیهٔ مشکی چپ — میزبان بالا / مهمان پایین،
-#       با استروک سفید گوشه‌گرد مثل تصویر نمونه
+# * technical note‌pitchtechnical note: technical noteandtechnical note PNG foldertechnical note tex technical note technical note:
+#     first half  → Half_Match_Moment.png   |  second half → Full_Match_Moment.png
+#     extra time → Extra_Match_Moment.png
+# * technical note technical noteandtechnical note (technical note charttechnical note line technical note lineandtechnical note technical noteandtechnical note HT/FT/ET) «from technical noteandtechnical note
+#   technical noteandtechnical note» detection data technical note‌technical noteandtechnical note (technical note technical note technical notecodetechnical note ‎#3a3a3a + lineandtechnical note technical note)technical note
+#   if detection failed technical noteandtechnical note technical note technical notefromtechnical note‌technical note‌technical note from technical note file‌technical note to‌technical noteandtechnical note
+#   fallback istechnical note technical note‌technical noteandtechnical note.
+# * technical noteandtechnical note technical note (exactly technical note specification user):
+#     - chart from same first with technical notefromtechnical note complete technical note technical note‌technical noteandtechnical note (technical note technical note‌technical noteandtechnical note)
+#     - technical noteandtechnical note technical noteandtechnical note ‎-120..+120‎ — without technical note number/technical note/technical note/technical note
+#     - line technical note technical noteortechnical note technical note = line technical note
+#     - line technical note and lineandtechnical note technical noteandtechnical note technical noteandtechnical note «technical noteand technical note‌technical noteandtechnical note» (after from fill again
+#       technical noteandtechnical note technical note‌technical note technical note technical note‌technical noteandtechnical note) — layertechnical note technical noteandtechnical note chart 100technical note technical note is
+#     - color fill = color chart technical noteandtechnical note istechnical noteandtechnical note technical note in technical note technical note technical note technical note
+#     - intechnical note technical noteandtechnical note technical note technical noteandtechnical note technical notetotechnical note fill
+#     - technical note technical note technical noteand technical note technical note — technical noteand technical note from technical note line technical note to technical note technical note‌technical note
+#     - technical note technical note = line technical noteandtechnical note withtechnical note + ball (technical notefromtechnical note‌technical note technical note sampletechnical note user)
+#     - logo/technical note team‌technical note: technical note technical note technical note — Home withtechnical note / Away belowtechnical note
+#       with istechnical noteandtechnical note technical note technical noteandtechnical note‌technical note technical note technical noteandtechnical note sample
 # =====================================================================
-TV_BG_DIRNAME = "tex"                                   # کنار اسکریپت
+TV_BG_DIRNAME = "tex"                                   # technical note technical note
 TV_BG_FILES = {
     "half":  "Half_Match_Moment.png",
     "full":  "Full_Match_Moment.png",
     "extra": "Extra_Match_Moment.png",
 }
 # ------------------------------------------------------------------
-# نسخهٔ ۱۰٫۸ — کالیبراسیون محور افقی از روی «تیک‌های خود تصویر»
-#   HT = دقیقهٔ ۴۵ | FT = دقیقهٔ ۹۰ | ET = دقیقهٔ ۱۰۵
-#   نیمه اول : تیک‌های ۰ ، ۱۵ ، ۳۰ ، ۴۵(HT)
-#   نیمه دوم : تیک‌های ۰ ، ۱۵ ، ۳۰ ، ۴۵(HT) ، ۶۰ ، ۷۵ ، ۹۰
-#   وقت اضافه: تیک‌های ۰ ، ۱۵ ، ۳۰ ، ۴۵(HT) ، ۶۰ ، ۷۵ ، ۹۰(FT) ، ۱۰۵(ET) ، ۱۲۰
-# تعداد تیکِ تشخیص‌داده‌شده ← دقیقهٔ لنگرها؛ نگاشت دقیقه→پیکسل خطیِ تکه‌تکه.
+# versiontechnical note 10technical note8 — technical noteandtechnical note technical noteandtechnical note technical note from technical noteandtechnical note «technical note‌technical note technical noteandtechnical note technical noteandtechnical note»
+#   HT = minutetechnical note 45 | FT = minutetechnical note 90 | ET = minutetechnical note 105
+#   first half : technical note‌technical note 0 technical note 15 technical note 30 technical note 45(HT)
+#   second half : technical note‌technical note 0 technical note 15 technical note 30 technical note 45(HT) technical note 60 technical note 75 technical note 90
+#   extra time: technical note‌technical note 0 technical note 15 technical note 30 technical note 45(HT) technical note 60 technical note 75 technical note 90(FT) technical note 105(ET) technical note 120
+# count technical note detection‌data‌technical note ← minutetechnical note technical note technical note minute→technical note linetechnical note technical note‌technical note.
 # ------------------------------------------------------------------
 TV_TICK_MINUTES_BY_COUNT = {
     4: (0.0, 15.0, 30.0, 45.0),
     7: (0.0, 15.0, 30.0, 45.0, 60.0, 75.0, 90.0),
     9: (0.0, 15.0, 30.0, 45.0, 60.0, 75.0, 90.0, 105.0, 120.0),
 }
-# موقعیت تیک‌ها روی فایل‌های اصلی (پیکسل تصویر مبنا) — فقط fallback
+# position technical note‌technical note technical noteandtechnical note file‌technical note original (technical note technical noteandtechnical note technical note) — only fallback
 TV_FALLBACK_TICKS = {
     "half":  (220.0, 647.0, 1073.0, 1500.0),
     "full":  (220.0, 434.0, 647.0, 860.0, 1073.0, 1286.0, 1500.0),
@@ -637,166 +637,166 @@ TV_FALLBACK_GEOM = {
     "extra": {"rect": (211, 1936, 189, 755), "zero_y": 486, "verticals": [],
               "anchors_x": [], "W": 2034},
 }
-TV_Y_RANGE = 150.0            # محور عمودی پایه ‎-150..+150‎ (بدون عدد روی محور)
-# --- نسخهٔ ۱۰٫۱۶ — مقیاس عمودی «پویا» (شرط جدید کاربر) ---
-# سقف محور = ۵۰ واحد بالاتر از «بیشینهٔ قدرمطلق ارتفاع هر دو نمودار» (بالا+
-# پایین با هم) و هرگز کمتر از ۱۵۰ نیست:
-#   مقیاس = max(150 ، بیشینهٔ |ارتفاع نمودار| + 50)
-# مثال کاربر: اوج ۱۲۰ → محور ‎±۱۷۰‎؛ اگر ‎(اوج+۵۰)<۱۵۰‎ شد → همان ‎±۱۵۰‎.
-TV_SCALE_MARGIN = 50.0        # فاصلهٔ سقف محور از بیشینهٔ نمودار
-TV_SCALE_MIN = 150.0          # حداقل مجاز مقیاس (= TV_Y_RANGE)
-# آیکون توپ همیشه «۳۰ واحد پایین‌تر از سقف مقیاس» است (شرط کاربر ۱۰٫۱۶):
-# توپ = مقیاس − ۳۰ → همهٔ توپ‌ها در «یک ارتفاع»؛ اگر مقیاس بعداً عوض شود
-# توپ‌ها همگی با هم جابه‌جا می‌شوند. با مقیاس حداقل ۱۵۰ → توپ روی ۱۲۰
-# (همان TV_BALL_VALUE نسخهٔ قبل — فقط حالت خاصِ مقیاس حداقل است).
+TV_Y_RANGE = 150.0            # technical noteandtechnical note technical noteandtechnical note technical note ‎-150..+150‎ (without number technical noteandtechnical note technical noteandtechnical note)
+# --- versiontechnical note 10technical note16 — technical noteortechnical note technical noteandtechnical note «technical noteandor» (technical note new user) ---
+# technical note technical noteandtechnical note = 50 andtechnical note above from «technical note technical noteintechnical note height technical note technical noteand chart» (withtechnical note+
+# below with technical note) and never technical note from 150 is not:
+#   technical noteortechnical note = max(150 technical note technical note |height chart| + 50)
+# technical note user: technical noteandtechnical note 120 → technical noteandtechnical note ‎±170‎technical note if ‎(technical noteandtechnical note+50)<150‎ technical note → same ‎±150‎.
+TV_SCALE_MARGIN = 50.0        # distancetechnical note technical note technical noteandtechnical note from technical note chart
+TV_SCALE_MIN = 150.0          # technical note technical notefrom technical noteortechnical note (= TV_Y_RANGE)
+# icon ball always «30 andtechnical note below‌technical note from technical note technical noteortechnical note» is (technical note user 10technical note16):
+# ball = technical noteortechnical note − 30 → technical note ball‌technical note in «technical note height»technical note if technical noteortechnical note aftertechnical note technical noteandtechnical note technical noteandtechnical note
+# ball‌technical note technical note with technical note technical noteto‌technical note technical note‌technical noteandtechnical note. with technical noteortechnical note technical note 150 → ball technical noteandtechnical note 120
+# (same TV_BALL_VALUE versiontechnical note before — only technical note technical note technical noteortechnical note technical note is).
 TV_BALL_GAP = 30.0
-# --- هندسهٔ تیک‌ها (نوار کوتاه زیر لبهٔ پایین مستطیل) ---
-TV_TICK_BAND_OFF = 4          # شروع اسکن: b + 4 پیکسل
-TV_TICK_BAND_H = 30           # ارتفاع نوار اسکن تیک
-TV_TICK_MIN_ROWS = 12         # حداقل پیکسل سفید در ستونِ تیک
-# --- اندازه‌های مارکر گل (عیناً از تصویر نمونهٔ کاربر اندازه‌گیری شد) ---
-TV_BALL_FRAC = 0.061          # قطر توپ ÷ ارتفاع مستطیل  (≈ 34px در 560px — عین نمونه)
-TV_BALL_EDGE_FRAC = 0.079     # (منسوخ — نسخهٔ ۱۰٫۱۵) فاصلهٔ قبلی توپ از لبه
-# نسخهٔ ۱۰٫۱۵ — ارتفاع آیکون توپ روی ‎±120‎ — نسخهٔ ۱۰٫۱۶: مقدار مؤثر
-# «مقیاس − ۳۰» است (TV_BALL_GAP)؛ این ثابت فقط حالت خاصِ مقیاس حداقل
-# (۱۵۰) را نشان می‌دهد و برای سازگاری تست‌ها نگه داشته شده است.
+# --- technical note technical note‌technical note (technical noteandtechnical note technical noteanduntiltechnical note technical note technical notetotechnical note below technical note) ---
+TV_TICK_BAND_OFF = 4          # start technical note: b + 4 technical note
+TV_TICK_BAND_H = 30           # height technical noteandtechnical note technical note technical note
+TV_TICK_MIN_ROWS = 12         # technical note technical note technical note in technical noteandtechnical note technical note
+# --- technical notefromtechnical note‌technical note technical note technical note (technical note from technical noteandtechnical note sampletechnical note user technical notefromtechnical note‌technical note technical note) ---
+TV_BALL_FRAC = 0.061          # technical note ball ÷ height technical note  (≈ 34px in 560px — technical note sample)
+TV_BALL_EDGE_FRAC = 0.079     # (technical noteandtechnical note — versiontechnical note 10technical note15) distancetechnical note beforetechnical note ball from technical noteto
+# versiontechnical note 10technical note15 — height icon ball technical noteandtechnical note ‎±120‎ — versiontechnical note 10technical note16: value technical note
+# «technical noteortechnical note − 30» is (TV_BALL_GAP)technical note technical note technical note only technical note technical note technical noteortechnical note technical note
+# (150) technical note technical note technical note‌technical note and for technical notefromtechnical note test‌technical note technical note technical note technical note is.
 TV_BALL_VALUE = 120.0
-TV_GLINE_FRAC = 0.0054        # ضخامت خط گل ÷ ارتفاع مستطیل (≈ 3px — عین نمونه)
-TV_GLINE_SHELL_FRAC = 0.0089  # پوستهٔ تیرهٔ زیر خط سفید (≈ 5px — خوانایی روی fill روشن)
-# --- نسخهٔ ۱۰٫۲۷ — اندازه‌های مارکر کارت قرمز (عین نسخهٔ 2017 / تصویر کاربر) ---
-TV_RC_W_FRAC = 0.040          # عرض کارت قرمز ÷ ارتفاع مستطیل (≈ 0.66 × قطر توپ)
-TV_RC_H_FRAC = 0.064          # ارتفاع کارت قرمز ÷ ارتفاع مستطیل (≈ 1.05 × قطر توپ)
-# --- نسخهٔ ۱۰٫۲۷ — منطق انتساب تیم کارت قرمز (تماشای بازیکن اخراجی) ---
-RC_Z_TARGET = 40.0            # مختصات z بازیکن اخراجی (بیرون خط طولی ۶۸m)
-RC_Z_TOL = 5.0                # تلورانس تشخیص z≈40 (بازیکنان زمین |z|≤34)
-RC_WATCH_WINDOW_S = 30.0      # پنجرهٔ تماشا (ثانیهٔ زمان بازی) برای تعیین تیم
-RC_WATCH_WALL_CAP_S = 300.0   # سقف wall تور ایمنی (توقف طولانی/ساعت گیرکرده)
-RC_MAX_JUMP = 5               # جهش مجاز شمارنده در یک Poll (بیشتر = ری‌بیس‌لاین)
-# --- لوگو/پرچم (ناحیهٔ مشکی چپ — اندازه‌ها عین تصویر نمونه) ---
-TV_FLAG_TARGET_W = 110        # بزرگ‌ترین بُعد نهایی لوگو+استروک (≈ 109px در نمونه)
-TV_FLAG_CONTENT_W = 100       # عرض محتوای رنگی پس از برش (نوار مشکی ≈ 135px)
-TV_FLAG_CONTENT_MAX_H = 118   # سقف ارتفاع محتوای رنگی
-TV_FLAG_STROKE_PX = 3         # استروک سفید خیلی نازک (≈ 3px در نمونه)
-TV_FLAG_GAP_PX = 2            # فاصلهٔ استروک از قسمت رنگی (مثل نمونه)
-TV_FLAG_CX_FRAC = 0.663       # x مرکز لوگو ÷ x لبهٔ چپ مستطیل (≈ 142px — مرکز نوار)
-TV_FLAG_HOME_CY_FRAC = 0.229  # y مرکز لوگوی میزبان از بالای مستطیل (عین نمونه)
-TV_FLAG_AWAY_CY_FRAC = 0.779  # y مرکز لوگوی مهمان از بالای مستطیل (عین نمونه)
-# --- ظاهر ---
-TV_ZERO_LINE_LW_FRAC = 0.0075   # ضخامت خط صفر بازکشیده‌شده ÷ ارتفاع مستطیل
-TV_VLINE_LW_FRAC = 0.0060       # ضخامت خطوط عمودی بازکشیده‌شده (HT/FT/ET)
-TV_FILL_ALPHA_HOME = 0.80       # عین نمودار اصلی
+TV_GLINE_FRAC = 0.0054        # technical note line technical note ÷ height technical note (≈ 3px — technical note sample)
+TV_GLINE_SHELL_FRAC = 0.0089  # shelltechnical note technical note technical note line technical note (≈ 5px — technical noteandtechnical note technical noteandtechnical note fill technical noteandtechnical note)
+# --- versiontechnical note 10technical note27 — technical notefromtechnical note‌technical note technical note red card (technical note versiontechnical note 2017 / technical noteandtechnical note user) ---
+TV_RC_W_FRAC = 0.040          # width red card ÷ height technical note (≈ 0.66 × technical note ball)
+TV_RC_H_FRAC = 0.064          # height red card ÷ height technical note (≈ 1.05 × technical note ball)
+# --- versiontechnical note 10technical note27 — technical note assignment team red card (technical note player technical note) ---
+RC_Z_TARGET = 40.0            # coordinates z player technical note (outside line lengthtechnical note 68m)
+RC_Z_TOL = 5.0                # tolerance detection z≈40 (players pitch |z|≤34)
+RC_WATCH_WINDOW_S = 30.0      # windowtechnical note technical note (secondtechnical note time withtechnical note) for technical note team
+RC_WATCH_WALL_CAP_S = 300.0   # technical note wall technical noteandtechnical note technical note (stop lengthtechnical note/technical note technical note)
+RC_MAX_JUMP = 5               # jump technical notefrom counter in technical note Poll (technical note = rebaseline)
+# --- logo/technical note (technical note technical note technical note — technical notefromtechnical note‌technical note technical note technical noteandtechnical note sample) ---
+TV_FLAG_TARGET_W = 110        # technical note‌technical note technical note technical note logo+istechnical noteandtechnical note (≈ 109px in sample)
+TV_FLAG_CONTENT_W = 100       # width technical noteandtechnical note colortechnical note technical note from technical note (technical noteandtechnical note technical note ≈ 135px)
+TV_FLAG_CONTENT_MAX_H = 118   # technical note height technical noteandtechnical note colortechnical note
+TV_FLAG_STROKE_PX = 3         # istechnical noteandtechnical note technical note technical note technical notefromtechnical note (≈ 3px in sample)
+TV_FLAG_GAP_PX = 2            # distancetechnical note istechnical noteandtechnical note from technical noteside colortechnical note (technical note sample)
+TV_FLAG_CX_FRAC = 0.663       # x technical note logo ÷ x technical notetotechnical note technical note technical note (≈ 142px — technical note technical noteandtechnical note)
+TV_FLAG_HOME_CY_FRAC = 0.229  # y technical note logotechnical note Home from withtechnical note technical note (technical note sample)
+TV_FLAG_AWAY_CY_FRAC = 0.779  # y technical note logotechnical note Away from withtechnical note technical note (technical note sample)
+# --- technical note ---
+TV_ZERO_LINE_LW_FRAC = 0.0075   # technical note line technical note withtechnical note‌technical note ÷ height technical note
+TV_VLINE_LW_FRAC = 0.0060       # technical note lineandtechnical note technical noteandtechnical note withtechnical note‌technical note (HT/FT/ET)
+TV_FILL_ALPHA_HOME = 0.80       # technical note chart original
 TV_FILL_ALPHA_AWAY = 0.90
-# --- منحنی: هموارسازی نمایشی + حذف دندانه (نسخهٔ ۱۰٫۸) ---
-TV_SMOOTH_SIGMA_SEC = 55.0    # سیگمای گاوسیِ لایهٔ نمایش TV (ثانیهٔ زمان بازی)
-                              # v10.27 — ۳۵→۵۵ (همان تنظیم «زنگوله‌ای» نسخهٔ
-                              # 2017 — قله‌ها/دره‌ها پهن‌تر و نرم‌تر می‌شوند؛
-                              # شکستگی‌های جزئی محو؛ شکل کلی حفظ می‌شود)
-TV_BIN_STEP_PX = 1.5          # میانگین‌گیری داخل ستون‌های ۱٫۵ پیکسلی (ضد دندانه)
-# --- نسخهٔ ۱۰٫۲۶ — «پلهٔ نامرئی» (ادامهٔ لبهٔ ابریشمی — مرجع صافی کاربر:
-#     snap_h1 / preview_v10_18_userzoom / preview_v10_18_stroke). ریشهٔ
-#     «پله‌پله»ی باقی‌مانده پیدا شد: درون‌یابی «خطی» بین گره‌های ~۰٫۹px،
-#     شیب را در هر گره ناگهانی عوض می‌کند ⇒ اسکالوپینگِ مقیاس پیکسل ⇒
-#     پله‌های کلوخه‌ای در زوم (۵-۸×). درمان (فقط رندر — فرم دست‌نخورده):
-#     ۱) _tv_uniform_resample_c1: درون‌یابی «مکعبی مونوتون» (PCHIP /
-#        Fritsch–Carlson) روی همان شبکهٔ ۰٫۵px — از همهٔ گره‌ها می‌گذرد
-#        (ارتفاع قله/دره عین قبل)، مونوتون (صفر فراجوش)، شیب پیوسته ⇒
-#        پله‌ها یکنواخت و مخملی. تغییر شکل نسبت به خطی: میانگین ۰٫۱۵px،
-#        p99 ۰٫۷px — نامرئی در نگاه عادی؛ تعداد قله‌ها و عبور از صفر عین قبل.
-#     ۲) feather stroke: استروک نیمه‌شفاف هم‌رنگ (۱٫۶px، آلفا ۰٫۴) روی مرز
-#        fill در مسیر matplotlib ⇒ گذار آلفای لبه ~۲x پهن‌تر و مخملی
-#        (عین مرجع snap_h1؛ peak-gradient لبه ۶۸→۴۵). env:
-#        TV_EDGE_FEATHER_LW / TV_EDGE_FEATHER_ALPHA (۰=خاموش).
-#     ۳) مسیر GPU (اورلی زنده): uniform جدید u_feather در شیدر لبه — فقط
-#        آیتم‌های fill نرمی ۱px می‌گیرند (خط‌ها/توپ/پرچم تیز می‌مانند).
-#        env: TV_GPU_FILL_FEATHER (۰=رفتار قبلی).
-# --- نسخهٔ ۱۰٫۲۵ — «لبهٔ ابریشمی» (کاربر: لبهٔ نمودار کاملاً صاف و صیقلی،
-#     بدون به‌هم‌ریختن فرم کلی) — ریشهٔ دندانه‌ها پیدا شد: خروجی binning،
-#     ستون‌های «ناهم‌فاصله» با مرکزهای لرزان می‌دهد و پلی‌لاین fill بین
-#     آن‌ها پلهٔ پیکسلی می‌سازد؛ AA معمولی Agg (‎~۱px‎) آن را نمی‌پوشاند.
-#     درمان دو لایه‌ای (فقط لایهٔ نمایش — فرمول مومنتوم دست‌نخورده):
-#     ۱) بازنمونه‌برداری منحنی روی شبکهٔ افقی «یکنواختِ» ریز (۰٫۵px)
-#     ۲) گاوسیِ زیرپیکسلیِ ثابت (۰٫۶px) فقط برای ارتعاش ستونیِ باقی‌مانده —
-#        عرض ویژگی‌های نمودار ≥ ~۱۰px ⇒ افت ارتفاع قله < ۰٫۲٪ (فرم عین قبل)
-#     ۳) رندر اسنپ‌شات با ابرنمونه‌گیری TV_SNAPSHOT_SS× و میانگین Box —
-#        AA واقعی روی همهٔ لبه‌ها (fill/گلو/خط گل/متن/لوگو) بدون تغییر شکل
-TV_CURVE_GRID_STEP_PX = 0.5     # گام شبکهٔ یکنواخت خروجی منحنی (پیکسل)
-TV_EDGE_MICRO_SIGMA_PX = 0.8    # سیگمای گاوسی زیرپیکسلی لبه (پیکسل طراحی)
-TV_SNAPSHOT_SS = 2              # ضریب ابرنمونه‌گیری رندر اسنپ‌شات (۱ = خاموش)
-# --- نسخهٔ ۱۰٫۲۶ — لبهٔ مخملی (feather) — عین مرجع صافی کاربر (snap_h1) ---
-# استروکِ نیمه‌شفافِ هم‌رنگ روی «خودِ مرز fill» → گذار آلفای لبه از ~۱px
-# به ~۱٫۶-۲px پهن می‌شود؛ پله‌های رستری در زوم مخملی دیده می‌شوند (عین
-# مرجع). هیچ تأثیری روی هندسه/شکل داده ندارد — فقط «رندرِ» لبه.
-# TV_EDGE_FEATHER=0 (env) → خاموش (رفتار ۱۰٫۲۵).
-TV_EDGE_FEATHER_LW_PX = 1.6     # ضخامت استروک feather (پیکسل طراحی)
-TV_EDGE_FEATHER_ALPHA = 0.40    # آلفای استروک feather
-# مسیر GPU (اورلی زنده): هم‌ارزِ همان نرمی برای fill برداری — نیم‌عرضِ
-# smoothstep لبه (پیکسل سطح). ۰ = رفتار قبلی (لبهٔ تیز ۱px).
+# --- technical note: technical noteandtechnical notefromtechnical note displaytechnical note + technical note technical note (versiontechnical note 10technical note8) ---
+TV_SMOOTH_SIGMA_SEC = 55.0    # technical note technical noteandtechnical note layertechnical note display TV (secondtechnical note time withtechnical note)
+                              # v10.27 — 35→55 (same technical note «bell-shaped» versiontechnical note
+                              # 2017 — peak‌technical note/valley‌technical note technical note‌technical note and smooth‌technical note technical note‌technical noteandtechnical note
+                              # technical note‌technical note technical note technical noteandtechnical note technical notetotal totaltechnical note technical note technical note‌technical noteandtechnical note)
+TV_BIN_STEP_PX = 1.5          # technical noteortechnical note‌technical note inside technical noteandtechnical note‌technical note 1technical note5 technical note (technical note technical note)
+# --- versiontechnical note 10technical note26 — «technical note technical note» (resumetechnical note technical notetotechnical note technical note — technical note technical note user:
+#     snap_h1 / preview_v10_18_userzoom / preview_v10_18_stroke). technical note
+#     «technical note‌technical note»technical note withtechnical note‌technical note technical note technical note: inandtechnical note‌ortechnical note «linetechnical note» technical note technical note‌technical note ~0technical note9pxtechnical note
+#     technical note technical note in technical note technical note technical note technical noteandtechnical note technical note‌technical note ⇒ technical noteandtechnical note technical noteortechnical note technical note ⇒
+#     technical note‌technical note totalandtechnical note‌technical note in technical noteandtechnical note (5-8×). intechnical note (only render — technical note unchanged):
+#     1) _tv_uniform_resample_c1: inandtechnical note‌ortechnical note «technical note technical noteandtechnical noteandtechnical noteandtechnical note» (PCHIP /
+#        Fritsch–Carlson) technical noteandtechnical note same technical note 0technical note5px — from technical note technical note‌technical note technical note‌technical note
+#        (height peak/valley technical note before)technical note technical noteandtechnical noteandtechnical noteandtechnical note (technical note technical noteandtechnical note)technical note technical note technical noteandtechnical note ⇒
+#        technical note‌technical note technical noteandtechnical note and technical note. change technical notetotal ratio to linetechnical note: technical noteortechnical note 0technical note15pxtechnical note
+#        p99 0technical note7px — technical note in technical note technical note count peak‌technical note and technical noteandtechnical note from technical note technical note before.
+#     2) feather stroke: istechnical noteandtechnical note technical note‌technical note technical note‌color (1technical note6pxtechnical note technical note 0technical note4) technical noteandtechnical note boundary
+#        fill in path matplotlib ⇒ technical note technical note technical noteto ~2x technical note‌technical note and technical note
+#        (technical note technical note snap_h1technical note peak-gradient technical noteto 68→45). env:
+#        TV_EDGE_FEATHER_LW / TV_EDGE_FEATHER_ALPHA (0=technical noteandtechnical note).
+#     3) path GPU (technical noteandtechnical note live): uniform new u_feather in technical notein technical noteto — only
+#        technical note‌technical note fill smoothing 1px technical note‌technical note (line‌technical note/ball/technical note technical note technical note‌technical note).
+#        env: TV_GPU_FILL_FEATHER (0=technical noteuntiltechnical note beforetechnical note).
+# --- versiontechnical note 10technical note25 — «technical notetotechnical note technical note» (user: technical notetotechnical note chart completetechnical note technical note and technical note
+#     without to‌technical note‌technical note technical note totaltechnical note) — technical note technical note‌technical note technical note technical note: output binningtechnical note
+#     technical noteandtechnical note‌technical note «technical note‌distance» with technical note technical note technical note‌technical note and technical note‌technical note fill technical note
+#     technical note‌technical note technical note technical note technical note‌technical notefromtechnical note AA technical noteandtechnical note Agg (‎~1px‎) technical note technical note technical note‌technical noteandtechnical note.
+#     intechnical note technical noteand layer‌technical note (only layertechnical note display — technical noteandtechnical note technical noteandtechnical noteandtechnical note unchanged):
+#     1) withtechnical notesampling technical note technical noteandtechnical note technical note technical note «technical noteandtechnical note» technical note (0technical note5px)
+#     2) technical noteandtechnical note technical note technical note (0technical note6px) only for technical note technical noteandtechnical note withtechnical note‌technical note —
+#        width andtechnical note‌technical note chart ≥ ~10px ⇒ decrease height peak < 0technical note2technical note (technical note technical note before)
+#     3) render technical noteagetechnical note‌technical note with technical notesample‌technical note TV_SNAPSHOT_SS× and technical noteortechnical note Box —
+#        AA real technical noteandtechnical note technical note technical noteto‌technical note (fill/technical noteand/line technical note/technical note/logo) unchanged technical notetotal
+TV_CURVE_GRID_STEP_PX = 0.5     # technical note technical note technical noteandtechnical note output technical note (technical note)
+TV_EDGE_MICRO_SIGMA_PX = 0.8    # technical note technical noteandtechnical note technical note technical noteto (technical note technical note)
+TV_SNAPSHOT_SS = 2              # technical note technical notesample‌technical note render technical noteagetechnical note‌technical note (1 = technical noteandtechnical note)
+# --- versiontechnical note 10technical note26 — technical notetotechnical note technical note (feather) — technical note technical note technical note user (snap_h1) ---
+# istechnical noteandtechnical note technical note‌technical note technical note‌color technical noteandtechnical note «technical noteandtechnical note boundary fill» → technical note technical note technical noteto from ~1px
+# to ~1technical note6-2px technical note technical note‌technical noteandtechnical note technical note‌technical note technical note in technical noteandtechnical note technical note technical note technical note‌technical noteandtechnical note (technical note
+# technical note). technical note technical note technical noteandtechnical note technical note/technical notetotal data technical note — only «rendertechnical note» technical noteto.
+# TV_EDGE_FEATHER=0 (env) → technical noteandtechnical note (technical noteuntiltechnical note 10technical note25).
+TV_EDGE_FEATHER_LW_PX = 1.6     # technical note istechnical noteandtechnical note feather (technical note technical note)
+TV_EDGE_FEATHER_ALPHA = 0.40    # technical note istechnical noteandtechnical note feather
+# path GPU (technical noteandtechnical note live): technical note‌technical note same smoothing for fill technical note — technical note‌widthtechnical note
+# smoothstep technical noteto (technical note level). 0 = technical noteuntiltechnical note beforetechnical note (technical notetotechnical note technical note 1px).
 TV_GPU_FILL_FEATHER_PX = 1.0
-# (نسخهٔ ۱۰٫۱۰ — خط لبهٔ حذف شد: دو خط افقیِ نزدیک خط صفر به رنگ تیم‌ها
-#  که کاربر گزارش کرد همان rim لبهٔ fill بود — حذف شد)
-# --- درخشش نئون نرم (بلور گاوسیِ واقعی — محوشدگی کاملاً نرم از خط به بیرون) ---
-TV_GLOW_CORE_PX = 4.0                       # ضخامت خط مبدأ درخشش
-# نسخهٔ ۱۰٫۱۰ — شدت بیشتر با همان نرمی (سیگماها ثابت = نرمی همان؛
-# فقط آلفای اوج ~۱٫۶ برابر شد تا درخشش بیشتر دیده شود)
-TV_GLOW_LAYERS = ((3.0, 0.48), (10.0, 0.21))  # (سیگمای بلور، آلفای اوج)
-# --- نسخهٔ ۱۰٫۱۶ — پیچ‌های موقتِ کاربر (کنار نمودار؛ بعداً هاردکد می‌شوند) ---
-TV_GLOW_SOFTNESS_MUL = 1.0     # ضریب «نرمی» نئون — در سیگمای بلور ضرب می‌شود
-TV_GLOW_INTENSITY_MUL = 1.0    # ضریب «شدت» نئون — در آلفای اوج ضرب می‌شود
-TV_EDGE_SMOOTH_PX = 0.0        # هموارسازی اضافهٔ «لبهٔ» نمودار (گاوسی، پیکسل)
-# نسخهٔ ۱۰٫۱۷ — سقف جابه‌جایی مجاز هموارساز لبه (پیکسل): با کلمپ نرم tanh،
-# هیچ ستونی بیش از این مقدار از مقدار اصلی‌اش دور نمی‌شود ⇒ دندانه‌های
-# لبه صاف می‌شوند ولی «شکل کلی» (قله‌ها/دره‌ها/ارتفاع‌ها) دست‌نخورده می‌ماند
-# (شرط کاربر: «نرم کردن لبه نباید شکل کلی نمودار را به هم بریزد»).
+# (versiontechnical note 10technical note10 — line technical notetotechnical note technical note technical note: technical noteand line technical note technical note line technical note to color team‌technical note
+#  technical note user technical note technical note same rim technical notetotechnical note fill technical noteandtechnical note — technical note technical note)
+# --- intechnical note technical noteandtechnical note smooth (technical noteandtechnical note technical noteandtechnical note real — technical noteandtechnical note completetechnical note smooth from line to outside) ---
+TV_GLOW_CORE_PX = 4.0                       # technical note line technical note intechnical note
+# versiontechnical note 10technical note10 — technical note technical note with same smoothing (technical note technical note = smoothing sametechnical note
+# only technical note technical noteandtechnical note ~1technical note6 technical note technical note until intechnical note technical note technical note technical noteandtechnical note)
+TV_GLOW_LAYERS = ((3.0, 0.48), (10.0, 0.21))  # (technical note technical noteandtechnical note technical note technical noteandtechnical note)
+# --- versiontechnical note 10technical note16 — technical note‌technical note technical noteandtechnical note user (technical note charttechnical note aftertechnical note technical notecode technical note‌technical noteandtechnical note) ---
+TV_GLOW_SOFTNESS_MUL = 1.0     # technical note «smoothing» technical noteandtechnical note — in technical note technical noteandtechnical note technical note technical note‌technical noteandtechnical note
+TV_GLOW_INTENSITY_MUL = 1.0    # technical note «technical note» technical noteandtechnical note — in technical note technical noteandtechnical note technical note technical note‌technical noteandtechnical note
+TV_EDGE_SMOOTH_PX = 0.0        # technical noteandtechnical notefromtechnical note technical note «technical notetotechnical note» chart (technical noteandtechnical note technical note)
+# versiontechnical note 10technical note17 — technical note technical noteto‌technical note technical notefrom technical noteandtechnical notefrom technical noteto (technical note): with totaltechnical note smooth tanhtechnical note
+# technical note technical noteandtechnical note technical note from technical note value from value original‌technical note technical noteandtechnical note technical note‌technical noteandtechnical note ⇒ technical note‌technical note
+# technical noteto technical note technical note‌technical noteandtechnical note andtechnical note «technical notetotal totaltechnical note» (peak‌technical note/valley‌technical note/height‌technical note) unchanged technical note‌technical note
+# (technical note user: «smooth technical note technical noteto technical notemust technical notetotal totaltechnical note chart technical note to technical note technical note»).
 TV_EDGE_SMOOTH_MAX_SHIFT_PX = 10.0
-# --- نسخهٔ ۱۰٫۹ — درخشش سفید نرمِ «توپ + خط عمودی گل» ---
-TV_MARKER_GLOW_LAYERS = ((2.5, 0.38), (9.0, 0.18))  # (سیگمای بلور، آلفای اوج) — سفید
-# --- نسخهٔ ۱۰٫۹ — «دقیقه‌های مشترک» (وقت اضافه‌شدهٔ هر بخش) ---
-# اولین گذر از این دقیقه‌ها در هر مرز = وقت اضافهٔ بخش قبلی (قبل از خط مرز
-# فشرده می‌شود)؛ با ری‌استارت تایمر، رسم از خودِ خط مرز ادامه می‌یابد.
-TV_STOP_BOUNDS = (45.0, 90.0, 105.0, 120.0)   # مرز بخش‌ها: HT / FT / ET / پایان
+# --- versiontechnical note 10technical note9 — intechnical note technical note smoothtechnical note «ball + line technical noteandtechnical note technical note» ---
+TV_MARKER_GLOW_LAYERS = ((2.5, 0.38), (9.0, 0.18))  # (technical note technical noteandtechnical note technical note technical noteandtechnical note) — technical note
+# --- versiontechnical note 10technical note9 — «minute‌technical note shared» (extra time‌technical note technical note section) ---
+# firsttechnical note technical note from technical note minute‌technical note in technical note boundary = extra timetechnical note section beforetechnical note (before from line boundary
+# technical note technical note‌technical noteandtechnical note)technical note with restart untiltechnical note technical note from technical noteandtechnical note line boundary resume technical note‌ortechnical note.
+TV_STOP_BOUNDS = (45.0, 90.0, 105.0, 120.0)   # boundary section‌technical note: HT / FT / ET / end
 TV_STOP_WINDOW = {45.0: 5.0, 90.0: 7.0, 105.0: 7.0, 120.0: 7.0}
-#                        ↑ پنجرهٔ دقیقه‌های مشترک (کاربر: ۴۵-۵۰ و ۹۰-۹۷)
-TV_STOP_SQUEEZE_FRAC = 0.10    # ضخامت باند فشردن = این کسر × فاصلهٔ تیک‌ها (px/min)
-TV_STOP_BAND_CAP_MIN = 8.0     # سقف دقیقه‌های فشرده‌شده در نگاشت (ضد باند غیرواقعی)
-TV_RESTART_GAP_SEC = 4.0       # حداقل شکاف زمان واقعی برای «تعویض دوره» (ری‌استارت تایمر)
-# --- نسخهٔ ۱۰٫۱۰ — تشخیص ری‌استارت طبق شرط کاربر: «کد اول چک کند که آیا
-# بازی به دقیقهٔ ۴۵ یا ۹۰ ریست شده؟» یعنی تایمر از مرز رد شده، عدد بزرگ‌تر
-# دیده و بعد از یک توقف دوباره از خودِ مرز شروع به شمارش کرده؛ تا قبل از
-# این رویداد، دقیقه‌های مشترک جزو وقت اضافهٔ بخش قبلی‌اند.
-TV_RESTART_LAND_EPS = 0.25     # فرود ری‌استارت: تا ۱۵ ثانیه بعد از دقیقهٔ مرز
-TV_RESTART_LAND_BELOW = 0.05   # فرود ری‌استارت: تا ۳ ثانیه قبل از دقیقهٔ مرز
-TV_RESTART_EDGE_EPS = 0.15     # «پایان وقت عادی روی مرز»: قبلاً تا ۹ ثانیه قبل از مرز
-TV_RESTART_BACKJUMP_MIN = 0.5  # جهش عقبروی بزرگ ساعت (≥۳۰s) = توقف/بریک حتی بدون شکاف نمونه
-TV_RESTART_EDGE_GAP_SEC = 30.0 # حداقل شکاف برای «پایان وقت عادی روی مرز» (بریک واقعی —
-                               #  استال کوتاه نمونه‌برداری نباید ری‌استارت کاذب بسازد)
-# --- نسخهٔ ۱۰٫۱۲ — «بریک بزرگ» (رفع خط صاف ابتدای نیمه دوم) ---
-# علامت: خط لولهٔ داده در برک HT چند دقیقه ساکت می‌ماند؛ اگر اولین نمونهٔ
-# زندهٔ نیمه دوم دیر فرود بیاید (مثلاً ۴۶'-۴۹')، فرودِ سخت‌گیرانهٔ ±۱۵ ثانیه
-# رد می‌شد ⇒ همهٔ نمونه‌های نیمه دوم در نوار باریکِ کنار خط HT فشرده می‌شدند
-# (کاربر: «هیچی ثبت نمی‌شه») و در خروج از پنجرهٔ ۴۵-۵۰ یک خط صاف کشیده
-# می‌شد. اکنون «سکوت ≥۱۸۰ ثانیهٔ واقعی» یا «شکاف نمایشی نگهبان ≥۳۰ ثانیه»
-# = بریک بزرگ؛ فرود تا انتهای پنجرهٔ مشترک پذیرفته و گارد جهش رو به جلو
-# غیرفعال می‌شود. (جشن گل/Replay با سکوت ۳۰-۱۲۰ ثانیه هرگز آستانه را رد
-# نمی‌کند ⇒ ری‌استارت کاذب ندارد.)
-TV_BREAK_WALL_SEC = 180.0      # سکوت واقعی (Wall) بین دو نمونهٔ متوالی = بریک بزرگ
-TV_RESTART_DISP_BREAK_SEC = 30.0  # شکاف disp_time نگهبان‌ها (HT/resync) = بریک بزرگ
+#                        ↑ windowtechnical note minute‌technical note shared (user: 45-50 and 90-97)
+TV_STOP_SQUEEZE_FRAC = 0.10    # technical note withtechnical note technical note = technical note technical note × distancetechnical note technical note‌technical note (px/min)
+TV_STOP_BAND_CAP_MIN = 8.0     # technical note minute‌technical note technical note‌technical note in technical note (technical note withtechnical note technical notereal)
+TV_RESTART_GAP_SEC = 4.0       # technical note gap time real for «technical noteandtechnical note technical noteandtechnical note» (restart untiltechnical note)
+# --- versiontechnical note 10technical note10 — detection restart technical note technical note user: «code first technical note technical note technical note technical noteor
+# withtechnical note to minutetechnical note 45 or 90 reset technical note» technical note untiltechnical note from boundary technical note technical note number technical note‌technical note
+# technical note and after from technical note stop again from technical noteandtechnical note boundary start to technical note technical note until before from
+# technical note technical noteandtechnical note minute‌technical note shared technical noteand extra timetechnical note section beforetechnical note‌technical note.
+TV_RESTART_LAND_EPS = 0.25     # technical noteandtechnical note restart: until 15 second after from minutetechnical note boundary
+TV_RESTART_LAND_BELOW = 0.05   # technical noteandtechnical note restart: until 3 second before from minutetechnical note boundary
+TV_RESTART_EDGE_EPS = 0.15     # «end andtechnical note technical note technical noteandtechnical note boundary»: beforetechnical note until 9 second before from boundary
+TV_RESTART_BACKJUMP_MIN = 0.5  # jump technical noteandtechnical note technical note technical note (≥30s) = stop/technical note technical note without gap sample
+TV_RESTART_EDGE_GAP_SEC = 30.0 # technical note gap for «end andtechnical note technical note technical noteandtechnical note boundary» (technical note real —
+                               #  istechnical note technical noteanduntiltechnical note sampling technical notemust restart technical note technical notefromtechnical note)
+# --- versiontechnical note 10technical note12 — «technical note technical note» (technical note line technical note technical note second half) ---
+# technical note: line technical noteandtechnical note data in technical note HT technical note minute technical note technical note‌technical note if firsttechnical note sampletechnical note
+# livetechnical note second half technical note technical noteandtechnical note technical noteortechnical note (technical note 46'-49')technical note technical noteandtechnical note technical note‌technical note ±15 second
+# technical note technical note‌technical note ⇒ technical note sample‌technical note second half in technical noteandtechnical note withtechnical note technical note line HT technical note technical note‌technical note
+# (user: «technical note register technical note‌technical note») and in technical noteandtechnical note from windowtechnical note 45-50 technical note line technical note technical note
+# technical note‌technical note. technical noteandtechnical note «silence ≥180 secondtechnical note real» or «gap displaytechnical note watchdog ≥30 second»
+# = technical note technical note technical noteandtechnical note until technical note windowtechnical note shared technical note and technical note jump technical noteand to technical noteand
+# disabled technical note‌technical noteandtechnical note. (technical note technical note/Replay with silence 30-120 second never threshold technical note technical note
+# technical note‌technical note ⇒ restart technical note technical note.)
+TV_BREAK_WALL_SEC = 180.0      # silence real (Wall) technical note technical noteand sampletechnical note technical noteandtechnical note = technical note technical note
+TV_RESTART_DISP_BREAK_SEC = 30.0  # gap disp_time watchdog‌technical note (HT/resync) = technical note technical note
 
-# --- نسخهٔ ۱۰٫۱۵ — چهار نوع ریست + گیتِ فاز Lifecycle ---
-# بخش‌های «بعد از» هر مرز — برای فرودهای بدون سقوطِ تایمر بعد از بریک بزرگ
-# (لحظهٔ ریست توسط خط لوله دیده نشده). مُهر phase نمونه باید با بخش بعدی
-# سازگار باشد؛ وگرنه وقفهٔ بلندِ وسط وقت هدررفتهٔ همان بخش، ری‌استار
-# نمی‌سازد (شرط کاربر: ریست = سقوط تایمر روی مرز، نه صعود از آن).
+# --- versiontechnical note 10technical note15 — technical note technical noteandtechnical note reset + technical note technical notefrom Lifecycle ---
+# section‌technical note «after from» technical note boundary — for technical noteandtechnical note without droptechnical note untiltechnical note after from technical note technical note
+# (momenttechnical note reset technical noteandtechnical note line technical noteandtechnical note technical note technical note). technical note phase sample must with section aftertechnical note
+# technical notefromtechnical note withtechnical note andtechnical note andtechnical note technical note andtechnical note andtechnical note technical noteintechnical note same sectiontechnical note technical note‌istechnical note
+# technical note‌technical notefromtechnical note (technical note user: reset = drop untiltechnical note technical noteandtechnical note boundarytechnical note technical note technical noteandtechnical note from technical note).
 TV_PHASE_AFTER_RESTART = {
-    45.0: ("HALF_2", "ET1", "ET2"),     # بعد از HT: نیمه دوم/وقت اضافه
-    90.0: ("ET1", "ET2"),               # بعد از FT: وقت اضافه
-    105.0: ("ET2",),                    # بعد از برک ET: نیمه دوم وقت اضافه
+    45.0: ("HALF_2", "ET1", "ET2"),     # after from HT: second half/extra time
+    90.0: ("ET1", "ET2"),               # after from FT: extra time
+    105.0: ("ET2",),                    # after from technical note ET: second half extra time
 }
 
 
 def tv_phase_allows_restart(bound: float, phase) -> bool:
-    """نسخهٔ ۱۰٫۱۵ — آیا فاز Lifecycle با «شروع بخشِ بعد از مرز» سازگار است؟
-    فقط برای فرودهای بدون سقوطِ تایمر بعد از بریک بزرگ به کار می‌رود.
-    phase=None / نامشخص (تاریخچهٔ قدیمی و تست‌ها) → True (رفتار قبلی)."""
+    """versiontext 10text15 — textor textfrom Lifecycle with «start sectiontext after from boundary» textfromtext istext
+    only for textandtext without droptext untiltext after from text text to text text‌textandtext.
+    phase=None / text (untiltext legacy and test‌text) → True (textuntiltext beforetext)."""
     if phase is None:
         return True
     try:
@@ -820,7 +820,7 @@ def _tv_bg_path(kind: str) -> str:
 
 
 def _tv_group_idx(idx: "np.ndarray") -> List[Tuple[int, int]]:
-    """بسته‌بندی ایندکس‌های متوالی → [(start, end)]"""
+    """text‌text text‌text textandtext → [(start, end)]"""
     if idx is None or len(idx) == 0:
         return []
     out = []
@@ -838,16 +838,16 @@ def _tv_group_idx(idx: "np.ndarray") -> List[Tuple[int, int]]:
 
 def _tv_detect_geometry(arr: "np.ndarray") -> Dict[str, Any]:
     """
-    تشخیص خودکار هندسه از خود تصویر:
-      * مستطیل نمودار = ناحیهٔ یکدست خاکستری ‎(58,58,58)‎
-      * خط صفر = سفیدِ سرتاسری در میانهٔ عمودی مستطیل
-      * خطوط عمودی = ستون‌های سفیدِ سرتاسری داخل مستطیل (HT/FT/ET)
-    خروجی: {"rect": (l,r,t,b), "zero_y": int, "verticals": [x,...]}
+    detection automatic text from textandtext textandtext:
+      * text chart = text textcodetext text ‎(58,58,58)‎
+      * line text = text textuntiltext in textortext textandtext text
+      * lineandtext textandtext = textandtext‌text text textuntiltext inside text (HT/FT/ET)
+    output: {"rect": (l,r,t,b), "zero_y": int, "verticals": [x,...]}
     """
     H, W = arr.shape[:2]
     rgb = np.asarray(arr[..., :3], dtype=float)
     if rgb.size and float(rgb.max()) <= 1.001:
-        rgb = rgb * 255.0          # ورودی 0..1 (خروجی tv_load_background) هم پذیرفته می‌شود
+        rgb = rgb * 255.0          # input 0..1 (output tv_load_background) technical note technical note technical note‌technical noteandtechnical note
     gray = (np.abs(rgb[:, :, 0] - 58) <= 12) & \
            (np.abs(rgb[:, :, 1] - 58) <= 12) & \
            (np.abs(rgb[:, :, 2] - 58) <= 12)
@@ -864,7 +864,7 @@ def _tv_detect_geometry(arr: "np.ndarray") -> Dict[str, Any]:
     if (b - t) < 60 or (r - l) < 60:
         raise ValueError("plot area too small")
 
-    # --- خط صفر: سفید سرتاسری بین t و b (نزدیک‌ترین به میانه) ---
+    # --- line technical note: technical note technical noteuntiltechnical note technical note t and b (nearest to technical noteortechnical note) ---
     seg = white[t + 6:b - 6, l + 8:r - 8]
     wrows = np.where(seg.mean(axis=1) > 0.85)[0]
     zero_y = None
@@ -876,18 +876,18 @@ def _tv_detect_geometry(arr: "np.ndarray") -> Dict[str, Any]:
     if zero_y is None:
         zero_y = (t + b) // 2
 
-    # --- خطوط عمودی داخل مستطیل (تصاویر فعلی خط داخلی ندارند؛ فقط سازگاری) ---
+    # --- lineandtechnical note technical noteandtechnical note inside technical note (technical noteandtechnical note technical note line internal technical note only technical notefromtechnical note) ---
     segv = white[t + 10:b - 10, l + 10:r - 10]
     wcols = np.where(segv.mean(axis=0) > 0.80)[0]
     verticals = []
     for g0, g1 in _tv_group_idx(wcols):
         verticals.append(l + 10 + (g0 + g1) // 2)
-    # لبه‌های مستطیل از لیست خطوط داخلی حذف شوند
+    # technical noteto‌technical note technical note from technical note lineandtechnical note internal technical note technical noteandtechnical note
     verticals = [x for x in verticals if l + 14 < x < r - 14]
 
-    # --- نسخهٔ ۱۰٫۸ — تیک‌های محور افقی (نوار کوتاه زیر لبهٔ پایین مستطیل) ---
-    # این تیک‌ها لنگرهای کالیبراسیون‌اند: ۴ تیک = ۰/۱۵/۳۰/۴۵(HT)
-    # ۷ تیک = ۰..۹۰ | ۹ تیک = ۰..۱۲۰ (با FT=۹۰ و ET=۱۰۵)
+    # --- versiontechnical note 10technical note8 — technical note‌technical note technical noteandtechnical note technical note (technical noteandtechnical note technical noteanduntiltechnical note technical note technical notetotechnical note below technical note) ---
+    # technical note technical note‌technical note technical note technical noteandtechnical note‌technical note: 4 technical note = 0/15/30/45(HT)
+    # 7 technical note = 0..90 | 9 technical note = 0..120 (with FT=90 and ET=105)
     anchors: List[int] = []
     y0b = b + TV_TICK_BAND_OFF
     y1b = min(H, y0b + TV_TICK_BAND_H)
@@ -899,12 +899,12 @@ def _tv_detect_geometry(arr: "np.ndarray") -> Dict[str, Any]:
             cx = (g0 + g1) / 2.0
             if (l - 8) <= cx <= (r + 8):
                 anchors.append(int(round(cx)))
-        # اعتبارسنجی: تعداد باید ۴/۷/۹ باشد؛ تیک اول نزدیک لبهٔ چپ و
-        # تیک آخر نزدیک لبهٔ راست (روی فایل‌های اصلی ≈ ۶ پیکسل داخل‌تر)
+        # technical notewithtechnical noteagetechnical note: count must 4/7/9 withtechnical note technical note first technical note technical notetotechnical note technical note and
+        # technical note technical note technical note technical notetotechnical note technical noteis (technical noteandtechnical note file‌technical note original ≈ 6 technical note inside‌technical note)
         ok = len(anchors) in TV_TICK_MINUTES_BY_COUNT
         if ok and len(anchors) >= 2:
             ok = (l + 2 <= anchors[0] <= l + 60) and (r - 60 <= anchors[-1] <= r + 2)
-            # فاصلهٔ تیک‌ها باید تقریباً یکنواخت باشد (بدون پرش غیرمنطقی)
+            # distancetechnical note technical note‌technical note must technical notewithtechnical note technical noteandtechnical note withtechnical note (without technical note technical note)
             gaps = [anchors[i2] - anchors[i2 - 1] for i2 in range(1, len(anchors))]
             if ok and gaps:
                 gmed = float(np.median(gaps))
@@ -964,9 +964,9 @@ def tv_fallback_background_cached(kind: str) -> Dict[str, Any]:
 
 def tv_load_background(kind: str) -> Optional[Dict[str, Any]]:
     """
-    بارگذاری کش‌شدهٔ تصویر پس‌زمینه + هندسهٔ تشخیصی.
-    خروجی: {"arr": float RGBA (H,W,4) 0..1, "geom": dict, "W": int, "H": int}
-    فایل نبود/خراب بود ⇒ None (تب خالی و امن می‌ماند).
+    withtext text‌text textandtext text‌pitchtext + text detectiontext.
+    output: {"arr": float RGBA (H,W,4) 0..1, "geom": dict, "W": int, "H": int}
+    file textandtext/broken textandtext ⇒ None (text empty and text text‌text).
     """
     path = _tv_bg_path(kind)
     try:
@@ -986,7 +986,7 @@ def tv_load_background(kind: str) -> Optional[Dict[str, Any]]:
             geom = _tv_detect_geometry(arr)
         except Exception:
             geom = dict(TV_FALLBACK_GEOM.get(kind) or TV_FALLBACK_GEOM["half"])
-            # مقیاس fallback در صورت تفاوت ابعاد فایل
+            # technical noteortechnical note fallback in technical noteandtechnical note technical noteandtechnical note technical note file
             ih, iw = arr.shape[:2]
             fw = TV_FALLBACK_GEOM[kind]["rect"][1] + 30
             sx, sy = iw / float(fw), ih / 978.0
@@ -1002,7 +1002,7 @@ def tv_load_background(kind: str) -> Optional[Dict[str, Any]]:
         return entry
     except Exception as ex:
         try:
-            clog(f"[TVBg] خطای بارگذاری {path}: {type(ex).__name__}: {ex}")
+            clog(f"[TVBg] Errortext withtext {path}: {type(ex).__name__}: {ex}")
         except Exception:
             pass
         # v2.1.0 — unreadable file: built-in fallback (charts stay alive)
@@ -1011,7 +1011,7 @@ def tv_load_background(kind: str) -> Optional[Dict[str, Any]]:
 
 
 def _tv_anchor_map(kind: str, geom: Dict[str, Any]):
-    """لنگرهای افقی (px) + دقیقهٔ آن‌ها برای پنل — با fallback اندازه‌گیری‌شده."""
+    """text text (px) + minutetext text‌text for text — with fallback textfromtext‌text‌text."""
     anchors = [float(x) for x in (geom.get("anchors_x") or [])]
     ms = TV_TICK_MINUTES_BY_COUNT.get(len(anchors))
     if ms is None:
@@ -1027,20 +1027,20 @@ def _tv_anchor_map(kind: str, geom: Dict[str, Any]):
 def tv_minute_to_x(kind: str, geom: Dict[str, Any], minute: float,
                    band: Optional[Dict[str, float]] = None) -> float:
     """
-    نگاشت «دقیقهٔ مسابقه» → پیکسل افقی تصویر (نسخهٔ ۱۰٫۸ — کالیبره با تیک‌ها).
-    لنگرها = تیک‌های تشخیص‌داده‌شدهٔ خود تصویر:
-      half  (۴ تیک) : ۰/۱۵/۳۰/۴۵(HT)     ← HT دقیقاً روی تیک آخرِ راست
-      full  (۷ تیک) : ۰/۱۵/۳۰/۴۵(HT)/۶۰/۷۵/۹۰
-      extra (۹ تیک) : ۰..۹۰(FT)/۱۰۵(ET)/۱۲۰
-    HT=۴۵ ، FT=۹۰ ، ET=۱۰۵ — نگاشت خطیِ تکه‌تکه بین تیک‌های مجاور؛
-    فراتر از آخرین لنگر (وقت‌های تلف‌شده) ادامهٔ خطی با شیب همان قطعه.
-    اگر تصویر تیک معتبری نداشت، تیک‌های اندازه‌گیری‌شدهٔ همان پنل با مقیاس
-    عرض تصویر استفاده می‌شود.
+    text «minutetext text» → text text textandtext (versiontext 10text8 — calibrated with text‌text).
+    text = text‌text detection‌data‌text textandtext textandtext:
+      half  (4 text) : 0/15/30/45(HT)     ← HT exactly textandtext text text textis
+      full  (7 text) : 0/15/30/45(HT)/60/75/90
+      extra (9 text) : 0..90(FT)/105(ET)/120
+    HT=45 text FT=90 text ET=105 — text linetext text‌text text text‌text textandtext
+    text from latest text (andtext‌text text‌text) resumetext linetext with text same text.
+    if textandtext text validtext text text‌text textfromtext‌text‌text same text with textortext
+    width textandtext istext text‌textandtext.
 
-    نسخهٔ ۱۰٫۹ — «دقیقه‌های مشترک»: اگر band داده شود ({"bound","s"})،
-    دقیقه‌های وقت اضافه‌شدهٔ بخش قبلی به‌جای ادامهٔ خطی، در باند باریکی
-    «سمت چپِ» خط مرز فشرده می‌شوند (نزدیک‌ترین نمونه ≈ ۱px قبل از خط) —
-    یعنی وقت اضافهٔ نیمهٔ اول قبل از HT می‌نشیند، نه بعد از آن.
+    versiontext 10text9 — «minute‌text shared»: if band data textandtext ({"bound","s"})text
+    minute‌text extra time‌text section beforetext to‌text resumetext linetext in withtext withtext
+    «side text» line boundary text text‌textandtext (nearest sample ≈ 1px before from line) —
+    text extra timetext text first before from HT text‌text text after from text.
     """
     l, r, _t, _b = geom["rect"]
     anchors, ms = _tv_anchor_map(kind, geom)
@@ -1052,7 +1052,7 @@ def tv_minute_to_x(kind: str, geom: Dict[str, Any], minute: float,
             if minute_ <= ms[i]:
                 u = (minute_ - ms[i - 1]) / max(1e-9, (ms[i] - ms[i - 1]))
                 return anchors[i - 1] + u * (anchors[i] - anchors[i - 1])
-        # فراتر از آخرین لنگر → ادامهٔ خطی با شیب آخرین قطعه
+        # technical note from latest technical note → resumetechnical note linetechnical note with technical note latest technical note
         i = len(ms) - 1
         rate = (anchors[i] - anchors[i - 1]) / max(1e-9, (ms[i] - ms[i - 1]))
         return anchors[i] + (minute_ - ms[i]) * rate
@@ -1063,16 +1063,16 @@ def tv_minute_to_x(kind: str, geom: Dict[str, Any], minute: float,
             s_tot = float(band.get("s", 0.0))
         except (TypeError, ValueError):
             return _map_raw(minute)
-        # شیب محلی دورِ مرز (برای ضخامت باند متناسب با مقیاس همان ناحیه)
+        # technical note technical note technical noteandtechnical note boundary (for technical note withtechnical note technical note with technical noteortechnical note same technical note)
         rate = (anchors[-1] - anchors[0]) / max(1e-9, (ms[-1] - ms[0]))
         for i in range(1, len(ms)):
             if ms[i - 1] <= bnd <= ms[i]:
                 rate = (anchors[i] - anchors[i - 1]) / max(1e-9, (ms[i] - ms[i - 1]))
                 break
-        delta = max(0.4, TV_STOP_SQUEEZE_FRAC * rate)      # px به ازای هر دقیقه
+        delta = max(0.4, TV_STOP_SQUEEZE_FRAC * rate)      # px to fromtechnical note technical note minute
         s_eff = min(max(0.0, s_tot), TV_STOP_BAND_CAP_MIN)
         x_bound = _map_raw(bnd)
-        x_off = min(max(minute - bnd, 0.0), s_eff)         # 0..s_eff دقیقه داخل باند
+        x_off = min(max(minute - bnd, 0.0), s_eff)         # 0..s_eff minute inside withtechnical note
         return x_bound - 1.0 - (s_eff - x_off) * delta
 
     return _map_raw(minute)
@@ -1080,57 +1080,57 @@ def tv_minute_to_x(kind: str, geom: Dict[str, Any], minute: float,
 
 def _tv_timeline(hist: List[Dict[str, float]], restarts_out: Optional[Dict[float, bool]] = None):
     """
-    نسخهٔ ۱۰٫۹ — گام مشترک محور زمانی TV (خالص و قابل‌تست).
-    خروجی: (minutes, bands, band_idx)
-      * minutes : دقیقهٔ بازی هر نمونه (NaN = نگهبان/نامعتبر — در رسم رد می‌شود)
-      * bands   : لیست وقت‌های اضافه‌شدهٔ شناسایی‌شده:
-                  {"bound": مرز (۴۵/۹۰/۱۰۵/۱۲۰), "gt0","gt1": بازهٔ game_time,
-                   "s": طول وقت اضافه به دقیقه}
-      * band_idx: ایندکس باند هر نمونه (-1 = عادی؛ ممکن است به باندِ دورریز
-                  اشاره کند — سمت مصرف با گارد بررسی شود)
+    versiontext 10text9 — text shared textandtext timetext TV (text and text‌test).
+    output: (minutes, bands, band_idx)
+      * minutes : minutetext withtext text sample (NaN = watchdog/invalid — in text text text‌textandtext)
+      * bands   : text andtext‌text text‌text text‌text:
+                  {"bound": boundary (45/90/105/120), "gt0","gt1": withtext game_time,
+                   "s": length extra time to minute}
+      * band_idx: text withtext text sample (-1 = text possible is to withtext textandtext
+                  text text — side text with text check textandtext)
 
-    منطق «دقیقه‌های مشترک» (۴۵-۵۰ / ۹۰-۹۷ / …) — نسخهٔ ۱۰٫۱۰ (شرط کاربر):
-      * کد «اول» چک می‌کند که آیا بازی به دقیقهٔ ۴۵ یا ۹۰ ریست شده یا نه؛
-        ری‌استارت یعنی: تایمر از دقیقهٔ مرز (۴۵:۰۰) رد شده و به عددی
-        بزرگ‌تر رسیده و بعد از یک توقف، دوباره از خودِ ۴۵:۰۰ شروع به
-        شمارش کرده است؛
-      * تا وقتی این رویداد ثبت نشده، اتفاق‌های این پنجره (مثل گل دقیقهٔ ۴۶
-        یا ۹۵) جزو «وقت اضافهٔ بخش قبلی» است (مثال کاربر: گل دقیقهٔ ۹۵
-        بدون ری‌استارتِ ثبت‌شدهٔ ۹۰ = گل نیمهٔ دوم؛ بعد از ثبت ری‌استارت ۹۰
-        = گل وقت اضافهٔ اول)؛
-      * به محض «تأیید» ری‌استارت، بخش بعدی از خودِ خط مرز شروع به رسم
-        می‌شود؛
-      * توقف = شکاف زمان واقعی بین نمونه‌ها (نگهبان‌های NaN حداقل ۱۰ ثانیه
-        شکاف دارند) «یا» جهش عقبروی بزرگ ساعت (ساعتِ فریز در بریک)؛
-      * جهش‌های کوچک عقبرو (resync وسط بازی، بدون توقف) ⇒ کلمپ مونوتونیک.
+    text «minute‌text shared» (45-50 / 90-97 / …) — versiontext 10text10 (text user):
+      * code «first» text text‌text text textor withtext to minutetext 45 or 90 reset text or text
+        restart text: untiltext from minutetext boundary (45:00) text text and to numbertext
+        text‌text text and after from text stoptext again from textandtext 45:00 start to
+        text text istext
+      * until when text textandtext register text text‌text text window (text text minutetext 46
+        or 95) textand «extra timetext section beforetext» is (text user: text minutetext 95
+        without restarttext register‌text 90 = text text secondtext after from register restart 90
+        = text extra timetext first)text
+      * to text «confirmation» restarttext section aftertext from textandtext line boundary start to text
+        text‌textandtext
+      * stop = gap time real text sample‌text (watchdog‌text NaN text 10 second
+        gap text) «or» jump textandtext text text (text frozen in text)text
+      * jump‌text textandtext textand (resync andtext withtext without stop) ⇒ totaltext textandtextandtextandtext.
 
-    نسخهٔ ۱۰٫۱۳ — «تأیید ری‌استارت» (شرط کاربر):
-      فرود روی مرز فقط «نامزدِ» ری‌استارت است؛ ثبت نهایی وقتی است که یک
-      نمونهٔ واقعی (غیرنگهبان = بازی PLAYING و ساعت جلو رفته) با دقیقهٔ
-      «بیشتر از خودِ مرز» برسد — یعنی بازی Playing شده و تایمر از مرز
-      (۴۵/۹۰/۱۰۵) بیشتر شده باشد. تا قبل از تأیید، اتفاق‌های پنجرهٔ مشترک
-      جزو وقت اضافهٔ بخش قبلی می‌مانند (مثال کاربر: ریست تایمر به ۹۰ در
-      حالی که بازی هنوز به وقت اضافه نرفته ⇒ نمودار ET فراخوانی نمی‌شود).
+    versiontext 10text13 — «confirmation restart» (text user):
+      textandtext textandtext boundary only «text» restart istext register text when is text text
+      sampletext real (textwatchdog = withtext PLAYING and text textand text) with minutetext
+      «text from textandtext boundary» text — text withtext Playing text and untiltext from boundary
+      (45/90/105) text text withtext. until before from confirmationtext text‌text windowtext shared
+      textand extra timetext section beforetext text‌text (text user: reset untiltext to 90 in
+      text text withtext still to extra time text ⇒ chart ET textandtext text‌textandtext).
 
-    نسخهٔ ۱۰٫۱۵ — «چهار نوع ریست» (شرط صریح کاربر — رفع باگ فعال‌شدن ET
-    به‌محض عبور از دقیقهٔ ۹۰ و ثبتِ گلِ وقت هدررفتهٔ نیمهٔ اول برای نیمهٔ دوم):
-      ریست یعنی «ساعت بازی واقعاً سقوط کرده و روی مرز نشسته باشد»:
-        الف) ریست به ۰۰:۰۰            → بازی جدید (Lifecycle — خارج از این تابع)
-        ب) ریست به ۴۵:۰۰              → شروع نیمهٔ دوم
-        ج) ریست به ۹۰:۰۰ از بالای ۹۰   → شروع نیمهٔ اول وقت اضافه
-        د) ریست به ۱۰۵:۰۰ از بالای ۱۰۵ → شروع نیمهٔ دوم وقت اضافه
-      و هر چهار نوع فقط وقتی «شروع یک بخش جدید»اند که بازی Playing شود و
-      تایمر شروع به بالا رفتن کند (گام تأیید ۱۰٫۱۳ — تغییری نکرده است).
-      پیامدها:
-        * عبورِ صعودیِ تایمر از ۹۰:۰۰ (وقت هدررفتهٔ نیمهٔ دوم) هرگز ریست
-          نیست — «سقوط به مرز» (m < prev_m) شرط اصلی است؛ استالِ چندثانیه‌ای
-          کنار مرز (اعلان وقت اضافه/ضربه آزاد) دیگر ری‌استارت نمی‌سازد؛
-        * برای ۹۰/۱۰۵ «بالاتر بودن قبلی از مرز» الزامی است (بند ج/د)؛
-        * فرودِ بدون سقوط بعد از یک بریک بزرگ (خط لوله در لحظهٔ ریست مرده
-          بوده — مثلاً اولین نمونهٔ نیمه دوم در ۴۸') فقط وقتی پذیرفته
-          می‌شود که فاز Lifecycle (مُهر phase نمونه) بخش بعدی را تأیید کند؛
-        * تا قبل از ریستِ تأییدشده، هر رویداد/نمونهٔ «وقت هدررفته» (بعد از
-          دقیقهٔ نهایی هر بخش) جزو همان بخش است — نه بخش بعدی.
+    versiontext 10text15 — «text textandtext reset» (text text user — text withtext active‌text ET
+    to‌text textandtext from minutetext 90 and registertext text andtext textintext text first for text second):
+      reset text «game clock andtext drop text and textandtext boundary text withtext»:
+        text) reset to 00:00            → new match (Lifecycle — text from text untiltext)
+        text) reset to 45:00              → start text second
+        text) reset to 90:00 from withtext 90   → start text first extra time
+        text) reset to 105:00 from withtext 105 → start text second extra time
+      and text text textandtext only when «start text section new»text text withtext Playing textandtext and
+      untiltext start to rise text (text confirmation 10text13 — changetext text is).
+      messagetext:
+        * textandtext textandtext untiltext from 90:00 (andtext textintext text second) never reset
+          is not — «drop to boundary» (m < prev_m) text original istext istext textsecond‌text
+          text boundary (text extra time/textto free) text restart text‌textfromtext
+        * for 90/105 «above textandtext beforetext from boundary» text is (text text/text)text
+        * textandtext without drop after from text text text (line textandtext in momenttext reset text
+          textandtext — text firsttext sampletext second half in 48') only when text
+          text‌textandtext text textfrom Lifecycle (text phase sample) section aftertext text confirmation text
+        * until before from resettext confirmationtext text textandtext/sampletext «andtext textintext» (after from
+          minutetext text text section) textand same section is — text section aftertext.
     """
     minutes: List[float] = []
     band_idx: List[int] = []
@@ -1140,21 +1140,21 @@ def _tv_timeline(hist: List[Dict[str, float]], restarts_out: Optional[Dict[float
     prev_m: Optional[float] = None
     prev_d: Optional[float] = None
     prev_gt: Optional[float] = None
-    prev_w: Optional[float] = None      # نسخهٔ ۱۰٫۱۲ — wall نمونهٔ قبلی (بریک بزرگ)
-    clamp_m: Optional[float] = None       # کلمپ مونوتونیک (فقط نمونه‌های واقعی)
-    # نسخهٔ ۱۰٫۱۰ — وضعیت هر مرز: آیا تایمر از مرز رد شده (عدد بزرگ‌تر دیده)
-    # و آیا ری‌استارتِ آن مرز ثبت شده است؟
+    prev_w: Optional[float] = None      # versiontechnical note 10technical note12 — wall sampletechnical note beforetechnical note (technical note technical note)
+    clamp_m: Optional[float] = None       # totaltechnical note technical noteandtechnical noteandtechnical noteandtechnical note (only sample‌technical note real)
+    # versiontechnical note 10technical note10 — andtechnical note technical note boundary: technical noteor untiltechnical note from boundary technical note technical note (number technical note‌technical note technical note)
+    # and technical noteor restarttechnical note technical note boundary registeredtechnical note istechnical note
     above = {B: False for B in TV_STOP_BOUNDS[:3]}
     restarted = {B: False for B in TV_STOP_BOUNDS[:3]}
-    # نسخهٔ ۱۰٫۱۳ — نامزدهای ری‌استارت (فرود روی مرز) که هنوز «تأیید» نشده‌اند:
-    #   B → {"d": disp لحظهٔ فرود، "up_to_m": آخرین دقیقهٔ قبل از فرود،
-    #        "up_to_gt": آخرین game_time قبل از فرود}
+    # versiontechnical note 10technical note13 — technical note restart (technical noteandtechnical note technical noteandtechnical note boundary) technical note still «confirmation» technical note‌technical note:
+    #   B → {"d": disp momenttechnical note technical noteandtechnical note "up_to_m": latest minutetechnical note before from technical noteandtechnical note
+    #        "up_to_gt": latest game_time before from technical noteandtechnical note}
     pending = {}
 
     def _finalize(c: Dict[str, float], up_to_m: float, d_restart=None) -> None:
         c["s"] = max(float(c.get("s", 0.0)), max(0.0, up_to_m - float(c["bound"])))
         if d_restart is not None and math.isfinite(float(d_restart)):
-            c["d1"] = float(d_restart)     # لحظهٔ نمایشی ری‌استارت تایمر
+            c["d1"] = float(d_restart)     # momenttechnical note displaytechnical note restart untiltechnical note
         if float(c["s"]) >= 0.05:
             bands.append(c)
 
@@ -1179,7 +1179,7 @@ def _tv_timeline(hist: List[Dict[str, float]], restarts_out: Optional[Dict[float
             d = float(s.get("disp_time", gt))
         except (TypeError, ValueError):
             d = gt
-        # نسخهٔ ۱۰٫۱۲ — زمان واقعی (Wall) نمونه برای آشکارسازی «بریک بزرگ»
+        # versiontechnical note 10technical note12 — time real (Wall) sample for technical notefromtechnical note «technical note technical note»
         try:
             w = float(s.get("wall")) if s.get("wall") is not None else None
             if w is not None and not math.isfinite(w):
@@ -1189,19 +1189,19 @@ def _tv_timeline(hist: List[Dict[str, float]], restarts_out: Optional[Dict[float
         m = gt / 60.0
         is_guard = (net != net)
 
-        # --- ۱) تشخیص ری‌استارت تایمر — نسخهٔ ۱۰٫۱۵ (چهار نوع ریست کاربر) ---
-        # ریست = «سقوط واقعی ساعت روی مرز» + توقف؛ نه استالِ صعودی کنار مرز.
-        # جزئیات کامل در docstring بالا (بندهای الف تا د).
+        # --- 1) detection restart untiltechnical note — versiontechnical note 10technical note15 (technical note technical noteandtechnical note reset user) ---
+        # reset = «drop real technical note technical noteandtechnical note boundary» + stoptechnical note technical note istechnical note technical noteandtechnical note technical note boundary.
+        # technical noteortechnical note complete in docstring withtechnical note (technical note technical note until technical note).
         if prev_m is not None:
-            # شرط اصلی ریست (نسخهٔ ۱۰٫۱۵): سقوط واقعی تایمر به مرز
+            # technical note original reset (versiontechnical note 10technical note15): drop real untiltechnical note to boundary
             is_drop = m < prev_m - 1e-9
             back_ok = math.isfinite(d) and \
                 (prev_m - m) >= TV_RESTART_BACKJUMP_MIN
-            # --- نسخهٔ ۱۰٫۱۲ — «بریک بزرگ»: سکوت واقعی ≥۳ دقیقه (خط لولهٔ
-            # داده در برک HT ساکت است و اولین نمونهٔ نیمه دوم ممکن است دیر
-            # فرود بیاید) یا شکاف نمایشی نگهبان‌ها (HT/resync). در این حالت
-            # فرود تا انتهای پنجرهٔ مشترک پذیرفته می‌شود و جهش رو به جلوی
-            # اولین نمونهٔ بریک (تأخیر خط لوله) ری‌استارت را رد نمی‌کند.
+            # --- versiontechnical note 10technical note12 — «technical note technical note»: silence real ≥3 minute (line technical noteandtechnical note
+            # data in technical note HT technical note is and firsttechnical note sampletechnical note second half possible is technical note
+            # technical noteandtechnical note technical noteortechnical note) or gap displaytechnical note watchdog‌technical note (HT/resync). in technical note technical note
+            # technical noteandtechnical note until technical note windowtechnical note shared technical note technical note‌technical noteandtechnical note and jump technical noteand to technical noteandtechnical note
+            # firsttechnical note sampletechnical note technical note (delay line technical noteandtechnical note) restart technical note technical note technical note‌technical note.
             wall_gap_ok = (prev_w is not None and w is not None
                            and (w - prev_w) >= TV_BREAK_WALL_SEC)
             try:
@@ -1211,30 +1211,30 @@ def _tv_timeline(hist: List[Dict[str, float]], restarts_out: Optional[Dict[float
             except TypeError:
                 disp_gap_ok = False
             big_break = bool(wall_gap_ok or disp_gap_ok)
-            # توقف کوتاه واقعی (≥۴ ثانیه سکوت wall) برای مسیر «سقوط به مرز»
+            # stop technical noteanduntiltechnical note real (≥4 second silence wall) for path «drop to boundary»
             wall_stop_ok = (prev_w is not None and w is not None
                             and (w - prev_w) >= TV_RESTART_GAP_SEC)
-            for B in TV_STOP_BOUNDS[:3]:        # ۴۵ / ۹۰ / ۱۰۵
+            for B in TV_STOP_BOUNDS[:3]:        # 45 / 90 / 105
                 if restarted.get(B):
                     continue
                 from_above = above.get(B, False) and prev_m > B + 1e-9
-                # «لبهٔ مرز» فقط برای ۴۵ (HT بدون وقت هدررفته — بند ب)؛
-                # برای ۹۰/۱۰۵ حذف شد: عبور عادی تایمر از مرز در وقت هدررفتهٔ
-                # نیمهٔ جاری نباید ری‌استارت بسازد (بندهای ج/د کاربر)
+                # «technical notetotechnical note boundary» only for 45 (HT without andtechnical note technical noteintechnical note — technical note technical note)technical note
+                # for 90/105 technical note technical note: technical noteandtechnical note technical note untiltechnical note from boundary in andtechnical note technical noteintechnical note
+                # technical note current technical notemust restart technical notefromtechnical note (technical note technical note/technical note user)
                 from_edge = (B == 45.0) and \
                     ((B - TV_RESTART_EDGE_EPS) <= prev_m <= (B + 1e-9))
                 if not (from_above or from_edge):
                     continue
                 if big_break:
-                    # فرود آزاد در کل پنجرهٔ مشترک (نمونهٔ اولِ بعد از بریک)
+                    # technical noteandtechnical note free in total windowtechnical note shared (sampletechnical note firsttechnical note after from technical note)
                     if not ((B - TV_RESTART_LAND_BELOW) <= m
                             <= (B + TV_STOP_WINDOW[B])):
                         continue
-                    # نسخهٔ ۱۰٫۱۵ — فرودِ «بدون سقوط» بعد از بریک بزرگ (خط
-                    # لوله در لحظهٔ ریست مرده بوده) فقط وقتی معتبر است که
-                    # فاز Lifecycle هم بخش بعدی را تأیید کند؛ وگرنه وقفهٔ
-                    # بلندِ وسط وقت هدررفته (همچنان در همان بخش) ری‌استار
-                    # نمی‌سازد. (تاریخچهٔ بدون مُهر phase = رفتار قبلی)
+                    # versiontechnical note 10technical note15 — technical noteandtechnical note «without drop» after from technical note technical note (line
+                    # technical noteandtechnical note in momenttechnical note reset technical note technical noteandtechnical note) only when valid is technical note
+                    # technical notefrom Lifecycle technical note section aftertechnical note technical note confirmation technical note andtechnical note andtechnical note
+                    # technical note andtechnical note andtechnical note technical noteintechnical note (technical note in same section) technical note‌istechnical note
+                    # technical note‌technical notefromtechnical note. (untiltechnical note without technical note phase = technical noteuntiltechnical note beforetechnical note)
                     if from_above and not is_drop and \
                             not tv_phase_allows_restart(B, s.get("phase")):
                         continue
@@ -1243,55 +1243,55 @@ def _tv_timeline(hist: List[Dict[str, float]], restarts_out: Optional[Dict[float
                             <= (B + TV_RESTART_LAND_EPS)):
                         continue
                     if m > prev_m + TV_RESTART_LAND_EPS:
-                        continue                 # جهش رو به جلو ≠ ری‌استارت
+                        continue                 # jump technical noteand to technical noteand ≠ restart
                     if from_above and not is_drop:
-                        # نسخهٔ ۱۰٫۱۵ — شرط کاربر: بالای مرز بودن به‌تنهایی
-                        # کافی نیست؛ تایمر باید واقعاً «سقوط» کرده باشد.
-                        # استال صعودی کنار مرز (اعلان وقت اضافه و…) هرگز
-                        # ری‌استارت نیست — ریشهٔ باگ ET در عبور از ۹۰ و ثبت
-                        # گل وقت هدررفته برای بخش بعدی.
+                        # versiontechnical note 10technical note15 — technical note user: withtechnical note boundary technical noteandtechnical note to‌technical note
+                        # technical note is nottechnical note untiltechnical note must andtechnical note «drop» technical note withtechnical note.
+                        # istechnical note technical noteandtechnical note technical note boundary (technical note extra time and…) never
+                        # restart is not — technical note withtechnical note ET in technical noteandtechnical note from 90 and register
+                        # technical note andtechnical note technical noteintechnical note for section aftertechnical note.
                         continue
                     if from_edge:
-                        # پایان عادی روی مرز (HT بدون وقت هدررفته): فقط با
-                        # بریک واقعی (شکاف ≥۳۰s — نه استال نمونه‌برداری)
+                        # end technical note technical noteandtechnical note boundary (HT without andtechnical note technical noteintechnical note): only with
+                        # technical note real (gap ≥30s — technical note istechnical note sampling)
                         gap_ok = (prev_d is not None and math.isfinite(prev_d)
                                   and math.isfinite(d)
                                   and (d - prev_d) >= TV_RESTART_EDGE_GAP_SEC)
                         if not (gap_ok or back_ok):
                             continue
                     else:
-                        # سقوط واقعی به مرز + توقف (شکاف ≥۴s / سکوت wall /
-                        # جهش عقبروی ساعت — حالت ساعتِ فریز در بریک)
+                        # drop real to boundary + stop (gap ≥4s / silence wall /
+                        # jump technical noteandtechnical note technical note — technical note technical note frozen in technical note)
                         gap_ok = (prev_d is not None and math.isfinite(prev_d)
                                   and math.isfinite(d)
                                   and (d - prev_d) >= TV_RESTART_GAP_SEC)
                         if not (gap_ok or back_ok or wall_stop_ok):
                             continue
-                # --- نسخهٔ ۱۰٫۱۳ — فرود فقط «نامزد» است؛ ثبت نهایی بعد از
-                # تأیید شرط کاربر انجام می‌شود (Playing + تایمر > مرز).
-                # up_to_m/up_to_gt = آخرین وضعیت قبل از فرود (برای تکمیل باند).
+                # --- versiontechnical note 10technical note13 — technical noteandtechnical note only «technical note» istechnical note register technical note after from
+                # confirmation technical note user technical note technical note‌technical noteandtechnical note (Playing + untiltechnical note > boundary).
+                # up_to_m/up_to_gt = latest andtechnical note before from technical noteandtechnical note (for technical note withtechnical note).
                 pending[B] = {"d": d, "up_to_m": prev_m, "up_to_gt": prev_gt}
-                # لنگر ریست تایمر: کلمپ مونوتونیکِ «قبل از مرز» از همین لحظه
-                # بی‌اعتبار است (نمونه‌های روی مرز = شروع شمارش جدید؛ رفتار
-                # ثبت-در-فرودِ نسخه‌های قبل حفظ می‌شود)
+                # technical note reset untiltechnical note: totaltechnical note technical noteandtechnical noteandtechnical noteandtechnical note «before from boundary» from technical note moment
+                # technical note‌technical notewithtechnical note is (sample‌technical note technical noteandtechnical note boundary = start technical note newtechnical note technical noteuntiltechnical note
+                # register-in-technical noteandtechnical note version‌technical note before technical note technical note‌technical noteandtechnical note)
                 clamp_m = None
                 break
 
-        # --- ۱-آ) تأیید ری‌استارت نامزد (نسخهٔ ۱۰٫۱۳ — شرط کاربر) ---
-        # نمونهٔ واقعی (غیرنگهبان) یعنی بازی PLAYING است و ساعت جلو رفته؛
-        # «Playing + تایمر از مرز بیشتر» = بخش بعدی واقعاً شروع شده است.
+        # --- 1-technical note) confirmation restart technical note (versiontechnical note 10technical note13 — technical note user) ---
+        # sampletechnical note real (technical notewatchdog) technical note withtechnical note PLAYING is and technical note technical noteand technical note
+        # «Playing + untiltechnical note from boundary technical note» = section aftertechnical note andtechnical note start technical note is.
         if pending and not is_guard:
             for B in TV_STOP_BOUNDS[:3]:
                 pd = pending.get(B)
                 if pd is None or restarted.get(B):
                     continue
                 if m <= B + 1e-9:
-                    continue                    # تایمر هنوز از مرز نگذشته
+                    continue                    # untiltechnical note still from boundary technical note
                 if cur is not None:
                     _finalize(cur, pd["up_to_m"], d_restart=pd["d"])
                     cur = None
                 elif bands and bands[-1]["bound"] == B:
-                    # باندِ بسته‌شده با «فرار از پنجره» — تا لحظهٔ فرود تکمیل شود
+                    # withtechnical note technical note‌technical note with «technical note from window» — until momenttechnical note technical noteandtechnical note technical note technical noteandtechnical note
                     bands[-1]["gt1"] = pd["up_to_gt"] \
                         if pd["up_to_gt"] is not None else bands[-1]["gt1"]
                     bands[-1]["s"] = max(float(bands[-1]["s"]),
@@ -1300,17 +1300,17 @@ def _tv_timeline(hist: List[Dict[str, float]], restarts_out: Optional[Dict[float
                         bands[-1]["d1"] = float(pd["d"])
                 bound_i = max(bound_i, min(TV_STOP_BOUNDS.index(B) + 1,
                                            len(TV_STOP_BOUNDS) - 1))
-                restarted[B] = True              # تأیید شد — ری‌استارت ثبت شد
+                restarted[B] = True              # confirmation technical note — restart registered
                 above[B] = False
-                clamp_m = None                   # کلمپ در مرز جدید ریست می‌شود
+                clamp_m = None                   # totaltechnical note in boundary new reset technical note‌technical noteandtechnical note
                 del pending[B]
 
-        # --- ۱-ب) ثبت «تایمر از مرز رد شده» (عدد بزرگ‌تر از مرز دیده شد) ---
+        # --- 1-technical note) register «untiltechnical note from boundary technical note technical note» (number technical note‌technical note from boundary technical note technical note) ---
         for B in TV_STOP_BOUNDS[:3]:
             if not above.get(B, False) and m > B + 1e-9:
                 above[B] = True
 
-        # --- ۲) فرار از پنجرهٔ دقیقه‌های مشترک → مرز بعدی ---
+        # --- 2) technical note from windowtechnical note minute‌technical note shared → boundary aftertechnical note ---
         while (bound_i < len(TV_STOP_BOUNDS) - 1
                and m > TV_STOP_BOUNDS[bound_i] + TV_STOP_WINDOW[TV_STOP_BOUNDS[bound_i]]):
             if cur is not None:
@@ -1318,7 +1318,7 @@ def _tv_timeline(hist: List[Dict[str, float]], restarts_out: Optional[Dict[float
                 cur = None
             bound_i += 1
 
-        # --- ۳) باز/امتداد باند وقت اضافهٔ بخش فعلی ---
+        # --- 3) withtechnical note/technical note withtechnical note extra timetechnical note section technical note ---
         bi = -1
         B = TV_STOP_BOUNDS[bound_i]
         if cur is None:
@@ -1329,9 +1329,9 @@ def _tv_timeline(hist: List[Dict[str, float]], restarts_out: Optional[Dict[float
                 cur["gt1"] = gt
                 cur["s"] = max(float(cur["s"]), m - float(cur["bound"]))
         if cur is not None:
-            bi = len(bands)          # اندیس باندِ در حال باز پس از نهایی‌شدن
+            bi = len(bands)          # technical note withtechnical note currently withtechnical note technical note from technical note‌technical note
 
-        # --- ۴) خروجی دقیقه (کلمپ مونوتونیک فقط برای نمونه‌های واقعی) ---
+        # --- 4) output minute (totaltechnical note technical noteandtechnical noteandtechnical noteandtechnical note only for sample‌technical note real) ---
         if is_guard:
             minutes.append(float("nan"))
         else:
@@ -1355,31 +1355,31 @@ def _tv_timeline(hist: List[Dict[str, float]], restarts_out: Optional[Dict[float
 
 def tv_build_minutes(hist: List[Dict[str, float]]) -> List[float]:
     """
-    نسخهٔ ۱۰٫۹ — محور «دقیقهٔ مسابقه» برای هر نمونهٔ history بر پایهٔ
-    game_time خام (ساعت بازی). چون لنگرهای تصویر دقیقهٔ مطلق مسابقه‌اند
-    (HT=۴۵ ، FT=۹۰ ، ET=۱۰۵)، شکاف HT به‌طور طبیعی روی خط HT می‌نشیند و
-    دو نیمه دقیقاً از محل HT به هم می‌چسبند (کالیبراسیون دوباره هنگام
-    عوض‌شدن تصویر خودکار است).
-      * نمونه‌های NaN نگهبان → NaN (در رسم رد می‌شوند)
-      * ری‌استارت تایمر (۴۵→۴۵ / ۹۰→۹۰ / ۱۰۵→۱۰۵ پس از شکاف دوره) →
-        دقیقه‌های بخش جدید از خودِ مرز ادامه می‌یابد (کلمپِ بین‌بخشی حذف شد)
-      * جهش‌های عقبرؤ ساعت (resync وسط بازی) → کلمپ مونوتونیک
+    versiontext 10text9 — textandtext «minutetext text» for text sampletext history text text
+    game_time text (game clock). because text textandtext minutetext text text‌text
+    (HT=45 text FT=90 text ET=105)text gap HT to‌textandtext text textandtext line HT text‌text and
+    textand text exactly from text HT to text text‌text (textandtext again text
+    textandtext‌text textandtext automatic is).
+      * sample‌text NaN watchdog → NaN (in text text text‌textandtext)
+      * restart untiltext (45→45 / 90→90 / 105→105 text from gap textandtext) →
+        minute‌text section new from textandtext boundary resume text‌ortext (totaltext text‌sectiontext text text)
+      * jump‌text textandtext text (resync andtext withtext) → totaltext textandtextandtextandtext
     """
     return _tv_timeline(hist)[0]
 
 
 def tv_stop_bands(hist: List[Dict[str, float]]) -> List[Dict[str, float]]:
-    """نسخهٔ ۱۰٫۹ — فهرست «وقت‌های اضافه‌شده» (دقیقه‌های مشترک) هر بخش.
-    خروجی: [{"bound": ۴۵/۹۰/۱۰۵/۱۲۰, "gt0","gt1": بازهٔ game_time, "s": طول}]"""
+    """versiontext 10text9 — list «andtext‌text text‌text» (minute‌text shared) text section.
+    output: [{"bound": 45/90/105/120, "gt0","gt1": withtext game_time, "s": length}]"""
     return _tv_timeline(hist)[1]
 
 
 def tv_restart_flags(hist: List[Dict[str, float]]) -> Dict[float, bool]:
-    """نسخهٔ ۱۰٫۱۳ — کدام مرزها ری‌استارتِ «تأییدشده» دارند (۴۵/۹۰/۱۰۵).
-    تأیید = فرود روی مرز + بعدش یک نمونهٔ واقعی (PLAYING، ساعت صعودی) با
-    دقیقهٔ بیشتر از خودِ مرز دیده شده باشد (شرط کاربر برای «شروع واقعی
-    بخش بعدی»). فرودِ بدون تأیید (مثلاً ریست تایمر به ۹۰ وقتی بازی ادامه
-    نیافته) اینجا False است و نمودار بخش بعدی فراخوانی نمی‌شود."""
+    """versiontext 10text13 — codetext boundarytext restarttext «confirmationtext» text (45/90/105).
+    confirmation = textandtext textandtext boundary + aftertext text sampletext real (PLAYINGtext text textandtext) with
+    minutetext text from textandtext boundary text text withtext (text user for «start real
+    section aftertext»). textandtext without confirmation (text reset untiltext to 90 when withtext resume
+    textdecreasetext) text False is and chart section aftertext textandtext text‌textandtext."""
     out: Dict[float, bool] = {}
     try:
         _tv_timeline(hist, restarts_out=out)
@@ -1390,10 +1390,10 @@ def tv_restart_flags(hist: List[Dict[str, float]]) -> Dict[float, bool]:
 
 def tv_band_for_time(bands: List[Dict[str, float]], gt: float,
                      disp: Optional[float] = None) -> Optional[Dict[str, float]]:
-    """باندِ وقت اضافه‌ای که این game_time داخل آن افت می‌کند (None = عادی).
-    نسخهٔ ۱۰٫۹ — دقیقه‌های مشترک دو بار دیده می‌شوند؛ مرز تشخیص «گذر اول/دوم»
-    disp_time است (لحظهٔ ری‌استارت تایمر در باند ذخیره می‌شود): اگر نمونه/
-    مارکر بعد از ری‌استارت باشد، دیگر داخل باندِ وقت اضافهٔ بخش قبل نیست."""
+    """withtext extra time‌text text text game_time inside text decrease text‌text (None = text).
+    versiontext 10text9 — minute‌text shared textand withtext text text‌textandtext boundary detection «text first/second»
+    disp_time is (momenttext restart untiltext in withtext save text‌textandtext): if sample/
+    text after from restart withtext text inside withtext extra timetext section before is not."""
     try:
         g = float(gt)
     except (TypeError, ValueError):
@@ -1410,13 +1410,13 @@ def tv_band_for_time(bands: List[Dict[str, float]], gt: float,
             continue
         d1 = b.get("d1")
         if dsp is not None and d1 is not None and dsp >= float(d1):
-            continue                          # گذر دوم (بعد از ری‌استارت) → عادی
+            continue                          # technical note second (after from restart) → technical note
         return b
     return None
 
 
 def tv_marker_minute(mk: Dict[str, Any]) -> Optional[float]:
-    """دقیقهٔ مسابقهٔ یک مارکر گل — بر پایهٔ game_time خام (همان محور تیک‌ها)."""
+    """minutetext text text text text — text text game_time text (same textandtext text‌text)."""
     try:
         gt = float(mk.get("game_time", float("nan")))
     except (TypeError, ValueError):
@@ -1428,11 +1428,11 @@ def tv_marker_minute(mk: Dict[str, Any]) -> Optional[float]:
 
 def _tv_internal_verticals(kind: str, geom: Dict[str, Any]) -> List[float]:
     """
-    خطوط عمودی سرتاسری که باید «روی fill» بازکشیده شوند (مثل تصویر نمونه —
-    فقط خطوط نام‌دار HT/FT/ET، نه تیک‌های ۱۵ دقیقه‌ای):
-      پنل full : خط HT (۴۵′)
-      پنل extra: خطوط HT (۴۵′) + FT (۹۰′) + ET (۱۰۵′)
-      پنل half : HT روی لبهٔ راست است → هیچ
+    lineandtext textandtext textuntiltext text must «textandtext fill» withtext textandtext (text textandtext sample —
+    only lineandtext text‌text HT/FT/ETtext text text‌text 15 minute‌text):
+      text full : line HT (45′)
+      text extra: lineandtext HT (45′) + FT (90′) + ET (105′)
+      text half : HT textandtext texttotext textis is → text
     """
     out = []
     l, r, _t, _b = geom["rect"]
@@ -1454,12 +1454,12 @@ def _tv_internal_verticals(kind: str, geom: Dict[str, Any]) -> List[float]:
 
 def tv_process_flag(path: str) -> Optional["np.ndarray"]:
     """
-    آماده‌سازی لوگو/پرچم برای تب TV (نسخهٔ ۱۰٫۸ — عین تصویر نمونه):
-      * برش به «قسمت رنگی» فایل (حذف حاشیهٔ شفاف) — استروک دور محتوای رنگی
-        احاطه می‌شود، نه دور کل عکس
-      * استروک سفید خیلی نازک (≈۳px) با فاصلهٔ کم (≈۲px) از محتوا — مثل نمونه
-      * سقف اندازه: لوگو+استروک هرگز بزرگ‌تر از فضای مشکی نمی‌شود
-    خروجی آرایهٔ RGBA float 0..1 — کش بر اساس (path, mtime).
+    text‌textfromtext logo/text for text TV (versiontext 10text8 — text textandtext sample):
+      * text to «textside colortext» file (text text text) — istextandtext textandtext textandtext colortext
+        text text‌textandtext text textandtext total image
+      * istextandtext text text textfromtext (≈3px) with distancetext text (≈2px) from textandtext — text sample
+      * text textfromtext: logo+istextandtext never text‌text from text text text‌textandtext
+    output text RGBA float 0..1 — text text text (path, mtime).
     """
     if Image is None:
         return None
@@ -1475,7 +1475,7 @@ def tv_process_flag(path: str) -> Optional["np.ndarray"]:
         from PIL import ImageChops as _ImageChops
         from PIL import ImageFilter as _ImageFilter
         im = Image.open(path).convert("RGBA")
-        # --- برش به محتوای رنگی (پیکسل‌های با آلفای معنادار) ---
+        # --- technical note to technical noteandtechnical note colortechnical note (technical note‌technical note with technical note technical note) ---
         a_arr = np.asarray(im)[:, :, 3]
         ys, xs = np.where(a_arr >= 8)
         if len(ys) == 0:
@@ -1483,7 +1483,7 @@ def tv_process_flag(path: str) -> Optional["np.ndarray"]:
             return None
         im = im.crop((int(xs.min()), int(ys.min()),
                       int(xs.max()) + 1, int(ys.max()) + 1))
-        # --- مقیاس محتوا (۲ برابر برای استروک نرم و گوشه‌های تمیز) ---
+        # --- technical noteortechnical note technical noteandtechnical note (2 technical note for istechnical noteandtechnical note smooth and technical noteandtechnical note‌technical note technical note) ---
         ss = 2
         w, h = im.size
         scale = min(TV_FLAG_CONTENT_W * ss / max(1, w),
@@ -1492,12 +1492,12 @@ def tv_process_flag(path: str) -> Optional["np.ndarray"]:
         im = im.resize((nw, nh), Image.Resampling.LANCZOS)
         alpha = im.getchannel("A")
 
-        # --- استروک حلقوی با فاصله: دیلیت دقیق ماسک آلفا (با نگه‌داشتن حاشیه) ---
+        # --- istechnical noteandtechnical note technical noteandtechnical note with distance: technical note technical note technical note technical note (with technical note‌technical note technical note) ---
         k_gap = max(1, TV_FLAG_GAP_PX * ss)
         k_out = max(k_gap + 1, (TV_FLAG_GAP_PX + TV_FLAG_STROKE_PX) * ss)
 
         def _dilate(mask, k):
-            # MaxFilter دقیق؛ خروجی = اندازهٔ محتوا + ۲k (حاشیهٔ دیلیت حفظ می‌شود)
+            # MaxFilter technical note output = technical notefromtechnical note technical noteandtechnical note + 2k (technical note technical note technical note technical note‌technical noteandtechnical note)
             w0, h0 = mask.size
             pad = k + 2
             big = Image.new("L", (w0 + 2 * pad, h0 + 2 * pad), 0)
@@ -1506,12 +1506,12 @@ def tv_process_flag(path: str) -> Optional["np.ndarray"]:
             a0 = pad - k
             return d.crop((a0, a0, a0 + w0 + 2 * k, a0 + h0 + 2 * k))
 
-        d_out = _dilate(alpha, k_out)              # = بوم نهایی (nw+2m × nh+2m)
-        d_gap = _dilate(alpha, k_gap)              # کوچک‌تر — هم‌مرکز می‌شود
+        d_out = _dilate(alpha, k_out)              # = technical noteandtechnical note technical note (nw+2m × nh+2m)
+        d_gap = _dilate(alpha, k_gap)              # technical noteandtechnical note‌technical note — technical note‌technical note technical note‌technical noteandtechnical note
         d_gap_pad = Image.new("L", d_out.size, 0)
         d_gap_pad.paste(d_gap, (k_out - k_gap, k_out - k_gap))
         ring = _ImageChops.subtract(d_out, d_gap_pad)
-        ring = ring.filter(_ImageFilter.GaussianBlur(1.2))   # لبه/گوشهٔ نرم
+        ring = ring.filter(_ImageFilter.GaussianBlur(1.2))   # technical noteto/technical noteandtechnical note smooth
         m = k_out
         canvas = Image.new("RGBA", (nw + 2 * m, nh + 2 * m), (0, 0, 0, 0))
         white_ring = Image.new("RGBA", ring.size, (255, 255, 255, 255))
@@ -1522,16 +1522,16 @@ def tv_process_flag(path: str) -> Optional["np.ndarray"]:
                                Image.Resampling.LANCZOS)
         out = np.asarray(canvas).astype(float) / 255.0
     except Exception as ex:
-        clog(f"[TVFlag] خطای پردازش {path}: {type(ex).__name__}: {ex}")
+        clog(f"[TVFlag] Errortext textfromtext {path}: {type(ex).__name__}: {ex}")
         out = None
     _tv_flag_cache[path] = (mt, out)
     return out
 
 
-# --- کمک‌کارهای نسخهٔ ۱۰٫۸ (خالص و قابل‌تست بدون بازی) ---
+# --- technical note‌technical note versiontechnical note 10technical note8 (technical note and technical note‌test without withtechnical note) ---
 
 def _tv_lighten(color, f: float = 0.35):
-    """(نسخهٔ ۱۰٫۱۰ — خط لبهٔ fill حذف شد؛ تابع فقط برای سازگاری نگه داشته شده.)"""
+    """(versiontext 10text10 — line texttotext fill text text untiltext only for textfromtext text text text.)"""
     try:
         from matplotlib import colors as _mcolors
         r, g, b = _mcolors.to_rgb(color)
@@ -1542,9 +1542,9 @@ def _tv_lighten(color, f: float = 0.35):
 
 def _tv_split_sign_segments(px: "np.ndarray", py: "np.ndarray", zero_y: float):
     """
-    شکستن منحنی به پاره‌های مثبت/منفی نسبت به خط صفر — نقطهٔ عبور از صفر
-    با درون‌یابی به هر دو پاره اضافه می‌شود (fill/گلو/لبه بدون پرش).
-    خروجی: (pos_segs, neg_segs) — هر پاره = (xs, ys) آرایهٔ numpy.
+    text text to text‌text textregister/text ratio to line text — text textandtext from text
+    with inandtext‌ortext to text textand text text text‌textandtext (fill/textand/textto without text).
+    output: (pos_segs, neg_segs) — text text = (xs, ys) text numpy.
     """
     pos_segs, neg_segs = [], []
     px = np.asarray(px, dtype=float)
@@ -1579,8 +1579,8 @@ def _tv_split_sign_segments(px: "np.ndarray", py: "np.ndarray", zero_y: float):
 
 def _tv_pixel_bin(px: "np.ndarray", py: "np.ndarray", step: float = 1.5):
     """
-    میانگین‌گیری نمونه‌ها داخل هر ستون پیکسلی (عرض step) — حذف ارتعاش
-    زیرپیکسلیِ لبهٔ fill («دندانه»). خروجی (bx, by) با طول ≤ عرض مستطیل/step.
+    textortext‌text sample‌text inside text textandtext text (width step) — text text
+    text texttotext fill («text»). output (bx, by) with length ≤ width text/step.
     """
     px = np.asarray(px, dtype=float)
     py = np.asarray(py, dtype=float)
@@ -1589,7 +1589,7 @@ def _tv_pixel_bin(px: "np.ndarray", py: "np.ndarray", step: float = 1.5):
     bi = np.floor(px / max(0.2, float(step))).astype(np.int64)
     b0 = int(bi.min())
     nb = int(bi.max()) - b0 + 1
-    if nb >= len(px):            # تراکم پایین — میانگین‌گیری بی‌فایده
+    if nb >= len(px):            # technical note below — technical noteortechnical note‌technical note technical note‌technical note
         return px, py
     cnt = np.bincount(bi - b0, minlength=nb).astype(float)
     sx = np.bincount(bi - b0, weights=px, minlength=nb)
@@ -1600,19 +1600,19 @@ def _tv_pixel_bin(px: "np.ndarray", py: "np.ndarray", step: float = 1.5):
 
 def _tv_extra_edge_smooth(by: "np.ndarray", sigma_samples: float,
                           max_shift: float = None) -> "np.ndarray":
-    """نسخهٔ ۱۰٫۱۶ — هموارسازی اضافهٔ «لبهٔ» نمودار (بند ۳-الف شرط کاربر):
-    گاوسیِ تک‌بعدی روی ارتفاع ستون‌های پس از binning؛ سیگما بر حسب «نمونه»
-    (هر نمونه ≈ TV_BIN_STEP_PX پیکسل). ورودی کاربر از کادر متنی موقت
-    کنار نمودار می‌آید (TV_EDGE_SMOOTH_PX بر حسب پیکسل)؛ عدد نهایی بعداً
-    هاردکد خواهد شد. این لایه فقط نمایشی است — فرمول مومنتوم دست‌نخورده.
-    نسخهٔ ۱۰٫۱۷ — «حفظ شکل» (شرط کاربر: نرمی فقط برای لبه است، نه تغییر
-    شکل نمودار): گاوسیِ خام قله‌ها را گرد و ارتفاع‌ها را جابه‌جا می‌کند؛
-    این‌جا خروجی گاوسی با «کلمپ نرم tanh» به مقدار اصلی محدود می‌شود:
+    """versiontext 10text16 — textandtextfromtext text «texttotext» chart (text 3-text text user):
+    textandtext text‌aftertext textandtext height textandtext‌text text from binningtext text text text «sample»
+    (text sample ≈ TV_BIN_STEP_PX text). input user from textin text textandtext
+    text chart text‌text (TV_EDGE_SMOOTH_PX text text text)text number text aftertext
+    textcode textandtext text. text layer only displaytext is — textandtext textandtextandtext unchanged.
+    versiontext 10text17 — «text texttotal» (text user: smoothing only for textto istext text change
+    texttotal chart): textandtext text peak‌text text text and height‌text text textto‌text text‌text
+    text‌text output textandtext with «totaltext smooth tanh» to value original textandtext text‌textandtext:
         delta = lim · tanh((smooth − original) / lim)
-    یعنی جابه‌جایی‌های کوچک (دندانه‌های زیرپیکسلی) کاملاً اعمال می‌شوند
-    (لبه صاف می‌شود) ولی هیچ ستونی بیش از lim (≈TV_EDGE_SMOOTH_MAX_SHIFT_PX
-    پیکسل) از مقدار اصلی دور نمی‌شود ⇒ قله‌ها/دره‌ها و شکل کلی سر جایشان
-    می‌مانند. max_shift=None → رفتار قدیمی (بدون کلمپ؛ برای تست‌ها)."""
+    text textto‌text‌text textandtext (text‌text text) completetext text text‌textandtext
+    (textto text text‌textandtext) andtext text textandtext text from lim (≈TV_EDGE_SMOOTH_MAX_SHIFT_PX
+    text) from value original textandtext text‌textandtext ⇒ peak‌text/valley‌text and texttotal totaltext text text
+    text‌text. max_shift=None → textuntiltext legacy (without totaltext for test‌text)."""
     try:
         by = np.asarray(by, dtype=float)
         sig = float(sigma_samples)
@@ -1637,13 +1637,13 @@ def _tv_extra_edge_smooth(by: "np.ndarray", sigma_samples: float,
 
 def _tv_uniform_resample(bx: "np.ndarray", by: "np.ndarray",
                          step: float = 0.5):
-    """نسخهٔ ۱۰٫۲۵ — بازنمونه‌برداری منحنی روی شبکهٔ افقی «یکنواخت».
-    خروجی binning، ستون‌هایی با مرکزهای ناهم‌فاصله می‌دهد (مرکز = میانگین x
-    نمونه‌های همان ستون)؛ پلی‌لاین بین این مرکزها، لبهٔ fill را پله‌پله
-    می‌کند. این‌جا منحنی با درون‌یابی خطی روی شبکهٔ ثابت step پیکسلی
-    نمونه‌برداری می‌شود ⇒ فاصلهٔ نقاط همیشه یکنواخت، لبهٔ پیوسته.
-    مقدارها از «همان» منحنی binning می‌آیند ⇒ هیچ قله/دره‌ای جابه‌جا
-    یا حذف نمی‌شود (فقط بازچینش نقطه‌ها روی x یکنواخت)."""
+    """versiontext 10text25 — withtextsampling text textandtext text text «textandtext».
+    output binningtext textandtext‌text with text text‌distance text‌text (text = textortext x
+    sample‌text same textandtext)text text‌text text text text texttotext fill text text‌text
+    text‌text. text‌text text with inandtext‌ortext linetext textandtext text text step text
+    sampling text‌textandtext ⇒ distancetext text always textandtext texttotext textandtext.
+    valuetext from «same» text binning text‌text ⇒ text peak/valley‌text textto‌text
+    or text text‌textandtext (only withtext text‌text textandtext x textandtext)."""
     try:
         bx = np.asarray(bx, dtype=float)
         by = np.asarray(by, dtype=float)
@@ -1653,7 +1653,7 @@ def _tv_uniform_resample(bx: "np.ndarray", by: "np.ndarray",
         return bx, by
     step = max(0.1, float(step))
     try:
-        # xp برای np.interp باید اکیداً صعودی باشد — نسخهٔ اول هر تکرار
+        # xp for np.interp must technical note technical noteandtechnical note withtechnical note — versiontechnical note first technical note technical note
         keep = np.concatenate(([True], np.diff(bx) > 1e-9))
         bxu, byu = bx[keep], by[keep]
         if bxu.size < 8:
@@ -1672,17 +1672,17 @@ def _tv_uniform_resample(bx: "np.ndarray", by: "np.ndarray",
 
 
 def _tv_pchip_slopes(bx: "np.ndarray", by: "np.ndarray") -> "np.ndarray":
-    """نسخهٔ ۱۰٫۲۶ — شیب‌های هermite مونوتون (Fritsch–Carlson) برای PCHIP.
-    خروجی: شیب (dy/dx) در هر گره؛ تضمین: هیچ فراجوشی (overshoot) بین دو
-    گرهٔ مجاور ایجاد نمی‌شود ⇒ شکل داده (قله/دره/پلهٔ واقعی) عیناً حفظ
-    می‌شود — فقط شیب بین گره‌ها «پیوسته» می‌شود."""
+    """versiontext 10text26 — text‌text textermite textandtextandtextandtext (Fritsch–Carlson) for PCHIP.
+    output: text (dy/dx) in text text text: text textandtext (overshoot) text textand
+    text textandtext text text‌textandtext ⇒ texttotal data (peak/valley/text real) text text
+    text‌textandtext — only text text text‌text «textandtext» text‌textandtext."""
     h = np.diff(bx)
     d = np.diff(by) / h
     m = np.zeros_like(by)
     m[0], m[-1] = d[0], d[-1]
     for i in range(1, len(by) - 1):
         if d[i - 1] * d[i] <= 0.0:
-            m[i] = 0.0                     # اکسترمم محلی — شیب صفر
+            m[i] = 0.0                     # technical note technical note — technical note technical note
         else:
             w1 = 2.0 * h[i] + h[i - 1]
             w2 = h[i] + 2.0 * h[i - 1]
@@ -1692,7 +1692,7 @@ def _tv_pchip_slopes(bx: "np.ndarray", by: "np.ndarray") -> "np.ndarray":
 
 def _tv_pchip_eval(bx: "np.ndarray", by: "np.ndarray",
                    gx: "np.ndarray") -> "np.ndarray":
-    """ارزیابی چندجمله‌ای هرمیت مکعبی روی شبکهٔ gx (bx صعودی فرض می‌شود)."""
+    """textortext text‌text text text textandtext text gx (bx textandtext text text‌textandtext)."""
     h = np.diff(bx)
     m = _tv_pchip_slopes(bx, by)
     idx = np.clip(np.searchsorted(bx, gx, side="right") - 1, 0, len(bx) - 2)
@@ -1710,13 +1710,13 @@ def _tv_pchip_eval(bx: "np.ndarray", by: "np.ndarray",
 
 def _tv_uniform_resample_c1(bx: "np.ndarray", by: "np.ndarray",
                             step: float = 0.5):
-    """نسخهٔ ۱۰٫۲۶ — بازنمونه‌برداری «مکعبی مونوتون» روی شبکهٔ یکنواخت.
-    ریشهٔ واقعی «پله‌پله»: نسخهٔ خطی (np.interp) بین گره‌های ~۰٫۹ پیکسلی،
-    شیب را در «هر گره» ناگهانی عوض می‌کند ⇒ اسکالوپینگِ مقیاس پیکسل ⇒
-    پله‌های نامنظم و کلوخه‌ای در زوم. درون‌یابی PCHIP: از «همهٔ» گره‌ها
-    می‌گذرد (ارتفاع قله/دره عین قبل)، مونوتون است (هیچ فراجوششی ندارد)،
-    و شیب بین گره‌ها پیوسته است ⇒ لبهٔ رستری یکنواخت و ابریشمی می‌شود.
-    تغییر شکل نسبت به نسخهٔ خطی ≤ دامنهٔ اسکالوپ (~۰٫۳px) — نامرئی."""
+    """versiontext 10text26 — withtextsampling «text textandtextandtextandtext» textandtext text textandtext.
+    text real «text‌text»: versiontext linetext (np.interp) text text‌text ~0text9 text
+    text text in «text text» text textandtext text‌text ⇒ textandtext textortext text ⇒
+    text‌text text and totalandtext‌text in textandtext. inandtext‌ortext PCHIP: from «text» text‌text
+    text‌text (height peak/valley text before)text textandtextandtextandtext is (text textandtext text)text
+    and text text text‌text textandtext is ⇒ texttotext text textandtext and text text‌textandtext.
+    change texttotal ratio to versiontext linetext ≤ text textandtext (~0text3px) — text."""
     try:
         bx = np.asarray(bx, dtype=float)
         by = np.asarray(by, dtype=float)
@@ -1749,11 +1749,11 @@ def _tv_uniform_resample_c1(bx: "np.ndarray", by: "np.ndarray",
 
 def _tv_micro_edge_smooth(by: "np.ndarray", sigma_px: float,
                           step_px: float) -> "np.ndarray":
-    """نسخهٔ ۱۰٫۲۵ — گاوسیِ «زیرپیکسلی» روی ارتفاع ستون‌های شبکهٔ یکنواخت.
-    فقط ارتعاش ستونیِ مقیاس ~۱ پیکسل حذف می‌شود؛ چون سیگما (‎۰٫۶px‎) ده‌ها
-    بار کوچک‌تر از عرض ویژگی‌های نمودار (قله/دره ≥ ~۱۰px) است، افت ارتفاع
-    قله‌ها < ۰٫۲٪ و جابه‌جایی صفر است — فرم کلی نمودار عین قبل می‌ماند.
-    (خنثی بودن روی شکل با تست «انحراف هندسه» هم verify می‌شود.)"""
+    """versiontext 10text25 — textandtext «text» textandtext height textandtext‌text text textandtext.
+    only text textandtext textortext ~1 text text text‌textandtext because text (‎0text6px‎) text‌text
+    withtext textandtext‌text from width andtext‌text chart (peak/valley ≥ ~10px) istext decrease height
+    peak‌text < 0text2text and textto‌text text is — text totaltext chart text before text‌text.
+    (text textandtext textandtext texttotal with test «text text» text verify text‌textandtext.)"""
     try:
         by = np.asarray(by, dtype=float)
         s = float(sigma_px) / max(0.05, float(step_px))
@@ -1767,33 +1767,33 @@ def _tv_micro_edge_smooth(by: "np.ndarray", sigma_px: float,
         return by
 
 
-# --- نسخهٔ ۱۰٫۱۵ — حذف «هالهٔ افقی» کنار خط صفر (شرط کاربر) ---
-# وقتی منحنی برای مدتی چسبیده به خط صفر حرکت می‌کند، درخشش نئونِ همان قسمت
-# یک نوار افقیِ کشیده و اضافه روی خط صفر می‌سازد (کاربر: «هالهٔ رنگ میزبان
-# در وسط نمودار»). درمان: وزن هر ستون = فاصلهٔ منحنی تا خط صفر در همان
-# ستون؛ نزدیکِ صفر → درخشش حذف، دور از صفر → درخشش کامل.
-TV_GLOW_ZERO_NEAR_PX = 5.0     # (پیش‌فرض سازگاری — مسیر رندر از آستانهٔ «واحدی» استفاده می‌کند)
-TV_GLOW_ZERO_FAR_PX = 30.0     # فاصلهٔ بیشتر از این → درخشش کامل
-TV_GLOW_ZERO_SPREAD_PX = 24.0  # شعاع گسترش افقی فاصله (عبورهای تند از صفر حفظ شوند)
-# --- نسخهٔ ۱۰٫۱۶ — ریشهٔ واقعی «هاله» پیدا شد ---
-# آستانهٔ قدیمی (۵ تا ۳۰ پیکسل ≈ ۳ تا ۱۶ واحد) هرگز درخششِ منحنی‌های
-# ۱۰-۲۰ واحدی (۲۰-۴۰ پیکسلی) را نمی‌کشت — همان نوار افقیِ رنگی کنار خط
-# صفر که کاربر دوباره گزارش کرد. آستانهٔ جدید بر حسب «واحد ارتفاع نمودار»
-# است (نه پیکسل) تا با مقیاس پویا هم درست بماند:
-TV_GLOW_ZERO_NEAR_VAL = 18.0   # نزدیک‌تر از ۱۸ واحد → بدون درخشش (هاله حذف)
-TV_GLOW_ZERO_FAR_VAL = 42.0    # دورتر از ۴۲ واحد → درخشش کامل
+# --- versiontechnical note 10technical note15 — technical note «technical note technical note» technical note line technical note (technical note user) ---
+# when technical note for technical note technical note to line technical note technical note technical note‌technical note intechnical note technical noteandtechnical note same technical noteside
+# technical note technical noteandtechnical note technical note technical note and technical note technical noteandtechnical note line technical note technical note‌technical notefromtechnical note (user: «technical note color Home
+# in andtechnical note chart»). intechnical note: weight technical note technical noteandtechnical note = distancetechnical note technical note until line technical note in same
+# technical noteandtechnical note technical note technical note → intechnical note technical note technical noteandtechnical note from technical note → intechnical note complete.
+TV_GLOW_ZERO_NEAR_PX = 5.0     # (default technical notefromtechnical note — path render from thresholdtechnical note «andtechnical note» istechnical note technical note‌technical note)
+TV_GLOW_ZERO_FAR_PX = 30.0     # distancetechnical note technical note from technical note → intechnical note complete
+TV_GLOW_ZERO_SPREAD_PX = 24.0  # radius technical note technical note distance (technical noteandtechnical note technical note from technical note technical note technical noteandtechnical note)
+# --- versiontechnical note 10technical note16 — technical note real «technical note» technical note technical note ---
+# thresholdtechnical note legacy (5 until 30 technical note ≈ 3 until 16 andtechnical note) never intechnical note technical note‌technical note
+# 10-20 andtechnical note (20-40 technical note) technical note technical note‌technical note — same technical noteandtechnical note technical note colortechnical note technical note line
+# technical note technical note user again technical note technical note. thresholdtechnical note new technical note technical note «andtechnical note height chart»
+# is (technical note technical note) until with technical noteortechnical note technical noteandor technical note correct technical note:
+TV_GLOW_ZERO_NEAR_VAL = 18.0   # technical note‌technical note from 18 andtechnical note → without intechnical note (technical note technical note)
+TV_GLOW_ZERO_FAR_VAL = 42.0    # technical noteandtechnical note from 42 andtechnical note → intechnical note complete
 
 
 def _tv_zero_fade_weight(segs, hw: int, sc: float, zero_y: float,
                          gs: float, near_px: float = None,
                          far_px: float = None) -> "np.ndarray":
-    """وزن ۰..۱ هر ستون تصویر برای میرایی درخششِ چسبیده به خط صفر.
-    فاصلهٔ منحنی تا خط صفر per-column محاسبه، افقی گسترش (max-filter) و
-    نرم می‌شود تا عبورهای تند از صفر (که فاصله در یک ستون صفر است) درخشش
-    خود را از دست ندهند؛ فقط قسمت‌های «چسبیده به صفر» بی‌هاله می‌شوند.
-    نسخهٔ ۱۰٫۱۶ — near_px/far_px اختیاری: مسیر رندر واقعی آستانه را بر
-    حسب «واحد ارتفاع نمودار» (TV_GLOW_ZERO_NEAR/FAR_VAL ÷ مقیاس پویا)
-    می‌فرستد؛ بدون آرگومان = ثابت‌های قدیمی پیکسلی (سازگاری تست‌ها)."""
+    """weight 0..1 text textandtext textandtext for text intext text to line text.
+    distancetext text until line text per-column texttotext text text (max-filter) and
+    smooth text‌textandtext until textandtext text from text (text distance in text textandtext text is) intext
+    textandtext text from text text only textside‌text «text to text» text‌text text‌textandtext.
+    versiontext 10text16 — near_px/far_px optional: path render real threshold text text
+    text «andtext height chart» (TV_GLOW_ZERO_NEAR/FAR_VAL ÷ textortext textandor)
+    text‌text without textandtext = text‌text legacy text (textfromtext test‌text)."""
     INF = 1e9
     d = np.full(int(hw), INF, dtype=float)
     for (xs, ys) in (segs or []):
@@ -1801,9 +1801,9 @@ def _tv_zero_fade_weight(segs, hw: int, sc: float, zero_y: float,
             continue
         xs_f = np.asarray(xs, dtype=float)
         ys_f = np.asarray(ys, dtype=float)
-        # متراکم‌سازی: فاصلهٔ تا صفر باید «در تمام ستون‌های بین نقاط» هم
-        # درست باشد (نه فقط در نقاط خود منحنی) — در غیر این صورت با ورودی
-        # کم‌تراکم، هالهٔ بین دو نقطه زنده می‌ماند
+        # technical note‌technical notefromtechnical note: distancetechnical note until technical note must «in technical note technical noteandtechnical note‌technical note technical note technical note» technical note
+        # correct withtechnical note (technical note only in technical note technical noteandtechnical note technical note) — in technical note technical note technical noteandtechnical note with input
+        # technical note‌technical note technical note technical note technical noteand technical note live technical note‌technical note
         if len(xs_f) >= 2:
             n_src = len(xs_f)
             span_cols = max(2.0, float(np.nanmax(np.abs(np.diff(xs_f))) * sc))
@@ -1816,7 +1816,7 @@ def _tv_zero_fade_weight(segs, hw: int, sc: float, zero_y: float,
         ok = (xc >= 0) & (xc < int(hw)) & np.isfinite(dy)
         if np.any(ok):
             np.minimum.at(d, xc[ok], dy[ok])
-    d = np.minimum(d, TV_GLOW_ZERO_FAR_PX * gs * sc * 4.0)   # سقف برای گسترش
+    d = np.minimum(d, TV_GLOW_ZERO_FAR_PX * gs * sc * 4.0)   # technical note for technical note
     k = int(max(0, round(TV_GLOW_ZERO_SPREAD_PX * gs * sc)))
     if k > 0:
         pad = np.pad(d, (k, k), constant_values=INF)
@@ -1828,7 +1828,7 @@ def _tv_zero_fade_weight(segs, hw: int, sc: float, zero_y: float,
     far = (TV_GLOW_ZERO_FAR_PX if far_px is None
            else float(far_px)) * gs * sc
     wgt = np.clip((d - near) / max(1e-6, (far - near)), 0.0, 1.0)
-    try:                                   # لبه‌های وزن نرم شود
+    try:                                   # technical noteto‌technical note weight smooth technical noteandtechnical note
         from PIL import ImageFilter as _IF0
         im1 = Image.new("L", (int(hw), 1), 0)
         im1.putdata((wgt * 255.0).astype(np.uint8).tolist())
@@ -1842,12 +1842,12 @@ def _tv_zero_fade_weight(segs, hw: int, sc: float, zero_y: float,
 def _tv_glow_layers(pos_segs, neg_segs, W, H, home_color, away_color,
                     rect_h, zero_y: float,
                     near_px: float = None, far_px: float = None) -> list:
-    """نسخهٔ ۱۰٫۲۴ — بدنهٔ محاسباتیِ درخشش نئون (بدون ax/matplotlib):
-    ماسک خط منحنی با «بلور گاوسی واقعی» در نیم‌وضوح + میرایی ستونی کنار
-    خط صفر — خروجی: [(rgba_float، رنگ)، ...] به ترتیب میزبان/مهمان.
-    هم _tv_draw_glow (مسیر matplotlib) و هم scene-builder GPU از همین
-    استفاده می‌کنند تا درخشش در هر دو مسیر «مو‌به‌مو» یکی باشد.
-    (ریاضی عیناً از _tv_draw_glow نسخهٔ ۱۰٫۱۶ کپی شده است.)"""
+    """versiontext 10text24 — text textwithtext intext textandtext (without ax/matplotlib):
+    text line text with «textandtext textandtext real» in text‌andtextandtext + text textandtext text
+    line text — output: [(rgba_floattext color)text ...] to order Home/Away.
+    text _tv_draw_glow (path matplotlib) and text scene-builder GPU from text
+    istext text‌text until intext in text textand path «textand‌to‌textand» text withtext.
+    (textortext text from _tv_draw_glow versiontext 10text16 text text is.)"""
     from PIL import ImageDraw as _IDraw
     from PIL import ImageFilter as _IFilter
     from matplotlib import colors as _mcolors
@@ -1858,10 +1858,10 @@ def _tv_glow_layers(pos_segs, neg_segs, W, H, home_color, away_color,
     except Exception:
         soft_mul, inten_mul = 1.0, 1.0
     if inten_mul <= 0.001:
-        return layers                  # شدت صفر — کاربر درخشش را خاموش کرده
+        return layers                  # technical note technical note — user intechnical note technical note technical noteandtechnical note technical note
     hw, hh = max(2, int(W) // 2), max(2, int(H) // 2)
-    sc = hw / float(W)                      # مقیاس نیم‌وضوح
-    gs = rect_h / 560.0                     # مقیاس با ارتفاع مستطیل
+    sc = hw / float(W)                      # technical noteortechnical note technical note‌andtechnical noteandtechnical note
+    gs = rect_h / 560.0                     # technical noteortechnical note with height technical note
     lw_half = max(1, int(round(TV_GLOW_CORE_PX * gs * sc)))
     for color, segs in ((home_color, pos_segs), (away_color, neg_segs)):
         if not segs:
@@ -1879,12 +1879,12 @@ def _tv_glow_layers(pos_segs, neg_segs, W, H, home_color, away_color,
             continue
         acc = np.zeros((hh, hw), dtype=float)
         for sig_base, peak in TV_GLOW_LAYERS:
-            sig = max(0.6, sig_base * gs * sc * soft_mul)   # ۱۰٫۱۶ — نرمی
+            sig = max(0.6, sig_base * gs * sc * soft_mul)   # 10technical note16 — smoothing
             bl = np.asarray(mask.filter(_IFilter.GaussianBlur(sig)),
                             dtype=float) / 255.0
-            acc += bl * (float(peak) * inten_mul)           # ۱۰٫۱۶ — شدت
+            acc += bl * (float(peak) * inten_mul)           # 10technical note16 — technical note
         np.clip(acc, 0.0, 1.0, out=acc)
-        # --- نسخهٔ ۱۰٫۱۵/۱۰٫۱۶ — میرایی هالهٔ کنار خط صفر (per-column) ---
+        # --- versiontechnical note 10technical note15/10technical note16 — technical note technical note technical note line technical note (per-column) ---
         zw = _tv_zero_fade_weight(segs, hw, sc, zero_y, gs,
                                   near_px=near_px, far_px=far_px)
         acc = acc * zw[None, :]
@@ -1903,17 +1903,17 @@ def _tv_draw_glow(ax, pos_segs, neg_segs, W, H, clip,
                   home_color, away_color, rect_h, zero_y: float,
                   near_px: float = None, far_px: float = None) -> int:
     """
-    درخشش نئون نرم (نسخهٔ ۱۰٫۸): ماسک خط منحنی با «بلور گاوسی واقعی» —
-    روشنایی از خط به بیرون به‌صورت کاملاً نرم محو می‌شود (بدون پله).
-    ماسک در نیم‌وضوح ساخته می‌شود (بلور کم‌بسامد است) → سریع و صاف.
-    نسخهٔ ۱۰٫۱۵ — درخششِ هر رنگ در ستون‌هایی که منحنی همان رنگ چسبیده به
-    خط صفر است میرا می‌شود (حذف هالهٔ افقی اضافه — شرط کاربر).
-    نسخهٔ ۱۰٫۱۶ — پیچ‌های موقت کاربر: TV_GLOW_SOFTNESS_MUL (سیگمای بلور)
-    و TV_GLOW_INTENSITY_MUL (آلفای اوج)؛ شدت صفر → درخشش اصلاً رسم
-    نمی‌شود. near_px/far_px → آستانهٔ «واحدی» حذف هاله (بند ۴).
-    نسخهٔ ۱۰٫۲۴ — ریاضی به _tv_glow_layers منتقل شد (مشترک با مسیر GPU)؛
-    خروجی این تابع پیکسل‌به‌پیکسل مثل قبل است.
-    خروجی: تعداد لایه‌های درخشش رسم‌شده.
+    intext textandtext smooth (versiontext 10text8): text line text with «textandtext textandtext real» —
+    textandtext from line to outside to‌textandtext completetext smooth textand text‌textandtext (without text).
+    text in text‌andtextandtext text text‌textandtext (textandtext text‌text is) → fast and text.
+    versiontext 10text15 — intext text color in textandtext‌text text text same color text to
+    line text is text text‌textandtext (text text text text — text user).
+    versiontext 10text16 — text‌text textandtext user: TV_GLOW_SOFTNESS_MUL (text textandtext)
+    and TV_GLOW_INTENSITY_MUL (text textandtext)text text text → intext text text
+    text‌textandtext. near_px/far_px → thresholdtext «andtext» text text (text 4).
+    versiontext 10text24 — textortext to _tv_glow_layers text text (shared with path GPU)text
+    output text untiltext text‌to‌text text before is.
+    output: count layer‌text intext text‌text.
     """
     info = 0
     for rgba, _color in _tv_glow_layers(pos_segs, neg_segs, W, H,
@@ -1930,10 +1930,10 @@ def _tv_draw_glow(ax, pos_segs, neg_segs, W, H, clip,
 def _tv_marker_glow_calc(gx: float, y_line0: float, y_line1: float,
                          ball_cy: float, ball_r: float,
                          rect_h: float) -> Optional[Dict[str, Any]]:
-    """نسخهٔ ۱۰٫۲۴ — محاسبهٔ درخشش سفید دور «خط عمودی گل + آیکون توپ»
-    (بدون ax): ماسک محلی + بلور گاوسی در دو لایه — خروجی rgba نیمه‌باز +
-    مختصات دقیقش در فضای پنل (x0, y0, x1, y1) برای imshow یا Quad GPU.
-    (ریاضی عیناً از _tv_draw_marker_glow نسخهٔ ۱۰٫۹.)"""
+    """versiontext 10text24 — texttotext intext text textandtext «line textandtext text + icon ball»
+    (without ax): text text + textandtext textandtext in textand layer — output rgba text‌withtext +
+    coordinates text in text text (x0, y0, x1, y1) for imshow or Quad GPU.
+    (textortext text from _tv_draw_marker_glow versiontext 10text9.)"""
     from PIL import ImageDraw as _IDraw
     from PIL import ImageFilter as _IFilter
     gs = rect_h / 560.0
@@ -1962,7 +1962,7 @@ def _tv_marker_glow_calc(gx: float, y_line0: float, y_line1: float,
         acc += bl * float(peak)
     np.clip(acc, 0.0, 1.0, out=acc)
     rgba = np.zeros((h, w, 4), dtype=float)
-    rgba[..., 0] = rgba[..., 1] = rgba[..., 2] = 1.0     # سفید
+    rgba[..., 0] = rgba[..., 1] = rgba[..., 2] = 1.0     # technical note
     rgba[..., 3] = acc
     return {"rgba": rgba, "x0": float(x0), "y0": float(y0),
             "x1": float(x1), "y1": float(y1)}
@@ -1972,13 +1972,13 @@ def _tv_draw_marker_glow(ax, gx: float, y_line0: float, y_line1: float,
                          ball_cy: float, ball_r: float, clip,
                          rect_h: float, gid: str) -> int:
     """
-    نسخهٔ ۱۰٫۹ — درخشش نرمِ سفید دور «خط عمودی گل + آیکون توپ».
-    ماسک محلی (خط + دایرهٔ توپ) با بلور گاوسی واقعی در دو لایه — هالهٔ
-    سفید کاملاً نرم که از خط به بیرون محو می‌شود (بدون پله). لایه زیر
-    خط صفر (zorder ۵ < ۶) است تا خط صفر/راهنماها هیچ‌گاه مات نشوند.
-    نسخهٔ ۱۰٫۲۴ — ریاضی به _tv_marker_glow_calc منتقل شد (مشترک با GPU)؛
-    خروجی پیکسل‌به‌پیکسل مثل قبل است.
-    خروجی: ۱ اگر رسم شد وگرنه ۰.
+    versiontext 10text9 — intext smoothtext text textandtext «line textandtext text + icon ball».
+    text text (line + text ball) with textandtext textandtext real in textand layer — text
+    text completetext smooth text from line to outside textand text‌textandtext (without text). layer text
+    line text (zorder 5 < 6) is until line text/text text‌text text textandtext.
+    versiontext 10text24 — textortext to _tv_marker_glow_calc text text (shared with GPU)text
+    output text‌to‌text text before is.
+    output: 1 if text text andtext 0.
     """
     calc = _tv_marker_glow_calc(gx, y_line0, y_line1, ball_cy, ball_r,
                                 rect_h)
@@ -1994,10 +1994,10 @@ def _tv_draw_marker_glow(ax, gx: float, y_line0: float, y_line1: float,
 
 
 def _tv_timestamp_bitmap(text: str) -> Optional[np.ndarray]:
-    """نسخهٔ ۱۰٫۲۴ — رندر «یک‌جا»ی مُهر تاریخ/ساعت (قرص + متن) به بیت‌مپ
-    RGBA برش‌خورده — تولید تصویر ثابت (خارج از مسیر نمایش زنده). خروجی برای
-    Quad تکستچر GPU؛ مرکز بیت‌مپ = مرکز قرص (مثل ax.text با ha/va=center).
-    فونت/اندازه/پد عیناً همان پارامترهای درون‌نموداری است (dpi=100)."""
+    """versiontext 10text24 — render «text‌text»text text untiltext/text (text + text) to text‌text
+    RGBA text‌textandtext — textandtext textandtext text (text from path display live). output for
+    Quad text GPUtext text text‌text = text text (text ax.text with ha/va=center).
+    textandtext/textfromtext/text text same text inandtext‌charttext is (dpi=100)."""
     from matplotlib.backends.backend_agg import FigureCanvasAgg
     try:
         dpi = 100.0
@@ -2038,12 +2038,12 @@ def _tv_timestamp_bitmap(text: str) -> Optional[np.ndarray]:
 def _tv_curve_core(momentum: "MomentumEngine", cfg: "MomentumScoringConfig",
                    bg: Optional[Dict[str, Any]],
                    bg_kind: str = "half") -> Optional[Dict[str, Any]]:
-    """نسخهٔ ۱۰٫۲۴ — پایهٔ «مشترک» ریاضیِ منحنی TV (بدون هیچ matplotlib).
-    هم draw_tv_momentum (مسیر تب/رندر PNG) و هم scene-builder رندر برداری GPU
-    از «همین» تابع استفاده می‌کنند تا شکل منحنی در هر دو مسیر مو‌به‌مو یکی
-    باشد (شرط کاربر: تغییر شکل نمودار ممنوع — فقط رندر برداری با AA واقعی).
-    خروجی: dict شامل هندسهٔ پنل + مختصات منحنی (bx/by) + پاره‌های مثبت/منفی +
-    مقیاس پویا + آستانه‌های درخشش؛ یا None وقتی پس‌زمینه در دسترس نیست."""
+    """versiontext 10text24 — text «shared» textortext text TV (without text matplotlib).
+    text draw_tv_momentum (path text/render PNG) and text scene-builder render text GPU
+    from «text» untiltext istext text‌text until texttotal text in text textand path textand‌to‌textand text
+    withtext (text user: change texttotal chart textmenutext — only render text with AA real).
+    output: dict text text text + coordinates text (bx/by) + text‌text textregister/text +
+    textortext textandor + threshold‌text intext or None when text‌pitchtext in text is not."""
     if bg is None:
         return None
     arr, geom = bg["arr"], bg["geom"]
@@ -2052,15 +2052,15 @@ def _tv_curve_core(momentum: "MomentumEngine", cfg: "MomentumScoringConfig",
     zero_y = geom["zero_y"]
     rect_h = max(1.0, float(b - t))
 
-    # --- snapshot اتمیک ---
+    # --- snapshot technical note ---
     with momentum._lock:
         hist = list(momentum.history)
         markers = [dict(m) for m in momentum.hook_goal_markers]
-        # نسخهٔ ۱۰٫۲۷ — مارکرهای کارت قرمز (getattr: سازگاری با موتورهای شبه)
+        # versiontechnical note 10technical note27 — technical note red card (getattr: technical notefromtechnical note with technical noteandtechnical noteandtechnical note technical noteto)
         rc_markers = [dict(m) for m in
                       (getattr(momentum, "red_card_markers", None) or [])]
 
-    # --- نسخهٔ ۱۰٫۱۶ — مقیاس عمودی «پویا» — پیش‌فرض: حداقل (±150) ---
+    # --- versiontechnical note 10technical note16 — technical noteortechnical note technical noteandtechnical note «technical noteandor» — default: technical note (±150) ---
     axis_scale = float(TV_SCALE_MIN)
     bx = by = None
     pos_segs = neg_segs = None
@@ -2068,7 +2068,7 @@ def _tv_curve_core(momentum: "MomentumEngine", cfg: "MomentumScoringConfig",
     bands = []
 
     if len(hist) >= 2:
-        # نسخهٔ ۱۰٫۹ — تایم‌لاین restart-aware: دقیقه‌ها + باندهای «دقیقه‌های مشترک»
+        # versiontechnical note 10technical note9 — untiltechnical note‌technical note restart-aware: minute‌technical note + withtechnical note «minute‌technical note shared»
         minutes_all, bands, band_of = _tv_timeline(hist)
         step = max(1, len(hist) // 3000)
         idxs = list(range(0, len(hist), step))
@@ -2078,25 +2078,25 @@ def _tv_curve_core(momentum: "MomentumEngine", cfg: "MomentumScoringConfig",
         for i in idxs:
             m = minutes_all[i]
             if m != m:
-                continue               # نگهبان NaN — رد
+                continue               # watchdog NaN — technical note
             smin.append(float(m))
             try:
                 sgame.append(float(hist[i].get("game_time", 0.0)))
             except (TypeError, ValueError):
                 sgame.append(0.0)
-            sval.append(float(hist[i]["net"]))   # نسخهٔ ۱۰٫۱۵ — مقدار خام
+            sval.append(float(hist[i]["net"]))   # versiontechnical note 10technical note15 — value technical note
             _bi = band_of[i]
             sband.append(bands[_bi] if 0 <= _bi < len(bands) else None)
 
         if len(smin) >= 2:
-            # --- نسخهٔ ۱۰٫۱۶ — مقیاس عمودی «پویا» (شرط کاربر — بند ۱) ---
+            # --- versiontechnical note 10technical note16 — technical noteortechnical note technical noteandtechnical note «technical noteandor» (technical note user — technical note 1) ---
             soft = max(1.0, float(getattr(cfg, "DISPLAY_SOFT_SCALE", 120.0)))
             vals = np.asarray(
                 [TV_Y_RANGE * math.tanh(float(v) / soft) for v in sval],
                 dtype=float)
             mins = np.asarray(smin, dtype=float)
 
-            # --- هموارسازی گاوسی نمایشی (صاف‌تر از نمودار اصلی — خواستهٔ کاربر) ---
+            # --- technical noteandtechnical notefromtechnical note technical noteandtechnical note displaytechnical note (technical note‌technical note from chart original — technical noteandistechnical note user) ---
             gt_arr = np.asarray(sgame, dtype=float)
             dts = np.diff(gt_arr)
             dts = dts[dts > 0]
@@ -2106,7 +2106,7 @@ def _tv_curve_core(momentum: "MomentumEngine", cfg: "MomentumScoringConfig",
             sm = np.asarray(_gauss_smooth_impl(vals.tolist(), sigma_samples),
                             dtype=float)
 
-            # --- نسخهٔ ۱۰٫۱۶ — محاسبهٔ مقیاس پویا ---
+            # --- versiontechnical note 10technical note16 — technical notetotechnical note technical noteortechnical note technical noteandor ---
             data_peak = float(np.max(np.abs(vals))) if vals.size else 0.0
             axis_scale = max(float(TV_SCALE_MIN),
                              data_peak + float(TV_SCALE_MARGIN))
@@ -2116,17 +2116,17 @@ def _tv_curve_core(momentum: "MomentumEngine", cfg: "MomentumScoringConfig",
             span = np.where(sm >= 0, zero_y - t, b - zero_y)
             py = zero_y - (sm / axis_scale) * span
 
-            # --- نسخهٔ ۱۰٫۲۵ — «شبکهٔ یکنواخت از مبدأ»: منحنیِ هموارشدهٔ
-            # گاوسی (σ=۳۵ثانیه ≈ ۱۸٫۶px) از قبل در مقیاس زیرپیکسلی صاف است؛
-            # مستقیم روی شبکهٔ ثابت ۰٫۵px بازنمونه می‌شود — بدون عبور از
-            # binningِ ۱٫۵px (مرکزهای لرزان ستونی = مبدأ دندانه). درون‌یابی
-            # خطی بین نمونه‌های اصلی = همان پلی‌لاین قبلی، فقط با x یکنواخت؛
-            # بعد گاوسی میکرون (۰٫۸px) فقط برای لبهٔ ابریشمی — قله/دره و
-            # شکل کلی (ویژگی‌های ≥ ~۱۸px) دست‌نخورده می‌مانند.
+            # --- versiontechnical note 10technical note25 — «technical note technical noteandtechnical note from technical note»: technical note technical noteandtechnical note
+            # technical noteandtechnical note (σ=35second ≈ 18technical note6px) from before in technical noteortechnical note technical note technical note istechnical note
+            # direct technical noteandtechnical note technical note technical note 0technical note5px withtechnical notesample technical note‌technical noteandtechnical note — without technical noteandtechnical note from
+            # binningtechnical note 1technical note5px (technical note technical note technical noteandtechnical note = technical note technical note). inandtechnical note‌ortechnical note
+            # linetechnical note technical note sample‌technical note original = same technical note‌technical note beforetechnical note only with x technical noteandtechnical note
+            # after technical noteandtechnical note technical noteandtechnical note (0technical note8px) only for technical notetotechnical note technical note — peak/valley and
+            # technical notetotal totaltechnical note (andtechnical note‌technical note ≥ ~18px) unchanged technical note‌technical note.
             bx, by = _tv_uniform_resample_c1(px, py, TV_CURVE_GRID_STEP_PX)
             by = _tv_micro_edge_smooth(by, TV_EDGE_MICRO_SIGMA_PX,
                                        TV_CURVE_GRID_STEP_PX)
-            # --- نسخهٔ ۱۰٫۱۷ — کلمپ نرم (فقط وقتی کاربر عدد داده باشد) ---
+            # --- versiontechnical note 10technical note17 — totaltechnical note smooth (only when user number data withtechnical note) ---
             if TV_EDGE_SMOOTH_PX > 0.0:
                 by = _tv_extra_edge_smooth(
                     by,
@@ -2136,7 +2136,7 @@ def _tv_curve_core(momentum: "MomentumEngine", cfg: "MomentumScoringConfig",
 
             if len(bx) >= 2:
                 pos_segs, neg_segs = _tv_split_sign_segments(bx, by, zero_y)
-                # نسخهٔ ۱۰٫۱۶ — آستانهٔ حذف هاله بر حسب «واحد ارتفاع نمودار»
+                # versiontechnical note 10technical note16 — thresholdtechnical note technical note technical note technical note technical note «andtechnical note height chart»
                 span_ref = 0.5 * (float(zero_y - t) + float(b - zero_y))
                 near_px = (TV_GLOW_ZERO_NEAR_VAL / axis_scale) * span_ref
                 far_px = (TV_GLOW_ZERO_FAR_VAL / axis_scale) * span_ref
@@ -2159,26 +2159,26 @@ def draw_tv_momentum(ax, momentum: "MomentumEngine", cfg: "MomentumScoringConfig
                      transparent_bg: bool = False,
                      timestamp_text: Optional[str] = None) -> Dict[str, Any]:
     """
-    رندر کامل تب TV روی ax (پیکسل‌محور) — نسخهٔ ۱۰٫۹:
-      * محور X کالیبره با تیک‌های خود تصویر (HT=۴۵′ ، FT=۹۰′ ، ET=۱۰۵′) —
-        محور بر حسب «دقیقهٔ مطلق مسابقه» است؛ عوض‌شدن پنل = کالیبره دوباره
-        خودکار و منحنی دقیقاً از خط HT ادامه می‌یابد
-      * «دقیقه‌های مشترک» (۴۵-۵۰/۹۰-۹۷): اولین گذر = وقت اضافهٔ بخش قبلی →
-        قبل از خط مرز فشرده می‌شود؛ با ری‌استارت تایمر، رسم از خودِ مرز
-      * نسبت ابعاد تصویر حفظ می‌شود (aspect equal — هیچ کشیدگی ندارد)
-      * محور Y ‎-150..+150‎ (بدون عدد) — صفر = خط مرکزی تصویر
-      * درخشش نئون نرم (بلور گاوسی) زیر fill + خط لبهٔ نازک روشن
-      * خط گل: از توپ تا خط صفر — «روی» fill، با درخشش سفید نرم و بدون
-        عبور از خط صفر
-      * خطوط عمودی HT/FT/ET (لنگرهای داخلی) روی fill بازکشیده می‌شوند
-      * لوگو: برش به قسمت رنگی + استروک نازک — داخل فضای مشکی، بدون
-        به‌هم‌ریختن نسبت ابعاد
-    نسخهٔ ۱۰٫۱۱:
-      * transparent_bg=True → پس‌زمینهٔ Figure/محور شفاف می‌ماند (کانال
-        آلفای تصویر اصلی حفظ می‌شود) — برای خروجی PNG اسنپ‌شات که باید
-        روی تصویر بازی بیفتد و بازی از زیرش دیده شود؛
-      * timestamp_text → تاریخ/ساعت شروع بازی (از ساعت سیستم) در نوار
-        بالای پنل (شفاف) با قرصِ نیمه‌شفاف تیره نوشته می‌شود.
+    render complete text TV textandtext ax (text‌textandtext) — versiontext 10text9:
+      * textandtext X calibrated with text‌text textandtext textandtext (HT=45′ text FT=90′ text ET=105′) —
+        textandtext text text «minutetext text text» istext textandtext‌text text = calibrated again
+        automatic and text exactly from line HT resume text‌ortext
+      * «minute‌text shared» (45-50/90-97): firsttext text = extra timetext section beforetext →
+        before from line boundary text text‌textandtext with restart untiltext text from textandtext boundary
+      * ratio text textandtext text text‌textandtext (aspect equal — text text text)
+      * textandtext Y ‎-150..+150‎ (without number) — text = line text textandtext
+      * intext textandtext smooth (textandtext textandtext) text fill + line texttotext textfromtext textandtext
+      * line text: from ball until line text — «textandtext» filltext with intext text smooth and without
+        textandtext from line text
+      * lineandtext textandtext HT/FT/ET (text internal) textandtext fill withtext text‌textandtext
+      * logo: text to textside colortext + istextandtext textfromtext — inside text text without
+        to‌text‌text ratio text
+    versiontext 10text11:
+      * transparent_bg=True → text‌pitchtext Figure/textandtext text text‌text (text
+        text textandtext original text text‌textandtext) — for output PNG textagetext‌text text must
+        textandtext textandtext withtext text and withtext from text text textandtext
+      * timestamp_text → untiltext/text start withtext (from text text) in textandtext
+        withtext text (text) with text text‌text text textandtext text‌textandtext.
     """
     info = {"fills": 0, "glow": 0, "goal_lines": 0, "balls": 0,
             "flags": 0, "zero_line": 0, "vlines": 0, "texts": 0,
@@ -2188,8 +2188,8 @@ def draw_tv_momentum(ax, momentum: "MomentumEngine", cfg: "MomentumScoringConfig
 
     bg = tv_load_background(bg_kind)
     ax.clear()
-    # نسخهٔ ۱۰٫۱۱ — transparent_bg: خروجی اسنپ‌شات (کانال آلفا حفظ می‌شود)
-    # در حالت عادی: پس‌زمینهٔ مشکی خالص (رفع «شفید» دیده‌شدن — نسخهٔ ۱۰٫۱۰)
+    # versiontechnical note 10technical note11 — transparent_bg: output technical noteagetechnical note‌technical note (technical note technical note technical note technical note‌technical noteandtechnical note)
+    # currentlytechnical note technical note: technical note‌pitchtechnical note technical note technical note (technical note «technical note» technical note‌technical note — versiontechnical note 10technical note10)
     ax.set_facecolor("none" if transparent_bg else "#000000")
     fig = getattr(ax, "figure", None)
     if fig is not None:
@@ -2209,11 +2209,11 @@ def draw_tv_momentum(ax, momentum: "MomentumEngine", cfg: "MomentumScoringConfig
     rect_h = max(1.0, float(b - t))
 
     ax.set_xlim(0, W)
-    ax.set_ylim(H, 0)              # محور Y رو به پایین = مختصات پیکسلی طبیعی
+    ax.set_ylim(H, 0)              # technical noteandtechnical note Y technical noteand to below = coordinates technical note technical note
     ax.set_position([0, 0, 1, 1])
-    # نسخهٔ ۱۰٫۹ — نسبت ابعاد تصویر حفظ می‌شود: باکس محور داخل کادر با
-    # نسبت ابعاد خود تصویر جا می‌گیرد (letterbox) — هیچ کشیدگی از هیچ طرف؛
-    # فضای اضافی دور تصویر، پس‌زمینهٔ مشکی تب دیده می‌شود.
+    # versiontechnical note 10technical note9 — ratio technical note technical noteandtechnical note technical note technical note‌technical noteandtechnical note: withtechnical note technical noteandtechnical note inside technical notein with
+    # ratio technical note technical noteandtechnical note technical noteandtechnical note technical note technical note‌technical note (letterbox) — technical note technical note from technical note technical note
+    # technical note technical note technical noteandtechnical note technical noteandtechnical note technical note‌pitchtechnical note technical note technical note technical note technical note‌technical noteandtechnical note.
     ax.set_aspect("equal", adjustable="box")
     ax.set_anchor("C")
     ax.axis("off")
@@ -2222,9 +2222,9 @@ def draw_tv_momentum(ax, momentum: "MomentumEngine", cfg: "MomentumScoringConfig
               zorder=0)
     info["bg"] = bg_kind
 
-    # --- نسخهٔ ۱۰٫۱۱ — تاریخ/ساعت شروع بازی: نوار بالای پنل (شفاف) ---
-    # tex بالای پنل ~۴۲px نوار شفاف دارد؛ متن با قرص نیمه‌شفاف تیره
-    # نوشته می‌شود تا روی هر پس‌زمینه‌ای از بازی خوانا بماند.
+    # --- versiontechnical note 10technical note11 — untiltechnical note/technical note start withtechnical note: technical noteandtechnical note withtechnical note technical note (technical note) ---
+    # tex withtechnical note technical note ~42px technical noteandtechnical note technical note technical note technical note with technical note technical note‌technical note technical note
+    # technical noteandtechnical note technical note‌technical noteandtechnical note until technical noteandtechnical note technical note technical note‌pitchtechnical note‌technical note from withtechnical note technical noteandtechnical note technical note.
     if timestamp_text:
         try:
             ax.text(W * 0.5, TV_TIMESTAMP_Y, str(timestamp_text),
@@ -2238,18 +2238,18 @@ def draw_tv_momentum(ax, momentum: "MomentumEngine", cfg: "MomentumScoringConfig
         except Exception as ex:
             clog(f"[TVStamp] {type(ex).__name__}: {ex}")
 
-    # مسیر برش به مستطیل نمودار — fill/گلو/خط گل هرگز بیرون نزنند
+    # path technical note to technical note chart — fill/technical noteand/line technical note never outside technical note
     from matplotlib.patches import Rectangle as _Rect
     clip = _Rect((l, t), (r - l), (b - t), transform=ax.transData)
     clip.set_visible(False)
     ax.add_patch(clip)
 
-    # --- نسخهٔ ۱۰٫۲۴ — پایهٔ مشترک ریاضی منحنی (snapshot اتمیک داخل core؛
-    # همان توابع و همان ترتیب — خروجی مو‌به‌مو مثل قبل) ---
+    # --- versiontechnical note 10technical note24 — technical note shared technical noteortechnical note technical note (snapshot technical note inside coretechnical note
+    # same technical noteandtechnical note and same order — output technical noteand‌to‌technical noteand technical note before) ---
     core = _tv_curve_core(momentum, cfg, bg, bg_kind)
     markers = core["markers"]
-    bands = core["bands"]          # نسخهٔ ۱۰٫۲۴ — باندهای دقیقه‌های مشترک
-    rc_markers = core.get("rc_markers") or []   # نسخهٔ ۱۰٫۲۷ — کارت قرمز
+    bands = core["bands"]          # versiontechnical note 10technical note24 — withtechnical note minute‌technical note shared
+    rc_markers = core.get("rc_markers") or []   # versiontechnical note 10technical note27 — red card
     axis_scale = core["axis_scale"]
     info["axis_scale"] = float(axis_scale)
 
@@ -2257,17 +2257,17 @@ def draw_tv_momentum(ax, momentum: "MomentumEngine", cfg: "MomentumScoringConfig
     if core["pos_segs"] is not None:
         pos_segs, neg_segs = core["pos_segs"], core["neg_segs"]
 
-        # --- درخشش نئون نرم (زیر fill) ---
-        # نسخهٔ ۱۰٫۱۶ — آستانهٔ حذف هاله بر حسب «واحد ارتفاع نمودار»
-        # (نزدیک‌تر از ۱۸ واحد → بدون درخشش؛ دورتر از ۴۲ → کامل)
-        # تا با مقیاس پویا هم هالهٔ وسط نمودار واقعاً حذف شود.
+        # --- intechnical note technical noteandtechnical note smooth (technical note fill) ---
+        # versiontechnical note 10technical note16 — thresholdtechnical note technical note technical note technical note technical note «andtechnical note height chart»
+        # (technical note‌technical note from 18 andtechnical note → without intechnical note technical noteandtechnical note from 42 → complete)
+        # until with technical noteortechnical note technical noteandor technical note technical note andtechnical note chart andtechnical note technical note technical noteandtechnical note.
         info["glow"] = _tv_draw_glow(ax, pos_segs, neg_segs, W, H,
                                      clip, home_color, away_color,
                                      rect_h, float(zero_y),
                                      near_px=core["near_px"],
                                      far_px=core["far_px"])
 
-        # --- fill دو تیم (رنگ خودمان — بدون استروک زرد) ---
+        # --- fill technical noteand team (color technical noteandtechnical note — without istechnical noteandtechnical note technical note) ---
         where_pos = by <= zero_y
         where_neg = by > zero_y
         f1 = ax.fill_between(bx, by, zero_y, where=where_pos,
@@ -2283,9 +2283,9 @@ def draw_tv_momentum(ax, momentum: "MomentumEngine", cfg: "MomentumScoringConfig
         info["fills"] += 2
         info["px"] = int(len(bx))
         info["bins"] = int(len(bx))
-        # --- نسخهٔ ۱۰٫۲۶ — پرِ لبهٔ مخملی (feather) — عین مرجع کاربر ---
-        # استروک هم‌رنگِ نیمه‌شفاف روی مرز fill؛ گذار آلفا را پهن و مخملی
-        # می‌کند (پله‌های رستری در زوم نرم دیده می‌شوند). بدون تغییر شکل.
+        # --- versiontechnical note 10technical note26 — technical note technical notetotechnical note technical note (feather) — technical note technical note user ---
+        # istechnical noteandtechnical note technical note‌colortechnical note technical note‌technical note technical noteandtechnical note boundary filltechnical note technical note technical note technical note technical note and technical note
+        # technical note‌technical note (technical note‌technical note technical note in technical noteandtechnical note smooth technical note technical note‌technical noteandtechnical note). unchanged technical notetotal.
         try:
             _fw = float(os.environ.get("TV_EDGE_FEATHER_LW",
                                        TV_EDGE_FEATHER_LW_PX) or 0.0)
@@ -2314,10 +2314,10 @@ def draw_tv_momentum(ax, momentum: "MomentumEngine", cfg: "MomentumScoringConfig
                     _ln.set_gid(f"tv_edge_feather_{_tag}_{_si}")
                     _n_feather += 1
             info["edge_feathers"] = _n_feather
-        # (نسخهٔ ۱۰٫۱۰ — خط لبهٔ رنگی حذف شد: دو خط افقیِ نزدیک خط صفر
-        #  به رنگ میزبان/مهمان که کاربر دید، rim لبهٔ fill بود)
+        # (versiontechnical note 10technical note10 — line technical notetotechnical note colortechnical note technical note technical note: technical noteand line technical note technical note line technical note
+        #  to color Home/Away technical note user technical note rim technical notetotechnical note fill technical noteandtechnical note)
 
-    # --- خط صفر + خطوط عمودی HT/FT/ET — «هرگز محو نمی‌شوند» (روی fill) ---
+    # --- line technical note + lineandtechnical note technical noteandtechnical note HT/FT/ET — «never technical noteand technical note‌technical noteandtechnical note» (technical noteandtechnical note fill) ---
     zlw = max(2.0, TV_ZERO_LINE_LW_FRAC * rect_h)
     zl = ax.plot([l, r], [zero_y, zero_y], color="#f2f2f2",
                  linewidth=zlw, alpha=1.0, zorder=6,
@@ -2332,13 +2332,13 @@ def draw_tv_momentum(ax, momentum: "MomentumEngine", cfg: "MomentumScoringConfig
         vl.set_clip_path(clip)
         info["vlines"] += 1
 
-    # --- مارکر گل: خط عمود از توپ «تا خط صفر» (روی fill — بدون عبور از صفر) ---
+    # --- technical note technical note: line technical noteandtechnical note from ball «until line technical note» (technical noteandtechnical note fill — without technical noteandtechnical note from technical note) ---
     ball_d = TV_BALL_FRAC * rect_h
     ball_r = ball_d / 2.0
-    # نسخهٔ ۱۰٫۱۶ — ارتفاع توپ = «مقیاس − ۳۰» (شرط جدید کاربر — بند ۲):
-    # همهٔ توپ‌ها در «یک ارتفاع» مشترک می‌نشینند و اگر مقیاس پویا بعداً
-    # بزرگ‌تر شود، توپ‌ها همگی با هم ۳۰ واحد پایین‌تر از سقف جدید می‌روند.
-    # با مقیاس حداقل ۱۵۰ → توپ روی ±120 (رفتار نسخهٔ ۱۰٫۱۵ حفظ می‌شود).
+    # versiontechnical note 10technical note16 — height ball = «technical noteortechnical note − 30» (technical note new user — technical note 2):
+    # technical note ball‌technical note in «technical note height» shared technical note‌technical note and if technical noteortechnical note technical noteandor aftertechnical note
+    # technical note‌technical note technical noteandtechnical note ball‌technical note technical note with technical note 30 andtechnical note below‌technical note from technical note new technical note‌technical noteandtechnical note.
+    # with technical noteortechnical note technical note 150 → ball technical noteandtechnical note ±120 (technical noteuntiltechnical note versiontechnical note 10technical note15 technical note technical note‌technical noteandtechnical note).
     ball_val = float(axis_scale) - float(TV_BALL_GAP)
     ball_home_y = zero_y - (ball_val / axis_scale) * (zero_y - t)
     ball_away_y = zero_y + (ball_val / axis_scale) * (b - zero_y)
@@ -2350,22 +2350,22 @@ def draw_tv_momentum(ax, momentum: "MomentumEngine", cfg: "MomentumScoringConfig
         mmin = tv_marker_minute(mk)
         if mmin is None:
             continue
-        # نسخهٔ ۱۰٫۹ — گلِ داخل «وقت اضافه‌شدهٔ بخش قبل» (مثلاً ۴۵+۲ نیمهٔ اول)
-        # قبل از خط مرز فشرده می‌شود؛ گلِ بعد از ری‌استارت تایمر سر جایش
-        # (تمایز گذر اول/دوم دقیقه‌های مشترک با disp_time انجام می‌شود)
+        # versiontechnical note 10technical note9 — technical note inside «extra time‌technical note section before» (technical note 45+2 technical note first)
+        # before from line boundary technical note technical note‌technical noteandtechnical note technical note after from restart untiltechnical note technical note technical note
+        # (technical note technical note first/second minute‌technical note shared with disp_time technical note technical note‌technical noteandtechnical note)
         _mk_band = tv_band_for_time(bands, mk.get("game_time", None),
                                     mk.get("disp_time", None))
         gx = tv_minute_to_x(bg_kind, geom, mmin, _mk_band)
         team = str(mk.get("team", "Home"))
         if team == "Home":
-            byc = ball_home_y                     # ارتفاع ‎+120‎ — بالای منحنی
-            y0, y1 = byc + ball_r * 0.9, float(zero_y)   # تا خط صفر — نه بیشتر
+            byc = ball_home_y                     # height ‎+120‎ — withtechnical note technical note
+            y0, y1 = byc + ball_r * 0.9, float(zero_y)   # until line technical note — technical note technical note
         else:
-            byc = ball_away_y                     # ارتفاع ‎−120‎ — زیر منحنی
+            byc = ball_away_y                     # height ‎−120‎ — technical note technical note
             y0, y1 = byc - ball_r * 0.9, float(zero_y)
         if abs(y1 - y0) < 2.0:
             y1 = y0 + (2.0 if team == "Home" else -2.0)
-        # --- نسخهٔ ۱۰٫۹ — درخشش سفید نرم دور خط + توپ (زیر خط صفر) ---
+        # --- versiontechnical note 10technical note9 — intechnical note technical note smooth technical noteandtechnical note line + ball (technical note line technical note) ---
         info["marker_glows"] += _tv_draw_marker_glow(
             ax, gx, y0, y1, float(byc), ball_r, clip, rect_h,
             f"tv_goal_glow_{gi}")
@@ -2384,12 +2384,12 @@ def draw_tv_momentum(ax, momentum: "MomentumEngine", cfg: "MomentumScoringConfig
                             alpha=0.0, linestyle="None", zorder=10)[0]
         invisible.set_gid(f"tv_goal_ball_{gi}")
         if _ball_icon_ref is not None:
-            # نسخهٔ ۱۰٫۸ — imshow با extent داده‌ای: قطر توپ دقیقاً ball_d
-            # پیکسلِ تصویر اصلی (مستقل از dpi/نقطه/بوم — عین تصویر نمونه)
+            # versiontechnical note 10technical note8 — imshow with extent data‌technical note: technical note ball exactly ball_d
+            # technical note technical noteandtechnical note original (independent from dpi/technical note/technical noteandtechnical note — technical note technical noteandtechnical note sample)
             _hd = ball_d / 2.0
             _img = ax.imshow(_ball_icon_ref,
                              extent=(gx - _hd, gx + _hd,
-                                     byc + _hd, byc - _hd),   # نسخهٔ Y معکوس — ردیف ۰ = بالا
+                                     byc + _hd, byc - _hd),   # versiontechnical note Y technical noteandtechnical note — technical note 0 = withtechnical note
                              zorder=11, interpolation="bilinear")
             _img.set_clip_path(clip)
             _img.set_gid(f"tv_goal_ballimg_{gi}")
@@ -2402,8 +2402,8 @@ def draw_tv_momentum(ax, momentum: "MomentumEngine", cfg: "MomentumScoringConfig
             fb.set_gid(f"tv_goal_ballimg_{gi}")
         info["balls"] += 1
 
-    # --- نسخهٔ ۱۰٫۲۷ — مارکر کارت قرمز: عین گل، فقط آیکون کارت به‌جای توپ ---
-    # (اندازه‌ها از تصویر نمونهٔ کاربر: عرض ≈ 0.66×قطر توپ، ارتفاع ≈ 1.05×)
+    # --- versiontechnical note 10technical note27 — technical note red card: technical note technical note only icon card to‌technical note ball ---
+    # (technical notefromtechnical note‌technical note from technical noteandtechnical note sampletechnical note user: width ≈ 0.66×technical note balltechnical note height ≈ 1.05×)
     rc_w = TV_RC_W_FRAC * rect_h
     rc_h = TV_RC_H_FRAC * rect_h
     _rc_icon_ref = build_red_card_icon()
@@ -2416,7 +2416,7 @@ def draw_tv_momentum(ax, momentum: "MomentumEngine", cfg: "MomentumScoringConfig
         gx = tv_minute_to_x(bg_kind, geom, mmin, _mk_band)
         team = str(mk.get("team", "Home"))
         cyc = ball_home_y if team == "Home" else ball_away_y
-        # خط از لبهٔ کارت تا خط صفر — مثل گل: بدون عبور از صفر
+        # line from technical notetotechnical note card until line technical note — technical note technical note: without technical noteandtechnical note from technical note
         if team == "Home":
             y0, y1 = cyc + rc_h * 0.45, float(zero_y)
         else:
@@ -2458,10 +2458,10 @@ def draw_tv_momentum(ax, momentum: "MomentumEngine", cfg: "MomentumScoringConfig
             rfb.set_gid(f"tv_rc_cardimg_{ci}")
         info["rc_cards"] += 1
 
-    # --- لوگو/پرچم: ناحیهٔ مشکی چپ — میزبان بالا / مهمان پایین ---
-    # (نسخهٔ ۱۰٫۹ — imshow با extent داده‌ای: «بزرگ‌ترین بُعد» دقیقاً
-    #  TV_FLAG_TARGET_W پیکسلِ تصویر اصلی و عرض/ارتفاع کاملاً متناسب با
-    #  آرایهٔ تصویر — نسبت ابعاد هرگز به هم نمی‌ریزد؛ عین نمونه)
+    # --- logo/technical note: technical note technical note technical note — Home withtechnical note / Away below ---
+    # (versiontechnical note 10technical note9 — imshow with extent data‌technical note: «technical note‌technical note technical note» exactly
+    #  TV_FLAG_TARGET_W technical note technical noteandtechnical note original and width/height completetechnical note technical note with
+    #  technical note technical noteandtechnical note — ratio technical note never to technical note technical note‌technical note technical note sample)
     for side, farr, cy_frac in (("home", home_flag_arr, TV_FLAG_HOME_CY_FRAC),
                                 ("away", away_flag_arr, TV_FLAG_AWAY_CY_FRAC)):
         if farr is None:
@@ -2480,78 +2480,78 @@ def draw_tv_momentum(ax, momentum: "MomentumEngine", cfg: "MomentumScoringConfig
             _img.set_gid(f"tv_flag_{side}")
             info["flags"] += 1
         except Exception as ex:
-            clog(f"[TVFlag] رندر لوگو {side} ناموفق: {ex}")
+            clog(f"[TVFlag] render logo {side} failed: {ex}")
 
     info["texts"] = len(getattr(ax, "texts", []))
     return info
 
 
 # =====================================================================
-# ۲۵-ب — اسنپ‌شات نمودار TV روی صفحهٔ بازی (نسخهٔ ۱۰٫۱۱ — درخواست کاربر)
+# 25-technical note — technical noteagetechnical note‌technical note chart TV technical noteandtechnical note technical note withtechnical note (versiontechnical note 10technical note11 — request user)
 # ---------------------------------------------------------------------
-# چرخهٔ کامل:
-#   دقیقهٔ هدف − ۱  →  رندر آفلاین نمودار TV با پس‌زمینهٔ شفاف (کانال آلفای
-#                     تصویر اصلی حفظ می‌شود) → PNG موقت در tv_snapshot_tmp
-#   دقیقهٔ هدف      →  نمایش روی صفحهٔ کاربر (پایین-چپ) به مدت تنظیم‌شده
-#                     (پیش‌فرض ۲۰ ثانیهٔ واقعی) — دقیقاً همان شکل، همراه گل‌ها
-#   پایان بازی      →  توقف ≥۱۲ ثانیه در زمان >۹۰′ و >۱۲۰′ → نمایش آخرین نمودار
-#   ریست تایمر به ۰۰:۰۰ (دست جدید) → «ذخیرهٔ دائمی» آخرین نمودار بازی قبلی
-#                     در Momentum_Saves با نام مخصوص خودش
-# تنظیمات (چرخ‌دندهٔ تب TV): در tv_snapshot_settings.json کنار اسکریپت
-# ذخیره می‌شود و در اجراهای بعدی خودکار بازیابی می‌شود.
+# cycletechnical note complete:
+#   minutetechnical note technical note − 1  →  render technical note chart TV with technical note‌pitchtechnical note technical note (technical note technical note
+#                     technical noteandtechnical note original technical note technical note‌technical noteandtechnical note) → PNG technical noteandtechnical note in tv_snapshot_tmp
+#   minutetechnical note technical note      →  display technical noteandtechnical note technical note user (below-technical note) to technical note technical note‌technical note
+#                     (default 20 secondtechnical note real) — exactly same technical notetotaltechnical note technical note technical note‌technical note
+#   match end      →  stop ≥12 second in time >90′ and >120′ → display latest chart
+#   reset untiltechnical note to 00:00 (technical note new) → «savetechnical note technical note» latest chart withtechnical note beforetechnical note
+#                     in Momentum_Saves with technical note technical noteandtechnical note technical noteandtechnical note
+# technical note (technical note‌technical note technical note TV): in tv_snapshot_settings.json technical note technical note
+# save technical note‌technical noteandtechnical note and in technical note aftertechnical note automatic recovery technical note‌technical noteandtechnical note.
 # =====================================================================
-TV_SNAP_TMP_DIRNAME = "tv_snapshot_tmp"            # PNG موقت اسنپ‌شات‌ها
-TV_SNAP_SAVE_DIRNAME = "Momentum_Saves"            # ذخیرهٔ دائمی آخرین نمودارها
+TV_SNAP_TMP_DIRNAME = "tv_snapshot_tmp"            # PNG technical noteandtechnical note technical noteagetechnical note‌technical note‌technical note
+TV_SNAP_SAVE_DIRNAME = "Momentum_Saves"            # savetechnical note technical note latest charttechnical note
 TV_SNAP_SETTINGS_FILENAME = "tv_snapshot_settings.json"
 
 TV_SNAP_KEYS = ("h1", "h2", "et")
-# بازهٔ مجاز انتخاب دقیقه برای هر بخش (درخواست صریح کاربر)
+# withtechnical note technical notefrom technical note minute for technical note section (request technical note user)
 TV_SNAP_RANGES = {"h1": (38, 44), "h2": (80, 89), "et": (110, 119)}
-TV_SNAP_DEFAULT_MINUTE = {"h1": 43, "h2": 85, "et": 116}   # «پیش‌فرض»
+TV_SNAP_DEFAULT_MINUTE = {"h1": 43, "h2": 85, "et": 116}   # «default»
 
 TV_SNAP_DEFAULTS = {
     "h1_enabled": True,  "h1_minute": 43,
     "h2_enabled": True,  "h2_minute": 85,
     "et_enabled": True,  "et_minute": 116,
-    "show_seconds": 10,                  # ثانیهٔ واقعی (نه ثانیهٔ بازی)
+    "show_seconds": 10,                  # secondtechnical note real (technical note secondtechnical note withtechnical note)
     "end_enabled": True, "end_seconds": 20,
     "permanent_save": False,
     "timestamp": False,
 }
 
-# پایان بازی: توقفِ پیوستهٔ بازی حداقل این‌قدر ثانیه ادامه یابد تا «پایان»
-# تلقی شود (تشخیص جشن گل از سوت پایان؛ جشن کوتاه‌تر از این است)
+# match end: stoptechnical note technical noteandtechnical note withtechnical note technical note technical note‌technical notein second resume ortechnical note until «end»
+# technical note technical noteandtechnical note (detection technical note technical note from technical noteandtechnical note endtechnical note technical note technical noteanduntiltechnical note‌technical note from technical note is)
 TV_SNAP_END_STOP_CONFIRM_SEC = 12.0
 TV_SNAP_END_RESHOW_COOLDOWN_SEC = 45.0
-TV_SNAP_MIN_HIST_SEC = 90.0      # بازی با کمتر از این زمان ذخیرهٔ دائمی نمی‌شود
+TV_SNAP_MIN_HIST_SEC = 90.0      # withtechnical note with technical note from technical note time savetechnical note technical note technical note‌technical noteandtechnical note
 
-# --- v10.28 — چرخهٔ عمر تراکنشی نمایش (پورت v1.3 از نسخهٔ 2017؛ رفع باگ
-# «نمودار در دقیقهٔ هدف (۴۳/۸۵) نمایش داده نشد و فقط پس از پایان بازی آمد») —
-# قبلاً st["shown"]=True صرفاً با «تولید» action ست می‌شد؛ اگر dispatch/UI
-# گم می‌شد، همان نمایش برای همیشه از دست می‌رفت. حالا مصرف نهایی فقط با
-# تأیید (confirm) پس از پذیرش Show انجام می‌شود و شکست/مهلت‌گذشتِ تأیید →
-# تلاش مجدد خودکار بدون ری‌استارت بازی. ---
-TV_SNAP_SHOW_CONFIRM_TIMEOUT_SEC = 10.0   # مهلت رسیدن تأیید SHOWING (wall)
-TV_SNAP_SHOW_RETRY_BACKOFF_SEC = 3.0      # فاصلهٔ تلاش مجدد پس از شکست
-TV_SNAP_SHOW_MAX_RETRIES = 6              # حداکثر تلاش مجدد هر کلید میان‌بازی
-TV_SNAP_END_FAIL_MAX = 3                  # حداکثر شکست ثبت‌شدهٔ هر سطح پایان
+# --- v10.28 — cycletechnical note technical note technical note display (technical noteandtechnical note v1.3 from versiontechnical note 2017technical note technical note withtechnical note
+# «chart in minutetechnical note technical note (43/85) display data technical note and only technical note from match end technical note») —
+# beforetechnical note st["shown"]=True technical note with «technical noteandtechnical note» action technical note technical note‌technical note if dispatch/UI
+# technical note technical note‌technical note same display for always from technical note technical note‌technical note. technical note technical note technical note only with
+# confirmation (confirm) technical note from technical note Show technical note technical note‌technical noteandtechnical note and technical note/technical note‌technical note confirmation →
+# technical note technical note automatic without restart withtechnical note. ---
+TV_SNAP_SHOW_CONFIRM_TIMEOUT_SEC = 10.0   # technical note technical note confirmation SHOWING (wall)
+TV_SNAP_SHOW_RETRY_BACKOFF_SEC = 3.0      # distancetechnical note technical note technical note technical note from technical note
+TV_SNAP_SHOW_MAX_RETRIES = 6              # technical note technical note technical note technical note totaltechnical note technical noteortechnical note‌withtechnical note
+TV_SNAP_END_FAIL_MAX = 3                  # technical note technical note register‌technical note technical note level end
 
-# --- v10.29 (پورت v1.2.2 از 2017) — تضمین «پایان نمایش همهٔ نمودارها»
-# (رفع باگ میدانی «نمودار دقیقهٔ 116 نمایش داده شد و دیگر تمام نشد و
-# برای همیشه در گوشهٔ تصویر ماند»):
-#  ۱) پنجرهٔ اورلی GPU فقط در لحظهٔ Show واقعی نمایان و بعد از انیمیشن
-#     خروج (یا hide_now) در «سطح خود ویندوز» مخفی می‌شود — حذف از صفحه
-#     دیگر فقط به ارائهٔ فریم شفاف از ترد رندر وابسته نیست؛
-#  ۲) فرمان hide در جریان انیمیشن رها (drop) نمی‌شود؛
-#  ۳) نگهبان مدت نمایش در UI بعد از (مدت تنظیم‌شده + انیمیشن + این
-#     مهلت) پنهان‌سازی اجباری idempotent اجرا می‌کند. ---
-TV_SNAP_OVERDUE_GRACE_SEC = 8.0        # مهلت اضافهٔ نگهبان مدت نمایش (wall)
+# --- v10.29 (technical noteandtechnical note v1.2.2 from 2017) — technical note «end display technical note charttechnical note»
+# (technical note withtechnical note technical note «chart minutetechnical note 116 display data technical note and technical note technical note technical note and
+# for always in technical noteandtechnical note technical noteandtechnical note technical note»):
+#  1) windowtechnical note technical noteandtechnical note GPU only in momenttechnical note Show real technical noteortechnical note and after from technical note
+#     technical noteandtechnical note (or hide_now) in «level technical noteandtechnical note andtechnical noteandtechnical note» technical note technical note‌technical noteandtechnical note — technical note from technical note
+#     technical note only to technical note frame technical note from technical note render andtechnical note is nottechnical note
+#  2) technical note hide in technical noteortechnical note technical note technical note (drop) technical note‌technical noteandtechnical note
+#  3) watchdog technical note display in UI after from (technical note technical note‌technical note + technical note + technical note
+#     technical note) hidden‌technical notefromtechnical note technical notewithtechnical note idempotent technical note technical note‌technical note. ---
+TV_SNAP_OVERDUE_GRACE_SEC = 8.0        # technical note technical note watchdog technical note display (wall)
 
-# --- v10.28 — لاگ همیشه-فعلِ «مراحل نمایش اسنپ‌شات» (عین mlog نسخهٔ 2017):
-# فایل کوچک momentum_2026_snapshot.log کنار اسکریپت — فقط چند خط به
-# ازای هر نمایش (REQUESTED/QUEUED/EXECUTED/SHOWING/CONFIRMED/FAILED/...).
-# هدف: در آزمون میدانی معلوم شود هر نمایش دقیقاً تا کدام مرحله رسیده.
-# هیچ چاپ کنسولی ندارد (سیاست v10.24 حفظ شد) و با یک فلگ خاموش می‌شود. ---
+# --- v10.28 — log always-technical note «technical note display technical noteagetechnical note‌technical note» (technical note mlog versiontechnical note 2017):
+# file technical noteandtechnical note momentum_2026_snapshot.log technical note technical note — only technical note line to
+# fromtechnical note technical note display (REQUESTED/QUEUED/EXECUTED/SHOWING/CONFIRMED/FAILED/...).
+# technical note: in technical noteandtechnical note technical note technical noteandtechnical note technical noteandtechnical note technical note display exactly until codetechnical note technical note technical note.
+# technical note print technical noteandtechnical note technical note (technical noteis v10.24 technical note technical note) and with technical note technical note technical noteandtechnical note technical note‌technical noteandtechnical note. ---
 SNAP_STAGE_LOG_ENABLED = True
 SNAP_STAGE_LOG_MAX_BYTES = 512 * 1024
 SNAP_STAGE_LOG_FILENAME = "momentum_2026_snapshot.log"
