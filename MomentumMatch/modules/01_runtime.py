@@ -649,7 +649,10 @@ def _load_embedded_ptdata():
     return _mod
 
 try:
-    _PT_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+    _PT_SCRIPT_DIR = os.environ.get(
+    "VAR_MODS_BACKEND_DIR",
+    os.path.dirname(os.path.abspath(__file__))
+)
 except Exception:
     _PT_SCRIPT_DIR = os.getcwd()
 try:
