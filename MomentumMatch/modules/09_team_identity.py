@@ -1,7 +1,7 @@
 class _TeamWinAPI:
-    """لایهٔ نازک WinAPI — فقط خواندن (معادل read_uint8/read_int32/read_uint64
-    ابزار اصلی که اینجا روی safe_read سوار شده‌اند). برای تست مصنوعی، کاملاً
-    قابل جای‌گذاری است (api=...)."""
+    """layertext textfromtext WinAPI — only read (text read_uint8/read_int32/read_uint64
+    tool original text text textandtext safe_read textandtext text‌text). for test textandtext completetext
+    text text‌text is (api=...)."""
 
     def open_process(self, pid: int):
         return kernel32.OpenProcess(TEAM_PROCESS_ACCESS, False, pid)
@@ -15,24 +15,24 @@ class _TeamWinAPI:
 
 class TeamIdentityTracker:
     """
-    نسخه ۱۰٫۵ — خوانندهٔ مستقل هویت تیم میزبان/مهمان برای اسلات‌های لوگو.
+    version 10text5 — textandtext independent textandtext team Home/Away for text‌text logo.
 
-    ورودی خواندن (عین ابزار اصلی):
-      * بایت وضعیت منو:   base + 0x36F9AE0  (uint8)  — فقط ۹ ⇒ تشخیص تیم
-      * لیگ میزبان:       resolve(base+0x37F89D8, [0x40, 0xA0, 0x118]) → int32
-      * اسلات‌های میزبان: resolve(base+0x36F9C10, [0x8, 0x0, 0x100, 0x64]) + i*112
-      * لیگ مهمان:        resolve(base+0x36F9C10, [0xC8, 0x118]) → int32
-      * اسلات‌های مهمان:  resolve(base+0x36F9C10, [0xC8, 0x100, 0x64]) + i*112
-        (i = 0..36 — اسلات هدف = league_id + 1 — تصویر = Football_Database/{league}/{value}.png)
-    resolve دقیقاً مثل resolve_pointer_chain ابزار اصلی است: اول deref آدرس
-    شروع، بعد برای هر آفست به‌جز آخری deref؛ آخری فقط جمع می‌شود.
+    input read (text tool original):
+      * byte andtext menu:   base + 0x36F9AE0  (uint8)  — only 9 ⇒ detection team
+      * league Home:       resolve(base+0x37F89D8, [0x40, 0xA0, 0x118]) → int32
+      * text‌text Home: resolve(base+0x36F9C10, [0x8, 0x0, 0x100, 0x64]) + i*112
+      * league Away:        resolve(base+0x36F9C10, [0xC8, 0x118]) → int32
+      * text‌text Away:  resolve(base+0x36F9C10, [0xC8, 0x100, 0x64]) + i*112
+        (i = 0..36 — text text = league_id + 1 — textandtext = Football_Database/{league}/{value}.png)
+    resolve exactly text resolve_pointer_chain tool original is: first deref address
+    starttext after for text text to‌text text dereftext text only text text‌textandtext.
 
-    خروجی: ident هر تیم = (league_id, image_id) یا None.
-    None یعنی «هنوز انتخاب معتبری دیده نشده» → UI همان عبارت «میزبان/مهمان»
-    را نشان می‌دهد (نیاز صریح کاربر).
+    output: ident text team = (league_id, image_id) or None.
+    None text «still text validtext text text» → UI same textwithtext «Home/Away»
+    text text text‌text (textortext text user).
     """
 
-    # زنجیرهٔ پوینترها — عین ابزار اصلی
+    # chaintechnical note pointertechnical note — technical note tool original
     SIDE_CHAINS = {
         "home": {
             "league": (0x037F89D8, (0x40, 0xA0, 0x118)),
@@ -54,32 +54,32 @@ class TeamIdentityTracker:
         self.api = api or _TeamWinAPI()
         self._pid_finder = pid_finder or get_pid_by_name
         self._base_finder = base_finder or get_module_base
-        # [PT v2.3.0] منبع دادهٔ PT (تیم‌ها/رنگ‌ها/لوگو) — None یعنی مسیر قدیمی
+        # [PT v2.3.0] source datatechnical note PT (team‌technical note/color‌technical note/logo) — None technical note path legacy
         self.pt = pt if (pt is not None and pt.available()) else None
         self.h_process = None
         self.pid: Optional[int] = None
         self.base_addr: Optional[int] = None
         self.proc_name: Optional[str] = None
         self.connected = False
-        # آخرین انتخاب معتبرِ قابل‌نمایش هر تیم:
-        #   PT mode → int Team ID ؛ مسیر قدیمی → (league_id, image_id)
+        # latest technical note validtechnical note technical note‌display technical note team:
+        #   PT mode → int Team ID technical note path legacy → (league_id, image_id)
         self.ident = {"home": None, "away": None}
-        # [PT v2.3.0] آخرین جفت ID خوانده‌شده با زنجیرهٔ جدید
+        # [PT v2.3.0] latest technical note ID technical noteandtechnical note‌technical note with chaintechnical note new
         self._pt_ids_last = None
-        # [PT v2.3.2] کنترل‌ساز لاگ تشخیصی زنجیره (TEAM_PT_CHAIN)
+        # [PT v2.3.2] technical note‌technical notefrom log detectiontechnical note chain (TEAM_PT_CHAIN)
         self._pt_diag_last = {"t": 0.0, "msg": None}
-        # v2.0.6 — اگر هویت هرگز در منو ۹ دیده نشده باشد (اتصالِ وسط بازی)،
-        # هر ۲ ثانیه یک تلاشِ «نجات» می‌شود؛ گاردهای اعتبارسنجیِ
-        # _read_side_ident همان‌اند (لیگ ۰..۳۵ + اسلات ۱..۳۷)
+        # v2.0.6 — if technical noteandtechnical note never in menu 9 technical note technical note withtechnical note (technical note andtechnical note withtechnical note)technical note
+        # technical note 2 second technical note technical note «technical note» technical note‌technical noteandtechnical note technical note technical notewithtechnical noteagetechnical note
+        # _read_side_ident same‌technical note (league 0..35 + technical note 1..37)
         self._rescue_last = 0.0
-        # نسخهٔ ۱۰٫۶ — شمارهٔ رنگ هر تیم از دو بایت استاتیک (base+0x36F5198/A0)؛
-        # آدرس‌ها استاتیک‌اند و تغییر نمی‌کنند ⇒ در «هر تیکِ متصل» خوانده می‌شوند
-        # (بدون قفل وضعیت منو). None یعنی خواندن این تیک ناموفق بوده.
+        # versiontechnical note 10technical note6 — numbertechnical note color technical note team from technical noteand byte istechnical note (base+0x36F5198/A0)technical note
+        # address‌technical note istechnical note‌technical note and change technical note‌technical note ⇒ in «technical note technical note technical note» technical noteandtechnical note technical note‌technical noteandtechnical note
+        # (without technical note andtechnical note menu). None technical note read technical note technical note failed technical noteandtechnical note.
         self.color_idx = {"home": None, "away": None}
 
-    # ---------------- اتصال (مستقل از کد اصلی) ----------------
+    # ---------------- technical note (independent from code original) ----------------
     def _find_process(self):
-        """مثل attach_process ابزار اصلی: پیدا کردن pid + آدرس پایهٔ ماژول.
+        """text attach_process tool original: text text pid + address text textandtext.
         [suite v2.1.5] — bridge-first: when the ModBridge answers, its
         game_status IS the truth (the bridge polls FL_2026.exe every 2 s —
         a backend opened before the game still learns when it appears).
@@ -135,7 +135,7 @@ class TeamIdentityTracker:
         self.proc_name, self.pid, self.base_addr = name, pid, base
         self.h_process = h
         self.connected = True
-        # «وقتی وصل شد دیگر دست نگه می‌دارد» — فقط همین‌جا OpenProcess می‌شود
+        # «when andtechnical note technical note technical note technical note technical note technical note‌technical note» — only technical note‌technical note OpenProcess technical note‌technical noteandtechnical note
         self._log_event("TEAM_CONNECT", pid=pid, proc=name, base=fmt_ptr(base))
         return True
 
@@ -151,14 +151,14 @@ class TeamIdentityTracker:
         self.proc_name = None
         was = self.connected
         self.connected = False
-        # مثل ابزار اصلی: آخرین انتخاب معتبر حفظ می‌شود (اسلات پاک نمی‌شود)
+        # technical note tool original: latest technical note valid technical note technical note‌technical noteandtechnical note (technical note technical note technical note‌technical noteandtechnical note)
         if was:
             self._log_event("TEAM_DISCONNECT", reason=reason)
 
     def close(self):
         self._disconnect("app-close")
 
-    # ---------------- خواندن حافظه (عین ابزار اصلی) ----------------
+    # ---------------- read memory (technical note tool original) ----------------
     def _read_u8(self, addr: int) -> Optional[int]:
         b = self.api.read(self.h_process, addr, 1)
         return b[0] if b else None
@@ -176,8 +176,8 @@ class TeamIdentityTracker:
         return None
 
     def _resolve_chain(self, start_addr: int, offsets) -> Optional[int]:
-        """دقیقاً مثل resolve_pointer_chain ابزار اصلی (شامل معنای
-        «if not curr» برای صفر/خواندنِ ناموفق)."""
+        """exactly text resolve_pointer_chain tool original (text text
+        «if not curr» for text/readtext failed)."""
         try:
             curr = self._read_u64(start_addr)
             if not curr:
@@ -194,11 +194,11 @@ class TeamIdentityTracker:
             return None
 
     def _resolve_chain_u32(self, start_addr: int, offsets) -> Optional[int]:
-        """[PT v2.3.2] مثل _resolve_chain ولی deref های «۴ بایتی» — طبق تأکید
-        صریح کاربر («پوینتر ۴ بایتی» ، «هر دو آدرس ۴ بایت هستند»). خواندن
-        ۸ بایتی، ۴ بایتِ بعدیِ سلول را به‌عنوان dword بالا بلعیده و آدرس‌ها
-        را خراب می‌کند (دلیلِ «تیم‌ها پیدا نمی‌شوند» در تست میدانی). بقیهٔ
-        معنا دقیقاً یکسان است."""
+        """[PT v2.3.2] text _resolve_chain andtext deref text «4 bytetext» — text text
+        text user («pointer 4 bytetext» text «text textand address 4 byte text»). read
+        8 bytetext 4 bytetext aftertext textandtext text to‌textandtext dword withtext text and address‌text
+        text broken text‌text (text «team‌text text text‌textandtext» in test text). text
+        text exactly text is."""
         try:
             curr = self._read_u32(start_addr)
             if not curr:
@@ -215,8 +215,8 @@ class TeamIdentityTracker:
             return None
 
     def _pt_chain_diag(self, msg: str, force: bool = False):
-        """[PT v2.3.2] لاگ تشخیصی میدانی زنجیره (رویداد TEAM_PT_CHAIN) —
-        کنترل‌شده: هر پیام حداکثر هر ۳ ثانیه یک‌بار (force برای موفقیت)."""
+        """[PT v2.3.2] log detectiontext text chain (textandtext TEAM_PT_CHAIN) —
+        text‌text: text message text text 3 second text‌withtext (force for successfultext)."""
         now = time.monotonic()
         if not force and msg == self._pt_diag_last["msg"] \
                 and now - self._pt_diag_last["t"] < 3.0:
@@ -231,14 +231,14 @@ class TeamIdentityTracker:
             pass
 
     def _read_team_ids_pt(self) -> Optional[Tuple[int, int]]:
-        """[PT v2.3.0/v2.3.2] (home_id, away_id) با زنجیرهٔ کاربر:
-        [[base+0x03705E20]+0x98]+0x228 ⇒ ۴ بایت میزبان، +۴ مهمان.
-        [v2.3.2] پوینترهای زنجیره «۴ بایتی» خوانده می‌شوند (تأکید کاربر) —
-        اندازه‌گیری میدانی کاربر: میزبان @6E948708 و مهمان @6E94870C یعنی
-        مهمان = آدرس میزبان + ۴ بایت (نه +۱) و هر دو مقدار ۴ بایتی‌اند.
-        اگر مسیر ۴ بایتی اعتبار نگشت، مسیر ۸ بایتیِ قدیم fallback می‌شود؛
-        هر دو مسیر همان اعتبارسنجی دیتابیس PT را دارند (زبالهٔ حافظه تیم
-        نمی‌سازد) و هر وضعیت یک رویداد TEAM_PT_CHAIN کنترل‌شده می‌نویسد."""
+        """[PT v2.3.0/v2.3.2] (home_id, away_id) with chaintext user:
+        [[base+0x03705E20]+0x98]+0x228 ⇒ 4 byte Hometext +4 Away.
+        [v2.3.2] pointertext chain «4 bytetext» textandtext text‌textandtext (text user) —
+        textfromtext‌text text user: Home @6E948708 and Away @6E94870C text
+        Away = address Home + 4 byte (text +1) and text textand value 4 bytetext‌text.
+        if path 4 bytetext textwithtext text path 8 bytetext text fallback text‌textandtext
+        text textand path same textwithtextagetext textuntiltext PT text text (textwithtext memory team
+        text‌textfromtext) and text andtext text textandtext TEAM_PT_CHAIN text‌text text‌textandtext."""
         if self.pt is None or not self.h_process or not self.base_addr:
             return None
         try:
@@ -251,7 +251,7 @@ class TeamIdentityTracker:
                         f"{tag}: chain resolve failed")
                     continue
                 home = self._read_u32(final)
-                # مهمان = آدرس میزبان + ۴ بایت (کاربر: 6E948708 → 6E94870C)
+                # Away = address Home + 4 byte (user: 6E948708 → 6E94870C)
                 away = self._read_u32(final + 4)
                 if home is None or away is None:
                     self._pt_chain_diag(
@@ -278,9 +278,9 @@ class TeamIdentityTracker:
         return None
 
     def _read_side_ident(self, side: str) -> Optional[Tuple[int, int]]:
-        """(league_id, image_id) یا None. league باید معتبر باشد و اسلات هدف
-        (league+1) در بازهٔ 1..37 بیفتد؛ وگرنه None (انتخاب جدیدی نیست و
-        نمایش قبلی مثل ابزار اصلی حفظ می‌شود)."""
+        """(league_id, image_id) or None. league must valid withtext and text text
+        (league+1) in withtext 1..37 text andtext None (text newtext is not and
+        display beforetext text tool original text text‌textandtext)."""
         try:
             lg_base_off, lg_chain = self.SIDE_CHAINS[side]["league"]
             lg_addr = self._resolve_chain(self.base_addr + lg_base_off, lg_chain)
@@ -300,30 +300,30 @@ class TeamIdentityTracker:
         except Exception:
             return None
 
-    # ---------------- تیک اصلی ----------------
-    # نسخهٔ ۱۰٫۶ — دقیقاً طبق نیاز کاربر:
-    #   * تا وقتی وصل نیستیم «هر ۱ ثانیه» (زیرکنترل حلقهٔ بیرونی) تلاش اتصال؛
-    #   * به محض اتصال، از همان لحظه به بعد خواندن اسلات‌ها «ریل‌تایم» است
-    #     (حلقهٔ بیرونی بازه را روی ۵۰ms می‌گذارد — مثل realtime_loop ابزار
-    #     اصلی) و دیگر هیچ تلاش اتصالی/اسکن پروسه در تیک‌های سالم انجام
-    #     نمی‌شود («وقتی وصل شد دیگر دست نگه می‌دارد»). حیات پروسه فقط از
-    #     راه خواندن حافظه کنترل می‌شود: شکست خواندن ⇒ یک‌بار اسکن تأیید.
+    # ---------------- technical note original ----------------
+    # versiontechnical note 10technical note6 — exactly technical note technical noteortechnical note user:
+    #   * until when andtechnical note is nottechnical note «technical note 1 second» (technical note technical note outsidetechnical note) technical note technical note
+    #   * to technical note technical note from same moment to after read technical note‌technical note «technical note‌untiltechnical note» is
+    #     (technical note outsidetechnical note withtechnical note technical note technical noteandtechnical note 50ms technical note‌technical note — technical note realtime_loop tool
+    #     original) and technical note technical note technical note technical note/technical note technical noteandtechnical note in technical note‌technical note healthy technical note
+    #     technical note‌technical noteandtechnical note («when andtechnical note technical note technical note technical note technical note technical note‌technical note»). technical noteortechnical note technical noteandtechnical note only from
+    #     technical note read memory technical note technical note‌technical noteandtechnical note: technical note read ⇒ technical note‌withtechnical note technical note confirmation.
     def poll(self) -> Dict[str, Any]:
-        """یک تیک کامل:
-          ۱) اگر وصل نیستیم → تلاش اتصال (پیدا کردن پروسه + OpenProcess).
-          ۲) اگر وصلیم → فقط خواندن حافظه (ریل‌تایم)؛ اسکن پروسه فقط در
-             شکست خواندن برای تشخیص مرگ/تعویض پروسه انجام می‌شود.
-          ۳) [PT v2.3.1] حالت PT: زنجیرهٔ جدید در «هر تیک» خوانده می‌شود،
-             ولی ثبتِ تشخیص فقط وقتی منو = ۹ است (قفل یکسان در دو مسیر)؛
-             بقیهٔ وضعیت‌ها → قفل روی آخرین انتخاب معتبر.
-          ۴) مسیر قدیمی (بدون PT): وضعیت منو = ۹ → خواندن زندهٔ هر دو تیم؛
-             بقیهٔ وضعیت‌ها → قفل روی آخرین انتخاب معتبر (مثل ابزار اصلی).
-          ۵) در هر تیکِ متصل، دو بایت استاتیک شمارهٔ رنگ هم خوانده می‌شود.
-        خروجی: {"home": ident|None, "away": ident|None,
+        """text text complete:
+          1) if andtext is nottext → text text (text text textandtext + OpenProcess).
+          2) if andtext → only read memory (text‌untiltext)text text textandtext only in
+             text read for detection text/textandtext textandtext text text‌textandtext.
+          3) [PT v2.3.1] text PT: chaintext new in «text text» textandtext text‌textandtext
+             andtext registertext detection only when menu = 9 is (text text in textand path)text
+             text andtext‌text → text textandtext latest text valid.
+          4) path legacy (without PT): andtext menu = 9 → read livetext text textand teamtext
+             text andtext‌text → text textandtext latest text valid (text tool original).
+          5) in text text text textand byte istext numbertext color text textandtext text‌textandtext.
+        output: {"home": ident|None, "away": ident|None,
                 "color_idx": {"home": int|None, "away": int|None},
                 "connected": bool, "menu": int|None}"""
         if not self.connected:
-            # --- فقط اینجا (و در شکست خواندن) پروسه جست‌وجو می‌شود ---
+            # --- only technical note (and in technical note read) technical noteandtechnical note technical note‌andtechnical noteand technical note‌technical noteandtechnical note ---
             found = None
             try:
                 found = self._find_process()
@@ -334,13 +334,13 @@ class TeamIdentityTracker:
             if not self._connect(*found):
                 return self._snapshot(None)
 
-        # --- متصل: خواندن ریل‌تایم (بدون هیچ اسکن در تیک سالم) ---
+        # --- technical note: read technical note‌untiltechnical note (without technical note technical note in technical note healthy) ---
         try:
             menu = self._read_u8(self.base_addr + TEAM_MENU_STATE_OFFSET)
         except Exception:
             menu = None
         if menu is None:
-            # شکست خواندن ⇒ یک‌بار بررسی حیات پروسه (اسکن فقط اینجا)
+            # technical note read ⇒ technical note‌withtechnical note check technical noteortechnical note technical noteandtechnical note (technical note only technical note)
             found = None
             try:
                 found = self._find_process()
@@ -350,7 +350,7 @@ class TeamIdentityTracker:
                 self._disconnect("process-gone")
                 return self._snapshot(None)
             if (int(found[1]) != int(self.pid)) or (int(found[2]) != int(self.base_addr)):
-                # پروسهٔ دیگری (بازی ری‌استارت‌شده) → اتصال به پروسهٔ جدید
+                # technical noteandtechnical note technical note (withtechnical note restart‌technical note) → technical note to technical noteandtechnical note new
                 self._disconnect("process-changed")
                 if not self._connect(*found):
                     return self._snapshot(None)
@@ -358,11 +358,11 @@ class TeamIdentityTracker:
                     menu = self._read_u8(self.base_addr + TEAM_MENU_STATE_OFFSET)
                 except Exception:
                     menu = None
-            # else: خطای گذرای خواندن — اتصال سالم حفظ می‌شود
+            # else: Errortechnical note technical note read — technical note healthy technical note technical note‌technical noteandtechnical note
 
-        # --- [PT v2.3.1] حالت PT: زنجیرهٔ جدید در «هر تیک» خوانده می‌شود،
-        #     اما ثبتِ تشخیص فقط وقتی منو = ۹ است (عین مسیر قدیمی — یک قفل
-        #     واحد برای کل تشخیص تیم)؛ بقیهٔ وضعیت‌ها ⇒ آخرین ID معتبر می‌ماند ---
+        # --- [PT v2.3.1] technical note PT: chaintechnical note new in «technical note technical note» technical noteandtechnical note technical note‌technical noteandtechnical note
+        #     technical note registertechnical note detection only when menu = 9 is (technical note path legacy — technical note technical note
+        #     andtechnical note for total detection team)technical note technical note andtechnical note‌technical note ⇒ latest ID valid technical note‌technical note ---
         if self.pt is not None:
             if menu == TEAM_MENU_DETECT_VALUE:
                 ids = self._read_team_ids_pt()
@@ -377,7 +377,7 @@ class TeamIdentityTracker:
                     if first:
                         self._log("PT team IDs detected: "
                                   f"{self.pt.team_name(ids[0])} vs {self.pt.team_name(ids[1])}")
-            # منو != ۹ ⇒ هیچ ثبتی انجام نمی‌شود (قفل — عین مسیر قدیمی)
+            # menu != 9 ⇒ technical note registertechnical note technical note technical note‌technical noteandtechnical note (technical note — technical note path legacy)
             for side, off in (("home", TEAM_COLOR_IDX_OFFSET_HOME),
                               ("away", TEAM_COLOR_IDX_OFFSET_AWAY)):
                 try:
@@ -387,18 +387,18 @@ class TeamIdentityTracker:
             return self._snapshot(menu)
 
         if menu == TEAM_MENU_DETECT_VALUE:
-            # منو = ۹: خواندن زندهٔ هر دو تیم (قفل فقط بیرون از ۹ — عین PT)
+            # menu = 9: read livetechnical note technical note technical noteand team (technical note only outside from 9 — technical note PT)
             for side in ("home", "away"):
                 ident = self._read_side_ident(side)
                 if ident is not None and ident != self.ident[side]:
                     self.ident[side] = ident
                     self._log_event("TEAM_IDENT", side=side, league=ident[0], img=ident[1])
         elif self.ident["home"] is None or self.ident["away"] is None:
-            # v2.0.6 — در مسابقه: اگر هویت هرگز در منو ۹ دیده نشده (اتصالِ
-            # وسطِ بازی)، هر ۲ ثانیه تلاشِ نجات؛ اگر زنجیره‌ها در
-            # بازی معتبر باشند همان مقادیر واقعی برمی‌گردند وگرنه None می‌ماند
-            # (بخواندنِ نامعتبر توسط گاردهای _read_side_ident رد می‌شود).
-            # بدون این، بنرِ نشانِ تیم‌ها (دقیقهٔ اول) هرگز نمایش داده نمی‌شد.
+            # v2.0.6 — in technical note: if technical noteandtechnical note never in menu 9 technical note technical note (technical note
+            # andtechnical note withtechnical note)technical note technical note 2 second technical note technical note if chain‌technical note in
+            # withtechnical note valid withtechnical note same technical note real technical note‌technical note andtechnical note None technical note‌technical note
+            # (technical notereadtechnical note invalid technical noteandtechnical note technical note _read_side_ident technical note technical note‌technical noteandtechnical note).
+            # without technical note technical note technical note team‌technical note (minutetechnical note first) never display data technical note‌technical note.
             now = time.time()
             if now - self._rescue_last >= 2.0:
                 self._rescue_last = now
@@ -410,9 +410,9 @@ class TeamIdentityTracker:
                         self.ident[side] = ident
                         self._log_event("TEAM_IDENT_RESCUE", side=side,
                                         league=ident[0], img=ident[1])
-        # منو != ۹ یا خواندن ناموفق → قفل: آخرین انتخاب معتبر می‌ماند
+        # menu != 9 or read failed → technical note: latest technical note valid technical note‌technical note
 
-        # --- نسخهٔ ۱۰٫۶: شمارهٔ رنگ هر دو تیم (استاتیک — بدون قفل منو) ---
+        # --- versiontechnical note 10technical note6: numbertechnical note color technical note technical noteand team (istechnical note — without technical note menu) ---
         for side, off in (("home", TEAM_COLOR_IDX_OFFSET_HOME),
                           ("away", TEAM_COLOR_IDX_OFFSET_AWAY)):
             try:
@@ -428,9 +428,9 @@ class TeamIdentityTracker:
                 "connected": self.connected, "menu": menu}
 
     def logo_path_for(self, ident) -> Optional[str]:
-        """[PT v2.3.0] حالت PT: Asset.zip → Teams/{team_id}.png (مسیر کش)؛
-        مسیر قدیمی: Football_Database/{league}/{img}.png؛ اگر موجود نبود None
-        (None یعنی UI همان عبارت «میزبان/مهمان» را نشان دهد)."""
+        """[PT v2.3.0] text PT: Asset.zip → Teams/{team_id}.png (path text)text
+        path legacy: Football_Database/{league}/{img}.pngtext if textandtextandtext textandtext None
+        (None text UI same textwithtext «Home/Away» text text text)."""
         if not ident:
             return None
         if self.pt is not None and isinstance(ident, int):
@@ -447,7 +447,7 @@ class TeamIdentityTracker:
         except Exception:
             return None
 
-    # ---------------- لاگ (در همان momentum_debug_log.txt) ----------------
+    # ---------------- log (in same momentum_debug_log.txt) ----------------
     def _log_event(self, tag: str, **kv):
         if self.logger is not None:
             try:
@@ -464,42 +464,42 @@ class TeamIdentityTracker:
 
 
 # =====================================================================
-# ۲۶-ب — انتخاب رنگ نمودار از leagues_data.json (نسخهٔ ۱۰٫۶؛ مسیر ۱۰٫۹)
+# 26-technical note — technical note color chart from leagues_data.json (versiontechnical note 10technical note6technical note path 10technical note9)
 # ---------------------------------------------------------------------
-# منبع رنگ: فایل leagues_data.json داخل پوشهٔ «Football_Database» کنار
-# اسکریپت (اگر آنجا نبود، نسخهٔ کنار اسکریپت هم بررسی می‌شود؛ هیچ داده‌ای از
-# داخل کد هاردکد نمی‌شود). ساختار: { league_id: { "teams": { team_id:
-# { "colors": {"Color 0": [r,g,b], "Color 1": ..., ...} } } } } که
-# r/g/b اعشاریِ 0..1 است (مقدار واقعی ÷ 255 ⇒ برای رنگ اصلی ×255).
+# source color: file leagues_data.json inside foldertechnical note «Football_Database» technical note
+# technical note (if technical note technical noteandtechnical note versiontechnical note technical note technical note technical note check technical note‌technical noteandtechnical note technical note data‌technical note from
+# inside code technical notecode technical note‌technical noteandtechnical note). structure: { league_id: { "teams": { team_id:
+# { "colors": {"Color 0": [r,g,b], "Color 1": ..., ...} } } } } technical note
+# r/g/b decimaltechnical note 0..1 is (value real ÷ 255 ⇒ for color original ×255).
 #
-# شمارهٔ رنگِ هر تیم از دو بایت استاتیک ۱ بیتی خوانده می‌شود:
-#   میزبان: base + 0x36F5198   (مطلق: 0x1436F5198)
-#   مهمان:  base + 0x36F51A0   (مطلق: 0x1436F51A0)
-# مقدار هر بایت دقیقاً اندیس رنگ است (از صفر شروع می‌شود).
+# numbertechnical note colortechnical note technical note team from technical noteand byte istechnical note 1 technical note technical noteandtechnical note technical note‌technical noteandtechnical note:
+#   Home: base + 0x36F5198   (technical note: 0x1436F5198)
+#   Away:  base + 0x36F51A0   (technical note: 0x1436F51A0)
+# value technical note byte exactly technical note color is (from technical note start technical note‌technical noteandtechnical note).
 #
-# قوانین انتخاب (طبق مشخصات کاربر):
-#   ۱) اگر شمارهٔ رنگ از تعداد رنگ‌های تعریف‌شده بیشتر بود (مثلاً 2 وقتی
-#      بزرگ‌ترین شمارهٔ تیم 1 است) ⇒ آخرین رنگ موجود استفاده می‌شود.
-#   ۲) رنگ سیاه/خیلی تیره که روی پس‌زمینهٔ تاریک نمودار خوب دیده نمی‌شود
-#      ⇒ با رنگی جایگزین می‌شود که هم با پس‌زمینه هم با رنگ تیم مقابل
-#      کنتراست داشته باشد.
-#   ۳) اگر رنگ دو تیم شبیه هم بود (کنتراست ناکافی) ⇒ رنگ «مهمان» تعویض
-#      می‌شود (با کنتراست کافی نسبت به پس‌زمینه و رنگ میزبان).
-#   ۴) کنار هر تیم همیشه یک دایره (رنگ انتخابی نمودار)؛ در حالت‌های ۲ و ۳
-#      دو دایره: رنگ اصلی + رنگ تعویضی (رندر در MomentumApp).
-#   ۵) اگر هیچ‌کدام رنگ نداشتند ⇒ دیفالت قرمز/سفید؛ اگر فقط یکی داشت ⇒
-#      برای تیم مقابلِ بی‌رنگ، خودکار رنگِ هم‌کنتراست انتخاب می‌شود.
-#   ۶) مقادیر فایل اعشاری 0..1 است (÷255) ⇒ در تبدیل در 255 ضرب می‌شود.
-# تابعِ resolve کاملاً pure است (بدون حافظه/TK) و برای تست مصنوعی باز است.
+# technical noteandtechnical note technical note (technical note specification user):
+#   1) if numbertechnical note color from count color‌technical note technical note‌technical note technical note technical noteandtechnical note (technical note 2 when
+#      technical note‌technical note numbertechnical note team 1 is) ⇒ latest color technical noteandtechnical noteandtechnical note istechnical note technical note‌technical noteandtechnical note.
+#   2) color technical noteortechnical note/technical note technical note technical note technical noteandtechnical note technical note‌pitchtechnical note untiltechnical note chart technical noteandtechnical note technical note technical note‌technical noteandtechnical note
+#      ⇒ with colortechnical note fallback technical note‌technical noteandtechnical note technical note technical note with technical note‌pitchtechnical note technical note with color team technical note
+#      technical noteis technical note withtechnical note.
+#   3) if color technical noteand team technical note technical note technical noteandtechnical note (technical noteis technical note) ⇒ color «Away» technical noteandtechnical note
+#      technical note‌technical noteandtechnical note (with technical noteis technical note ratio to technical note‌pitchtechnical note and color Home).
+#   4) technical note technical note team always technical note technical note (color technical note chart)technical note currentlytechnical note‌technical note 2 and 3
+#      technical noteand technical note: color original + color technical noteandtechnical note (render in MomentumApp).
+#   5) if technical note‌codetechnical note color technical note ⇒ technical note technical note/technical note if only technical note technical note ⇒
+#      for team technical note technical note‌colortechnical note automatic colortechnical note technical note‌technical noteis technical note technical note‌technical noteandtechnical note.
+#   6) technical note file decimaltechnical note 0..1 is (÷255) ⇒ in technical note in 255 technical note technical note‌technical noteandtechnical note.
+# untiltechnical note resolve completetechnical note pure is (without memory/TK) and for test technical noteandtechnical note withtechnical note is.
 # =====================================================================
 
-DEFAULT_HOME_CHART_COLOR = (230, 57, 70)    # ‎#e63946 — قرمزِ همیشه‌قبلی میزبان
-DEFAULT_AWAY_CHART_COLOR = (245, 245, 245)  # ‎#f5f5f5 — سفیدِ همیشه‌قبلی مهمان
-CHART_PANEL_BG_RGB = (17, 26, 43)           # ‎#111a2b — پس‌زمینهٔ پنل نمودار
+DEFAULT_HOME_CHART_COLOR = (230, 57, 70)    # ‎#e63946 — technical note always‌beforetechnical note Home
+DEFAULT_AWAY_CHART_COLOR = (245, 245, 245)  # ‎#f5f5f5 — technical note always‌beforetechnical note Away
+CHART_PANEL_BG_RGB = (17, 26, 43)           # ‎#111a2b — technical note‌pitchtechnical note technical note chart
 
-# سکوی کاندیدها (اولین رنگِ قابل‌قبول انتخاب می‌شود؛ ترتیب = ترجیح):
-# میزبان با قرمز شروع می‌شود؛ مهمان با سفید — تا در حالت‌های خودکار تا
-# حد امکان همان ظاهر کلاسیک قرمز/سفید حفظ شود.
+# technical noteandtechnical note technical note (firsttechnical note colortechnical note technical note‌technical noteandtechnical note technical note technical note‌technical noteandtechnical note order = technical note):
+# Home with technical note start technical note‌technical noteandtechnical note Away with technical note — until currentlytechnical note‌technical note automatic until
+# technical note technical note same technical note totaltechnical note technical note/technical note technical note technical noteandtechnical note.
 TEAM_COLOR_HOME_PREF = ('#e63946', '#ff8c42', '#ffd166', '#4cc9f0',
                         '#a3e635', '#f5f5f5', '#ff5d8f')
 TEAM_COLOR_AWAY_PREF = ('#f5f5f5', '#4cc9f0', '#ffd166', '#a3e635',
@@ -525,7 +525,7 @@ def _rgb_to_hex(rgb) -> str:
 
 
 def _relative_luminance(rgb) -> float:
-    """روشنایی نسبی WCAG (0..1) — برای سنجش کنتراست واقعی با پس‌زمینه."""
+    """textandtext text WCAG (0..1) — for agetext textis real with text‌pitchtext."""
     def _lin(c):
         c = max(0.0, min(1.0, c / 255.0))
         return c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4
@@ -534,7 +534,7 @@ def _relative_luminance(rgb) -> float:
 
 
 def _contrast_ratio(rgb_a, rgb_b) -> float:
-    """نسبت کنتراست WCAG (1..21) — معیار «دیده‌شدن روی پس‌زمینه»."""
+    """ratio textis WCAG (1..21) — textortext «text‌text textandtext text‌pitchtext»."""
     la, lb = _relative_luminance(rgb_a), _relative_luminance(rgb_b)
     lighter, darker = max(la, lb), min(la, lb)
     return (lighter + 0.05) / (darker + 0.05)
@@ -546,44 +546,44 @@ def _rgb_distance(a, b) -> float:
 
 class TeamColorResolver:
     """
-    نسخهٔ ۱۰٫۶ — حل‌کنندهٔ رنگ fill نمودار برای میزبان/مهمان.
+    versiontext 10text6 — text‌text color fill chart for Home/Away.
 
-    ورودی‌ها از TeamIdentityTracker می‌آیند:
-      * ident هر تیم = (league_id, image_id)  — کلید جست‌وجو در JSON
-      * idx هر تیم = بایت استاتیک شمارهٔ رنگ (یا None اگر خوانده نشد)
-    خروجی resolve: برای هر تیم
-      {"final": (r,g,b),        # رنگ نهایی رسم نمودار
-       "original": (r,g,b)|None, # رنگ اصلیِ انتخاب‌شده از فایل (None = از فایل نبود)
-       "replaced": bool}         # True ⇒ دو دایره (اصلی + تعویضی) کنار تیم
-    فایل JSON با کش بر اساس mtime خوانده می‌شود ⇒ اگر کاربر فایل را ویرایش
-    کند، بدون ری‌استارت برنامه اعمال می‌شود.
+    input‌text from TeamIdentityTracker text‌text:
+      * ident text team = (league_id, image_id)  — totaltext text‌andtextand in JSON
+      * idx text team = byte istext numbertext color (or None if textandtext text)
+    output resolve: for text team
+      {"final": (r,g,b),        # color text text chart
+       "original": (r,g,b)|None, # color originaltext text‌text from file (None = from file textandtext)
+       "replaced": bool}         # True ⇒ textand text (original + textandtext) text team
+    file JSON with text text text mtime textandtext text‌textandtext ⇒ if user file text andtext
+    text without restart text text text‌textandtext.
     """
 
-    # کمینهٔ کنتراست قابل‌قبول با پس‌زمینهٔ پنل (WCAG) — زیرِ آن «تاریک» تلقی
-    # می‌شود (مشکی ≈ 0.8 ، سرمه‌ای ≈ 1.0 ، خاکستری تیره ≈ 1.7 ، قرمزِ فعلی ≈ 4.2)
+    # technical note technical noteis technical note‌technical noteandtechnical note with technical note‌pitchtechnical note technical note (WCAG) — technical note technical note «untiltechnical note» technical note
+    # technical note‌technical noteandtechnical note (technical note ≈ 0.8 technical note technical note‌technical note ≈ 1.0 technical note technical note technical note ≈ 1.7 technical note technical note technical note ≈ 4.2)
     MIN_CONTRAST_BG = 2.0
-    # کمینهٔ فاصلهٔ مجاز بین رنگ دو تیم (فاصلهٔ RGB در 0..441 و اختلاف روشنایی)
+    # technical note distancetechnical note technical notefrom technical note color technical noteand team (distancetechnical note RGB in 0..441 and technical note technical noteandtechnical note)
     MIN_RGB_DIST_OPPONENT = 90.0
     MIN_LUM255_DIFF_OPPONENT = 30.0
-    # رنگ جایگزین باید از رنگ اصلیِ تعویض‌شده هم به‌قدر کافی متفاوت باشد
+    # color fallback must from color originaltechnical note technical noteandtechnical note‌technical note technical note to‌technical notein technical note technical noteandtechnical note withtechnical note
     MIN_RGB_DIST_FROM_ORIGINAL = 60.0
 
     def __init__(self, json_path: Optional[str] = None, logger=None, pt=None):
-        # نسخهٔ ۱۰٫۹ — مسیر پیش‌فرض: پوشهٔ Football_Database کنار اسکریپت؛
-        # اگر آنجا نبود، مسیر قدیمی (کنار اسکریپت) هم بررسی می‌شود.
-        # [PT v2.3.0] اگر PT فعال باشد رنگ‌ها از teams_players_PES2021.txt
-        # می‌آیند (RGB ستون اصلی) و JSON فقط fallback است.
+        # versiontechnical note 10technical note9 — path default: foldertechnical note Football_Database technical note technical note
+        # if technical note technical noteandtechnical note path legacy (technical note technical note) technical note check technical note‌technical noteandtechnical note.
+        # [PT v2.3.0] if PT active withtechnical note color‌technical note from teams_players_PES2021.txt
+        # technical note‌technical note (RGB technical noteandtechnical note original) and JSON only fallback is.
         self.pt = pt if (pt is not None and pt.available()) else None
-        self.json_path = json_path          # None = انتخاب خودکار از کاندیدها
+        self.json_path = json_path          # None = technical note automatic from technical note
         self.logger = logger
-        self._cache = None            # آخرین JSON سالم
+        self._cache = None            # latest JSON healthy
         self._cache_mtime = None
-        self._active_path = None      # مسیر فایل فعال آخرین خواندن
-        self._failed_mtime = None     # برای «فقط یک‌بار» لاگ‌کردن فایل خراب
+        self._active_path = None      # path file active latest read
+        self._failed_mtime = None     # for «only technical note‌withtechnical note» log‌technical note file broken
         self._logged_loaded = False
         self._logged_missing = False
 
-    # ---------------- فایل leagues_data.json ----------------
+    # ---------------- file leagues_data.json ----------------
     def _log(self, msg: str):
         if self.logger is not None:
             try:
@@ -592,10 +592,10 @@ class TeamColorResolver:
                 pass
 
     def _resolve_json_path(self) -> Optional[str]:
-        """نسخهٔ ۱۰٫۹ — انتخاب فایل leagues_data.json:
-        اولویت ۱: Football_Database/leagues_data.json کنار اسکریپت
-        اولویت ۲: leagues_data.json کنار اسکریپت (سازگاری با نسخه‌های قبل)
-        مسیر صریح داده‌شده (json_path) همیشه اولویت دارد."""
+        """versiontext 10text9 — text file leagues_data.json:
+        firstandtext 1: Football_Database/leagues_data.json text text
+        firstandtext 2: leagues_data.json text text (textfromtext with version‌text before)
+        path text data‌text (json_path) always firstandtext text."""
         if self.json_path:
             return self.json_path
         for cand in team_json_candidates():
@@ -607,13 +607,13 @@ class TeamColorResolver:
         return None
 
     def _data(self) -> Optional[dict]:
-        """خواندن فایل با کش mtime؛ فایل نبود/خراب بود ⇒ None (دیفالت‌ها)."""
+        """read file with text mtimetext file textandtext/broken textandtext ⇒ None (text‌text)."""
         path = self._resolve_json_path()
         if path is None:
             if not self._logged_missing:
                 self._logged_missing = True
-                self._log("leagues_data.json پیدا نشد (Football_Database/ و کنار "
-                          "اسکریپت) — رنگ‌های پیش‌فرض قرمز/سفید استفاده می‌شود")
+                self._log("leagues_data.json text text (Football_Database/ and text "
+                          "text) — color‌text default text/text istext text‌textandtext")
             self._cache, self._cache_mtime = None, None
             return None
         try:
@@ -634,21 +634,21 @@ class TeamColorResolver:
             self._cache_mtime = mtime
             if not self._logged_loaded:
                 n_teams = sum(len((v or {}).get("teams") or {}) for v in data.values())
-                self._log(f"leagues_data.json بارگذاری شد از {path}: "
+                self._log(f"leagues_data.json withtext text from {path}: "
                           f"leagues={len(data)} teams={n_teams}")
                 self._logged_loaded = True
         except Exception as ex:
-            # فایل خراب ⇒ تا تغییر mtime دوباره تلاش نکن (فقط یک‌بار لاگ)
+            # file broken ⇒ until change mtime again technical note technical note (only technical note‌withtechnical note log)
             if self._failed_mtime != mtime:
                 self._failed_mtime = mtime
-                self._log(f"خطا در leagues_data.json ({type(ex).__name__}: {ex}) — "
-                          f"رنگ‌های پیش‌فرض قرمز/سفید استفاده می‌شود")
+                self._log(f"Error in leagues_data.json ({type(ex).__name__}: {ex}) — "
+                          f"color‌text default text/text istext text‌textandtext")
             self._cache, self._cache_mtime = None, mtime
         return self._cache
 
     @staticmethod
     def _parse_colors(raw) -> List[Tuple[int, int, int]]:
-        """{"Color 0": [f,f,f], ...} → [(r,g,b), ...] با اندیس ۰ مبنا (×255)."""
+        """{"Color 0": [f,f,f], ...} → [(r,g,b), ...] with text 0 text (×255)."""
         out: List[Tuple[int, int, int]] = []
         if not isinstance(raw, dict):
             return out
@@ -676,9 +676,9 @@ class TeamColorResolver:
         return out
 
     def team_colors(self, ident) -> List[Tuple[int, int, int]]:
-        """رنگ‌های تعریف‌شدهٔ تیم — [PT v2.3.0] حالت PT (ident = int Team ID):
-        از teams_players_PES2021.txt (شمارهٔ رنگ = اندیس سطر)؛ مسیر قدیمی
-        (league, team) از JSON؛ ناشناخته ⇒ []"""
+        """color‌text text‌text team — [PT v2.3.0] text PT (ident = int Team ID):
+        from teams_players_PES2021.txt (numbertext color = text text)text path legacy
+        (league, team) from JSONtext unknown ⇒ []"""
         if not ident:
             return []
         if self.pt is not None and isinstance(ident, int):
@@ -704,10 +704,10 @@ class TeamColorResolver:
         except Exception:
             return []
 
-    # ---------------- قوانین ۱ تا ۶ ----------------
+    # ---------------- technical noteandtechnical note 1 until 6 ----------------
     @staticmethod
     def _pick_by_index(colors, idx) -> Optional[Tuple[int, int, int]]:
-        """قانون ۱ — اندیس از حافظه؛ None ⇒ رنگ اول؛ خارج از بازه ⇒ آخرین رنگ."""
+        """rule 1 — text from memorytext None ⇒ color firsttext text from withtext ⇒ latest color."""
         if not colors:
             return None
         i = 0 if idx is None else int(idx)
@@ -719,20 +719,20 @@ class TeamColorResolver:
 
     @classmethod
     def _too_dark_on_bg(cls, rgb) -> bool:
-        """قانون ۲ — سیاه/خیلی تیره روی پس‌زمینهٔ تاریک نمودار."""
+        """rule 2 — textortext/text text textandtext text‌pitchtext untiltext chart."""
         return _contrast_ratio(rgb, CHART_PANEL_BG_RGB) < cls.MIN_CONTRAST_BG
 
     @classmethod
     def _too_similar(cls, a, b) -> bool:
-        """قانون ۳ — دو رنگ به‌هم شبیه‌اند (کنتراست ناکافی)."""
+        """rule 3 — textand color to‌text text‌text (textis text)."""
         return (_rgb_distance(a, b) < cls.MIN_RGB_DIST_OPPONENT
                 or abs(_relative_luminance(a) * 255.0 - _relative_luminance(b) * 255.0)
                 < cls.MIN_LUM255_DIFF_OPPONENT)
 
     @classmethod
     def _pick_color(cls, candidates, original, opponent) -> Tuple[int, int, int]:
-        """اولین کاندید که: با پس‌زمینه کنتراست داشته باشد، از رنگ اصلی
-        (تعویض‌شونده) و رنگ حریف به‌قدر کافی متفاوت باشد؛ وگرنه بهترین."""
+        """firsttext text text: with text‌pitchtext textis text withtext from color original
+        (textandtext‌textandtext) and color text to‌textin text textandtext withtext andtext totext."""
         for hx in candidates:
             c = _hex_to_rgb(hx)
             if original is not None and _rgb_distance(c, original) < cls.MIN_RGB_DIST_FROM_ORIGINAL:
@@ -742,7 +742,7 @@ class TeamColorResolver:
             if opponent is not None and cls._too_similar(c, opponent):
                 continue
             return c
-        # هیچ کاندیدی شرط‌ها را کامل نداشت ⇒ کمینه‌فاصله‌ترین (بیشینهٔ بدترین فاصله)
+        # technical note technical note technical note‌technical note technical note complete technical note ⇒ technical note‌distance‌technical note (technical note technical note distance)
         best, best_score = None, -1.0
         for hx in candidates:
             c = _hex_to_rgb(hx)
@@ -757,19 +757,19 @@ class TeamColorResolver:
         return best if best is not None else _hex_to_rgb(candidates[0])
 
     def resolve(self, home_ident, home_idx, away_ident, away_idx) -> Dict[str, Dict[str, Any]]:
-        """منطق کامل قوانین ۱..۶ — pure و بدون اثر جانبی."""
+        """text complete textandtext 1..6 — pure and without impact text."""
         home_cols = self.team_colors(home_ident)
         away_cols = self.team_colors(away_ident)
         h_base = self._pick_by_index(home_cols, home_idx)
         a_base = self._pick_by_index(away_cols, away_idx)
 
         h_final, a_final = h_base, a_base
-        # قانون ۲ — رنگ خیلی تیره ⇒ تعویض (با درنظرگرفتن رنگ حریف)
+        # rule 2 — color technical note technical note ⇒ technical noteandtechnical note (with intechnical note color technical note)
         if h_final is not None and self._too_dark_on_bg(h_final):
             h_final = self._pick_color(TEAM_COLOR_HOME_PREF, h_final, a_final)
         if a_final is not None and self._too_dark_on_bg(a_final):
             a_final = self._pick_color(TEAM_COLOR_AWAY_PREF, a_final, h_final)
-        # قانون ۵ — تیمِ بدون رنگ ⇒ خودکار رنگِ هم‌کنتراست (دیفالت اولِ لیست)
+        # rule 5 — teamtechnical note without color ⇒ automatic colortechnical note technical note‌technical noteis (technical note firsttechnical note technical note)
         if h_final is None:
             h_final = self._pick_color(
                 (_rgb_to_hex(DEFAULT_HOME_CHART_COLOR),) + TEAM_COLOR_HOME_PREF,
@@ -778,7 +778,7 @@ class TeamColorResolver:
             a_final = self._pick_color(
                 (_rgb_to_hex(DEFAULT_AWAY_CHART_COLOR),) + TEAM_COLOR_AWAY_PREF,
                 None, h_final)
-        # قانون ۳ — دو رنگ شبیه ⇒ فقط رنگ مهمان تعویض می‌شود
+        # rule 3 — technical noteand color technical note ⇒ only color Away technical noteandtechnical note technical note‌technical noteandtechnical note
         if self._too_similar(h_final, a_final):
             a_final = self._pick_color(TEAM_COLOR_AWAY_PREF, a_final, h_final)
 
