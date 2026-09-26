@@ -1157,7 +1157,7 @@ class BridgeHookClient:
         self._token = token
         self._port = port
         self._ipc_file = ipc_file or os.path.join(
-            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+            _MOMENTUM_INSTALL_DIR,
             "bridge_ipc.json")
         if self._port is None and self._token is None:
             try:
