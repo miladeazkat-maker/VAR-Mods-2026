@@ -191,6 +191,14 @@ def main() -> None:
     original_normalized = ast.dump(normalize_ast(original_tree), include_attributes=False)
     current_normalized = ast.dump(normalize_ast(current_tree), include_attributes=False)
     if original_normalized != current_normalized:
+        difference = first_ast_difference(normalize_ast(original_tree), normalize_ast(current_tree))
+        print("Original node counts:", node_type_counts(normalize_ast(original_tree)))
+        print("Modular node counts:", node_type_counts(normalize_ast(current_tree)))
+        if difference:
+            path, left_dump, right_dump = difference
+            print("First AST difference:", path)
+            print("Original:", left_dump)
+            print("Modular:", right_dump)
         raise AssertionError(
             "The modular Momentum source does not match the original monolith AST "
             "after ignoring string literal contents. This indicates a code-structure change."
