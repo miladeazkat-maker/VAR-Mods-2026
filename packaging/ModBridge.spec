@@ -1,22 +1,17 @@
 # -*- mode: python ; coding: utf-8 -*-
+from pathlib import Path
 from PyInstaller.utils.hooks import collect_all, collect_submodules
 
-# Backend source files are embedded as runtime data. They are extracted only
-# into PyInstaller's temporary _MEIPASS directory while ModBridge is running.
+ROOT = Path(SPECPATH).resolve().parent.parent
+
 backend_sources = [
-    ("GLT/GLTMod.py", "GLT"),
-    ("HeatMap/HeatMapMod.py", "HeatMap"),
-    ("HeatMap/BroadcastRenderer.py", "HeatMap"),
-    ("SAOTMod/SAOTMod.py", "SAOTMod"),
-    ("RefereeView/RefereeView.py", "RefereeView"),
-    ("MomentumMatch/MomentumMod.py", "MomentumMatch"),
+    (ROOT / "GLT" / "GLTMod.py", "GLT"),
+    (ROOT / "HeatMap" / "HeatMapMod.py", "HeatMap"),
+    (ROOT / "HeatMap" / "BroadcastRenderer.py", "HeatMap"),
+    (ROOT / "SAOTMod" / "SAOTMod.py", "SAOTMod"),
+    (ROOT / "RefereeView" / "RefereeView.py", "RefereeView"),
+    (ROOT / "MomentumMatch" / "MomentumMod.py", "MomentumMatch"),
 ]
-for i in range(1, 13):
-    if i == 11:
-        continue
-    path = f"MomentumMatch/modules/{i:02d}_"
-    # The module filenames are handled explicitly below because names include
-    # descriptive suffixes and are not guaranteed to be sequential.
 momentum_modules = [
     "01_runtime.py",
     "02_memory.py",
@@ -31,11 +26,11 @@ momentum_modules = [
     "12_selftest_entry.py",
 ]
 backend_sources += [
-    (f"MomentumMatch/modules/{name}", "MomentumMatch/modules")
+    (ROOT / "MomentumMatch" / "modules" / name, "MomentumMatch/modules")
     for name in momentum_modules
 ]
 
-datas = backend_sources
+datas = [(str(src), dest) for src, dest in backend_sources]
 binaries = []
 hiddenimports = [
     "PyQt6",
@@ -72,8 +67,8 @@ for pkg in ("PyQt6", "matplotlib", "panda3d", "ursina", "moderngl", "glcontext",
             pass
 
 a = Analysis(
-    ["ModBridge.py"],
-    pathex=["."],
+    [str(ROOT / "ModBridge.py")],
+    pathex=[str(ROOT)],
     binaries=binaries,
     datas=datas,
     hiddenimports=hiddenimports,
