@@ -1320,8 +1320,11 @@ HM_SETTINGS_DEFAULTS = {
 }
 HM_DISPLAY_MINUTE = HM_SETTINGS_DEFAULTS["hm_display_minute"]
 HM_VIEWER_SIDE = HM_SETTINGS_DEFAULTS["hm_viewer_side"]
-_HM_CFG_PATH = os.path.join(os.path.dirname(
-    os.path.dirname(os.path.abspath(__file__))), "ModsConfig.json")
+_HM_INSTALL_DIR = os.environ.get(
+    "VAR_MODS_INSTALL_DIR",
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+)
+_HM_CFG_PATH = os.path.join(_HM_INSTALL_DIR, "ModsConfig.json")
 _hm_last_cfg_check = 0.0
 _hm_settings_sig = None
 
