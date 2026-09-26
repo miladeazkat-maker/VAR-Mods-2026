@@ -72,7 +72,7 @@ def load_ball_icon():
         return _ball_icon_cache["arr"]
     _ball_icon_cache["tried"] = True
     try:
-        path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+        path = os.path.join(_MOMENTUM_DATA_DIR,
                             "tex", "ball_icon.png")
         if os.path.exists(path):
             import matplotlib.image as _mpimg
@@ -815,7 +815,7 @@ _tv_flag_cache: Dict[str, Tuple[Any, Any]] = {}  # path → (mtime, arr|None)
 
 
 def _tv_bg_path(kind: str) -> str:
-    return os.path.join(os.path.dirname(os.path.abspath(__file__)),
+    return os.path.join(_MOMENTUM_DATA_DIR,
                         TV_BG_DIRNAME, TV_BG_FILES.get(kind, TV_BG_FILES["half"]))
 
 
