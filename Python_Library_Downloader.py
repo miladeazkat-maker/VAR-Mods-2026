@@ -28,6 +28,8 @@ from tkinter import messagebox
 APP_TITLE = "PES MODS • Python & Libraries Suite"
 PYTHON_ORG_URL = "https://www.python.org/downloads/"
 PYTHON_WIN_URL = "https://www.python.org/downloads/windows/"
+PYTHON_COMPATIBLE_SERIES = "3.13"
+PYTHON_COMPATIBLE_FALLBACK = "3.13.13"
 PYPI_JSON_URL = "https://pypi.org/pypi/{}/json"
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
 
@@ -97,58 +99,167 @@ def ensure_admin():
             sys.exit(0)
 
 
-def get_real_python_exe():
-    """Locate real python.exe on the host system."""
-    if not getattr(sys, 'frozen', False):
-        return sys.executable
+def probe_python_exe(python_bin):
+    """Return (path, version) for a usable host Python interpreter."""
+    if not python_bin:
+        return None
+
+    flags = subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0
+    query = (
+        "import sys; "
+        "print(sys.executable); "
+        "print('.'.join(map(str, sys.version_info[:3])))"
+    )
+    try:
+        r = subprocess.run(
+            [python_bin, "-c", query],
+            capture_output=True,
+            text=True,
+            creationflags=flags,
+            timeout=5,
+        )
+        if r.returncode != 0:
+            return None
+        lines = [x.strip() for x in r.stdout.splitlines() if x.strip()]
+        if len(lines) < 2:
+            return None
+        path = lines[0]
+        version = lines[1]
+        if os.path.exists(path):
+            return path, version
+    except Exception:
+        pass
+    return None
+
+
+def get_host_python_candidates():
+    """Collect installed host Python interpreters without relying on the frozen EXE runtime."""
+    candidates = []
+    seen = set()
+
+    def add(value):
+        if not value:
+            return
+        value = str(value).strip().strip('"')
+        key = value.lower()
+        if key not in seen:
+            seen.add(key)
+            candidates.append(value)
+
+    flags = subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0
 
     try:
-        flags = subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0
         r = subprocess.run(
-            ["py", "-3", "-c", "import sys; print(sys.executable)"],
-            capture_output=True, text=True, creationflags=flags, timeout=4
+            ["py", f"-{PYTHON_COMPATIBLE_SERIES}", "-c", "import sys; print(sys.executable)"],
+            capture_output=True,
+            text=True,
+            creationflags=flags,
+            timeout=4,
         )
-        if r.returncode == 0 and r.stdout.strip():
-            p = r.stdout.strip()
-            if os.path.exists(p):
-                return p
+        if r.returncode == 0:
+            add(r.stdout.strip())
     except Exception:
         pass
 
-    py_path = shutil.which("python")
-    if py_path and not py_path.lower().endswith(os.path.basename(sys.executable).lower()):
-        return py_path
+    try:
+        r = subprocess.run(
+            ["py", "-0p"],
+            capture_output=True,
+            text=True,
+            creationflags=flags,
+            timeout=4,
+        )
+        if r.returncode == 0:
+            for line in r.stdout.splitlines():
+                match = re.search(r"([A-Za-z]:\\.*python\\.exe)\\s*$", line.strip(), re.IGNORECASE)
+                if match:
+                    add(match.group(1))
+    except Exception:
+        pass
 
     local_app = os.environ.get("LOCALAPPDATA", "")
     if local_app:
-        base_py = Path(local_app) / "Programs" / "Python"
-        if base_py.exists():
-            candidates = sorted(base_py.glob("Python3*/python.exe"), reverse=True)
-            if candidates:
-                return str(candidates[0])
+        base = Path(local_app) / "Programs" / "Python"
+        if base.exists():
+            for p in sorted(base.glob("Python3*/python.exe"), reverse=True):
+                add(str(p))
 
-    for env_var in ["ProgramFiles", "ProgramFiles(x86)"]:
-        pf = os.environ.get(env_var, "")
-        if pf:
-            base_py = Path(pf) / "Python"
-            if base_py.exists():
-                candidates = sorted(base_py.glob("Python3*/python.exe"), reverse=True)
-                if candidates:
-                    return str(candidates[0])
+    for env_var in ("ProgramFiles", "ProgramFiles(x86)"):
+        root = os.environ.get(env_var, "")
+        if root:
+            base = Path(root) / "Python"
+            if base.exists():
+                for p in sorted(base.glob("Python3*/python.exe"), reverse=True):
+                    add(str(p))
 
-    return "python"
+    path_python = shutil.which("python")
+    if path_python:
+        add(path_python)
 
+    return candidates
+
+
+def get_host_python_info(require_compatible=False):
+    """Return the best installed host interpreter, never the Python bundled inside PyInstaller."""
+    found = []
+    frozen_exe = Path(sys.executable).resolve() if getattr(sys, "frozen", False) else None
+
+    for candidate in get_host_python_candidates():
+        result = probe_python_exe(candidate)
+        if not result:
+            continue
+        path, version = result
+        version_key = version_tuple(version)
+        major_minor = version_key[:2]
+
+        if frozen_exe:
+            try:
+                if Path(path).resolve() == frozen_exe:
+                    continue
+            except Exception:
+                pass
+
+        found.append({
+            "path": path,
+            "version": version,
+            "version_key": version_key,
+            "major_minor": major_minor,
+        })
+
+    if not found:
+        return None
+
+    compatible = [x for x in found if x["major_minor"] == (3, 13)]
+    if compatible:
+        return max(compatible, key=lambda x: x["version_key"])
+
+    if require_compatible:
+        return None
+
+    return max(found, key=lambda x: x["version_key"])
+
+
+def get_real_python_exe(require_compatible=True):
+    """Locate a usable host Python, preferring the project's compatible 3.13 runtime."""
+    info = get_host_python_info(require_compatible=require_compatible)
+    return info["path"] if info else None
 
 # ============================================================================
 # HOST ENVIRONMENT DISCOVERY (SOLVES FROZEN EXE NOT SEEING LIBRARIES)
 # ============================================================================
 
 def inject_host_site_packages():
-    """Inject host Python site-packages into sys.path so the frozen EXE sees packages."""
+    """Expose the host Python site-packages to the frozen UI process when possible."""
     try:
-        py_bin = get_real_python_exe()
+        py_bin = get_real_python_exe(require_compatible=True)
+        if not py_bin:
+            return
         flags = subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0
-        cmd = [py_bin, "-c", "import site, sys; print('\\n'.join(sys.path + site.getsitepackages() + [site.getusersitepackages()]))"]
+        cmd = [
+            py_bin,
+            "-c",
+            "import site, sys; print('\\n'.join(sys.path + site.getsitepackages() + [site.getusersitepackages()]))",
+        ]
         res = subprocess.run(cmd, capture_output=True, text=True, creationflags=flags, timeout=5)
         if res.returncode == 0:
             for line in res.stdout.splitlines():
@@ -159,16 +270,13 @@ def inject_host_site_packages():
     except Exception:
         pass
 
+def get_host_installed_packages(python_bin=None):
+    """Query package metadata from the selected host interpreter, not from the frozen EXE."""
+    py_bin = python_bin or get_real_python_exe(require_compatible=True)
+    if not py_bin:
+        return {}
 
-def get_host_installed_packages():
-    """
-    Directly query the host Python for all installed packages and versions.
-    Works flawlessly inside standalone PyInstaller EXE files.
-    """
-    py_bin = get_real_python_exe()
     flags = subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0
-
-    # 1. Fast metadata distributions probe
     script = (
         "import importlib.metadata as m, json; "
         "d_map = {}; "
@@ -176,15 +284,26 @@ def get_host_installed_packages():
         "print(json.dumps(d_map))"
     )
     try:
-        r = subprocess.run([py_bin, "-c", script], capture_output=True, text=True, creationflags=flags, timeout=6)
+        r = subprocess.run(
+            [py_bin, "-c", script],
+            capture_output=True,
+            text=True,
+            creationflags=flags,
+            timeout=8,
+        )
         if r.returncode == 0 and r.stdout.strip():
             return json.loads(r.stdout.strip())
     except Exception:
         pass
 
-    # 2. Pip fallback probe
     try:
-        r = subprocess.run([py_bin, "-m", "pip", "list", "--format=json"], capture_output=True, text=True, creationflags=flags, timeout=7)
+        r = subprocess.run(
+            [py_bin, "-m", "pip", "list", "--format=json"],
+            capture_output=True,
+            text=True,
+            creationflags=flags,
+            timeout=8,
+        )
         if r.returncode == 0 and r.stdout.strip():
             data = json.loads(r.stdout.strip())
             return {item["name"].lower(): item["version"] for item in data if "name" in item and "version" in item}
@@ -192,7 +311,6 @@ def get_host_installed_packages():
         pass
 
     return {}
-
 
 # ============================================================================
 # COLOR MATH & ARCHITECTURE HELPERS
@@ -288,42 +406,39 @@ def check_url_exists(url):
 # ============================================================================
 
 def fetch_latest_python_installer():
+    """Find the latest Python 3.13.x Windows installer for this project."""
     arch = get_windows_arch()
 
     def make_url(ver):
         fname = f"python-{ver}.exe" if arch == "win32" else f"python-{ver}-{arch}.exe"
         return f"https://www.python.org/ftp/python/{ver}/{fname}"
 
+    index_url = f"https://www.python.org/ftp/python/{PYTHON_COMPATIBLE_SERIES}/"
     try:
-        req = urllib.request.Request(PYTHON_ORG_URL, headers={"User-Agent": USER_AGENT})
+        req = urllib.request.Request(index_url, headers={"User-Agent": USER_AGENT})
         with urllib.request.urlopen(req, timeout=8) as resp:
             html_text = resp.read().decode("utf-8", errors="ignore")
-        match = re.search(r'href=["\'](https?://www\.python\.org/ftp/python/(\d+\.\d+\.\d+)/python-\2[^"\']*\.exe)["\']', html_text)
-        if match:
-            ver = match.group(2)
+
+        versions = re.findall(
+            rf'href=["\']({re.escape(PYTHON_COMPATIBLE_SERIES)}\.\d+)/',
+            html_text,
+            flags=re.IGNORECASE,
+        )
+        if versions:
+            ver = max(set(versions), key=version_tuple)
             cand_url = make_url(ver)
             if check_url_exists(cand_url):
                 return ver, cand_url
     except Exception:
         pass
 
-    try:
-        req = urllib.request.Request("https://endoflife.date/api/python.json", headers={"User-Agent": USER_AGENT})
-        with urllib.request.urlopen(req, timeout=6) as resp:
-            data = json.loads(resp.read().decode("utf-8"))
-            if isinstance(data, list) and len(data) > 0:
-                for item in data:
-                    cand_ver = item.get("latest")
-                    if cand_ver:
-                        cand_url = make_url(cand_ver)
-                        if check_url_exists(cand_url):
-                            return cand_ver, cand_url
-    except Exception:
-        pass
+    fallback_url = make_url(PYTHON_COMPATIBLE_FALLBACK)
+    if check_url_exists(fallback_url):
+        return PYTHON_COMPATIBLE_FALLBACK, fallback_url
 
-    cur = platform.python_version()
-    return cur, make_url(cur)
-
+    raise RuntimeError(
+        f"Unable to find a compatible Python {PYTHON_COMPATIBLE_SERIES}.x Windows installer."
+    )
 
 def download_file_monitored(url, destination, progress_cb=None):
     req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
@@ -447,8 +562,7 @@ class GlassButton(tk.Canvas):
         self.is_hover = False
         self.is_down = False
 
-        self.bind("<Enter>", self._on_enter)
-        self.bind("<Leave>", self._on_leave)
+        self.bind("<Enter>", self._on_enter)        self.bind("<Leave>", self._on_leave)
         self.bind("<Button-1>", self._on_press)
         self.bind("<ButtonRelease-1>", self._on_release)
 
@@ -897,7 +1011,6 @@ class App:
     def _on_mousewheel(self, event):
         if self.main_canvas.winfo_exists():
             self.main_canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
-
     def post(self, fn, *args):
         with self.queue_lock:
             self.events_queue.append((fn, args))
@@ -1248,101 +1361,3 @@ class App:
                     self.post(self.set_inst_progress, 40, "Executing silent CPython installation...")
                     res = run_process([
                         str(installer_path), "/quiet", "InstallAllUsers=0", "PrependPath=1",
-                        "Include_pip=1", "Include_launcher=1", "Include_test=0", "SimpleInstall=0"
-                    ])
-                    if res.returncode not in (0, 3010):
-                        raise RuntimeError(f"Python Installer failed with code {res.returncode}")
-                    python_bin = get_real_python_exe()
-
-                # 2. Update pip
-                self.post(self.set_inst_progress, 45, "Updating pip package manager...")
-                res = run_process([python_bin, "-m", "pip", "install", "--upgrade", "pip"])
-                if res.returncode != 0:
-                    raise RuntimeError(f"Pip upgrade failed: {res.stderr.strip() or res.stdout.strip()}")
-
-                # 3. Sequentially run pip install on all packages
-                total_pkgs = len(REQUIRED_PACKAGES)
-                flags = subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0
-
-                for idx, (pkg_name, label, _) in enumerate(REQUIRED_PACKAGES, start=1):
-                    row = self.rows[pkg_name]
-                    inst_ver = row.get("installed_ver")
-                    latest_ver = row.get("latest_ver")
-
-                    if not inst_ver or (latest_ver and compare_versions(inst_ver, latest_ver) < 0):
-                        self.post(self.log, f"Running pip install for {label}...")
-                        step_pct = int(45 + (idx / total_pkgs) * 50)
-                        self.post(self.set_inst_progress, step_pct, f"Installing {label} ({idx}/{total_pkgs})...")
-
-                        cmd = [python_bin, "-m", "pip", "install", "--upgrade", pkg_name]
-                        proc = subprocess.Popen(
-                            cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                            text=True, encoding="utf-8", errors="replace", creationflags=flags
-                        )
-
-                        errs = []
-                        for line in proc.stdout:
-                            c_line = line.strip()
-                            if c_line:
-                                self.post(self.log, f"[{label}] {c_line}")
-                                if "ERROR:" in c_line:
-                                    errs.append(c_line)
-
-                        proc.wait()
-                        if proc.returncode != 0:
-                            raise RuntimeError(f"{label} error: " + ("\n".join(errs) if errs else f"code {proc.returncode}"))
-
-                inject_host_site_packages()
-                self.post(self.set_inst_progress, 100, "All packages successfully installed! (100%)")
-                self.post(self.quick_done, True, "Automatic setup completed! Python and all libraries are installed and ready.")
-            except Exception as e:
-                self.post(self.quick_done, False, str(e))
-
-        threading.Thread(target=worker, daemon=True).start()
-
-    def quick_done(self, ok, msg):
-        self.busy = False
-        self.status_badge.config(text="READY", bg="#0a2a1d", fg=self.green)
-        self.hero_btn.configure(state="normal", text="Install All")
-        self.lib_refresh_btn.configure(state="normal")
-        self.act_title.config(text="Task Monitor: Idle")
-        self.log(msg, "INFO" if ok else "ERROR")
-
-        self.check_python()
-        self.check_libraries()
-
-        if ok:
-            messagebox.showinfo("Setup Completed", msg)
-        else:
-            messagebox.showerror("Setup Error", msg)
-
-
-# ============================================================================
-# ENTRY POINT WITH ADMIN PRIVILEGES
-# ============================================================================
-
-def main():
-    if os.name != "nt":
-        temp_root = tk.Tk()
-        temp_root.withdraw()
-        messagebox.showerror("Windows Required", "This utility is optimized specifically for Windows 10/11.")
-        temp_root.destroy()
-        return
-
-    # 1. Elevate to Admin without jumping to System32
-    ensure_admin()
-
-    # 2. High-DPI Display Scaling
-    try:
-        from ctypes import windll
-        windll.shcore.SetProcessDpiAwareness(1)
-    except Exception:
-        pass
-
-    root = tk.Tk()
-    App(root)
-    root.mainloop()
-
-
-if __name__ == "__main__":
-    main()
