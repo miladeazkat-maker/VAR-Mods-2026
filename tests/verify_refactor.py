@@ -257,6 +257,22 @@ def main() -> None:
         tree = ast.parse((MODULE_DIR / name).read_text(encoding="utf-8"), filename=name)
         current_bodies.extend(tree.body)
 
+    # MomentumMod.py contains loader-only setup followed by the public CLI entry block.
+    # Include only that final __main__ block when comparing against the original monolith.
+    loader_tree = ast.parse(loader, filename="MomentumMod.py")
+    cli_blocks = [
+        node for node in loader_tree.body
+        if isinstance(node, ast.If)
+        and isinstance(node.test, ast.Compare)
+        and any(
+            isinstance(comparator, ast.Constant) and comparator.value == "__main__"
+            for comparator in node.test.comparators
+        )
+    ]
+    if len(cli_blocks) != 1:
+        raise AssertionError("MomentumMod.py must contain exactly one __main__ CLI block.")
+    current_bodies.extend(cli_blocks)
+
     current_tree = ast.Module(body=current_bodies, type_ignores=[])
 
     original_normalized = ast.dump(normalize_ast(original_tree), include_attributes=False)
