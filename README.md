@@ -1,187 +1,332 @@
-# ⚽ VAR-Mods-2026: Next-Gen Broadcast & Analytics Suite For Football Life 2026
+# VAR-Mods-2026
 
-![Project Banner](assets/banner.png)
+A Python-based broadcast, VAR, camera, and match-analysis suite for Football Life 2026.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python Version](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
-[![Game Support](https://img.shields.io/badge/Game-Football%20Life%202026%20%2F%20PES%202021-red.svg)](https://www.pessmohaned.com/)
+VAR-Mods-2026 combines game-memory telemetry, real-time overlays, broadcast-style rendering, and configurable mod backends. The project is designed around a frontend/bridge/backend architecture so that the user interface, shared hook broker, and individual gameplay tools can evolve independently.
 
-An advanced, unified Python-driven overlay and live match analytics suite built specifically for **Football Life 2026** (PES 2021 engine). 
+> **Target:** Football Life 2026 (PES 2021-based engine)  
+> **Platform:** Windows  
+> **License:** MIT
 
-**VAR-Mods-2026** bridges low-level RAM memory inspection with real-time dynamic graphics rendering, delivering modern VAR, broadcast camera dynamics, and tactical telemetry straight into your gameplay experience.
+## 1. Project Components
 
----
+The repository currently contains the following user-facing modules:
 
-## 📌 Table of Contents
-- [Why a Unified Suite?](#-why-a-unified-suite)
-- [Architecture & Workflow](#-architecture--workflow)
-- [Detailed Module Breakdown](#-detailed-module-breakdown)
-- [Automatic Dependency Manager](#-automatic-dependency-manager)
-- [Game Settings & Requirements](#-game-settings--requirements)
-- [Installation & Setup](#-installation--setup)
-- [How to Run](#-how-to-run)
-- [Troubleshooting & FAQ](#-troubleshooting--faq)
-- [Development Story & AI Integration](#-development-story--ai-integration)
-- [Community Call to Action](#-community-call-to-action)
-- [License](#-license)
+| Module | Purpose |
+|---|---|
+| **S.A.O.T.** | Semi-Automated Offside Technology with live player/ball positioning and an offside-plane visualization workflow. |
+| **Goal Line Technology** | Goal-line review workflow with replay control, camera views, frame freezing, and configurable animation controls. |
+| **Referee View** | Referee-perspective camera/overlay functionality. |
+| **Match Momentum** | Live event detection, pass/shot analysis, possession tracking, momentum scoring, broadcast chart rendering, and timed chart overlays. |
+| **Heat Map** | Live player-position collection, tactical heatmap generation, broadcast rendering, and player/team presentation. |
+| **Asset Downloader** | Downloads and manages Football Life/PES player and team assets used by the presentation layers. |
 
----
+The desktop frontend is responsible for configuration and launching the bridge. Individual backends are responsible for their own runtime logic.
 
-## 💡 Why a Unified Suite?
+## 2. Runtime Architecture
 
-In traditional modding, running multiple standalone Python scripts or memory hooks simultaneously leads to severe memory address collision, resource hogging, and frequent game crashes. 
+The project uses three logical layers.
 
-**VAR-Mods-2026** resolves this by consolidating all broadcast utilities into a single synchronized core engine. This unified approach:
-- Eliminates RAM offset read conflicts.
-- Reduces CPU/GPU overhead by sharing frame rendering cycles.
-- Allows on-the-fly toggling and live configuration without closing the game.
+### 2.1 Frontend — MyMods.py
 
----
+MyMods.py is the main configuration application.
 
-## 🏗️ Architecture & Workflow
+It provides:
 
-The system is engineered using a two-tier decoupled architecture:
+- Mod configuration and hotkey management.
+- Preview panels and usage instructions.
+- ModsConfig.json generation/update.
+- Team and presentation settings.
+- Launch control for the bridge layer.
+- Configuration passed to backend processes.
 
-![System Architecture]
+### 2.2 Bridge — ModBridge.py
 
-1. **Mother Application (`MyMods.py`):**
-   * A full-featured GUI built with PyQt for customizing options, hotkeys, and individual mod behaviors.
-   * Includes built-in quick instructions per mod and quick-access buttons to full YouTube video tutorials.
-2. **Bridge Engine (`ModBridge.py`):**
-   * A high-performance, background memory engine that performs non-invasive hook operations and draws transparent overlay overlays over the game.
-   * Enables in-game keybinding triggers to toggle mods live during match play.
+ModBridge.py is the middle layer between the frontend and the individual mod backends.
 
----
+Its responsibilities include:
 
-## 💻 Detailed Module Breakdown
+- Starting and monitoring backend processes.
+- Running privileged components where required.
+- Providing the shared hook broker.
+- Managing hook ownership and coexistence between mods.
+- Passing configuration to child processes.
+- Monitoring backend lifecycle and failures.
+- Providing IPC through the local bridge channel.
 
-### 1. 📐 SAOT Mod (Semi-Automated Offside Technology)
-Generates dynamic 3D offside lines in real-time by reading 3D spatial coordinates of players and the ball directly from RAM.
-![SAOT Preview](assets/saot_preview.png)
+The bridge is especially important for shared game-memory hooks. A backend should not blindly restore bytes that may belong to another active consumer.
 
-### 2. 🥅 GLT Mod (Goal-Line Technology)
-High-precision goal-line decision overlay featuring instant frame-freeze and 3D goal-plane inspection angles.
-![GLT Preview](assets/glt_preview.png)
+### 2.3 Mod Backends
 
-### 3. 🔥 HeatMap Mod
-Renders tactical positional influence heatmaps live during matches to analyze team pressure and spatial control.
-![HeatMap Preview](assets/heatmap_preview.png)
+Each mod has its own backend implementation and assets.
 
-### 4. 🎥 RefereeView Mod
-Provides an immersive body-cam perspective overlay simulating top-flight referee broadcasting views.
-![RefereeView Preview](assets/refereeview_preview.png)
+    VAR-Mods-2026/
+    ├── MyMods.py
+    ├── ModBridge.py
+    ├── Python_Library_Downloader.py
+    ├── MomentumMatch/
+    │   ├── MomentumMod.py
+    │   ├── modules/
+    │   │   ├── 01_runtime.py
+    │   │   ├── 02_memory.py
+    │   │   ├── 03_models.py
+    │   │   ├── 04_engines.py
+    │   │   ├── 05_chart_tv.py
+    │   │   ├── 06_snapshot_core.py
+    │   │   ├── 07_overlay_renderers.py
+    │   │   ├── 08_scene_archive.py
+    │   │   ├── 09_team_identity.py
+    │   │   ├── 10_app_gui_snapshot.py
+    │   │   ├── 11_app_runtime.py
+    │   │   └── 12_selftest_entry.py
+    │   └── tex/
+    ├── HeatMap/
+    │   ├── HeatMapMod.py
+    │   └── BroadcastRenderer.py
+    ├── GLT/
+    │   ├── GLTMod.py
+    │   └── tex/
+    ├── SAOTMod/
+    │   ├── SAOTMod.py
+    │   └── textut/
+    ├── RefereeView/
+    │   └── RefereeView.py
+    ├── PT/
+    │   └── PES_FootballLife_Asset_Downloader.py
+    ├── Background/
+    ├── assets/
+    ├── requirements.txt
+    └── LICENSE
 
-### 5. 📈 MomentumMatch Mod
-Calculates real-time match dominance, momentum swings, and pressure indices using tactical data streams.
-![MomentumMatch Preview](assets/momentum_preview.png)
+## 3. Match Momentum
 
----
+MomentumMatch/MomentumMod.py is the backend for Match Momentum.
 
-## 🛠️ Automatic Dependency Manager
+The original implementation grew into a single source file of more than 22,000 lines. It contained memory access, event models, pass and shot analysis, momentum scoring, TV chart generation, snapshot management, GPU/Win32 overlay renderers, team identity handling, GUI/runtime orchestration, and self-tests.
 
-The suite includes an automated environment installer (`Python Library Downloader.exe` / `Python Library Downloader.py`) designed to automatically inspect, download, and sync your CPython runtime alongside all required libraries[cite: 1].
+The implementation is being modularized without changing its runtime contract.
 
-![Environment Suite](assets/environment_suite.png)
+### 3.1 Momentum Modules
 
-### Core Required Libraries[cite: 1]:
-* **GUI Engine:** `CustomTkinter`, `PyQt6`, `PyQt6-WebEngine`[cite: 1]
-* **3D & Game Engines:** `Panda3D`, `Ursina`[cite: 1]
-* **Memory & Input:** `PyMem`, `Keyboard`[cite: 1]
-* **Numerics & Imaging:** `NumPy`, `Matplotlib`, `Pillow`[cite: 1]
-* **Build Tools:** `PyInstaller`[cite: 1]
+| File | Responsibility |
+|---|---|
+| 01_runtime.py | Runtime bootstrap, PT data source, platform handling, shared configuration, and low-level startup utilities. |
+| 02_memory.py | Windows memory access, game hooks, hook broker communication, and GameEngine. |
+| 03_models.py | Data models, runtime state, event structures, and shared event infrastructure. |
+| 04_engines.py | Pass, shot, pressure, transition, event-detection, and momentum engines. |
+| 05_chart_tv.py | Momentum chart generation, TV timeline processing, smoothing, markers, and presentation calculations. |
+| 06_snapshot_core.py | Snapshot configuration and transactional snapshot state management. |
+| 07_overlay_renderers.py | GPU and Win32 overlay renderers. |
+| 08_scene_archive.py | GPU scene construction, match archives, archive loading, and archive rendering. |
+| 09_team_identity.py | Team detection, team colors, logos, player identity, and related presentation data. |
+| 10_app_gui_snapshot.py | Application UI and snapshot presentation workflow. |
+| 11_app_runtime.py | Monitoring worker, live event polling, match lifecycle, reset handling, and runtime orchestration. |
+| 12_selftest_entry.py | Regression/self-test suite and the public main() entry point. |
 
----
+MomentumMod.py remains the public entry point. The modular files are loaded in their original dependency order into the same runtime namespace. This preserves the existing public names and avoids introducing unnecessary import cycles into the memory-hook and rendering code.
 
-## ⚠️ Game Settings & Requirements
+### 3.2 Momentum Data Pipeline
 
-* **Target Game:** Football Life 2026 (PES 2021 base engine).
-* **Display Requirement:** The game **MUST** be run in **Borderless Windowed** mode in your game settings for transparent overlays to render correctly over the match window. To make the game full-screen (removing window borders), use the "BorderlessGaming.exe" software.
+The Momentum backend combines several data sources:
 
----
+- Match clock.
+- Possession state.
+- Ball position.
+- Player positions.
+- Pass counter/events.
+- Shot counter/events.
+- Goal counters.
+- Red-card state.
+- Team identity and colors.
+- Player/team assets.
 
-## 🚀 Installation & Setup
+These inputs feed the event-detection and scoring engines, which produce the momentum history used by the standard chart and the TV-style renderer.
 
-### Option A: Automated Setup (Recommended)
-1. Run `Python Library Downloader.exe` (or execute `python "Python Library Downloader.py"`).
-2. Click **Install All** to automatically set up Python and all requisite dependencies[cite: 1].
+### 3.3 Match Events
 
-### Option B: Manual Installation (Developers)
-Clone this repository and install dependencies using `requirements.txt`:
+The event system currently includes logic for:
 
-```bash
-git clone [https://github.com/miladeazkat-maker/VAR-Mods-2026.git](https://github.com/miladeazkat-maker/VAR-Mods-2026.git)
-cd VAR-Mods-2026
-pip install -r requirements.txt
+- Successful and failed passes.
+- Pass threat.
+- Shot detection and classification.
+- Shot threat.
+- Chances and big chances.
+- Goals and goal response.
+- Penalties and penalty outcomes.
+- Pressure episodes.
+- Transitions.
+- Counterattacks.
+- Line breaks.
+- Final-third entries.
+- Penalty-box entries.
+- Corners.
+- Goal kicks.
+- Red-card markers.
+- Possession changes.
 
-```
+The scoring layer applies configurable weights and time-based decay rather than treating every event as an identical contribution.
 
-#### `requirements.txt`
+### 3.4 Snapshot and Broadcast Presentation
 
-```text
-customtkinter
-keyboard
-matplotlib
-numpy
-panda3d
-pillow
-pymem
-pyqt6
-pyqt6-webengine
-ursina
+Momentum snapshots support:
 
-```
+- Half-time snapshots.
+- Second-half snapshots.
+- Extra-time snapshots.
+- End-of-match snapshots.
+- Configurable display duration.
+- Preloading.
+- Transactional show/confirm/fail states.
+- Automatic retry after failed presentation.
+- GPU rendering when available.
+- Win32 fallback rendering.
+- Optional permanent match-chart archives.
 
----
+The renderer also supports the TV-style timeline with half-time, full-time, extra-time, goal, and red-card markers.
 
-## 🎮 How to Run
+## 4. Heat Map
 
-1. **Configure Mods:** Launch the Mother GUI to set up options and custom hotkeys:
-```bash
-python MyMods.py
+The Heat Map backend separates data acquisition from presentation.
 
-```
+HeatMapMod.py handles:
 
+- FL 2026 process access.
+- Player-position acquisition.
+- Ball and match-time data.
+- Team/player identification.
+- Match lifecycle handling.
+- Heatmap generation.
+- Overlay control.
 
-2. **Start the Bridge Engine:** Click the **Launch Bridge** button in the app or run:
-```bash
-python ModBridge.py
+BroadcastRenderer.py handles the GPU presentation layer and broadcast-style animation.
 
-```
+The renderer follows a shared coordinate contract so that the live 2D heatmap and broadcast presentation remain spatially consistent.
 
+## 5. Goal Line Technology
 
-3. **Launch the Game:** Open **Football Life 2026** in **Borderless Windowed** mode.
-4. **Play:** Use your assigned hotkeys during the match to trigger VAR overlays, heatmaps, or GLT reviews!
+The GLT backend provides the goal-line review workflow, including:
 
----
+- Goal-review state handling.
+- Game-memory interaction.
+- Replay/camera control.
+- Goal-plane inspection.
+- Configurable animation controls.
+- Multiple presentation styles.
 
-## ❓ Troubleshooting & FAQ
+GLT runs independently from the Momentum backend while participating in the bridge's hook-coexistence architecture where shared memory locations are involved.
 
----
+## 6. S.A.O.T.
 
-## 🤖 Development Story & AI Integration
+The S.A.O.T. module provides a semi-automated offside visualization system based on live game coordinates.
 
-This project is the result of over **5 months of intensive research and engineering**, with approximately **80% of the architecture code-assisted by cutting-edge AI models**. It serves as an open testbed for AI-assisted reverse engineering, real-time memory injection, and computer graphics overlays in sports video games.
+Its package also contains the ReShade assets required by the S.A.O.T. workflow.
 
-Many more features and brand-new mods are actively under development!
+## 7. Referee View
 
----
+Referee View provides a dedicated referee-perspective presentation layer.
 
-## 🤝 Community Call to Action
+The module includes its preview and overlay assets and is launched and monitored through the bridge architecture.
 
-### 🎮 To Gamers & Football Fans:
+## 8. PT Data and Assets
 
-* **Test & Feedback:** Try the suite in your career modes and matches!
-* **Report Bugs:** Open an issue if you encounter crashes or offset glitches.
-* **Support:** Consider donating to support future development and server costs for asset updates.
+The project uses the PT data source for team/player identity and presentation assets.
 
-### 💻 To Developers & Modders:
+The shared PT data model can provide:
 
-* **Contribute Offsets:** Help maintain RAM memory addresses across game patches.
-* **Build Real VAR:** Join forces with us to build a fully automated, functional Video Assistant Referee system!
-* **Open-Source Ethos:** We advocate for open modding. If you fork or build upon this project, please keep your creations **100% free and open-source** for everyone.
+- Team IDs.
+- Team names.
+- Short names.
+- Team colors.
+- Player slots.
+- PES player IDs.
+- Team logos.
+- Player face images.
 
----
+Asset extraction is designed to avoid unpacking the complete asset archive when only a single image is required.
 
-## 📜 License
+## 9. Installation
 
-Distributed under the **MIT License**. See `LICENSE` for more informatn.
+### Automated Installation
+
+The repository includes:
+
+- Python Library Downloader.py
+- Python Library Downloader.exe
+
+The downloader is intended to install the Python runtime dependencies used by the suite.
+
+### Manual Installation
+
+Install Python and the dependencies listed in requirements.txt.
+
+    git clone https://github.com/miladeazkat-maker/VAR-Mods-2026.git
+    cd VAR-Mods-2026
+    pip install -r requirements.txt
+
+## 10. Running the Suite
+
+The normal workflow is:
+
+1. Start MyMods.py.
+2. Configure the required mods and hotkeys.
+3. Launch ModBridge.py from the frontend.
+4. Start Football Life 2026.
+5. Enable/use the desired mod according to its configuration and hotkey.
+6. Keep the game in a window mode compatible with the overlay system.
+
+Individual backends also expose development/testing entry points where applicable.
+
+For Match Momentum:
+
+    python MomentumMatch/MomentumMod.py --selftest
+
+An archived Momentum match can also be rendered without running a live match:
+
+    python MomentumMatch/MomentumMod.py --render-archive <archive.zip|match_data.json>
+
+## 11. Development and Safety Rules
+
+Because several components interact directly with the game's process memory, refactoring must preserve behavior.
+
+When modifying a backend:
+
+- Do not change memory offsets unless the change is intentional and documented.
+- Do not change hook signatures or original instruction bytes accidentally.
+- Do not restore memory owned by another active hook consumer.
+- Preserve match lifecycle transitions.
+- Preserve fallback paths.
+- Preserve timing-sensitive worker behavior.
+- Preserve the public entry point used by ModBridge.py.
+- Run the available self-tests after changes.
+- Prefer small, reviewable commits over large unrelated changes.
+
+For the Momentum refactor specifically, module boundaries should remain based on responsibility. Do not split a timing-sensitive state machine merely to reduce line count.
+
+## 12. Project Status
+
+VAR-Mods-2026 is an actively developed modding project. Some components contain legacy compatibility paths because the project has evolved through multiple generations of the underlying tools.
+
+The current development focus includes:
+
+- Improving maintainability of the large Momentum backend.
+- Removing obsolete implementation debris and unnecessary comments.
+- Standardizing source documentation in English.
+- Keeping the runtime behavior and existing gameplay integrations stable.
+- Improving the public project documentation.
+
+## 13. Contributing
+
+Bug reports, compatibility information, reverse-engineering findings, and carefully tested improvements are welcome.
+
+When reporting a memory-related issue, include:
+
+- Football Life version.
+- Which mod was active.
+- Whether the bridge was running.
+- Whether another memory-intensive mod was active.
+- The relevant backend log/self-test result.
+- The exact reproduction steps.
+
+## 14. License
+
+This project is distributed under the MIT License. See LICENSE for the complete license text.
