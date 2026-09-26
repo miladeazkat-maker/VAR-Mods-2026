@@ -22,7 +22,6 @@ _MOMENTUM_MODULES = (
     "08_scene_archive.py",
     "09_team_identity.py",
     "10_app_gui_snapshot.py",
-    "11_app_runtime.py",
     "12_selftest_entry.py",
 )
 
