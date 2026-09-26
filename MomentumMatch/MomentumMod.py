@@ -44,4 +44,25 @@ del _MomentumPath
 del _MOMENTUM_MODULES
 
 if __name__ == "__main__":
+    if "--render-archive" in sys.argv:
+        try:
+            _idx = sys.argv.index("--render-archive")
+            _path = sys.argv[_idx + 1] if len(sys.argv) > _idx + 1 else ""
+            if not _path:
+                print("usage: python MomentumMod.py --render-archive "
+                      "<archive.zip|match_data.json>")
+                sys.exit(2)
+            _out = render_archive_chart(_path)
+            if _out:
+                print("CHART RENDERED: " + str(_out))
+                sys.exit(0)
+            print("RENDER FAILED: " + str(_path))
+            sys.exit(1)
+        except SystemExit:
+            raise
+        except Exception as _ex:
+            print(f"RENDER ERROR: {type(_ex).__name__}: {_ex}")
+            sys.exit(1)
+    if "--selftest" in sys.argv:
+        sys.exit(run_selftest())
     main()
