@@ -104,7 +104,7 @@ class MomentumApp(_MOM_BASE):
             json_path=os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                     TEAM_COLOR_JSON_FILENAME),
             logger=self.dbg,
-            pt=PT)   # [PT v2.3.0] رنگ‌ها از PT/teams_players_PES2021.txt
+            pt=PT)   # [PT v2.3.0] color‌technical note from PT/teams_players_PES2021.txt
 
         self._auto_connect_running = True
         self._auto_connect_busy = False
@@ -207,7 +207,7 @@ class MomentumApp(_MOM_BASE):
         self.team_tracker = TeamIdentityTracker(
             db_dir=os.path.join(os.path.dirname(os.path.abspath(__file__)), TEAM_DB_DIRNAME),
             logger=self.dbg,
-            pt=PT)   # [PT v2.3.0] Team ID از زنجیرهٔ جدید + لوگو از Asset.zip
+            pt=PT)   # [PT v2.3.0] Team ID from chaintechnical note new + logo from Asset.zip
         self._team_loop_running = True
         self.after(TEAM_TRACKER_INTERVAL_MS, self._team_tick)
 
@@ -246,7 +246,7 @@ class MomentumApp(_MOM_BASE):
             self._start_hotkey_thread()
             self.after(100, self._gui_toggle_tick)
         try:
-            self._refresh_color_dots()   # رسم اولیهٔ دایره‌های رنگ (دیفالت قرمز/سفید)
+            self._refresh_color_dots()   # technical note firsttechnical note technical note‌technical note color (technical note technical note/technical note)
         except Exception:
             pass
 
@@ -385,18 +385,18 @@ class MomentumApp(_MOM_BASE):
                      mode=("manual" if manual else "auto"))
         if getattr(self, "_gui_active", False):
             try:
-                self.btn_connect.config(state="disabled", text="متصل شد ✅", bg="#2a9d8f")
+                self.btn_connect.config(state="disabled", text="text text ✅", bg="#2a9d8f")
                 self.btn_reset.config(state="normal")
             except Exception:
                 pass
-            if "هشدار" in msg:
+            if "Warning" in msg:
                 try:
-                    self.lbl_status.config(text="وضعیت: متصل (با هشدار هوک‌ها) ⚠", fg="#fca311")
+                    self.lbl_status.config(text="andtext: text (with Warning hook‌text) ⚠", fg="#fca311")
                 except Exception:
                     pass
             else:
                 try:
-                    self.lbl_status.config(text="وضعیت: متصل — در انتظار بازی 🟢", fg="#2ecc71")
+                    self.lbl_status.config(text="andtext: text — in text withtext 🟢", fg="#2ecc71")
                 except Exception:
                     pass
         self.is_monitoring = True
@@ -429,10 +429,10 @@ class MomentumApp(_MOM_BASE):
                     except Exception:
                         pass
                     try:
-                        self.btn_connect.config(state="normal", text="اتصال به پروسه بازی",
+                        self.btn_connect.config(state="normal", text="text to textandtext withtext",
                                                 bg="#00b4d8")
-                        self.lbl_status.config(text="وضعیت: پروسهٔ بازی بسته شد — "
-                                                    "انتظار اتصال خودکار ⏳", fg="#fca311")
+                        self.lbl_status.config(text="andtext: textandtext withtext text text — "
+                                                    "text text automatic ⏳", fg="#fca311")
                     except Exception:
                         pass
             elif not self._auto_connect_busy:
@@ -476,7 +476,7 @@ class MomentumApp(_MOM_BASE):
                            font=("Segoe UI", 12, "bold"), fg="#00f5d4", bg="#111622")
         lbl_app.pack(side="left", pady=8)
 
-        # کارت Match Time (زنده)
+        # card Match Time (live)
         time_card = tk.Frame(header, bg="#0d1a26", highlightbackground="#00b4d8", highlightthickness=1, padx=12, pady=3)
         time_card.pack(side="left", padx=25)
         tk.Label(time_card, text="MATCH TIME", font=("Segoe UI", 7, "bold"), fg="#7f8fa6", bg="#0d1a26").pack()
@@ -485,16 +485,16 @@ class MomentumApp(_MOM_BASE):
         self.lbl_clock_src = tk.Label(time_card, text="Game Clock: --", font=("Segoe UI", 7), fg="#ffd166", bg="#0d1a26")
         self.lbl_clock_src.pack()
 
-        self.lbl_status = tk.Label(header, text="وضعیت: در انتظار اتصال",
+        self.lbl_status = tk.Label(header, text="andtext: in text text",
                                    font=("Segoe UI", 9, "bold"), fg="#fca311", bg="#111622")
         self.lbl_status.pack(side="right", padx=12)
 
-        self.btn_connect = tk.Button(header, text="اتصال به پروسه بازی", font=("Segoe UI", 9, "bold"),
+        self.btn_connect = tk.Button(header, text="text to textandtext withtext", font=("Segoe UI", 9, "bold"),
                                      bg="#00b4d8", fg="#ffffff", relief="flat", padx=16, pady=4,
                                      cursor="hand2", command=self.start_monitoring)
         self.btn_connect.pack(side="right")
 
-        self.btn_reset = tk.Button(header, text="ریست مسابقه", font=("Segoe UI", 9, "bold"),
+        self.btn_reset = tk.Button(header, text="reset text", font=("Segoe UI", 9, "bold"),
                                    bg="#415a77", fg="#ffffff", relief="flat", padx=14, pady=4,
                                    cursor="hand2", state="disabled", command=self.request_reset)
         self.btn_reset.pack(side="right", padx=6)
@@ -502,10 +502,10 @@ class MomentumApp(_MOM_BASE):
         # ---------------- Field Bar ----------------
         field_bar = tk.Frame(self, bg="#151d2c", padx=15, pady=4)
         field_bar.pack(fill="x")
-        self.lbl_field_info = tk.Label(field_bar, text="هندسه زمین: در انتظار شناسایی گلرها...",
+        self.lbl_field_info = tk.Label(field_bar, text="text pitch: in text text text...",
                                        font=("Segoe UI", 9), fg="#ffd166", bg="#151d2c")
         self.lbl_field_info.pack(side="left")
-        # نسخه ۴: وضعیت زندهٔ هوک گل (سمت راست نوار زمین)
+        # version 4: andtechnical note livetechnical note goal hook (side technical noteis technical noteandtechnical note pitch)
         self.lbl_goal_hook = tk.Label(field_bar, text="Goal Hook: -- ",
                                       font=("Consolas", 9, "bold"), fg="#7f8fa6", bg="#151d2c")
         self.lbl_goal_hook.pack(side="right")
@@ -516,42 +516,42 @@ class MomentumApp(_MOM_BASE):
 
         self.card_home = tk.Frame(poss_box, bg="#131a28", relief="groove", bd=2, padx=12, pady=5)
         self.card_home.pack(side="left", fill="both", expand=True, padx=(0, 5))
-        # نسخه ۱۰٫۵ — اسلات لوگو/پرچم میزبان (پیش‌فرض: «میزبان» تا لوگو خوانده شود)
-        self.lbl_home_logo = tk.Label(self.card_home, text="میزبان", font=("Segoe UI", 10, "bold"),
+        # version 10technical note5 — technical note logo/technical note Home (default: «Home» until logo technical noteandtechnical note technical noteandtechnical note)
+        self.lbl_home_logo = tk.Label(self.card_home, text="Home", font=("Segoe UI", 10, "bold"),
                                       fg="#6b7a90", bg="#0d1117", bd=1, relief="groove",
                                       width=TEAM_LOGO_SLOT_TEXT_W, height=TEAM_LOGO_SLOT_TEXT_H)
         self.lbl_home_logo.pack(side="left", padx=(0, 10), pady=2, fill="y")
         home_txt = tk.Frame(self.card_home, bg="#131a28")
         home_txt.pack(side="left", fill="both", expand=True)
-        # نسخهٔ ۱۰٫۶ — ردیف نام: [نام تیم] [دایره‌های رنگ نمودار]
+        # versiontechnical note 10technical note6 — technical note technical note: [team name] [technical note‌technical note color chart]
         home_name_row = tk.Frame(home_txt, bg="#131a28")
         home_name_row.pack(fill="x")
-        self.lbl_home_team = tk.Label(home_name_row, text="میزبان (Home / صندلی ۱-۱۱)", font=("Segoe UI", 10, "bold"), fg="#a6e3a1", bg="#131a28")
+        self.lbl_home_team = tk.Label(home_name_row, text="Home (Home / text 1-11)", font=("Segoe UI", 10, "bold"), fg="#a6e3a1", bg="#131a28")
         self.lbl_home_team.pack(side="left")
         self.cvs_home_colors = tk.Canvas(home_name_row, width=TEAM_COLOR_DOT_H, height=TEAM_COLOR_DOT_H,
                                          bg="#131a28", highlightthickness=0)
         self.cvs_home_colors.pack(side="left", padx=(7, 0))
-        self.lbl_home_status = tk.Label(home_txt, text="مالکیت: ندارد", font=("Segoe UI", 8), fg="#94a3b8", bg="#131a28")
+        self.lbl_home_status = tk.Label(home_txt, text="possession: text", font=("Segoe UI", 8), fg="#94a3b8", bg="#131a28")
         self.lbl_home_status.pack(anchor="w")
 
         self.card_away = tk.Frame(poss_box, bg="#131a28", relief="groove", bd=2, padx=12, pady=5)
         self.card_away.pack(side="right", fill="both", expand=True, padx=(5, 0))
-        # نسخه ۱۰٫۵ — اسلات لوگو/پرچم مهمان (پیش‌فرض: «مهمان» تا لوگو خوانده شود)
-        self.lbl_away_logo = tk.Label(self.card_away, text="مهمان", font=("Segoe UI", 10, "bold"),
+        # version 10technical note5 — technical note logo/technical note Away (default: «Away» until logo technical noteandtechnical note technical noteandtechnical note)
+        self.lbl_away_logo = tk.Label(self.card_away, text="Away", font=("Segoe UI", 10, "bold"),
                                       fg="#6b7a90", bg="#0d1117", bd=1, relief="groove",
                                       width=TEAM_LOGO_SLOT_TEXT_W, height=TEAM_LOGO_SLOT_TEXT_H)
         self.lbl_away_logo.pack(side="right", padx=(10, 0), pady=2, fill="y")
         away_txt = tk.Frame(self.card_away, bg="#131a28")
         away_txt.pack(side="right", fill="both", expand=True)
-        # نسخهٔ ۱۰٫۶ — ردیف نام: [نام تیم] [دایره‌های رنگ نمودار]
+        # versiontechnical note 10technical note6 — technical note technical note: [team name] [technical note‌technical note color chart]
         away_name_row = tk.Frame(away_txt, bg="#131a28")
         away_name_row.pack(fill="x")
-        self.lbl_away_team = tk.Label(away_name_row, text="میهمان (Away / صندلی ۱۲-۲۲)", font=("Segoe UI", 10, "bold"), fg="#f38ba8", bg="#131a28")
+        self.lbl_away_team = tk.Label(away_name_row, text="Away (Away / text 12-22)", font=("Segoe UI", 10, "bold"), fg="#f38ba8", bg="#131a28")
         self.lbl_away_team.pack(side="left")
         self.cvs_away_colors = tk.Canvas(away_name_row, width=TEAM_COLOR_DOT_H, height=TEAM_COLOR_DOT_H,
                                          bg="#131a28", highlightthickness=0)
         self.cvs_away_colors.pack(side="left", padx=(7, 0))
-        self.lbl_away_status = tk.Label(away_txt, text="مالکیت: ندارد", font=("Segoe UI", 8), fg="#94a3b8", bg="#131a28")
+        self.lbl_away_status = tk.Label(away_txt, text="possession: text", font=("Segoe UI", 8), fg="#94a3b8", bg="#131a28")
         self.lbl_away_status.pack(anchor="w")
 
         # ---------------- Tabs ----------------
@@ -559,23 +559,23 @@ class MomentumApp(_MOM_BASE):
         tabs_frame.pack(fill="both", expand=True, padx=15, pady=5)
 
         self.tab_control = ttk.Notebook(tabs_frame)
-        # نسخهٔ ۱۰٫۱۲ — تب «Live Match Momentum» حذف شد (درخواست کاربر)؛
-        # تب TV Momentum کامل حفظ شده و تب اول است.
-        # نسخهٔ ۱۰٫۹ — پس‌زمینهٔ تب TV: مشکی خالص (حول تصویر/letterbox هم مشکی)
+        # versiontechnical note 10technical note12 — technical note «Live Match Momentum» technical note technical note (request user)technical note
+        # technical note TV Momentum complete technical note technical note and technical note first is.
+        # versiontechnical note 10technical note9 — technical note‌pitchtechnical note technical note TV: technical note technical note (technical noteandtechnical note technical noteandtechnical note/letterbox technical note technical note)
         self.tab_tv = tk.Frame(self.tab_control, bg="#000000")
         self.tab_events = tk.Frame(self.tab_control, bg="#090c12")
         self.tab_seq = tk.Frame(self.tab_control, bg="#090c12")
         self.tab_details = tk.Frame(self.tab_control, bg="#090c12")
         self.tab_debug = tk.Frame(self.tab_control, bg="#090c12")
 
-        # نسخهٔ ۱۰٫۷ — تب نمودار روی تصویر پنل (Half/Full/Extra)
+        # versiontechnical note 10technical note7 — technical note chart technical noteandtechnical note technical noteandtechnical note technical note (Half/Full/Extra)
         self.tab_control.add(self.tab_tv, text="  📺 TV Match Momentum  ")
         self.tab_control.add(self.tab_events, text="  📋 Event Timeline  ")
         self.tab_control.add(self.tab_seq, text="  📊 Possession Sequences  ")
         self.tab_control.add(self.tab_details, text="  🎯 Event / Threat Details  ")
         self.tab_control.add(self.tab_debug, text="  🧪 Momentum Debug  ")
         self.tab_control.pack(fill="both", expand=True)
-        # رندر TV فقط وقتی تب دیده می‌شود + رندر فوری هنگام سوییچ
+        # render TV only when technical note technical note technical note‌technical noteandtechnical note + render immediate technical note technical noteandtechnical note
         self.tab_control.bind("<<NotebookTabChanged>>", self._on_tab_changed)
 
         self.build_tv_tab(self.tab_tv)
@@ -586,8 +586,8 @@ class MomentumApp(_MOM_BASE):
 
 
     def _detect_goal_glyph(self):
-        """بررسی وجود گلیف ⚽ (U+26BD) در فونت پیش‌فرض matplotlib؛
-        در نبود آن، مارکر گرافیکی استاندارد (دایره سفید با حاشیه تیره) استفاده می‌شود."""
+        """check andtextandtext text ⚽ (U+26BD) in textandtext default matplotlibtext
+        in textandtext text text text istext (text text with text text) istext text‌textandtext."""
         try:
             from matplotlib import font_manager
             from matplotlib.ft2font import FT2Font
@@ -599,11 +599,11 @@ class MomentumApp(_MOM_BASE):
             self._goal_glyph_ok = False
 
     def build_tv_tab(self, parent):
-        """تب TV: فقط و فقط نمودار روی تصویر — بدون هیچ متن/تیک/عددی.
-        نسخهٔ ۱۰٫۱۰ — Figure دیگر شفاف نیست: پس‌زمینهٔ مشکی خالص (#000000)
-        روی خودِ Figure/محور/ویدجت بوم اعمال می‌شود (رفع «شفید» دیده‌شدن).
-        نسخهٔ ۱۰٫۱۱ — آیکون چرخ‌دندهٔ ⚙ بالای تب: مودال تنظیمات اسنپ‌شات
-        (زمان‌بندی نمایش روی صفحهٔ بازی + مدت + ذخیرهٔ دائمی + تاریخ/زمان)."""
+        """text TV: only and only chart textandtext textandtext — without text text/text/numbertext.
+        versiontext 10text10 — Figure text text is not: text‌pitchtext text text (#000000)
+        textandtext textandtext Figure/textandtext/andtext textandtext text text‌textandtext (text «text» text‌text).
+        versiontext 10text11 — icon text‌text ⚙ withtext text: textandtext text textagetext‌text
+        (time‌text display textandtext text withtext + text + savetext text + untiltext/time)."""
         bar = tk.Frame(parent, bg="#000000", height=30)
         bar.pack(fill="x")
         tk.Label(bar, text="TV Match Momentum",
@@ -616,14 +616,14 @@ class MomentumApp(_MOM_BASE):
             highlightthickness=0, cursor="hand2",
             command=self.open_snapshot_settings)
         self.btn_snap_settings.pack(side="right", padx=10, pady=1)
-        tk.Label(bar, text="تنظیمات اسنپ‌شات",
+        tk.Label(bar, text="text textagetext‌text",
                  font=("Segoe UI", 8), fg="#22304d", bg="#000000").pack(side="right")
 
-        # --- نسخهٔ ۱۰٫۱۶ — ابزار موقت تنظیم ظاهر (شرط کاربر — بعداً حذف می‌شود) ---
-        # الف) نرمی لبهٔ نمودار (عدد → گاوسی اضافهٔ لبه)
-        # ب) دو گزینهٔ نرمی/شدت نور نئون منحنی‌ها
+        # --- versiontechnical note 10technical note16 — tool technical noteandtechnical note technical note technical note (technical note user — aftertechnical note technical note technical note‌technical noteandtechnical note) ---
+        # technical note) smoothing technical notetotechnical note chart (number → technical noteandtechnical note technical note technical noteto)
+        # technical note) technical noteand technical note smoothing/technical note technical noteandtechnical note technical noteandtechnical note technical note‌technical note
         bar2 = tk.Frame(parent, bg="#000000", height=30)
-        bar2.pack(fill="x", side="bottom")   # قبل از canvas — نمودار وسط می‌ماند
+        bar2.pack(fill="x", side="bottom")   # before from canvas — chart andtechnical note technical note‌technical note
         self._tv_edge_var = tk.StringVar(value=f"{TV_EDGE_SMOOTH_PX:g}")
         self._tv_glow_soft_var = tk.StringVar(value=f"{TV_GLOW_SOFTNESS_MUL:g}")
         self._tv_glow_int_var = tk.StringVar(value=f"{TV_GLOW_INTENSITY_MUL:g}")
@@ -640,25 +640,25 @@ class MomentumApp(_MOM_BASE):
                          insertbackground="#ffd166")
             e.pack(side="right", padx=2)
             e.bind("<Return>", lambda _e: self._apply_tv_tuning())
-            # نسخهٔ ۱۰٫۱۷ — «ریل‌تایم»: تایپ در کافیست؛ ۲۲۰ms بعد از مکث،
-            # نمودارِ رسم‌شده (تب و PNG روی بازی) با مقدار تازه رندر می‌شود
+            # versiontechnical note 10technical note17 — «technical note‌untiltechnical note»: untiltechnical note in technical note 220ms after from technical note
+            # charttechnical note technical note‌technical note (technical note and PNG technical noteandtechnical note withtechnical note) with value fresh render technical note‌technical noteandtechnical note
             e.bind("<KeyRelease>", self._tune_key_live)
             return e
 
-        tk.Label(bar2, text="ابزار موقت (در آپدیت بعدی حذف می‌شود):",
+        tk.Label(bar2, text="tool textandtext (in text aftertext text text‌textandtext):",
                  font=("Segoe UI", 8), fg="#55627a",
                  bg="#000000").pack(side="right", padx=(6, 10))
-        _tune_lbl("نرمی لبه (px):")
+        _tune_lbl("smoothing textto (px):")
         _tune_ent(self._tv_edge_var)
-        _tune_lbl("نرمی نئون (×):")
+        _tune_lbl("smoothing textandtext (×):")
         _tune_ent(self._tv_glow_soft_var)
-        _tune_lbl("شدت نئون (×):")
+        _tune_lbl("text textandtext (×):")
         _tune_ent(self._tv_glow_int_var)
-        tk.Button(bar2, text="اعمال", font=("Segoe UI", 8, "bold"),
+        tk.Button(bar2, text="text", font=("Segoe UI", 8, "bold"),
                   bg="#1a2336", fg="#00f5d4", relief="flat", cursor="hand2",
                   activebackground="#1a2336", activeforeground="#ffffff",
                   command=self._apply_tv_tuning).pack(side="right", padx=(2, 8))
-        tk.Button(bar2, text="پیش‌فرض (۰ / ۱ / ۱)", font=("Segoe UI", 8),
+        tk.Button(bar2, text="default (0 / 1 / 1)", font=("Segoe UI", 8),
                   bg="#141b2b", fg="#7f8fa6", relief="flat", cursor="hand2",
                   activebackground="#141b2b", activeforeground="#c0c8d8",
                   command=self._reset_tv_tuning).pack(side="left", padx=8)
@@ -676,9 +676,9 @@ class MomentumApp(_MOM_BASE):
 
 
     def _style_tv_axes_empty(self):
-        """حالت انتظار تب TV — بدون هیچ متن اضافه (پس‌زمینهٔ مشکی خالص).
-        نسخهٔ ۱۰٫۱۰ — بعد از clear() رنگ‌ها دوباره صراحتاً مشکی می‌شوند
-        (clear() رنگ محور را به پیش‌فرض برمی‌گرداند)."""
+        """text text text TV — without text text text (text‌pitchtext text text).
+        versiontext 10text10 — after from clear() color‌text again textuntiltext text text‌textandtext
+        (clear() color textandtext text to default text‌text)."""
         self.tv_ax.clear()
         self.tv_ax.set_facecolor("#000000")
         self.tv_ax.axis("off")
@@ -689,20 +689,20 @@ class MomentumApp(_MOM_BASE):
 
 
     def _apply_tv_tuning(self):
-        """بند ۳ پیام کاربر — کادرهای موقت کنار نمودار:
-          * «نرمی لبه (px)» → TV_EDGE_SMOOTH_PX (گاوسی اضافهٔ لبه + کلمپ شکل)
-          * «نرمی نئون (×)» → TV_GLOW_SOFTNESS_MUL (سیگمای بلور درخشش)
-          * «شدت نئون (×)» → TV_GLOW_INTENSITY_MUL (آلفای اوج درخشش)
-        نسخهٔ ۱۰٫۱۷ — «ریل‌تایم روی نمودارِ رسم‌شده» (شرط تازهٔ کاربر:
-        نه فقط نمودارِ جدید!):
-          * هر تایپ در کادرها خودش این متد را با تأخیر ۲۲۰ms صدا می‌زند؛
-          * تب زندهٔ TV فوراً با همان دادهٔ رسم‌شده دوباره رندر می‌شود
-            (force از پرچم stale-visible عبور می‌کند)؛
-          * اگر PNG اسنپ‌شات همین حالا روی صفحهٔ بازی است، همان پنجره
-            در جای خودش با ظاهر تازه re-blit می‌شود (بدون قطع انیمیشن
-            و بدون ریست ماشین حالت)؛
-          * کش/پیش‌بارگذاری برای PNGهای بعدی هم باطل/بازمسلح می‌شود.
-        (این مقادیر موقت‌اند و در آپدیت بعدی هاردکد می‌شوند.)"""
+        """text 3 message user — textvalleytext textandtext text chart:
+          * «smoothing textto (px)» → TV_EDGE_SMOOTH_PX (textandtext text textto + totaltext texttotal)
+          * «smoothing textandtext (×)» → TV_GLOW_SOFTNESS_MUL (text textandtext intext)
+          * «text textandtext (×)» → TV_GLOW_INTENSITY_MUL (text textandtext intext)
+        versiontext 10text17 — «text‌untiltext textandtext charttext text‌text» (text freshtext user:
+        text only charttext new!):
+          * text untiltext in textvalleytext textandtext text text text with delay 220ms text text‌text
+          * text livetext TV textandtext with same datatext text‌text again render text‌textandtext
+            (force from text stale-visible textandtext text‌text)text
+          * if PNG textagetext‌text text text textandtext text withtext istext same window
+            in text textandtext with text fresh re-blit text‌textandtext (without text text
+            and without reset text text)text
+          * text/text‌withtext for PNGtext aftertext text withtext/withtextarmed text‌textandtext.
+        (text text textandtext‌text and in text aftertext textcode text‌textandtext.)"""
         global TV_EDGE_SMOOTH_PX, TV_GLOW_SOFTNESS_MUL, TV_GLOW_INTENSITY_MUL
 
         def _f(var, default, lo, hi):
@@ -721,34 +721,34 @@ class MomentumApp(_MOM_BASE):
             self._tv_glow_int_var.set(f"{TV_GLOW_INTENSITY_MUL:g}")
         except Exception:
             pass
-        # نسخهٔ ۱۰٫۱۷ — هر کار «مستقل» است تا یک خطا بقیه را فلج نکند
+        # versiontechnical note 10technical note17 — technical note technical note «independent» is until technical note Error technical note technical note technical note technical note
         try:
-            self._snap_capture_cache.clear()          # PNGها با ظاهر تازه
+            self._snap_capture_cache.clear()          # PNGtechnical note with technical note fresh
         except Exception as ex:
             clog(f"[TVTune] cache: {type(ex).__name__}: {ex}")
         try:
-            self.snap_engine.reset_preload_flags()    # پیش‌بارگذاری دوباره مسلح
+            self.snap_engine.reset_preload_flags()    # technical note‌withtechnical note again armed
         except Exception as ex:
             clog(f"[TVTune] preflags: {type(ex).__name__}: {ex}")
         try:
-            self._discard_snapshot_preload()          # پنجرهٔ پیش‌ساختهٔ کهنه
+            self._discard_snapshot_preload()          # windowtechnical note technical note‌technical note technical note
         except Exception as ex:
             clog(f"[TVTune] prediscard: {type(ex).__name__}: {ex}")
         try:
             self._tv_dirty = True
-            self._refresh_tv_chart(force=True)        # تبِ رسم‌شده — فوری
+            self._refresh_tv_chart(force=True)        # technical note technical note‌technical note — immediate
         except Exception as ex:
             clog(f"[TVTune] tab: {type(ex).__name__}: {ex}")
         try:
-            self._retune_live_overlay()               # PNGِ در حال نمایش — فوری
+            self._retune_live_overlay()               # PNGtechnical note currently display — immediate
         except Exception as ex:
             clog(f"[TVTune] overlay: {type(ex).__name__}: {ex}")
 
 
     def _tune_key_live(self, _event=None):
-        """نسخهٔ ۱۰٫۱۷ — اعمال «ریل‌تایم» هنگام تایپ: هر کلید، تایمرِ
-        ۲۲۰ms را از نو کوک می‌کند؛ بعد از مکثِ کوتاه، مقدار اعمال و
-        نمودارِ رسم‌شده همان لحظه تازه می‌شود (بدون نیاز به Enter)."""
+        """versiontext 10text17 — text «text‌untiltext» text untiltext: text totaltext untiltext
+        220ms text from textand textandtext text‌text after from text textanduntiltext value text and
+        charttext text‌text same moment fresh text‌textandtext (without textortext to Enter)."""
         try:
             aid = getattr(self, "_tune_deb_after", None)
             if aid:
@@ -770,12 +770,12 @@ class MomentumApp(_MOM_BASE):
 
 
     def _retune_live_overlay(self):
-        """نسخهٔ ۱۰٫۱۷ — اگر پنجرهٔ اسنپ‌شات همین حالا روی صفحهٔ بازی است،
-        همان نمودارِ «در حال نمایش» با پیچ‌های تازه، در همان مکان و بدون
-        قطع انیمیشن، دوباره رندر و re-blit می‌شود (ریل‌تایمِ واقعی —
-        رندر سنگین در ترد Worker است و UI هیچ لگی نمی‌بیند).
-        نسخهٔ ۱۰٫۲۳ — مسیر GPU: همان «re-blit» — texture در جا عوض
-        می‌شود (بدون ساخت پنجره، بدون قطع نمایش)."""
+        """versiontext 10text17 — if windowtext textagetext‌text text text textandtext text withtext istext
+        same charttext «currently display» with text‌text freshtext in same text and without
+        text text again render and re-blit text‌textandtext (text‌untiltext real —
+        render agetext in text Worker is and UI text text text‌text).
+        versiontext 10text23 — path GPU: same «re-blit» — texture in text textandtext
+        text‌textandtext (without text windowtext without text display)."""
         if getattr(self, "_snap_gpu", None) is not None:
             st = getattr(self, "_snap_overlay_state", None)
             if st is None or not st.get("gpu"):
@@ -786,7 +786,7 @@ class MomentumApp(_MOM_BASE):
 
             def _worker_gpu():
                 try:
-                    # نسخهٔ ۱۰٫۲۴ — اول مسیر برداری (سریع — بدون matplotlib)
+                    # versiontechnical note 10technical note24 — first path technical note (fast — without matplotlib)
                     scene = None
                     try:
                         scene = self._build_gpu_scene_now()
@@ -825,13 +825,13 @@ class MomentumApp(_MOM_BASE):
         except Exception:
             return
         if getattr(self, "_snap_retune_busy", False):
-            return                                    # یکی در جریان است — کافی است
+            return                                    # technical note in technical noteortechnical note is — technical note is
         try:
             cur_y = int(win.winfo_rooty())
         except Exception:
             cur_y = int(st.get("y_final", 0))
         if cur_y > int(self.winfo_screenheight()):
-            cur_y = int(st.get("y_final", cur_y))     # زیر صفحه — جای نهایی
+            cur_y = int(st.get("y_final", cur_y))     # technical note technical note — technical note technical note
         self._snap_retune_busy = True
 
         def _worker():
@@ -857,10 +857,10 @@ class MomentumApp(_MOM_BASE):
 
 
     def _reblit_overlay_window(self, disp, arr, st, cur_y):
-        """نسخهٔ ۱۰٫۱۷ — اعمال بیت‌مپ تازه روی «همان» پنجرهٔ زندهٔ
-        اسنپ‌شات، در همان مکان (بدون ساخت پنجرهٔ جدید/بدون ریست انیمیشن).
-        پنجرهٔ لایه‌ای → یک UpdateLayeredWindow؛ پنجرهٔ معمولی → عوض‌کردن
-        تصویر Label."""
+        """versiontext 10text17 — text text‌text fresh textandtext «same» windowtext livetext
+        textagetext‌text in same text (without text windowtext new/without reset text).
+        windowtext layer‌text → text UpdateLayeredWindowtext windowtext textandtext → textandtext‌text
+        textandtext Label."""
         win = st.get("win")
         if win is None:
             return
@@ -879,7 +879,7 @@ class MomentumApp(_MOM_BASE):
                 if win32_show_layered(win, disp, x, cur_y, w, h, arr=arr):
                     st["disp"], st["arr"] = disp, arr
                     try:
-                        ph = ImageTk.PhotoImage(disp)   # برای fallback/مسیر غیرلایه‌ای
+                        ph = ImageTk.PhotoImage(disp)   # for fallback/path technical notelayer‌technical note
                         st["photo"] = ph
                     except Exception:
                         pass
@@ -895,7 +895,7 @@ class MomentumApp(_MOM_BASE):
 
 
     def _reset_tv_tuning(self):
-        """بازگشت پیچ‌های موقت به پیش‌فرض (۰ / ۱ / ۱)."""
+        """withtext text‌text textandtext to default (0 / 1 / 1)."""
         global TV_EDGE_SMOOTH_PX, TV_GLOW_SOFTNESS_MUL, TV_GLOW_INTENSITY_MUL
         TV_EDGE_SMOOTH_PX = 0.0
         TV_GLOW_SOFTNESS_MUL = 1.0
@@ -914,22 +914,22 @@ class MomentumApp(_MOM_BASE):
             sel = self.tab_control.select()
             self._tv_visible = bool(sel) and sel == str(self.tab_tv)
             if self._tv_visible:
-                self._tv_dirty = True     # رندر فوری هنگام سوییچ
+                self._tv_dirty = True     # render immediate technical note technical noteandtechnical note
         except Exception:
             pass
 
 
     def _tv_bg_kind_for_state(self) -> str:
-        """انتخاب تصویر پس‌زمینه بر اساس فاز مسابقه:
-        نیمه اول → Half | نیمه دوم → Full | وقت اضافه → Extra
-        نسخهٔ ۱۰٫۱۳ — شرط کاربر: نمودارِ بخش بعدی فقط وقتی «فراخوانی» می‌شود
-        که بخش بعدی واقعاً شروع شده باشد (بازی Playing + تایمر از مرز بیشتر):
-          * Full: نیمه دوم + تایمرِ دیده‌شده در جریان بازی از ۴۵:۰۰ بیشتر
-            شده باشد (تا قبل از آن، نمودار نیمهٔ اول روی صفحه می‌ماند)؛
-          * Extra: ری‌استارتِ ۹۰ در تایم‌لاین «تأیید» شده باشد — تایمر به
-            ۹۰:۰۰ ریست شده و بعدش در جریان PLAYING از ۹۰:۰۰ بیشتر شده است.
-            وقت تلف‌شدهٔ بلند نیمهٔ دوم (حتی بالای ۹۵ دقیقه) و ریستِ بدون
-            ادامهٔ بازی، دیگر نمودار ET را فراخوانی نمی‌کند (رفع باگ)."""
+        """text textandtext text‌pitchtext text text textfrom text:
+        first half → Half | second half → Full | extra time → Extra
+        versiontext 10text13 — text user: charttext section aftertext only when «textandtext» text‌textandtext
+        text section aftertext andtext start text withtext (withtext Playing + untiltext from boundary text):
+          * Full: second half + untiltext text‌text in textortext withtext from 45:00 text
+            text withtext (until before from text chart text first textandtext text text‌text)text
+          * Extra: restarttext 90 in untiltext‌text «confirmation» text withtext — untiltext to
+            90:00 reset text and aftertext in textortext PLAYING from 90:00 text text is.
+            andtext text‌text text text second (text withtext 95 minute) and resettext without
+            resumetext withtext text chart ET text textandtext text‌text (text withtext)."""
         if (self.half_number >= 2
                 and self._match_phase in (MatchPhase.HALF_2, MatchPhase.ET1,
                                           MatchPhase.ET2, MatchPhase.FULL_TIME)):
@@ -948,8 +948,8 @@ class MomentumApp(_MOM_BASE):
         return "half"
 
     def _tv_update_flags(self):
-        """آماده‌سازی آرایهٔ لوگو/پرچم هر تیم (استروک سفید گوشه‌گرد) — فقط
-        وقتی مسیر تصویر عوض شده دوباره پردازش می‌شود."""
+        """text‌textfromtext text logo/text text team (istextandtext text textandtext‌text) — only
+        when path textandtext textandtext text again textfromtext text‌textandtext."""
         for side in ("home", "away"):
             path = self.team_tracker.logo_path_for(self._team_ident_last.get(side))
             sig = path
@@ -959,8 +959,8 @@ class MomentumApp(_MOM_BASE):
                 self._tv_dirty = True
 
     def _tv_signature(self, bg_kind: str) -> tuple:
-        """امضای وضعیت برای رندر تنها در صورت تغییر (کارایی ~10fps).
-        نسخهٔ ۱۰٫۱۳ — مُهر تاریخ دیگر جزو رندر تب نیست (فقط فایل دائمی)."""
+        """text andtext for render text in textandtext change (text ~10fps).
+        versiontext 10text13 — text untiltext text textand render text is not (only file text)."""
         with self.momentum._lock:
             hist = self.momentum.history
             n_hist = len(hist)
@@ -976,12 +976,12 @@ class MomentumApp(_MOM_BASE):
                 self._tv_flag_sig["home"], self._tv_flag_sig["away"])
 
     def _refresh_tv_chart(self, force: bool = False):
-        """رندر زندهٔ تب TV — فقط وقتی تب دیده می‌شود و وضعیت عوض شده است.
-        نسخهٔ ۱۰٫۱۳ — طبق درخواست کاربر، تاریخ/ساعت فقط روی «فایل دائمی»
-        نوشته می‌شود؛ نه روی نمودار نمایش داده‌شده روی صفحهٔ بازی و نه تب.
-        نسخهٔ ۱۰٫۱۷ — force=True یعنی «همین حالا رندر کن»: از پرچم
-        _tv_visible عبور می‌کند (اگر پرچم به هر دلیلی stale باشد،
-        «اعمال پیچ‌ها» دیگر قربانی آن نمی‌شود؛ فقط canvas باید باشد)."""
+        """render livetext text TV — only when text text text‌textandtext and andtext textandtext text is.
+        versiontext 10text13 — text request usertext untiltext/text only textandtext «file text»
+        textandtext text‌textandtext text textandtext chart display data‌text textandtext text withtext and text text.
+        versiontext 10text17 — force=True text «text text render text»: from text
+        _tv_visible textandtext text‌text (if text to text text stale withtext
+        «text text‌text» text textwithtext text text‌textandtext only canvas must withtext)."""
         try:
             if getattr(self, "tv_canvas", None) is None:
                 return
@@ -1008,7 +1008,7 @@ class MomentumApp(_MOM_BASE):
 
 
     def _snapshot_timestamp_text(self) -> Optional[str]:
-        """مُهر تاریخ/ساعت «شروع» بازی از ساعت سیستم (اگر تیک فعال باشد)."""
+        """text untiltext/text «start» withtext from text text (if text active withtext)."""
         try:
             if not self.snap_engine.s.get("timestamp"):
                 return None
@@ -1025,10 +1025,10 @@ class MomentumApp(_MOM_BASE):
                             f"snap_{safe or 'chart'}.png")
 
     def _build_gpu_scene_now(self, timestamp_text: Optional[str] = None):
-        """نسخهٔ ۱۰٫۲۴ — ساخت صحنهٔ برداری GPU در ترد Worker (خالص — بدون
-        Tk/GL). از همان رنگ/پرچم/bg_kind مسیر فعلی استفاده می‌کند؛ شکل منحنی
-        از _tv_curve_core — مو‌به‌مو همان مسیر matplotlib. خروجی None =
-        ساخت ناموفق (فراخوان به مسیر بیت‌مپ قبلی برمی‌گردد)."""
+        """versiontext 10text24 — text scenetext text GPU in text Worker (text — without
+        Tk/GL). from same color/text/bg_kind path text istext text‌text texttotal text
+        from _tv_curve_core — textand‌to‌textand same path matplotlib. output None =
+        text failed (textandtext to path text‌text beforetext text‌text)."""
         return build_gpu_graph_scene(
             self.momentum, self.config, self._tv_bg_kind_for_state(),
             self._chart_colors["home"], self._chart_colors["away"],
@@ -1037,12 +1037,12 @@ class MomentumApp(_MOM_BASE):
 
     def _snapshot_render_current(self, out_path: Optional[str] = None,
                                  with_timestamp: bool = False):
-        """رندر آفلاین وضعیت فعلی نمودار TV (با آلفای شفاف) — همان شکلِ تب،
-        همراه گل‌ها. خروجی: PIL.Image یا None. (از Worker فراخوانی می‌شود؛
-        Figure مستقل دارد و با تب اصلی تداخل ندارد.)
-        نسخهٔ ۱۰٫۱۳ — مُهر تاریخ/ساعت «فقط» برای فایل ذخیرهٔ دائمی تولید
-        می‌شود (with_timestamp=True)؛ نموداری که روی صفحهٔ بازی می‌آید
-        هرگز مُهر ندارد."""
+        """render text andtext text chart TV (with text text) — same texttotaltext text
+        text text‌text. output: PIL.Image or None. (from Worker textandtext text‌textandtext
+        Figure independent text and with text original textinside text.)
+        versiontext 10text13 — text untiltext/text «only» for file savetext text textandtext
+        text‌textandtext (with_timestamp=True)text charttext text textandtext text withtext text‌text
+        never text text."""
         return render_tv_snapshot(
             self.momentum, self.config, self._display_value,
             self._tv_bg_kind_for_state(),
@@ -1053,8 +1053,8 @@ class MomentumApp(_MOM_BASE):
             out_path=out_path, transparent=True)
 
     def _snap_life_mark(self, key, stage: str, note: str = "") -> None:
-        """ثبت یک مرحله از چرخهٔ عمر Snapshot در دفترترتیب — امن برای هر
-        تردی (Worker/Main-UI/Anim) و هر کلیدی (h1/h2/et/end)."""
+        """register text text from cycletext text Snapshot in textorder — text for text
+        text (Worker/Main-UI/Anim) and text totaltext (h1/h2/et/end)."""
         try:
             if key is None:
                 key = "?"
@@ -1069,8 +1069,8 @@ class MomentumApp(_MOM_BASE):
             pass
 
     def _snap_life_dump(self, key, title: str = "") -> None:
-        """چاپ تایم‌لاین کامل چرخهٔ عمر Snapshot (بلوک [SNAPSHOT SEQ #N])
-        + RACE CHECK: فاصلهٔ PRELOAD COMPLETE تا SHOW یا تحلیل علت Race."""
+        """print untiltext‌text complete cycletext text Snapshot (textandtext [SNAPSHOT SEQ #N])
+        + RACE CHECK: distancetext PRELOAD COMPLETE until SHOW or text text Race."""
         if not TV_SNAP_SHOW_DEBUG:
             return
         try:
@@ -1104,10 +1104,10 @@ class MomentumApp(_MOM_BASE):
             pass
 
     def _snap_race_analysis(self, key) -> None:
-        """نسخهٔ ۱۰٫۲۱ — تست ۶: چرا Show قبل از PRELOAD COMPLETE اجرا شد؟
-        بر اساس «آخرین مرحلهٔ ثبت‌شده»، نقطهٔ توقف دقیق + علت محتمل لاگ
-        می‌شود (بند E کاربر). فقط تشخیص — هیچ تغییر رفتاری.
-        نسخهٔ ۱۰٫۲۴ — فقط با TV_SNAP_SHOW_DEBUG."""
+        """versiontext 10text21 — test 6: text Show before from PRELOAD COMPLETE text text
+        text text «latest text register‌text»text text stop text + text text log
+        text‌textandtext (text E user). only detection — text change textuntiltext.
+        versiontext 10text24 — only with TV_SNAP_SHOW_DEBUG."""
         if not TV_SNAP_SHOW_DEBUG:
             return
         try:
@@ -1162,11 +1162,11 @@ class MomentumApp(_MOM_BASE):
     def _snap_state_event(self, event: str, state: "SnapshotState",
                           key=None, extra: str = "",
                           only_from: Optional[tuple] = None) -> None:
-        """ثبت یک گذر ماشین حالت + چاپ بلوک [SNAPSHOT_STATE].
-        only_from: اگر داده شود، فقط وقتی «حالت قبلی» یکی از این‌هاست
-        event ثبت می‌شود (جلوگیری از لاگ گمراه‌کننده در مسیرهای
-        تکراری مثل hideِ لحظهٔ Show).
-        امن برای هر تردی (Worker/Main-UI) — فقط تخصیص اتمی + print."""
+        """register text text text text + print textandtext [SNAPSHOT_STATE].
+        only_from: if data textandtext only when «text beforetext» text from text‌textis
+        event register text‌textandtext (textandtext from log text‌text in pathtext
+        text text hidetext momenttext Show).
+        text for text text (Worker/Main-UI) — only text text + print."""
         try:
             prev = getattr(self, "_snap_state", SnapshotState.EMPTY)
             if only_from is not None and prev not in only_from:
@@ -1176,8 +1176,8 @@ class MomentumApp(_MOM_BASE):
                 self._snap_state_key = key
             self._snap_state_since = time.perf_counter()
             if state == SnapshotState.PREPARING:
-                # مرجع اندازه‌گیری prepare= (فقط شروع PRELOAD ریست می‌شود
-                # تا event های بین راه اندازهٔ «prepare» را خراب نکنند)
+                # technical note technical notefromtechnical note‌technical note prepare= (only start PRELOAD reset technical note‌technical noteandtechnical note
+                # until event technical note technical note technical note technical notefromtechnical note «prepare» technical note broken technical note)
                 self._snap_state_t0 = self._snap_state_since
             if not TV_SNAP_SHOW_DEBUG:
                 return
@@ -1198,9 +1198,9 @@ class MomentumApp(_MOM_BASE):
             pass
 
     def _snap_show_stage(self, key, stage: str, extra: str = "") -> None:
-        """لاگ همیشه-فعل یک مرحله از چرخهٔ نمایش (فایل کوچک
-        momentum_2026_snapshot.log کنار اسکریپت — عین mlog نسخهٔ 2017؛
-        هیچ چاپ کنسولی ندارد). قابل‌اتکا در آزمون میدانی بدون فلگ دیباگ."""
+        """log always-text text text from cycletext display (file textandtext
+        momentum_2026_snapshot.log text text — text mlog versiontext 2017text
+        text print textandtext text). text‌text in textandtext text without text textwithtext."""
         try:
             if key in (None, ""):
                 key = "?"
@@ -1211,11 +1211,11 @@ class MomentumApp(_MOM_BASE):
             pass
 
     def _snap_show_event(self, kind: str, key, reason: str = "") -> None:
-        """ثبت رویداد چرخهٔ تراکنشی از «هر تردی» (Worker/UI/انیمیشن):
-        ("confirm", key)         → نمایش به SHOWING رسید — مصرف مجاز
-        ("confirm_end", lvl)     → show_end به SHOWING رسید
-        ("fail", key, reason)    → شکست dispatch/UI — مسلح‌سازی مجدد
-        ("fail_end", lvl, reason)→ شکست show_end — پس گرفتن shows"""
+        """register textandtext cycletext text from «text text» (Worker/UI/text):
+        ("confirm", key)         → display to SHOWING text — text textfrom
+        ("confirm_end", lvl)     → show_end to SHOWING text
+        ("fail", key, reason)    → text dispatch/UI — armed‌textfromtext text
+        ("fail_end", lvl, reason)→ text show_end — text text shows"""
         try:
             with self._snap_show_lock:
                 self._snap_show_events.append((kind, key, reason))
@@ -1223,8 +1223,8 @@ class MomentumApp(_MOM_BASE):
             pass
 
     def _snap_drain_show_events(self) -> None:
-        """اعمال رویدادهای confirm/fail روی موتور — فقط در ترد Worker،
-        در ابتدای هر _snapshot_tick (موتور خالص/تک‌ترد می‌ماند)."""
+        """text textandtextdatatext confirm/fail textandtext textandtextandtext — only in text Workertext
+        in text text _snapshot_tick (textandtextandtext text/text‌text text‌text)."""
         try:
             while True:
                 try:
@@ -1469,22 +1469,22 @@ class MomentumApp(_MOM_BASE):
                   f"{type(e).__name__}: {e}", flush=True)
 
     def _snapshot_tick(self, total_t, m_state, now_wall):
-        """تیک ماشین حالت اسنپ‌شات — هر تیک Worker (حتی خارج از PLAYING).
-        نسخهٔ ۱۰٫۱۵ — «preload/preload_end»: ۱-۲ ثانیه قبل از لحظهٔ نمایش،
-        رندر + ساخت پنجرهٔ زیرِ صفحه انجام می‌شود تا ورود بدون لگ باشد.
-        نسخهٔ ۱۰٫۱۸ — ابزار دقیق (بند ۱/۲/۴ کاربر): کل مسیر Worker
-        (Render/Resize/Premultiply/Cached-check) با perf_counter ثبت می‌شود؛
-        در لحظهٔ Show هیچ Render/Resize/I/O پنهانی انجام نمی‌شود — اگر کش
-        آماده نبود، با [SNAPSHOT WARNING] شفاف ثبت می‌شود.
-        v10.28 — چرخهٔ تراکنشی (پورت v1.3 از 2017): رویدادهای confirm/fail
-        اول drain می‌شوند؛ صدور («show», key) دیگر کلید را مصرف نمی‌کند
-        (مصرف = تأیید SHOWING). اگر dispatch/UI گم شود، مهلت
-        TV_SNAP_SHOW_CONFIRM_TIMEOUT_SEC پاس شود و همان کلید خودکار Retry
-        می‌شود — بدون ری‌استارت بازی."""
+        """text text text textagetext‌text — text text Worker (text text from PLAYING).
+        versiontext 10text15 — «preload/preload_end»: 1-2 second before from momenttext displaytext
+        render + text windowtext text text text text‌textandtext until andtextandtext without text withtext.
+        versiontext 10text18 — tool text (text 1/2/4 user): total path Worker
+        (Render/Resize/Premultiply/Cached-check) with perf_counter register text‌textandtext
+        in momenttext Show text Render/Resize/I/O hiddentext text text‌textandtext — if text
+        text textandtext with [SNAPSHOT WARNING] text register text‌textandtext.
+        v10.28 — cycletext text (textandtext v1.3 from 2017): textandtextdatatext confirm/fail
+        first drain text‌textandtext textandtext («show», key) text totaltext text text text‌text
+        (text = confirmation SHOWING). if dispatch/UI text textandtext text
+        TV_SNAP_SHOW_CONFIRM_TIMEOUT_SEC pass textandtext and same totaltext automatic Retry
+        text‌textandtext — without restart withtext."""
         self._snap_drain_show_events()
-        # --- v10.28 — دیده‌بانی «مسدود توسط نیمه»: اگر ساعت از هدف گذشته
-        # ولی half هنوز به مقدار لازم نرسیده، یک‌بار لاگ می‌شود تا در آزمون
-        # میدانی معلوم شود مشکل از ماشین فاز است نه مسیر Show.
+        # --- v10.28 — technical note‌withtechnical note «technical noteandtechnical note technical noteandtechnical note technical note»: if technical note from technical note technical note
+        # andtechnical note half still to value technical notefromtechnical note technical note technical note‌withtechnical note log technical note‌technical noteandtechnical note until in technical noteandtechnical note
+        # technical note technical noteandtechnical note technical noteandtechnical note technical notetotal from technical note technical notefrom is technical note path Show.
         try:
             _t = float(total_t) if total_t is not None else None
         except (TypeError, ValueError):
@@ -1515,7 +1515,7 @@ class MomentumApp(_MOM_BASE):
         for kind, key in acts:
             try:
                 if kind == "show_abandoned":
-                    # v10.28 — سقف تلاش‌ها پر شد؛ نمایش رها می‌شود (یک‌بار لاگ)
+                    # v10.28 — technical note technical note‌technical note technical note technical note display technical note technical note‌technical noteandtechnical note (technical note‌withtechnical note log)
                     if key not in self._snap_abandon_noted:
                         self._snap_abandon_noted.add(key)
                         self._snap_show_stage(
@@ -1524,7 +1524,7 @@ class MomentumApp(_MOM_BASE):
                                    f"last_fail="
                                    f"{self.snap_engine.mid.get(key, {}).get('last_fail', '')}"))
                 elif kind == "capture":
-                    # نسخهٔ ۱۰٫۲۱ — تست ۶: شروع چرخهٔ عمر این Snapshot
+                    # versiontechnical note 10technical note21 — test 6: start cycletechnical note technical note technical note Snapshot
                     self._snap_life_mark(key, "CAPTURE REQUESTED (engine act)")
                     tr = SnapShowTrace("CAPTURE (target-1min) DEBUG",
                                        TV_SNAP_SHOW_DEBUG)
@@ -1541,23 +1541,23 @@ class MomentumApp(_MOM_BASE):
                         note=f"{getattr(img, 'width', 0)}x"
                              f"{getattr(img, 'height', 0)}")
                 elif kind == "preload":
-                    # نسخهٔ ۱۰٫۱۵ — پیش‌بارگذاری میان‌بازی
-                    # نسخهٔ ۱۰٫۱۹ — مسیر یکپارچهٔ dispatch (act + self-heal
-                    # retry هر دو از همین متد می‌روند)
-                    # نسخهٔ ۱۰٫۲۱ — تست ۶: مرحلهٔ PRELOAD REQUESTED
+                    # versiontechnical note 10technical note15 — technical note‌withtechnical note technical noteortechnical note‌withtechnical note
+                    # versiontechnical note 10technical note19 — path technical note dispatch (act + self-heal
+                    # retry technical note technical noteand from technical note technical note technical note‌technical noteandtechnical note)
+                    # versiontechnical note 10technical note21 — test 6: technical note PRELOAD REQUESTED
                     self._snap_life_mark(key, "PRELOAD REQUESTED (engine act)")
                     self._snapshot_preload_dispatch(key, "PRELOAD DEBUG",
                                                     at_end=False)
                 elif kind == "preload_end":
-                    # نسخهٔ ۱۰٫۱۵ — پیش‌بارگذاری نمایش پایان (~۲ ثانیه قبل
-                    # از تأیید توقفِ پایان)
+                    # versiontechnical note 10technical note15 — technical note‌withtechnical note display end (~2 second before
+                    # from confirmation stoptechnical note end)
                     self._snap_life_mark("end", "PRELOAD REQUESTED (engine act)")
                     self._snapshot_preload_dispatch("end", "PRELOAD-END DEBUG",
                                                     at_end=True)
                 elif kind == "show":
-                    # نسخهٔ ۱۰٫۱۸ — لحظهٔ نمایش: فقط «پنجرهٔ آماده» جابه‌جا
-                    # می‌شود؛ هر عمل سنگین این‌جا باید با لاگ شفاف دیده شود
-                    # نسخهٔ ۱۰٫۲۱ — تست ۶: SHOW REQUESTED (از Worker)
+                    # versiontechnical note 10technical note18 — momenttechnical note display: only «windowtechnical note technical note» technical noteto‌technical note
+                    # technical note‌technical noteandtechnical note technical note technical note agetechnical note technical note‌technical note must with log technical note technical note technical noteandtechnical note
+                    # versiontechnical note 10technical note21 — test 6: SHOW REQUESTED (from Worker)
                     self._snap_life_mark(key, "SHOW REQUESTED (engine act)")
                     tr = SnapShowTrace("SHOW DEBUG", TV_SNAP_SHOW_DEBUG)
                     tr.step("Show request received")
@@ -1565,13 +1565,13 @@ class MomentumApp(_MOM_BASE):
                     img = self._snap_capture_cache.get(key)
                     tr.end("Cached image check", t0,
                            note=("hit" if img is not None else "MISS"))
-                    # نسخهٔ ۱۰٫۱۹ — فقط وضعیت «ready» صریح پذیرفته می‌شود
+                    # versiontechnical note 10technical note19 — only andtechnical note «ready» technical note technical note technical note‌technical noteandtechnical note
                     pre_ready = (getattr(self, "_snap_pre", None) is not None
                                  and self._snap_pre.get("key") == key
                                  and self._snap_pre.get("state") == "ready")
                     if img is None:
-                        # بند ۴ کاربر — رندر سنگین هرگز نباید پنهان باشد
-                        # (نسخهٔ ۱۰٫۲۴ — فقط با TV_SNAP_SHOW_DEBUG)
+                        # technical note 4 user — render agetechnical note never technical notemust hidden withtechnical note
+                        # (versiontechnical note 10technical note24 — only with TV_SNAP_SHOW_DEBUG)
                         if TV_SNAP_SHOW_DEBUG:
                             print("[SNAPSHOT WARNING] Cached image was NOT ready "
                                   "at show time (key=" + str(key) + ")",
@@ -1588,8 +1588,8 @@ class MomentumApp(_MOM_BASE):
                                 note="cache hit — no disk I/O at show time")
                     path = self._snapshot_tmp_path(key)
                     if pre_ready:
-                        # پنجرهٔ پیش‌ساختهٔ همان کلید زنده است → هیچ آماده‌سازی
-                        # پیکسلی در لحظهٔ Show لازم نیست (بند ۳ کاربر)
+                        # windowtechnical note technical note‌technical note same totaltechnical note live is → technical note technical note‌technical notefromtechnical note
+                        # technical note in momenttechnical note Show technical notefromtechnical note is not (technical note 3 user)
                         tr.step("Prepare display (worker)",
                                 note="skipped — prebuilt window ready")
                         ui_img, payload = None, None
@@ -1604,8 +1604,8 @@ class MomentumApp(_MOM_BASE):
                     secs = snap_clamp_seconds(
                         self.snap_engine.s.get("show_seconds"))
                     tr.step("Dispatch show to UI (after)")
-                    # v10.28 — REQUESTED + QUEUED با شماره تلاش؛ اگر صف
-                    # after شکست خورد، بلافاصله fail → تلاش مجدد خودکار
+                    # v10.28 — REQUESTED + QUEUED with number technical note if technical note
+                    # after technical note technical noteandtechnical note technical notedistance fail → technical note technical note automatic
                     _att = self.snap_engine.show_attempt(key)
                     self._snap_show_stage(
                         key, "TARGET REACHED → SHOW REQUESTED (engine)",
@@ -1625,7 +1625,7 @@ class MomentumApp(_MOM_BASE):
                         self._snap_show_event(
                             "fail", key, "ui-queue-failed (after() raised)")
                 elif kind == "show_end":
-                    # نسخهٔ ۱۰٫۲۱ — تست ۶: SHOW REQUESTED (پایان بازی)
+                    # versiontechnical note 10technical note21 — test 6: SHOW REQUESTED (match end)
                     self._snap_life_mark("end", "SHOW REQUESTED (engine act)")
                     tr = SnapShowTrace("SHOW-END DEBUG", TV_SNAP_SHOW_DEBUG)
                     tr.step("Show request received")
@@ -1666,8 +1666,8 @@ class MomentumApp(_MOM_BASE):
                     secs = snap_clamp_seconds(
                         self.snap_engine.s.get("end_seconds"))
                     tr.step("Dispatch show to UI (after)")
-                    # v10.28 — سطح در پرواز ثبت می‌شود تا fail_end بداند کدام
-                    # سطح را بازمسلح کند (end90/end120)
+                    # v10.28 — level in technical noteandfrom register technical note‌technical noteandtechnical note until fail_end technical note codetechnical note
+                    # level technical note withtechnical notearmed technical note (end90/end120)
                     self._snap_end_dispatch_lvl = key
                     self._snap_show_stage(
                         "end", "END SHOW REQUESTED (engine)",
@@ -1688,7 +1688,7 @@ class MomentumApp(_MOM_BASE):
                             "ui-queue-failed (after() raised)")
             except Exception as ex:
                 clog(f"[SnapShot] {kind}/{key}: {type(ex).__name__}: {ex}")
-                # v10.28 — شکست خودِ پردازش action در Worker هم fail می‌شود
+                # v10.28 — technical note technical noteandtechnical note technical notefromtechnical note action in Worker technical note fail technical note‌technical noteandtechnical note
                 if kind == "show" and key in ("h1", "h2", "et"):
                     self._snap_show_event(
                         "fail", key,
@@ -1697,24 +1697,24 @@ class MomentumApp(_MOM_BASE):
                     self._snap_show_event(
                         "fail_end", self._snap_end_dispatch_lvl or key,
                         f"worker-act-error: {type(ex).__name__}: {ex}")
-        # نسخهٔ ۱۰٫۱۹ — self-heal پیش‌بارگذاری: اگر پنجرهٔ پیش‌ساخته آماده
-        # نبود، تا «قبل» از لحظهٔ نمایش دوباره تلاش می‌شود (محدود نرخ)
+        # versiontechnical note 10technical note19 — self-heal technical note‌withtechnical note: if windowtechnical note technical note‌technical note technical note
+        # technical noteandtechnical note until «before» from momenttechnical note display again technical note technical note‌technical noteandtechnical note (technical noteandtechnical note technical note)
         self._snapshot_preload_selfheal(total_t, now_wall)
 
     def _snapshot_preload_dispatch(self, key, trace_title, at_end: bool,
                                    reason: str = ""):
-        """مسیر یکپارچهٔ Preload پنجره (act «preload/preload_end» موتور و
-        self-heal retry هر دو از همین‌جا می‌روند) — از ترد Worker:
-          ۱) تصویر از کش (یا رندر اگر نبود — همان قرارداد قبلی)
-          ۲) LANCZOS resize + پیش‌ضرب آلفا (خارج از UI-Thread)
-          ۳) dispatch ساخت پنجره به UI-Thread (زیرِ صفحه)
-        همهٔ کارهای سنگین «قبل» از لحظهٔ Show انجام می‌شود؛ در لحظهٔ Show
-        فقط show/position/animation باقی می‌ماند (بند ۳/۴ کاربر).
-        reason: اگر retry self-heal باشد، علت در لاگ می‌آید."""
+        """path text Preload window (act «preload/preload_end» textandtextandtext and
+        self-heal retry text textand from text‌text text‌textandtext) — from text Worker:
+          1) textandtext from text (or render if textandtext — same text beforetext)
+          2) LANCZOS resize + text‌text text (text from UI-Thread)
+          3) dispatch text window to UI-Thread (text text)
+        text text agetext «before» from momenttext Show text text‌textandtext in momenttext Show
+        only show/position/animation withtext text‌text (text 3/4 user).
+        reason: if retry self-heal withtext text in log text‌text."""
         try:
             if getattr(self, "_closing", False):
                 return
-            # نسخهٔ ۱۰٫۲۲ — [SNAPSHOT_STATE] PRELOAD START (EMPTY → PREPARING)
+            # versiontechnical note 10technical note22 — [SNAPSHOT_STATE] PRELOAD START (EMPTY → PREPARING)
             self._snap_state_event(
                 "PRELOAD START", SnapshotState.PREPARING, key=key,
                 extra=(f"reason={reason}" if reason
@@ -1732,9 +1732,9 @@ class MomentumApp(_MOM_BASE):
                    size=(getattr(img, "width", 0) or 0,
                          getattr(img, "height", 0) or 0))
             t1 = tr.begin()
-            # --- نسخهٔ ۱۰٫۲۴ — مسیر برداری GPU: scene در Worker ساخته می‌شود
-            # (خارج از لحظهٔ Show)؛ LANCZOS/premultiply/matplotlib-draw از
-            # مسیر نمایش حذف می‌شوند. شکست → مسیر بیت‌مپ قبلی.
+            # --- versiontechnical note 10technical note24 — path technical note GPU: scene in Worker technical note technical note‌technical noteandtechnical note
+            # (technical note from momenttechnical note Show)technical note LANCZOS/premultiply/matplotlib-draw from
+            # path display technical note technical note‌technical noteandtechnical note. technical note → path technical note‌technical note beforetechnical note.
             scene = None
             if (getattr(self, "_snap_gpu", None) is not None
                     and self._snap_gpu.is_alive()
@@ -1763,8 +1763,8 @@ class MomentumApp(_MOM_BASE):
                 self._snap_pre_retry_wall[key] = time.time()
             except Exception:
                 pass
-            # نسخهٔ ۱۰٫۲۱ — تست ۶: PRELOAD DISPATCHED → صف UI + ثبت زمان
-            # ارسال (برای تشخیص «صف بیش از 1s اجرا نشد» در self-heal)
+            # versiontechnical note 10technical note21 — test 6: PRELOAD DISPATCHED → technical note UI + register time
+            # technical note (for detection «technical note technical note from 1s technical note technical note» in self-heal)
             try:
                 self._snap_life_mark(key, "PRELOAD DISPATCHED → UI queue",
                                      note=f"build_gen={gen}")
@@ -1790,10 +1790,10 @@ class MomentumApp(_MOM_BASE):
                 pass
 
     def _snap_pre_ready_for(self, key) -> bool:
-        """بررسی آمادگی پنجرهٔ پیش‌ساخته از دید Worker (بدون هیچ فراخوانی Tk):
-        وضعیت صریح «ready» + همان کلید + پنجره موجود."""
+        """check text windowtext text‌text from text Worker (without text textandtext Tk):
+        andtext text «ready» + same totaltext + window textandtextandtext."""
         pre = getattr(self, "_snap_pre", None)
-        # نسخهٔ ۱۰٫۲۳ — معماری GPU: prebuilt بدون پنجرهٔ Tk هم معتبر است
+        # versiontechnical note 10technical note23 — architecture GPU: prebuilt without windowtechnical note Tk technical note valid is
         return bool(pre is not None
                     and pre.get("key") == key
                     and pre.get("state") == "ready"
@@ -1801,7 +1801,7 @@ class MomentumApp(_MOM_BASE):
                          or pre.get("gpu") is True))
 
     def _snap_pre_fail_reason_text(self, key) -> str:
-        """آخرین دلیل شکست Preload برای کلید (برای لاگ self-heal/Show)."""
+        """latest text text Preload for totaltext (for log self-heal/Show)."""
         f = getattr(self, "_snap_pre_fail", None)
         if f and f.get("key") in (None, key) and f.get("reason"):
             return f"previous attempt failed — {f.get('reason')}"
@@ -1809,8 +1809,8 @@ class MomentumApp(_MOM_BASE):
 
     @staticmethod
     def _preload_not_ready_print(reason: str) -> None:
-        """بلوک لاگ «NOT READY» با دلیل دقیق (بند ۷ کاربر).
-        نسخهٔ ۱۰٫۲۴ — فقط با TV_SNAP_SHOW_DEBUG چاپ می‌شود (حذف لاگ کنسول)."""
+        """textandtext log «NOT READY» with text text (text 7 user).
+        versiontext 10text24 — only with TV_SNAP_SHOW_DEBUG print text‌textandtext (text log textandtext)."""
         if not TV_SNAP_SHOW_DEBUG:
             return
         try:
@@ -1823,32 +1823,32 @@ class MomentumApp(_MOM_BASE):
             pass
 
     def _snapshot_preload_selfheal(self, total_t, now_wall):
-        """نسخهٔ ۱۰٫۱۹ — ترمیم خودکار Preload (شرط کاربر: «اگر Window باید
-        Rebuild شود، این کار باید قبل از زمان Show بعدی انجام شود»):
-          * اگر پنجرهٔ پیش‌ساختهٔ کلید آماده نیست (ساخت UI شکست خورده/
-            دیر اجرا شده/پنجره نابود شده)، دوباره dispatch می‌شود —
-            با محدود نرخ و فقط تا TV_SNAP_PRELOAD_MIN_REMAIN_SEC
-            قبل از لحظهٔ نمایش (ساخت در لحظهٔ Show دیگر معنا ندارد)؛
-          * زمان‌بندی/تریگر موتور دست‌نخورده است — این مسیر فقط «بک‌فیلِ»
-            idempotent است و وقتی پنجره آماده است کاری نمی‌کند.
-        نسخهٔ ۱۰٫۲۱ — تست ۶ (Race واقعی کاربر: «PRELOAD UI CALLBACK هرگز
-        قبل از Show اجرا نشد»):
-          ۱) دیگر شرط «فلگ pre ست شده باشد» لازم نیست — اگر تیک Worker از
-             پنجرهٔ preload پریده باشد (فلگ pre هرگز ست نشده)، همین‌جا
-             backfill می‌شود (علت در reason لاگ می‌شود)؛
-          ۲) اگر صف ساخت بیش از 1.0s بدون اجرا مانده باشد (UI-Thread
-             مشغول/کال‌بک گم‌شده)، برای «همان کلید» دوباره dispatch
-             می‌شود (supersede — ساخت قدیمی خودش را باطل می‌کند).
-        نسخهٔ ۱۰٫۲۲ — Snapshot Window Lifecycle Manager (اولویت ۱/۲
-        گزارش فنی کاربر): پنجرهٔ «آستانه‌ای پهن» — برای میان‌بازی‌ها
-        dispatch از «هدف − TV_SNAP_PRELOAD_WIDE_LEAD_SEC (۱۰s)» باز
-        می‌شود (if match_time >= preload_start — مشخصات کاربر):
-        دیگر پنجرهٔ ۲ ثانیه‌ایِ تک‌شانس نیست؛ حتی اگر UI/Worker در
-        پنجرهٔ باریک گیر کند، تلاش‌های نرخ‌محدود ۰٫۵s چند ثانیه
-        فرصت دارند. امن بودن محتوا: تصویر میان‌بازی همان PNG کپچرشدهٔ
-        T-60s است (کش ثابت) → ساخت زودترِ پنجره محتوای نمایش را
-        تغییر نمی‌دهد. نمایش «پایان» عمداً پنجرهٔ باریک قبلی را
-        دارد (رندرش به لحظهٔ توقف وابسته است)."""
+        """versiontext 10text19 — text automatic Preload (text user: «if Window must
+        Rebuild textandtext text text must before from time Show aftertext text textandtext»):
+          * if windowtext text‌text totaltext text is not (text UI text textandtext/
+            text text text/window textandtext text)text again dispatch text‌textandtext —
+            with textandtext text and only until TV_SNAP_PRELOAD_MIN_REMAIN_SEC
+            before from momenttext display (text in momenttext Show text text text)text
+          * time‌text/text textandtextandtext unchanged is — text path only «text‌text»
+            idempotent is and when window text is text text‌text.
+        versiontext 10text21 — test 6 (Race real user: «PRELOAD UI CALLBACK never
+        before from Show text text»):
+          1) text text «text pre text text withtext» textfromtext is not — if text Worker from
+             windowtext preload text withtext (text pre never text text)text text‌text
+             backfill text‌textandtext (text in reason log text‌textandtext)text
+          2) if text text text from 1.0s without text text withtext (UI-Thread
+             textandtext/text‌text text‌text)text for «same totaltext» again dispatch
+             text‌textandtext (supersede — text legacy textandtext text withtext text‌text).
+        versiontext 10text22 — Snapshot Window Lifecycle Manager (firstandtext 1/2
+        text text user): windowtext «threshold‌text text» — for textortext‌withtext‌text
+        dispatch from «text − TV_SNAP_PRELOAD_WIDE_LEAD_SEC (10s)» withtext
+        text‌textandtext (if match_time >= preload_start — specification user):
+        text windowtext 2 second‌text text‌text is nottext text if UI/Worker in
+        windowtext withtext text text text‌text text‌textandtext 0text5s text second
+        text text. text textandtext textandtext: textandtext textortext‌withtext same PNG text
+        T-60s is (text text) → text textandtext window textandtext display text
+        change text‌text. display «end» text windowtext withtext beforetext text
+        text (rendertext to momenttext stop andtext is)."""
         try:
             if getattr(self, "_closing", False):
                 return
@@ -1858,15 +1858,15 @@ class MomentumApp(_MOM_BASE):
                 t = float(total_t) if total_t is not None else None
             except (TypeError, ValueError):
                 t = None
-            # نسخهٔ ۱۰٫۲۱ — «در حال ساخت» دیگر مهلت مطلق نیست: اگر صف بیش
-            # از 1.0s بدون اجرا بماند، برای همان کلید دوباره dispatch می‌شود
+            # versiontechnical note 10technical note21 — «currently technical note» technical note technical note technical note is not: if technical note technical note
+            # from 1.0s without technical note technical note for same totaltechnical note again dispatch technical note‌technical noteandtechnical note
             in_flight = (getattr(self, "_snap_pre_build_gen", 0)
                          > getattr(self, "_snap_pre_built_gen", 0))
             pending_key = getattr(self, "_snap_pre_pending_key", None)
 
             def _in_flight_block(key) -> Optional[str]:
-                """اگر صف ساخت جلوی dispatchِ این کلید را بگیرد، دلیل را
-                برمی‌گرداند (None = اجازهٔ dispatch)."""
+                """if text text textandtext dispatchtext text totaltext text text text text
+                text‌text (None = textfromtext dispatch)."""
                 if not in_flight:
                     return None
                 if pending_key != key:
@@ -1874,21 +1874,21 @@ class MomentumApp(_MOM_BASE):
                 dw = self._snap_pre_dispatch_wall.get(key, 0.0)
                 if (now - dw) < 1.0:
                     return "queued build still fresh (<1.0s)"
-                return None          # گیرکرده → اجازهٔ re-dispatch (supersede)
+                return None          # technical note → technical notefromtechnical note re-dispatch (supersede)
 
-            # ---------- میان‌بازی ----------
+            # ---------- technical noteortechnical note‌withtechnical note ----------
             for key in TV_SNAP_KEYS:
                 st = eng.mid.get(key)
-                # نسخهٔ ۱۰٫۲۱ — فلگ pre دیگر شرط نیست (پرش تیک از پنجرهٔ
-                # ۲ ثانیه‌ای هم باید backfill شود)
+                # versiontechnical note 10technical note21 — technical note pre technical note technical note is not (technical note technical note from windowtechnical note
+                # 2 second‌technical note technical note must backfill technical noteandtechnical note)
                 if st is None or st.get("shown"):
                     continue
                 if t is None:
                     continue
                 tgt = eng.target_minute(key) * 60.0
-                # نسخهٔ ۱۰٫۲۲ — پنجرهٔ آستانه‌ای پهن (اولویت ۱ کاربر):
-                # if match_time >= preload_start → هر تیک بعد از آستانه
-                # شانس dispatch دارد (نه فقط پنجرهٔ ۲ ثانیه‌ای تک‌شانس).
+                # versiontechnical note 10technical note22 — windowtechnical note threshold‌technical note technical note (firstandtechnical note 1 user):
+                # if match_time >= preload_start → technical note technical note after from threshold
+                # technical note dispatch technical note (technical note only windowtechnical note 2 second‌technical note technical note‌technical note).
                 if not ((tgt - TV_SNAP_PRELOAD_WIDE_LEAD_SEC) <= t
                         < (tgt - TV_SNAP_PRELOAD_MIN_REMAIN_SEC)):
                     continue
@@ -1917,7 +1917,7 @@ class MomentumApp(_MOM_BASE):
                 self._snapshot_preload_dispatch(
                     key, "PRELOAD-RETRY DEBUG", at_end=False,
                     reason=_reason)
-            # ---------- پایان بازی ----------
+            # ---------- match end ----------
             if eng.s.get("end_enabled"):
                 for lvl in ("end120", "end90"):
                     st = eng.end.get(lvl)
@@ -1953,9 +1953,9 @@ class MomentumApp(_MOM_BASE):
             pass
 
     def _export_match_archive(self) -> Optional[str]:
-        """نسخهٔ ۱۰٫۲۴ — خروجی کامل رخدادهای بازی (ZIP) از وضعیت فعلی.
-        از ترد Worker فراخوانی می‌شود (پایان بازی/دکمهٔ دستی) — هیچ Tk.
-        خروجی: مسیر ZIP یا None."""
+        """versiontext 10text24 — output complete textdatatext withtext (ZIP) from andtext text.
+        from text Worker textandtext text‌textandtext (match end/buttontext text) — text Tk.
+        output: path ZIP or None."""
         try:
             teams = {}
             for side in ("home", "away"):
@@ -1982,19 +1982,19 @@ class MomentumApp(_MOM_BASE):
             return None
 
     def _snapshot_finalize_previous_match(self):
-        """«ذخیرهٔ دائمی نمودارها» — آخرین نمودار بازی قبلی، درست قبل از
-        پاک‌شدن تاریخچه (تایمر به ۰۰:۰۰ ریست شده = شروع دست جدید) در
-        Momentum_Saves با نام مخصوص خودش ذخیره می‌شود. (از Worker)
-        نسخهٔ ۱۰٫۱۳ — فقط همین فایل دائمی مُهر تاریخ/ساعت دارد (کاربر:
-        نموداری که روی صفحهٔ بازی می‌آید نباید مُهر داشته باشد).
-        نسخهٔ ۱۰٫۲۴ — آرشیو کامل رخدادها (ZIP) «همیشه» قبل از هر چیز
-        نوشته می‌شود (مستقل از permanent_save — درخواست صریح کاربر)."""
+        """«savetext text charttext» — latest chart withtext beforetext correct before from
+        text‌text untiltext (untiltext to 00:00 reset text = start text new) in
+        Momentum_Saves with text textandtext textandtext save text‌textandtext. (from Worker)
+        versiontext 10text13 — only text file text text untiltext/text text (user:
+        charttext text textandtext text withtext text‌text textmust text text withtext).
+        versiontext 10text24 — archive complete textdatatext (ZIP) «always» before from text text
+        textandtext text‌textandtext (independent from permanent_save — request text user)."""
         s = self.snap_engine.s
         with self.momentum._lock:
             n_hist = len(self.momentum.history)
         if n_hist < 2 or self._match_seen_max_t < TV_SNAP_MIN_HIST_SEC:
-            return    # بازی هنوز دادهٔ معناداری ندارد
-        # --- نسخهٔ ۱۰٫۲۴ — آرشیو کامل رخدادها (خودکار — همیشه) ---
+            return    # withtechnical note still datatechnical note technical note technical note
+        # --- versiontechnical note 10technical note24 — archive complete technical notedatatechnical note (automatic — always) ---
         try:
             self._export_match_archive()
         except Exception:
@@ -2022,10 +2022,10 @@ class MomentumApp(_MOM_BASE):
         img.save(path)
 
     def _discard_snapshot_preload(self):
-        """نسخهٔ ۱۰٫۱۵ — نابودی پنجرهٔ «پیش‌ساختهٔ» اسنپ‌شات (زیرِ صفحه).
-        نسخهٔ ۱۰٫۲۲ — اگر پنجرهٔ پیش‌ساختهٔ «آماده» دور انداخته شد
-        (retune/hide/reset)، ماشین حالت به EMPTY برمی‌گردد و لاگ می‌شود
-        (self-heal پهن ۱۰٫۲۲ تا قبل از Show دوباره می‌سازد)."""
+        """versiontext 10text15 — textandtext windowtext «text‌text» textagetext‌text (text text).
+        versiontext 10text22 — if windowtext text‌text «text» textandtext text text
+        (retune/hide/reset)text text text to EMPTY text‌text and log text‌textandtext
+        (self-heal text 10text22 until before from Show again text‌textfromtext)."""
         pre = getattr(self, "_snap_pre", None)
         if pre is not None:
             try:
@@ -2039,37 +2039,37 @@ class MomentumApp(_MOM_BASE):
             except Exception:
                 pass
             self._snap_pre_photo = None
-            # نسخهٔ ۱۰٫۲۲ — [SNAPSHOT_STATE] پنجرهٔ آماده دور انداخته شد
+            # versiontechnical note 10technical note22 — [SNAPSHOT_STATE] windowtechnical note technical note technical noteandtechnical note technical note technical note
             self._snap_state_event(
                 "PREBUILT DISCARDED", SnapshotState.EMPTY, key=None,
                 extra="prebuilt window discarded (retune/hide/reset)",
                 only_from=(SnapshotState.READY,))
 
     def _hide_snapshot_overlay(self, expect_win=None):
-        """پنهان‌سازی نمودار روی صفحه.
-        نسخهٔ ۱۰٫۱۷ — expect_win: اگر داده شود، فقط وقتی پنجرهٔ فعلی
-        «همان» پنجره است نابود/لغو می‌شود؛ hideِ دیرهنگامِ یک نمودار
-        قبلی (مثلاً after(0,hide) تردِ خروجِ قدیمی) دیگر نمی‌تواند
-        پنجرهٔ نمودار تازه را نابود یا انیمیشنش را لغو کند.
-        نسخهٔ ۱۰٫۲۳ — مسیر GPU: پنجره‌ای برای نابود کردن نیست؛ تایمرها
-        لغو و سطح در همان فریم شفاف می‌شود (hide_now — یک پیام)."""
-        # v10.29 — پنهان‌سازی انجام شد → ضرب‌الاجل نگهبان مدت نمایش نیز
-        # باطل می‌شود (مسیرهای GPU و Tk هر دو از همین‌جا می‌گذرند)
+        """hidden‌textfromtext chart textandtext text.
+        versiontext 10text17 — expect_win: if data textandtext only when windowtext text
+        «same» window is textandtext/textand text‌textandtext hidetext text text chart
+        beforetext (text after(0,hide) text textandtext legacy) text text‌textandtext
+        windowtext chart fresh text textandtext or text text textand text.
+        versiontext 10text23 — path GPU: window‌text for textandtext text is nottext untiltext
+        textand and level in same frame text text‌textandtext (hide_now — text message)."""
+        # v10.29 — hidden‌technical notefromtechnical note technical note technical note → technical note‌technical note watchdog technical note display technical note
+        # withtechnical note technical note‌technical noteandtechnical note (pathtechnical note GPU and Tk technical note technical noteand from technical note‌technical note technical note‌technical note)
         self._snap_overlay_deadline_wall = None
         if getattr(self, "_snap_gpu", None) is not None:
             return self._hide_snapshot_overlay_gpu(expect_win)
         win = getattr(self, "_snap_overlay", None)
         if expect_win is not None and win is not expect_win:
-            return                      # پنجره عوض شده — دست به نسل جدید نمی‌زنیم
-        # نسخهٔ ۱۰٫۱۳ — لغو تایمرهای انیمیشن در جریان قبل از نابودی پنجره
+            return                      # window technical noteandtechnical note technical note — technical note to technical note new technical note‌technical note
+        # versiontechnical note 10technical note13 — technical noteand untiltechnical note technical note in technical noteortechnical note before from technical noteandtechnical note window
         for aid in list(getattr(self, "_snap_overlay_after", []) or []):
             try:
                 self.after_cancel(aid)
             except Exception:
                 pass
         self._snap_overlay_after = []
-        # نسخهٔ ۱۰٫۱۶ — لغو ترد انیمیشن (نسل جدید + پرچم توقف؛ ترد daemon است
-        # و با نسل جدید در همان فریم بعدی خارج می‌شود — بدون join مسدود)
+        # versiontechnical note 10technical note16 — technical noteand technical note technical note (technical note new + technical note stoptechnical note technical note daemon is
+        # and with technical note new in same frame aftertechnical note technical note technical note‌technical noteandtechnical note — without join technical noteandtechnical note)
         try:
             self._snap_anim_gen += 1
             self._snap_anim_alive = False
@@ -2083,20 +2083,20 @@ class MomentumApp(_MOM_BASE):
             self._snap_overlay = None
             self._snap_overlay_photo = None
             self._snap_overlay_state = None
-            # نسخهٔ ۱۰٫۲۲ — [SNAPSHOT_STATE] پنهان‌سازی واقعی → EMPTY
-            # (فقط وقتی overlay «دیده‌شدنی/در حال نمایش» بود — hideِ
-            # لحظهٔ Show که پنجرهٔ قبلی ندارد، لاگ گمراه‌کننده نمی‌سازد)
+            # versiontechnical note 10technical note22 — [SNAPSHOT_STATE] hidden‌technical notefromtechnical note real → EMPTY
+            # (only when overlay «technical note‌technical note/currently display» technical noteandtechnical note — hidetechnical note
+            # momenttechnical note Show technical note windowtechnical note beforetechnical note technical note log technical note‌technical note technical note‌technical notefromtechnical note)
             self._snap_state_event(
                 "HIDDEN", SnapshotState.EMPTY, key=None,
                 extra="overlay window destroyed",
                 only_from=(SnapshotState.VISIBLE, SnapshotState.SHOWING))
-        # نسخهٔ ۱۰٫۱۵ — پیش‌ساخته هم با پنهان‌سازی زنده باطل می‌شود
+        # versiontechnical note 10technical note15 — technical note‌technical note technical note with hidden‌technical notefromtechnical note live withtechnical note technical note‌technical noteandtechnical note
         self._discard_snapshot_preload()
 
     def _gpu_overlay_boot(self):
-        """راه‌اندازی Renderer GPU — فقط «یک‌بار در شروع». تصمیم GPU/legacy
-        هرگز در لحظهٔ Show گرفته نمی‌شود (هیچ ساختی هنگام نمایش انجام
-        نمی‌شود). شکست → لاگ شفاف + مسیر قبلی (۱۰٫۲۲) برای «همین اجرا»."""
+        """text‌textfromtext Renderer GPU — only «text‌withtext in start». text GPU/legacy
+        never in momenttext Show text text‌textandtext (text text text display text
+        text‌textandtext). text → log text + path beforetext (10text22) for «text text»."""
         self._snap_gpu = None
         if not TV_SNAP_GPU_OVERLAY:
             if TV_SNAP_SHOW_DEBUG:
@@ -2135,7 +2135,7 @@ class MomentumApp(_MOM_BASE):
                     print(f"Reason: {err}", flush=True)
                     print("Falling back to legacy Tk layered path (v10.22).",
                           flush=True)
-                    print("برای فعال‌سازی معماری GPU اجرا کنید: "
+                    print("for active‌textfromtext architecture GPU text text: "
                           "pip install moderngl glfw", flush=True)
                     print("=" * 60, flush=True)
                 except Exception:
@@ -2212,8 +2212,8 @@ class MomentumApp(_MOM_BASE):
 
     @staticmethod
     def _gpu_rgba_bytes(disp):
-        """PIL RGBA آماده (خروجی LANCZOS Worker) → (bytes, w, h) برای GPU
-        Texture. کیفیت عیناً همان تصویر قبلی است — هیچ تغییری نکرده."""
+        """PIL RGBA text (output LANCZOS Worker) → (bytes, w, h) for GPU
+        Texture. text text same textandtext beforetext is — text changetext text."""
         if disp is None:
             return None
         try:
@@ -2230,14 +2230,14 @@ class MomentumApp(_MOM_BASE):
                                       prepared=None, trace=None,
                                       key_tag=None, build_gen=None,
                                       scene=None):
-        """نسخهٔ ۱۰٫۲۳ — Preload روی معماری GPU:
-        هیچ پنجرهٔ Tk ساخته نمی‌شود؛ بیت‌مپ آمادهٔ Worker (LANCZOS) یک GPU
-        Texture آپلود می‌شود (فقط پیام به ترد رندر — زیر چند ms) و State
-        به READY می‌رود. تمام لاگ‌های چرخهٔ عمر ([SNAPSHOT_STATE]/[SNAPSHOT
-        PRELOAD]/دفترترتیب) با همان قالب قبلی حفظ شده‌اند.
-        نسخهٔ ۱۰٫۲۴ — اگر scene برداری از Worker رسیده باشد، به‌جای بیت‌مپ
-        «صحنهٔ برداری» آپلود می‌شود (رندر خط/fill با AA واقعی روی GPU) —
-        matplotlib دیگر هیچ نقشی در مسیر نمایش ندارد."""
+        """versiontext 10text23 — Preload textandtext architecture GPU:
+        text windowtext Tk text text‌textandtext text‌text text Worker (LANCZOS) text GPU
+        Texture textandtext text‌textandtext (only message to text render — text text ms) and State
+        to READY text‌textandtext. text log‌text cycletext text ([SNAPSHOT_STATE]/[SNAPSHOT
+        PRELOAD]/textorder) with same text beforetext text text‌text.
+        versiontext 10text24 — if scene text from Worker text withtext to‌text text‌text
+        «scenetext text» textandtext text‌textandtext (render line/fill with AA real textandtext GPU) —
+        matplotlib text text text in path display text."""
         try:
             if (build_gen is not None
                     and build_gen != getattr(self, "_snap_pre_build_gen",
@@ -2258,7 +2258,7 @@ class MomentumApp(_MOM_BASE):
                 trace.step("Preload started (UI) — uploading GPU texture "
                            "(no Tk window)")
             self._discard_snapshot_preload()
-            # --- نسخهٔ ۱۰٫۲۴ — مسیر برداری: هیچ بیت‌مپی لازم نیست ---
+            # --- versiontechnical note 10technical note24 — path technical note: technical note technical note‌technical note technical notefromtechnical note is not ---
             if scene is not None:
                 try:
                     gpu = self._snap_gpu
@@ -2276,7 +2276,7 @@ class MomentumApp(_MOM_BASE):
                           "place": scene.get("place"),
                           "state": "ready",
                           "built_wall": time.perf_counter()}
-                    self._snap_pre_photo = None          # جلوگیری از GC لازم نیست
+                    self._snap_pre_photo = None          # technical noteandtechnical note from GC technical notefromtechnical note is not
                     self._snap_pre = st
                     self._snap_life_mark(
                         key_tag,
@@ -2322,7 +2322,7 @@ class MomentumApp(_MOM_BASE):
                             pass
                     return
                 except Exception as ex:
-                    scene = None            # افت به مسیر بیت‌مپ قبلی
+                    scene = None            # decrease to path technical note‌technical note beforetechnical note
                     if trace is not None:
                         trace.step("Vector scene upload failed — bitmap "
                                    f"fallback ({type(ex).__name__}: {ex})")
@@ -2397,7 +2397,7 @@ class MomentumApp(_MOM_BASE):
                   "w": int(w), "h": int(h),
                   "surf": surf, "place": place,
                   "state": "ready", "built_wall": time.perf_counter()}
-            self._snap_pre_photo = disp          # جلوگیری از GC
+            self._snap_pre_photo = disp          # technical noteandtechnical note from GC
             self._snap_pre = st
             self._snap_life_mark(key_tag,
                                  "PRELOAD COMPLETE (GPU TEXTURE READY)",
@@ -2459,12 +2459,12 @@ class MomentumApp(_MOM_BASE):
     def _show_snapshot_overlay_gpu(self, img, path, seconds: float,
                                    at_end: bool, prepared=None, trace=None,
                                    sent_perf=None, key=None):
-        """نسخهٔ ۱۰٫۲۳ — Show روی معماری GPU (فلسفهٔ کاربر):
-          Show = renderer.show()  ←  فقط یک queue.put (زیر ~۰٫۱ms)
-        در این لحظه هیچ Toplevel/PhotoImage/UpdateLayeredWindow/
-        SetWindowPos/Image.open/Render انجام نمی‌شود. ورود/ماندن/خروج
-        کاملاً داخل GPU با Shader است و پنجره ثابت می‌ماند. چرخهٔ عمر
-        ([SNAPSHOT_STATE] + تضمین پایان) با همان قالب قبلی حفظ شده."""
+        """versiontext 10text23 — Show textandtext architecture GPU (text user):
+          Show = renderer.show()  ←  only text queue.put (text ~0text1ms)
+        in text moment text Toplevel/PhotoImage/UpdateLayeredWindow/
+        SetWindowPos/Image.open/Render text text‌textandtext. andtextandtext/text/textandtext
+        completetext inside GPU with Shader is and window text text‌text. cycletext text
+        ([SNAPSHOT_STATE] + text end) with same text beforetext text text."""
         try:
             gpu = self._snap_gpu
             if gpu is None:
@@ -2499,7 +2499,7 @@ class MomentumApp(_MOM_BASE):
             self._snap_life_mark(key if key is not None
                                  else ("end" if at_end else "?"),
                                  "SHOW (UI callback)")
-            # پیش‌ساخته «قبل از» hide جدا می‌شود (hide آن را باطل می‌کند)
+            # technical note‌technical note «before from» hide technical note technical note‌technical noteandtechnical note (hide technical note technical note withtechnical note technical note‌technical note)
             pre = getattr(self, "_snap_pre", None)
             self._snap_pre = None
             t_hide = trace.begin() if trace is not None else 0.0
@@ -2510,7 +2510,7 @@ class MomentumApp(_MOM_BASE):
                 "SHOW", SnapshotState.SHOWING, key=key,
                 extra=((f"latency={_lat_ms:.1f}ms")
                        if _lat_ms is not None else "latency=?"))
-            # --- پذیرش Prebuilt GPU (بدون هیچ کار سنگینی) ---
+            # --- technical note Prebuilt GPU (without technical note technical note agetechnical note) ---
             pre_key_ok = (key is None or pre is None
                           or pre.get("key") in (None, key))
             tex_ready = (gpu.state() in (GPUOverlayRenderer.ST_READY,
@@ -2539,7 +2539,7 @@ class MomentumApp(_MOM_BASE):
                 self._snap_life_dump(key,
                                      "SHOW — prebuilt accepted (no race)")
             else:
-                # --- مسیر اضطراری (هرگز در عملیات عادی نباید رخ دهد) ---
+                # --- path technical note (never in technical noteortechnical note technical note technical notemust technical note technical note) ---
                 if pre is None:
                     _why = ("prebuilt texture missing — preload was never "
                             "dispatched or its UI callback did not execute")
@@ -2573,7 +2573,7 @@ class MomentumApp(_MOM_BASE):
                     trace.step("NO PREBUILT TEXTURE — uploading now at "
                                "show time (!)",
                                note=f"this is the heavy path — {_why}")
-                # ساخت بیت‌مپ در لحظهٔ Show (سنگین — فقط اضطراری)
+                # technical note technical note‌technical note in momenttechnical note Show (agetechnical note — only technical note)
                 sw, sh = self._snap_screen
                 disp = None
                 if prepared is not None and prepared[0] is not None:
@@ -2617,21 +2617,21 @@ class MomentumApp(_MOM_BASE):
             self._snap_overlay_state = st
             self._snap_overlay_after = []
             self._snap_anim_alive = True
-            # --- Show (فقط یک پیام — زیر ~۰٫۱ms) ---
+            # --- Show (only technical note message — technical note ~0technical note1ms) ---
             anim_ms = 0 if TV_SNAP_DEBUG_NO_ANIM else int(TV_SNAP_ANIM_MS)
-            # v10.29 — ضرب‌الاجل خروج: مدت تنظیم‌شده + انیمیشن + مهلت؛
-            # پس از آن نگهبان UI پنهان‌سازی اجباری می‌کند (تضمین پایان
-            # همهٔ نمایش‌ها — رفع «نمودار 116 تا ابد ماند»)؛ ست شدنِ آن
-            # قبل از gpu.show است تا حتی در صورت خطای بعدی، ضرب‌الاجل
-            # فعال بماند و نگهبان پاک‌سازی کند.
+            # v10.29 — technical note‌technical note technical noteandtechnical note: technical note technical note‌technical note + technical note + technical note
+            # technical note from technical note watchdog UI hidden‌technical notefromtechnical note technical notewithtechnical note technical note‌technical note (technical note end
+            # technical note display‌technical note — technical note «chart 116 until technical note technical note»)technical note technical note technical note technical note
+            # before from gpu.show is until technical note in technical noteandtechnical note Errortechnical note aftertechnical note technical note‌technical note
+            # active technical note and watchdog cleanup technical note.
             self._snap_overlay_deadline_wall = (
                 time.time() + float(seconds) + TV_SNAP_ANIM_MS / 1000.0
                 + TV_SNAP_OVERDUE_GRACE_SEC)
             t_show = gpu.show(anim_ms, key=key)
             show_ms = (time.perf_counter() - t_show) * 1000.0
-            # v10.28 — SHOWING: پذیرش renderer.show == نقطهٔ مصرف تراکنشی؛
-            # از این‌جا به بعد کلید در موتور consumed می‌شود (تأیید در
-            # تیک بعدی Worker از صف رویداد اعمال می‌شود).
+            # v10.28 — SHOWING: technical note renderer.show == technical note technical note technical note
+            # from technical note‌technical note to after totaltechnical note in technical noteandtechnical noteandtechnical note consumed technical note‌technical noteandtechnical note (confirmation in
+            # technical note aftertechnical note Worker from technical note technical noteandtechnical note technical note technical note‌technical noteandtechnical note).
             _ck = key if key is not None else ("end" if at_end else "?")
             if at_end or _ck == "end":
                 self._snap_show_event("confirm_end", _ck)
@@ -2662,7 +2662,7 @@ class MomentumApp(_MOM_BASE):
                 if getattr(self, "_closing", False):
                     return
                 if self._snap_overlay_state is not st:
-                    return              # نسل جدید آمد — کاری نکن
+                    return              # technical note new technical note — technical note technical note
                 if TV_SNAP_DEBUG_NO_ANIM:
                     gpu.hide_now()
                     _gpu_hide_this()
@@ -2694,13 +2694,13 @@ class MomentumApp(_MOM_BASE):
                            % ((time.perf_counter()
                                - self._snap_state_since) * 1000.0)))
                 _sched(max(1, int(float(seconds) * 1000.0)), _begin_exit)
-                # تضمین پایان (لایهٔ ۳): حتی اگر خروجِ نرم گیر کند
+                # technical note end (layertechnical note 3): technical note if technical noteandtechnical note smooth technical note technical note
                 _sched(max(1, int((float(seconds)
                                    + TV_SNAP_ANIM_MS / 1000.0 + 1.2)
                                   * 1000.0)), _gpu_hide_this)
 
             def _entry_watchdog():
-                # لایهٔ ۲ — اگر زنجیرهٔ after گم شده بود
+                # layertechnical note 2 — if chaintechnical note after technical note technical note technical noteandtechnical note
                 if life["entry_done"] or getattr(self, "_closing", False):
                     return
                 clog("[SnapShow] watchdog (GPU): entry rescued")
@@ -2723,10 +2723,10 @@ class MomentumApp(_MOM_BASE):
                     pass
 
     def _hide_snapshot_overlay_gpu(self, expect_win=None):
-        """نسخهٔ ۱۰٫۲۳ — پنهان‌سازی روی GPU:
-          * تایمرهای after چرخه لغو و نسل انیمیشن bump می‌شود؛
-          * hide_now = یک پیام → ترد رندر در همان فریم شفاف می‌کند؛
-          * [SNAPSHOT_STATE] HIDDEN فقط اگر overlay واقعاً بالاست."""
+        """versiontext 10text23 — hidden‌textfromtext textandtext GPU:
+          * untiltext after cycle textand and text text bump text‌textandtext
+          * hide_now = text message → text render in same frame text text‌text
+          * [SNAPSHOT_STATE] HIDDEN only if overlay andtext withtextis."""
         if expect_win is not None:
             cur = getattr(self, "_snap_overlay_state", None)
             if cur is not None and cur.get("win") is not expect_win:
@@ -2757,18 +2757,18 @@ class MomentumApp(_MOM_BASE):
         self._discard_snapshot_preload()
 
     def _snap_overlay_duration_watchdog(self):
-        """v10.29 (پورت v1.2.2 از 2017) — تضمین «پایان نمایش همهٔ
-        نمودارها»: هر ۲ ثانیه در UI-Thread اجرا می‌شود؛ اگر نموداری
-        بعد از گذشتن «مدت تنظیم‌شده + انیمیشن + مهلت» هنوز روی صفحه
-        باشد (یعنی کل زنجیرهٔ خروج سه‌لایه گم شده باشد)، پنهان‌سازی
-        اجباری idempotent اجرا می‌شود: تایمرها لغو + پنجره در سطح خود
-        ویندوز مخفی (GPU) / نابود (Tk). رفع باگ میدانی «نمودار دقیقهٔ
-        116 نمایش داده شد و دیگر تمام نشد و برای همیشه در گوشهٔ تصویر
-        ماند». این متد در نمایش عادی هرگز کاری انجام نمی‌دهد — فقط
-        وقتی فعال می‌شود که همهٔ لایه‌های دیگر شکست خورده باشند."""
+        """v10.29 (textandtext v1.2.2 from 2017) — text «end display text
+        charttext»: text 2 second in UI-Thread text text‌textandtext if charttext
+        after from text «text text‌text + text + text» still textandtext text
+        withtext (text total chaintext textandtext text‌layer text text withtext)text hidden‌textfromtext
+        textwithtext idempotent text text‌textandtext: untiltext textand + window in level textandtext
+        andtextandtext text (GPU) / textandtext (Tk). text withtext text «chart minutetext
+        116 display data text and text text text and for always in textandtext textandtext
+        text». text text in display text never text text text‌text — only
+        when active text‌textandtext text text layer‌text text text textandtext withtext."""
         try:
             if getattr(self, "_closing", False):
-                return          # بستن برنامه — زنجیرهٔ باززمان‌بندی می‌ایستد
+                return          # technical note technical note — chaintechnical note withtechnical notetime‌technical note technical note‌technical note
             _dl = getattr(self, "_snap_overlay_deadline_wall", None)
             if _dl is not None and time.time() >= _dl:
                 _st = getattr(self, "_snap_overlay_state", None)
@@ -2794,9 +2794,9 @@ class MomentumApp(_MOM_BASE):
                 pass
 
     def _gpu_scene_reblit(self, scene, st):
-        """نسخهٔ ۱۰٫۲۴ — re-blit برداری (ریل‌تایم پیچ‌ها): scene تازه در
-        همان مکان/حالت نمایش قبلی (keep_state) — بدون قطع انیمیشن، بدون
-        matplotlib، بدون بیت‌مپ."""
+        """versiontext 10text24 — re-blit text (text‌untiltext text‌text): scene fresh in
+        same text/text display beforetext (keep_state) — without text text without
+        matplotlibtext without text‌text."""
         gpu = getattr(self, "_snap_gpu", None)
         if gpu is None or scene is None:
             return
@@ -2810,9 +2810,9 @@ class MomentumApp(_MOM_BASE):
 
 
     def _gpu_reblit(self, disp, st):
-        """نسخهٔ ۱۰٫۲۳ — معادل UpdateLayeredWindowِ «همان پنجره» در معماری
-        GPU: texture در همان مکان عوض می‌شود؛ هیچ انیمیشن/وضعیتی ریست
-        نمی‌شود (keep_state=True)."""
+        """versiontext 10text23 — text UpdateLayeredWindowtext «same window» in architecture
+        GPU: texture in same text textandtext text‌textandtext text text/andtext reset
+        text‌textandtext (keep_state=True)."""
         gpu = getattr(self, "_snap_gpu", None)
         if gpu is None or disp is None:
             return
@@ -2834,24 +2834,24 @@ class MomentumApp(_MOM_BASE):
 
     def _build_snapshot_window(self, img, path, prepared=None, trace=None,
                                key=None):
-        """ساخت پنجرهٔ شفاف اسنپ‌شات «کاملاً زیرِ صفحه» (مشترک بین
-        پیش‌بارگذاری و مسیر فوری — خروجی: dict وضعیت پنجره).
-        نسخهٔ ۱۰٫۲۱ — تست ۶: اگر key داده شود، مراحل WINDOW CREATED /
-        PHOTOIMAGE READY / LAYERED READY در دفترترتیب چرخهٔ عمر ثبت
-        می‌شوند (بقیهٔ رفتار مو‌به‌مو قبلی است).
-        نسخهٔ ۱۰٫۱۶ — اگر prepared=(disp, arr, geo) از ترد Worker رسیده
-        باشد، هیچ کار سنگینی این‌جا انجام نمی‌شود (فقط ساخت پنجره + یک
-        blit آماده)؛ وگرنه مثل قبل محلی resize/premultiply می‌شود.
-        نسخهٔ ۱۰٫۱۷ — «اعتبارسنجی» بارپکت Worker: اگر arr/disp/geo با
-        هم نخوانند (dtype/shape/اندازه)، بارپکت دور ریخته می‌شود و
-        مسیر محلیِ مطمئن (۱۰٫۱۵) اجرا می‌شود — پنجره هیچ‌گاه با
-        بیت‌مپِ خراب ساخته نمی‌شود.
-        نسخهٔ ۱۰٫۱۸ — هر زیرمرحلهٔ UI (Toplevel/PhotoImage/update_idletasks/
-        UpdateLayeredWindow) با trace زمان‌گیری می‌شود (بند ۵ کاربر)؛
-        TV_SNAP_DEBUG_SMALL_BITMAP=True → بیت‌مپ آزمایشی 256×256 (بند ۱۱).
-        نسخهٔ ۱۰٫۱۹ — PhotoImage و Label جداگانه زمان‌گیری می‌شوند
-        (قالب بند ۱۰ب کاربر)؛ در خطا، پنجرهٔ نیمه‌ساخته نابود و خطا
-        بالا فرستاده می‌شود (بدون نشتی پنجرهٔ زیر صفحه)."""
+        """text windowtext text textagetext‌text «completetext text text» (shared text
+        text‌withtext and path immediate — output: dict andtext window).
+        versiontext 10text21 — test 6: if key data textandtext text WINDOW CREATED /
+        PHOTOIMAGE READY / LAYERED READY in textorder cycletext text register
+        text‌textandtext (text textuntiltext textand‌to‌textand beforetext is).
+        versiontext 10text16 — if prepared=(disp, arr, geo) from text Worker text
+        withtext text text agetext text‌text text text‌textandtext (only text window + text
+        blit text)text andtext text before text resize/premultiply text‌textandtext.
+        versiontext 10text17 — «textwithtextagetext» withtext Worker: if arr/disp/geo with
+        text textandtext (dtype/shape/textfromtext)text withtext textandtext text text‌textandtext and
+        path text text (10text15) text text‌textandtext — window text‌text with
+        text‌text broken text text‌textandtext.
+        versiontext 10text18 — text text UI (Toplevel/PhotoImage/update_idletasks/
+        UpdateLayeredWindow) with trace time‌text text‌textandtext (text 5 user)text
+        TV_SNAP_DEBUG_SMALL_BITMAP=True → text‌text text 256×256 (text 11).
+        versiontext 10text19 — PhotoImage and Label text time‌text text‌textandtext
+        (text text 10text user)text in Errortext windowtext text‌text textandtext and Error
+        withtext textuntiltext text‌textandtext (without text windowtext text text)."""
         sw = max(1, int(self.winfo_screenwidth()))
         sh = max(1, int(self.winfo_screenheight()))
         win = None
@@ -2870,7 +2870,7 @@ class MomentumApp(_MOM_BASE):
                            and disp.size == (w, h))
                 except Exception:
                     _ok, disp, arr = False, None, None
-                if not _ok:                 # بارپکت خراب → مسیر مطمئن محلی
+                if not _ok:                 # withtechnical note broken → path technical note technical note
                     if trace is not None:
                         trace.step("Worker payload validation",
                                    note="INVALID — local fallback prepare")
@@ -2880,13 +2880,13 @@ class MomentumApp(_MOM_BASE):
                 t0 = trace.begin() if trace is not None else 0.0
                 x, y_final, w, h = snap_overlay_geometry(
                     img.width, img.height, sw, sh)
-                disp = img.resize((w, h), Image.Resampling.LANCZOS)  # نسبت حفظ
+                disp = img.resize((w, h), Image.Resampling.LANCZOS)  # ratio technical note
                 arr = None
                 if trace is not None:
                     trace.end("Local resize (UI fallback — LANCZOS)", t0,
                               size=(w, h))
             if TV_SNAP_DEBUG_SMALL_BITMAP:
-                # --- بند ۱۱ کاربر — تست سطح کوچک: 256×256 به‌جای PNG واقعی ---
+                # --- technical note 11 user — test level technical noteandtechnical note: 256×256 to‌technical note PNG real ---
                 sz = max(32, int(TV_SNAP_DEBUG_BITMAP_SIZE))
                 disp = Image.new("RGBA", (sz, sz), (0, 200, 255, 170))
                 arr = _premultiply_rgba(disp)
@@ -2895,7 +2895,7 @@ class MomentumApp(_MOM_BASE):
                     trace.step("DEBUG SMALL-BITMAP TEST ACTIVE",
                                size=(sz, sz),
                                note=f"{sz}x{sz} instead of real snapshot")
-            y_start = sh + 4                   # کاملاً زیرِ صفحه
+            y_start = sh + 4                   # completetechnical note technical note technical note
 
             t_tk = trace.begin() if trace is not None else 0.0
             win = tk.Toplevel(self)
@@ -2903,7 +2903,7 @@ class MomentumApp(_MOM_BASE):
                 trace.end("Toplevel creation", t_tk)
             t_cfg = trace.begin() if trace is not None else 0.0
             win.overrideredirect(True)
-            win.attributes("-topmost", True)   # Topmost فقط همین‌جا — یک‌بار
+            win.attributes("-topmost", True)   # Topmost only technical note‌technical note — technical note‌withtechnical note
             win.configure(bg="#000000")
             win.geometry(f"{w}x{h}+{x}+{y_start}")
             if trace is not None:
@@ -2913,7 +2913,7 @@ class MomentumApp(_MOM_BASE):
                 self._snap_life_mark(key, "WINDOW CREATED (Toplevel+config)")
             photo, lbl = None, None
             if ImageTk is not None:
-                # نسخهٔ ۱۰٫۱۹ — زمان‌گیری جدا (قالب بند ۱۰ب کاربر)
+                # versiontechnical note 10technical note19 — time‌technical note technical note (technical note technical note 10technical note user)
                 t_ph = trace.begin() if trace is not None else 0.0
                 photo = ImageTk.PhotoImage(disp)
                 if trace is not None:
@@ -2952,7 +2952,7 @@ class MomentumApp(_MOM_BASE):
                     "arr": arr, "x": x, "y_start": y_start,
                     "y_final": y_final, "w": w, "h": h, "layered": layered,
                     "hwnd": hwnd,
-                    "built_wall": time.perf_counter()}   # نسخهٔ ۱۰٫۱۸
+                    "built_wall": time.perf_counter()}   # versiontechnical note 10technical note18
         except Exception:
             if win is not None:
                 try:
@@ -2964,23 +2964,23 @@ class MomentumApp(_MOM_BASE):
     def _prepare_snapshot_overlay(self, img, path, at_end: bool,
                                   prepared=None, trace=None, key_tag=None,
                                   build_gen=None, scene=None):
-        """پیش‌بارگذاری (UI-Thread): رندر/تصویر آماده + ساخت پنجرهٔ زیرِ
-        صفحه ۱-۲ ثانیه قبل از لحظهٔ نمایش؛ ورود بعدی فقط انیمیشن است و
-        هیچ لود/رندری در لحظهٔ ورود انجام نمی‌شود.
-        نسخهٔ ۱۰٫۱۶ — resize + پیش‌ضرب آلفا قبلاً در ترد Worker انجام شده
-        (prepared)؛ این‌جا فقط پنجره ساخته می‌شود.
-        نسخهٔ ۱۰٫۱۸ — کلید پنجره ثبت می‌شود تا در لحظهٔ Show فقط «پنجرهٔ
-        همان کلید» پذیرفته شود + trace کامل مراحل UI.
-        نسخهٔ ۱۰٫۱۹ (بندهای ۵/۷/۱۰ کاربر):
-          * وضعیت صریح «ready» فقط وقتی ثبت می‌شود که پنجره «قابل استفاده»
-            باشد (Layered+arr+HWND در ویندوز / PhotoImage در مسیر ساده)؛
-          * بلوک [SNAPSHOT PRELOAD] PRELOAD COMPLETE با Window/HWND/Size/
-            مدت ساخت UI چاپ می‌شود؛ در شکست: NOT READY + Reason دقیق؛
-          * build_gen: اگر dispatch جدیدتری در صف است، این تلاش باطل می‌شود.
-        نسخهٔ ۱۰٫۲۳ — اگر معماری GPU فعال باشد، کل این مسیر به
-        _prepare_snapshot_overlay_gpu می‌رود (هیچ پنجرهٔ Tk ساخته
-        نمی‌شود؛ فقط GPU Texture آپلود می‌شود).
-        نسخهٔ ۱۰٫۲۴ — scene برداری (در صورت وجود) به مسیر GPU پاس می‌شود."""
+        """text‌withtext (UI-Thread): render/textandtext text + text windowtext text
+        text 1-2 second before from momenttext displaytext andtextandtext aftertext only text is and
+        text textandtext/rendertext in momenttext andtextandtext text text‌textandtext.
+        versiontext 10text16 — resize + text‌text text beforetext in text Worker text text
+        (prepared)text text‌text only window text text‌textandtext.
+        versiontext 10text18 — totaltext window register text‌textandtext until in momenttext Show only «windowtext
+        same totaltext» text textandtext + trace complete text UI.
+        versiontext 10text19 (text 5/7/10 user):
+          * andtext text «ready» only when register text‌textandtext text window «usable»
+            withtext (Layered+arr+HWND in andtextandtext / PhotoImage in path text)text
+          * textandtext [SNAPSHOT PRELOAD] PRELOAD COMPLETE with Window/HWND/Size/
+            text text UI print text‌textandtext in text: NOT READY + Reason text
+          * build_gen: if dispatch newtext in text istext text text withtext text‌textandtext.
+        versiontext 10text23 — if architecture GPU active withtext total text path to
+        _prepare_snapshot_overlay_gpu text‌textandtext (text windowtext Tk text
+        text‌textandtext only GPU Texture textandtext text‌textandtext).
+        versiontext 10text24 — scene text (in textandtext andtextandtext) to path GPU pass text‌textandtext."""
         if getattr(self, "_snap_gpu", None) is not None:
             return self._prepare_snapshot_overlay_gpu(
                 img, path, at_end, prepared=prepared, trace=trace,
@@ -2989,15 +2989,15 @@ class MomentumApp(_MOM_BASE):
             if (build_gen is not None
                     and build_gen != getattr(self, "_snap_pre_build_gen",
                                              build_gen)):
-                # یک dispatch جدیدتر آمده — این تلاش کهنه است (superseded)
-                # نسخهٔ ۱۰٫۲۱ — تست ۶: در دفترترتیب هم ثبت می‌شود
+                # technical note dispatch newtechnical note technical note — technical note technical note technical note is (superseded)
+                # versiontechnical note 10technical note21 — test 6: in technical noteorder technical note register technical note‌technical noteandtechnical note
                 self._snap_life_mark(key_tag,
                                      "PRELOAD SUPERSEDED (newer dispatch)")
                 if trace is not None:
                     trace.step("Preload attempt superseded (newer dispatch)")
                     trace.finish()
                 return
-            # نسخهٔ ۱۰٫۲۱ — تست ۶: callback UI واقعاً اجرا شد
+            # versiontechnical note 10technical note21 — test 6: callback UI andtechnical note technical note technical note
             self._snap_life_mark(key_tag, "PRELOAD UI CALLBACK EXECUTED")
             try:
                 self._snap_pre_built_gen = int(build_gen or 0)
@@ -3028,9 +3028,9 @@ class MomentumApp(_MOM_BASE):
                 return
             st = self._build_snapshot_window(img, path, prepared=prepared,
                                              trace=trace, key=key_tag)
-            st["key"] = key_tag                        # نسخهٔ ۱۰٫۱۸
+            st["key"] = key_tag                        # versiontechnical note 10technical note18
             st["at_end"] = bool(at_end)
-            # --- نسخهٔ ۱۰٫۱۹ — گزارش منابع + قابلیت استفاده ---
+            # --- versiontechnical note 10technical note19 — technical note technical note + technical note istechnical note ---
             hwnd = st.get("hwnd")
             photo_ok = st.get("photo") is not None
             arr_ok = st.get("arr") is not None
@@ -3060,16 +3060,16 @@ class MomentumApp(_MOM_BASE):
                     trace.finish()
                 self._preload_not_ready_print(reason)
                 return
-            st["state"] = "ready"                  # نسخهٔ ۱۰٫۱۹
+            st["state"] = "ready"                  # versiontechnical note 10technical note19
             st["built_wall"] = time.perf_counter()
-            self._snap_pre_photo = st["photo"]     # جلوگیری از GC
+            self._snap_pre_photo = st["photo"]     # technical noteandtechnical note from GC
             self._snap_pre = st
-            # نسخهٔ ۱۰٫۲۱ — تست ۶: PRELOAD COMPLETE / WINDOW READY + دامپ
-            # چرخهٔ عمر (تا این لحظه) — قابل مقایسه با SHOW بعدی
+            # versiontechnical note 10technical note21 — test 6: PRELOAD COMPLETE / WINDOW READY + technical note
+            # cycletechnical note technical note (until technical note moment) — technical note technical note with SHOW aftertechnical note
             self._snap_life_mark(key_tag, "PRELOAD COMPLETE (WINDOW READY)",
                                  note=f"UI build {ui_ms:.1f} ms")
             self._snap_life_dump(key_tag, "PRELOAD COMPLETE")
-            # نسخهٔ ۱۰٫۲۲ — [SNAPSHOT_STATE] READY (PREPARING → READY)
+            # versiontechnical note 10technical note22 — [SNAPSHOT_STATE] READY (PREPARING → READY)
             try:
                 _prep_ms = ((time.perf_counter()
                              - getattr(self, "_snap_state_t0",
@@ -3092,7 +3092,7 @@ class MomentumApp(_MOM_BASE):
                                  " — waiting for show time"))
                 trace.finish()
             if TV_SNAP_SHOW_DEBUG:
-                # --- بند ۱۰ج کاربر — بلوک پایان کامل Preload ---
+                # --- technical note 10technical note user — technical noteandtechnical note end complete Preload ---
                 try:
                     print("-" * 60, flush=True)
                     print("[SNAPSHOT PRELOAD]", flush=True)
@@ -3132,49 +3132,49 @@ class MomentumApp(_MOM_BASE):
 
     def _spawn_snap_anim_thread(self, gen, hwnd, x, y0, y1, box, trace=None,
                                 anim_tag: str = "ENTRY"):
-        """نسخهٔ ۱۰٫۱۶ — انیمیشن ورود/خروج در «ترد اختصاصی» (رفع لگ ورود —
-        شرط کاربر: سپردن به یک ترد جدا):
-          * هر فریم با زمان‌بندی مطلق perf_counter محاسبه می‌شود (اگر UI
-            یا سیستم momentarily کند شود، فریم بعدی دقیقاً روی مکانِ
-            زمان‌درست می‌پرد — حرکت هرگز عقب نمی‌ماند)؛
-          * اعمال با SetWindowPos خام (win32_move_hwnd) بدون هیچ فراخوانی
-            Tk — صف شلوغ UI-Thread دیگر روی حرکت اثر ندارد؛
-          * لغو با نسل (gen) — hide/پنجرهٔ جدید بلافاصله ترد قبلی را می‌کشد.
-        نسخهٔ ۱۰٫۱۷ — «تضمین ظهور» (رفع «PNG اصلاً بالا نیامد»):
-          * موفقیتِ هر SetWindowPos سنجیده می‌شود؛ اولین ردشدن → نتیجهٔ
-            «fail» در box نوشته می‌شود؛
-          * ترد «هیچ» فراخوانی Tk ندارد (حتی after) — چون پس‌زدنِ
-            afterِ کراس‌ترد توسط بعضی ساخت‌های Tcl دیده شد (پروب دیباگ:
-            after(0) از ترد هرگز پردازش نمی‌شد = همان علت واقعی
-            «بالا نیامدن PNG»)؛ نتیجه در box می‌نشیند و «پالرِ»
-            UI-Thread (لایهٔ ۱-ب) آن را تا ۴۰ms بعد می‌خواند و خودش
-            fallback (حلقهٔ after) را اجرا می‌کند.
-        نسخهٔ ۱۰٫۱۸ (بندهای ۸/۹ کاربر):
-          * SetThreadPriority(...,2) حذف شد — ترد انیمیشن «عادی» است؛
-            Game > Overlay از نظر اولویت منابع (بند ۸)؛
-          * مدت با perf_counter روی زمان واقعی کنترل می‌شود (۱۰۰۰ms
-            ثابت — کاهش 60→40fps مدت را عوض نمی‌کند)؛
-          * شروع/پایان/نتیجه/تعداد فریم و FPS مؤثر در trace ثبت می‌شود.
-        نسخهٔ ۱۰٫۲۰ (بندهای ۴/۵/۸ پیام جدید کاربر) — ابزار دقیق هر فریم:
-          * «تمام» فریم‌ها ثبت می‌شوند: شماره / elapsed / مکان هدف /
-            y واقعی (GetWindowRect — تشخیص عقب‌ماندگی DWM) / مدت و
-            پرچم واقعی SetWindowPos (از تلمتری _SWP_LAST) / interval
-            واقعی از فریم قبل / مدت واقعی sleep؛
-          * بلوک [SNAPSHOT ANIMATION DEBUG] «بعد از پایان حرکت» یک‌جا
-            چاپ می‌شود تا خودِ لاگ‌گیری روی زمان‌بندی فریم اثر نگذارد؛
-          * خلاصه: میانگین/بیشینه/کمینهٔ interval و SetWindowPos (با
-            شمارهٔ فریم) + لیست Stallها (interval > ۲× گام)؛
-          * TV_SNAP_DEBUG_ANIM_NO_MOVE (تست ب): ترد و زمان‌بندی ۴۰fps
-            فعال می‌ماند ولی هیچ SetWindowPos انجام نمی‌شود؛
-          * ترد همچنان «هیچ» فراخوانی Tk ندارد (فقط win32 + print)."""
+        """versiontext 10text16 — text andtextandtext/textandtext in «text text» (text text andtextandtext —
+        text user: text to text text text):
+          * text frame with time‌text text perf_counter textto text‌textandtext (if UI
+            or text momentarily text textandtext frame aftertext exactly textandtext text
+            time‌correct text‌text — text never text text‌text)text
+          * text with SetWindowPos text (win32_move_hwnd) without text textandtext
+            Tk — text textandtext UI-Thread text textandtext text impact text
+          * textand with text (gen) — hide/windowtext new textdistance text beforetext text text‌text.
+        versiontext 10text17 — «text textandtext» (text «PNG text withtext textortext»):
+          * successfultext text SetWindowPos agetext text‌textandtext firsttext text → text
+            «fail» in box textandtext text‌textandtext
+          * text «text» textandtext Tk text (text after) — because text‌text
+            aftertext text‌text textandtext text text‌text Tcl text text (textandtext textwithtext:
+            after(0) from text never textfromtext text‌text = same text real
+            «withtext textortext PNG»)text text in box text‌text and «text»
+            UI-Thread (layertext 1-text) text text until 40ms after text‌textandtext and textandtext
+            fallback (text after) text text text‌text.
+        versiontext 10text18 (text 8/9 user):
+          * SetThreadPriority(...,2) text text — text text «text» istext
+            Game > Overlay from text firstandtext text (text 8)text
+          * text with perf_counter textandtext time real text text‌textandtext (1000ms
+            text — text 60→40fps text text textandtext text‌text)text
+          * start/end/text/count frame and FPS text in trace register text‌textandtext.
+        versiontext 10text20 (text 4/5/8 message new user) — tool text text frame:
+          * «text» frame‌text register text‌textandtext: number / elapsed / text text /
+            y real (GetWindowRect — detection text‌text DWM) / text and
+            text real SetWindowPos (from text _SWP_LAST) / interval
+            real from frame before / text real sleeptext
+          * textandtext [SNAPSHOT ANIMATION DEBUG] «after from end text» text‌text
+            print text‌textandtext until textandtext log‌text textandtext time‌text frame impact text
+          * text: textortext/text/text interval and SetWindowPos (with
+            numbertext frame) + text Stalltext (interval > 2× text)text
+          * TV_SNAP_DEBUG_ANIM_NO_MOVE (test text): text and time‌text 40fps
+            active text‌text andtext text SetWindowPos text text‌textandtext
+          * text text «text» textandtext Tk text (only win32 + print)."""
         import threading as _th
         dur = max(0.05, TV_SNAP_ANIM_MS / 1000.0)
         step = max(0.008, TV_SNAP_ANIM_STEP_MS / 1000.0)
         no_move = bool(TV_SNAP_DEBUG_ANIM_NO_MOVE)
 
         def _dump(recs, note: str, total_ms: float) -> None:
-            """نسخهٔ ۱۰٫۲۰ — چاپ بلوک [SNAPSHOT ANIMATION DEBUG] (بند ۴).
-            نسخهٔ ۱۰٫۲۴ — فقط با TV_SNAP_SHOW_DEBUG (حذف لاگ کنسول)."""
+            """versiontext 10text20 — print textandtext [SNAPSHOT ANIMATION DEBUG] (text 4).
+            versiontext 10text24 — only with TV_SNAP_SHOW_DEBUG (text log textandtext)."""
             if not TV_SNAP_SHOW_DEBUG:
                 return
             try:
@@ -3214,7 +3214,7 @@ class MomentumApp(_MOM_BASE):
                     print(f"  frame interval: {r['interval_ms']:.2f} ms",
                           flush=True)
                     print(f"  sleep: {r['sleep_ms']:.2f} ms", flush=True)
-                    # --- نسخهٔ ۱۰٫۲۱ — تست ۵: تلمتری کامل ویندوزی فریم ---
+                    # --- versiontechnical note 10technical note21 — test 5: technical note complete andtechnical noteandtechnical note frame ---
                     w = r.get("wrec")
                     if w:
                         try:
@@ -3287,7 +3287,7 @@ class MomentumApp(_MOM_BASE):
                 else:
                     print("SetWindowPos: none (TEST-B NO-MOVE)",
                           flush=True)
-                # --- نسخهٔ ۱۰٫۲۱ — خلاصهٔ تست ۴/۵ ---
+                # --- versiontechnical note 10technical note21 — technical note test 4/5 ---
                 slow_txt = _anim_slow_swp_text(recs, thr_ms=5.0)
                 print("Slow SetWindowPos frames (duration > 5 ms): "
                       + (slow_txt if slow_txt else "none"), flush=True)
@@ -3299,13 +3299,13 @@ class MomentumApp(_MOM_BASE):
 
         def _work():
             frames = 0
-            recs = []                 # نسخهٔ ۱۰٫۲۰ — رکورد هر فریم
-            prev_it = None            # لحظهٔ شروع فریم قبل (interval)
+            recs = []                 # versiontechnical note 10technical note20 — technical noteandtechnical note technical note frame
+            prev_it = None            # momenttechnical note start frame before (interval)
             t0 = time.perf_counter()
             try:
-                # --- نسخهٔ ۱۰٫۱۸ — بند ۸ کاربر: اولویت ترد انیمیشن دستکاری
-                # نمی‌شود (SetThreadPriority حذف شد). انیمیشن Overlay باید
-                # کاملاً Non-Intrusive باشد: Game > Overlay.
+                # --- versiontechnical note 10technical note18 — technical note 8 user: firstandtechnical note technical note technical note technical note
+                # technical note‌technical noteandtechnical note (SetThreadPriority technical note technical note). technical note Overlay must
+                # completetechnical note Non-Intrusive withtechnical note: Game > Overlay.
                 if trace is not None:
                     trace.step("Animation thread started (priority: normal)",
                                hwnd=hwnd,
@@ -3314,7 +3314,7 @@ class MomentumApp(_MOM_BASE):
                 nxt = t0
                 while True:
                     if self._snap_anim_gen != gen:
-                        box["result"] = "cancel"   # لغو شد
+                        box["result"] = "cancel"   # technical noteand technical note
                         if trace is not None:
                             trace.step("Animation cancelled (generation)")
                         _dump(recs, "CANCELLED (generation superseded)",
@@ -3323,7 +3323,7 @@ class MomentumApp(_MOM_BASE):
                     it = time.perf_counter()
                     p = (it - t0) / dur
                     if p >= 1.0:
-                        # --- حرکت نهایی (نسخهٔ ۱۰٫۲۰: ثبت جدا از فریم‌ها) ---
+                        # --- technical note technical note (versiontechnical note 10technical note20: register technical note from frame‌technical note) ---
                         if no_move:
                             ok = True
                             _fdur, _ffl = 0.0, 0
@@ -3352,7 +3352,7 @@ class MomentumApp(_MOM_BASE):
                         break
                     e = snap_ease_in_out(p)
                     ty = int(round(y0 + (y1 - y0) * e))
-                    # --- نسخهٔ ۱۰٫۲۰ — بند ۶: مدتِ دقیق همین فریم از تلمتری
+                    # --- versiontechnical note 10technical note20 — technical note 6: technical note technical note technical note frame from technical note
                     if no_move:
                         ok = True
                         swp_ms, fl, skipped = 0.0, 0, True
@@ -3362,7 +3362,7 @@ class MomentumApp(_MOM_BASE):
                         swp_ms = float(_SWP_LAST.get("dur_ms", 0.0))
                         fl = int(_SWP_LAST.get("flags", 0))
                         skipped = False
-                        # نسخهٔ ۱۰٫۲۱ — تست ۵: رکورد کامل ویندوزی همین فریم
+                        # versiontechnical note 10technical note21 — test 5: technical noteandtechnical note complete andtechnical noteandtechnical note technical note frame
                         try:
                             wrec = dict(_SWP_LAST_EXTRA) \
                                 if _SWP_LAST_EXTRA else None
@@ -3381,7 +3381,7 @@ class MomentumApp(_MOM_BASE):
                         "sleep_ms": 0.0})
                     prev_it = it
                     if not ok and not skipped:
-                        box["result"] = "fail"     # جابه‌جایی رد شد
+                        box["result"] = "fail"     # technical noteto‌technical note technical note technical note
                         if trace is not None:
                             trace.step("Animation end",
                                        hwnd=hwnd,
@@ -3392,12 +3392,12 @@ class MomentumApp(_MOM_BASE):
                     nxt += step
                     dly = nxt - time.perf_counter()
                     if dly > 0:
-                        _s0 = time.perf_counter()   # بند ۴: مدت واقعی sleep
+                        _s0 = time.perf_counter()   # technical note 4: technical note real sleep
                         time.sleep(dly)
                         recs[-1]["sleep_ms"] = \
                             (time.perf_counter() - _s0) * 1000.0
                     else:
-                        nxt = time.perf_counter()   # عقب افتادیم — بازچینش
+                        nxt = time.perf_counter()   # technical note decreasetechnical note — withtechnical note
             except Exception:
                 box["result"] = "fail"
                 if trace is not None:
@@ -3415,42 +3415,42 @@ class MomentumApp(_MOM_BASE):
     def _show_snapshot_overlay(self, img, path, seconds: float, at_end: bool,
                                prepared=None, trace=None, sent_perf=None,
                                key=None):
-        """نمایش نمودار روی صفحه (باید از UI-Thread صدا زده شود):
-        سایز/محل از فرمول snap_overlay_geometry (پایین-چپ، تا 8K،
-        نسبت ابعاد دقیقاً حفظ می‌شود — هیچ کشیدگی ندارد).
-        نسخهٔ ۱۰٫۱۳ — نمودار یک‌دفعه ظاهر «نمی‌شود»: از زیر صفحه طی
-        ۱ ثانیه با ease-in-out وارد می‌شود، به مدت تنظیم‌شده می‌ماند و
-        با همان سبک به زیر صفحه برمی‌گردد و بعد بسته می‌شود.
-        نسخهٔ ۱۰٫۱۵ — پنجرهٔ پیش‌ساخته (۱-۲ ثانیه قبل، زیرِ صفحه) پذیرفته
-        می‌شود؛ ورود بدون هیچ لگِ لود انجام می‌شود.
-        نسخهٔ ۱۰٫۱۶ — خودِ حرکت هم از UI-Thread جدا شد: روی ویندوزِ لایه‌ای
-        انیمیشن در «ترد اختصاصی» با SetWindowPos خام اجرا می‌شود؛ در
-        محیط‌های دیگر همان حلقهٔ after قبلی (fallback) کار می‌کند.
-        نسخهٔ ۱۰٫۱۷ — «سه لایهٔ تضمین ظهور» (کاربر: PNG اصلاً بالا نیامد!):
-          لایه ۱) ترد اختصاصی فقط win32 — نتیجه در box می‌نشیند (بدون هیچ
-                  فراخوانی Tk؛ afterِ کراس‌ترد در بعضی ساخت‌های Tcl هرگز
-                  پردازش نمی‌شود — علتِ واقعیِ «بالا نیامدن»)؛ پالرِ
-                  UI-Thread نتیجه را تا ۴۰ms بعد می‌خواند: "ok" → پایان
-                  عادی؛ "fail" → خودش حلقهٔ after محافظ‌شده را اجرا
-                  می‌کند (fallback کامل تا geometry)؛
-          لایه ۲) «واچ‌داگ ورود» بعد از انیمیشن+۶۰۰ms: اگر پنجره هنوز
-                  به مکان نهایی نرسیده (ترد مرده/کراس‌ترد رد شده/after
-                  کار نکرده)، UI خودش پنجره را به مکان نهایی می‌برد و
-                  چرخهٔ ماندن/خروج را کامل می‌کند؛
-          لایه ۳) «تضمین پایان»: بعد از مدت نمایش+انیمیشن+حاشیه،
-                  پنهان‌سازی اجباری idempotent — هیچ‌چیز گیر نمی‌کند.
-        + وضعیت کامل پنجره در _snap_overlay_state نگه داشته می‌شود تا
-          «اعمال ریل‌تایم پیچ‌ها» بتواند همان پنجره را در جا re-blit کند.
-        نسخهٔ ۱۰٫۱۸ — (بند ۳ کاربر) در لحظهٔ Show «هیچ» عمل سنگینی انجام
-        نمی‌شود: پنجرهٔ پیش‌ساخته فقط باید همان کلید باشد؛ در غیر این
-        صورت ساختِ کامل در لحظهٔ Show با لاگ شفاف ثبت می‌شود. تأخیر صف
-        after، hide پنجرهٔ قبلی، مسیر پذیرش/ساخت و شروع/پایان انیمیشن
-        همه در trace ثبت می‌شوند. TV_SNAP_DEBUG_NO_ANIM (بند ۱۰) =
-        نمایش بدون انیمیشن (پرش مستقیم) برای تفکیک علت لگ.
-        نسخهٔ ۱۰٫۲۳ — اگر معماری GPU فعال باشد، کل این مسیر به
-        _show_snapshot_overlay_gpu می‌رود: Show فقط یک queue.put است
-        (زیر ~۰٫۱ms) و انیمیشن کاملاً داخل GPU (Shader) اجرا می‌شود —
-        هیچ SetWindowPos/Toplevel/PhotoImage در مسیر نیست."""
+        """display chart textandtext text (must from UI-Thread text text textandtext):
+        text/text from textandtext snap_overlay_geometry (below-text until 8Ktext
+        ratio text exactly text text‌textandtext — text text text).
+        versiontext 10text13 — chart text‌text text «text‌textandtext»: from text text text
+        1 second with ease-in-out andtext text‌textandtext to text text‌text text‌text and
+        with same lightweight to text text text‌text and after text text‌textandtext.
+        versiontext 10text15 — windowtext text‌text (1-2 second beforetext text text) text
+        text‌textandtext andtextandtext without text text textandtext text text‌textandtext.
+        versiontext 10text16 — textandtext text text from UI-Thread text text: textandtext andtextandtext layer‌text
+        text in «text text» with SetWindowPos text text text‌textandtext in
+        text‌text text same text after beforetext (fallback) text text‌text.
+        versiontext 10text17 — «text layertext text textandtext» (user: PNG text withtext textortext!):
+          layer 1) text text only win32 — text in box text‌text (without text
+                  textandtext Tktext aftertext text‌text in text text‌text Tcl never
+                  textfromtext text‌textandtext — text realtext «withtext textortext»)text text
+                  UI-Thread text text until 40ms after text‌textandtext: "ok" → end
+                  text "fail" → textandtext text after text‌text text text
+                  text‌text (fallback complete until geometry)text
+          layer 2) «andtext‌text andtextandtext» after from text+600ms: if window still
+                  to text text text (text text/text‌text text text/after
+                  text text)text UI textandtext window text to text text text‌text and
+                  cycletext text/textandtext text complete text‌text
+          layer 3) «text end»: after from text display+text+text
+                  hidden‌textfromtext textwithtext idempotent — text‌text text text‌text.
+        + andtext complete window in _snap_overlay_state text text text‌textandtext until
+          «text text‌untiltext text‌text» textandtext same window text in text re-blit text.
+        versiontext 10text18 — (text 3 user) in momenttext Show «text» text agetext text
+        text‌textandtext: windowtext text‌text only must same totaltext withtext in text text
+        textandtext text complete in momenttext Show with log text register text‌textandtext. delay text
+        aftertext hide windowtext beforetext path text/text and start/end text
+        text in trace register text‌textandtext. TV_SNAP_DEBUG_NO_ANIM (text 10) =
+        display without text (text direct) for text text text.
+        versiontext 10text23 — if architecture GPU active withtext total text path to
+        _show_snapshot_overlay_gpu text‌textandtext: Show only text queue.put is
+        (text ~0text1ms) and text completetext inside GPU (Shader) text text‌textandtext —
+        text SetWindowPos/Toplevel/PhotoImage in path is not."""
         if getattr(self, "_snap_gpu", None) is not None:
             return self._show_snapshot_overlay_gpu(
                 img, path, seconds, at_end, prepared=prepared, trace=trace,
@@ -3467,7 +3467,7 @@ class MomentumApp(_MOM_BASE):
                                - float(sent_perf)) * 1000.0
                 except Exception:
                     _lat_ms = None
-            # نسخهٔ ۱۰٫۲۰ — بند ۸: شناسهٔ ترد جاری و Main/UI در لحظهٔ Show
+            # versiontechnical note 10technical note20 — technical note 8: technical note technical note current and Main/UI in momenttechnical note Show
             if trace is not None:
                 try:
                     _mt = threading.main_thread()
@@ -3476,8 +3476,8 @@ class MomentumApp(_MOM_BASE):
                                       f"Main/UI: {_mt.ident}"))
                 except Exception:
                     pass
-                # نسخهٔ ۱۰٫۲۰ — بند ۹/۱۰: حالت انیمیشن در لاگ (مقایسهٔ تست‌ها)
-                # نسخهٔ ۱۰٫۲۱ — تست ۳ (SINGLE-MOVE) هم به فهرست حالت‌ها اضافه شد
+                # versiontechnical note 10technical note20 — technical note 9/10: technical note technical note in log (technical note test‌technical note)
+                # versiontechnical note 10technical note21 — test 3 (SINGLE-MOVE) technical note to list technical note‌technical note technical note technical note
                 try:
                     _mode = ("DEBUG NO-ANIM — test A (static show, no "
                              "animation thread)"
@@ -3492,27 +3492,27 @@ class MomentumApp(_MOM_BASE):
                     trace.step("Animation mode: " + _mode)
                 except Exception:
                     pass
-            # نسخهٔ ۱۰٫۲۱ — تست ۶: SHOW (UI) در دفترترتیب چرخهٔ عمر
+            # versiontechnical note 10technical note21 — test 6: SHOW (UI) in technical noteorder cycletechnical note technical note
             self._snap_life_mark(key if key is not None
                                  else ("end" if at_end else "?"),
                                  "SHOW (UI callback)")
-            # نسخهٔ ۱۰٫۱۵ — پیش‌ساخته «قبل از» hide جدا می‌شود (hide در
-            # پایان کارِ خودش preload را هم باطل می‌کند) تا پذیرفته شود
+            # versiontechnical note 10technical note15 — technical note‌technical note «before from» hide technical note technical note‌technical noteandtechnical note (hide in
+            # end technical note technical noteandtechnical note preload technical note technical note withtechnical note technical note‌technical note) until technical note technical noteandtechnical note
             pre = getattr(self, "_snap_pre", None)
             self._snap_pre = None
             t_hide = trace.begin() if trace is not None else 0.0
             self._hide_snapshot_overlay()
             if trace is not None:
                 trace.end("Hide previous overlay", t_hide)
-            # نسخهٔ ۱۰٫۲۲ — [SNAPSHOT_STATE] SHOW (READY → SHOWING)
+            # versiontechnical note 10technical note22 — [SNAPSHOT_STATE] SHOW (READY → SHOWING)
             self._snap_state_event(
                 "SHOW", SnapshotState.SHOWING, key=key,
                 extra=((f"latency={_lat_ms:.1f}ms")
                        if _lat_ms is not None else "latency=?"))
             st = None
-            # نسخهٔ ۱۰٫۱۸ — فقط پنجرهٔ پیش‌ساختهٔ «همان کلید» پذیرفته می‌شود
-            # نسخهٔ ۱۰٫۱۹ — گزارش کامل منابع (بند ۱۲ کاربر): پنجره باید
-            # «آمادهٔ» استفاده باشد؛ منابع گمشده با نام دقیق لاگ می‌شوند.
+            # versiontechnical note 10technical note18 — only windowtechnical note technical note‌technical note «same totaltechnical note» technical note technical note‌technical noteandtechnical note
+            # versiontechnical note 10technical note19 — technical note complete technical note (technical note 12 user): window must
+            # «technical note» istechnical note withtechnical note technical note technical note with technical note technical note log technical note‌technical noteandtechnical note.
             pre_key_ok = (key is None or pre is None
                           or pre.get("key") in (None, key))
             pre_win = pre.get("win") if pre is not None else None
@@ -3526,7 +3526,7 @@ class MomentumApp(_MOM_BASE):
                                 and pre.get("state") == "ready")
             if (pre is not None and pre_key_ok and pre_win_ok
                     and pre_state_ok):
-                st = pre                              # پنجرهٔ پیش‌ساخته — آمادهٔ ورود
+                st = pre                              # windowtechnical note technical note‌technical note — technical note andtechnical noteandtechnical note
                 if trace is not None:
                     age = ((time.perf_counter() - st.get("built_wall",
                                                           time.perf_counter()))
@@ -3551,12 +3551,12 @@ class MomentumApp(_MOM_BASE):
                                   else ("N.A. (plain window path)"
                                         if not layered_p else "MISSING")),
                                note="zero heavy work at show time")
-                # نسخهٔ ۱۰٫۲۱ — تست ۶: پنجرهٔ پیش‌ساخته پذیرفته شد — دامپ
-                # چرخهٔ عمر با RACE CHECK (باید gap مثبتِ ~۲s باشد)
+                # versiontechnical note 10technical note21 — test 6: windowtechnical note technical note‌technical note technical note technical note — technical note
+                # cycletechnical note technical note with RACE CHECK (must gap technical noteregistertechnical note ~2s withtechnical note)
                 self._snap_life_mark(key, "PREBUILT ACCEPTED AT SHOW")
                 self._snap_life_dump(key, "SHOW — prebuilt accepted (no race)")
             else:
-                # --- نسخهٔ ۱۰٫۱۹ — دلیل دقیق + مسیر اضطراری (بند ۷/۸ کاربر) ---
+                # --- versiontechnical note 10technical note19 — technical note technical note + path technical note (technical note 7/8 user) ---
                 if pre is None:
                     _why = ("prebuilt window missing — preload was never "
                             "dispatched or its UI callback did not execute")
@@ -3571,8 +3571,8 @@ class MomentumApp(_MOM_BASE):
                 _fail = getattr(self, "_snap_pre_fail", None)
                 if _fail and _fail.get("key") in (None, key):
                     _why += f" | last preload failure: {_fail.get('reason')}"
-                # نسخهٔ ۱۰٫۲۱ — تست ۶: قبل از هر چیز، علت دقیق Race از روی
-                # دفترترتیب چرخهٔ عمر لاگ می‌شود (بند E کاربر)
+                # versiontechnical note 10technical note21 — test 6: before from technical note technical note technical note technical note Race from technical noteandtechnical note
+                # technical noteorder cycletechnical note technical note log technical note‌technical noteandtechnical note (technical note E user)
                 self._snap_life_mark(key, "SHOW — NO PREBUILT (RACE)",
                                      note=_why)
                 self._snap_life_dump(key, "RACE — show before PRELOAD COMPLETE")
@@ -3587,7 +3587,7 @@ class MomentumApp(_MOM_BASE):
                               "operation.", flush=True)
                     except Exception:
                         pass
-                # پنجرهٔ یتیمِ غیرقابل استفاده نابود می‌شود (بدون نشتی)
+                # windowtechnical note technical noteteamtechnical note technical noteusable technical noteandtechnical note technical note‌technical noteandtechnical note (without technical note)
                 if pre is not None and pre_win is not None:
                     try:
                         pre_win.destroy()
@@ -3616,11 +3616,11 @@ class MomentumApp(_MOM_BASE):
                                                  trace=trace, key=key)
                 st["state"] = "ready"
             self._snap_overlay = st["win"]
-            self._snap_overlay_photo = st["photo"]    # جلوگیری از GC
-            self._snap_overlay_state = st             # نسخهٔ ۱۰٫۱۷
+            self._snap_overlay_photo = st["photo"]    # technical noteandtechnical note from GC
+            self._snap_overlay_state = st             # versiontechnical note 10technical note17
             self._snap_overlay_after = []
             self._snap_anim_alive = True
-            # v10.29 — ضرب‌الاجل خروج (مسیر Tk/Legacy) — همان فرمول GPU
+            # v10.29 — technical note‌technical note technical noteandtechnical note (path Tk/Legacy) — same technical noteandtechnical note GPU
             self._snap_overlay_deadline_wall = (
                 time.time() + float(seconds) + TV_SNAP_ANIM_MS / 1000.0
                 + TV_SNAP_OVERDUE_GRACE_SEC)
@@ -3642,7 +3642,7 @@ class MomentumApp(_MOM_BASE):
                     pass
 
             def _current_y():
-                """y واقعی پنجره — اول از خود ویندوز (GetWindowRect)، بعد Tk."""
+                """y real window — first from textandtext andtextandtext (GetWindowRect)text after Tk."""
                 yy = win32_window_y(st.get("hwnd")) if st.get("hwnd") else None
                 if yy is not None:
                     return int(yy)
@@ -3654,12 +3654,12 @@ class MomentumApp(_MOM_BASE):
             _cb_seq = [0]
 
             def _schedule(delay_ms: int, fn) -> None:
-                """نسخهٔ ۱۰٫۲۰ — بند ۱۲ کاربر: هر callback مرتبط با
-                اسنپ‌شات روی Main/UI (زنجیرهٔ poll انیمیشن، watchdog،
-                ورود/خروج/پنهان‌سازی) با Name / Scheduled / Executed /
-                Latency / Duration لاگ می‌شود تا تداخل احتمالی‌اش با
-                انیمیشن دقیقاً دیده شود. زمان‌ها نسبت به شروع trace
-                (لحظهٔ dispatch Show) هستند — همان خط‌زمان مراحل
+                """versiontext 10text20 — text 12 user: text callback text with
+                textagetext‌text textandtext Main/UI (chaintext poll text watchdogtext
+                andtextandtext/textandtext/hidden‌textfromtext) with Name / Scheduled / Executed /
+                Latency / Duration log text‌textandtext until textinside text‌text with
+                text exactly text textandtext. time‌text ratio to start trace
+                (momenttext dispatch Show) text — same line‌time text
                 [SNAPSHOT SHOW DEBUG]."""
                 _cb_seq[0] += 1
                 _name = getattr(fn, "__name__", "callback")
@@ -3695,10 +3695,10 @@ class MomentumApp(_MOM_BASE):
                     pass
 
             def _anim_afterloop(y0: int, y1: int, done) -> None:
-                """مسیر fallback (غیرویندوز/بدون hwnd/شکست ترد): همان
-                حلقهٔ after نسخهٔ ۱۰٫۱۳ — روی UI-Thread با زنجیرهٔ کامل
-                fallback (win32 → win32 → geometry) — همیشه کار می‌کند.
-                نسخهٔ ۱۰٫۱۸ — زمان‌بندی با perf_counter (بند ۹ کاربر)."""
+                """path fallback (textandtextandtext/without hwnd/text text): same
+                text after versiontext 10text13 — textandtext UI-Thread with chaintext complete
+                fallback (win32 → win32 → geometry) — always text text‌text.
+                versiontext 10text18 — time‌text with perf_counter (text 9 user)."""
                 t0 = time.perf_counter()
                 dur = max(0.05, TV_SNAP_ANIM_MS / 1000.0)
 
@@ -3718,13 +3718,13 @@ class MomentumApp(_MOM_BASE):
 
                 _step()
 
-            # --- نسخهٔ ۱۰٫۱۷ — لایهٔ ۱: ترد + box + پالرِ UI-Thread ---
-            # ترد فقط نتیجه را در box می‌نویسد (بدون هیچ فراخوانی Tk —
-            # afterِ کراس‌ترد در بعضی ساخت‌های Tcl هرگز پردازش نمی‌شود!).
-            # پالر (UI-Thread) تا ۴۰ms بعد نتیجه را می‌خواند:
-            #   "ok"   → پایان عادی (done)؛
-            #   "fail" → خودش حلقهٔ after محافظ‌شده را اجرا می‌کند؛
-            #   هیچ    → تا ضرب‌الاجل صبر، بعد زورِ نهایی + done.
+            # --- versiontechnical note 10technical note17 — layertechnical note 1: technical note + box + technical note UI-Thread ---
+            # technical note only technical note technical note in box technical note‌technical noteandtechnical note (without technical note technical noteandtechnical note Tk —
+            # aftertechnical note technical note‌technical note in technical note technical note‌technical note Tcl never technical notefromtechnical note technical note‌technical noteandtechnical note!).
+            # technical note (UI-Thread) until 40ms after technical note technical note technical note‌technical noteandtechnical note:
+            #   "ok"   → end technical note (done)technical note
+            #   "fail" → technical noteandtechnical note technical note after technical note‌technical note technical note technical note technical note‌technical note
+            #   technical note    → until technical note‌technical note technical note after technical noteandtechnical note technical note + done.
 
             def _run_anim(y0: int, y1: int, done, anim_trace=None,
                           anim_tag: str = "ENTRY") -> None:
@@ -3734,8 +3734,8 @@ class MomentumApp(_MOM_BASE):
                     self._spawn_snap_anim_thread(
                         self._snap_anim_gen, hwnd, x, y0, y1, box,
                         trace=anim_trace, anim_tag=anim_tag)
-                    # نسخهٔ ۱۰٫۲۰ — بند ۸: شناسهٔ ترد انیمیشن در همان لحظهٔ
-                    # spawn (correlation با بلوک ANIMATION DEBUG)
+                    # versiontechnical note 10technical note20 — technical note 8: technical note technical note technical note in same momenttechnical note
+                    # spawn (correlation with technical noteandtechnical note ANIMATION DEBUG)
                     if anim_trace is not None:
                         try:
                             _at = getattr(self, "_snap_anim_thread", None)
@@ -3757,9 +3757,9 @@ class MomentumApp(_MOM_BASE):
                             return
                         res = box.get("result")
                         if res == "ok":
-                            # نسخهٔ ۱۰٫۲۰ — بند ۱۱: پایان انیمیشن از دید
-                            # UI-Thread (فاصله تا "Animation end" = تاخیر
-                            # پالر ۴۰ms یا کندی UI-Thread — عدد تشخیصی)
+                            # versiontechnical note 10technical note20 — technical note 11: end technical note from technical note
+                            # UI-Thread (distance until "Animation end" = untiltechnical note
+                            # technical note 40ms or technical note UI-Thread — number detectiontechnical note)
                             if anim_trace is not None:
                                 try:
                                     anim_trace.step(
@@ -3782,8 +3782,8 @@ class MomentumApp(_MOM_BASE):
                         if res == "cancel":
                             return
                         if time.perf_counter() >= deadline:
-                            # ترد هیچ نگاشتی نگذاشت (مرده/قفل) — زورِ نهایی
-                            # (نسخهٔ ۱۰٫۲۰: در تست ب هیچ حرکتی مجاز نیست)
+                            # technical note technical note technical note technical note (technical note/technical note) — technical noteandtechnical note technical note
+                            # (versiontechnical note 10technical note20: in test technical note technical note technical note technical notefrom is not)
                             if not TV_SNAP_DEBUG_ANIM_NO_MOVE:
                                 _move(int(round(y1)))
                             done()
@@ -3794,17 +3794,17 @@ class MomentumApp(_MOM_BASE):
                 else:
                     _anim_afterloop(y0, y1, done)
 
-            # --- نسخهٔ ۱۰٫۱۷ — چرخهٔ عمر با «تضمین سه‌لایه» ---
+            # --- versiontechnical note 10technical note17 — cycletechnical note technical note with «technical note technical note‌layer» ---
             life = {"entry_done": False}
 
             def _hide_this():
                 self._hide_snapshot_overlay(expect_win=win)
 
             def _begin_exit():
-                """پایان ماندن → خروج با همان سبک (نسخهٔ ۱۰٫۱۳؛ نام تاریخی
-                حفظ شد — تضمین‌های ۱۰٫۱۷ روی آن سوارند).
-                نسخهٔ ۱۰٫۱۸ — خروج هم trace مستقل دارد (مقایسهٔ ورود/خروج:
-                کاربر — «هنگام خروج معمولاً لگ دیده نمی‌شود»)."""
+                """end text → textandtext with same lightweight (versiontext 10text13text text untiltext
+                text text — text‌text 10text17 textandtext text textandtext).
+                versiontext 10text18 — textandtext text trace independent text (text andtextandtext/textandtext:
+                user — «text textandtext textandtext text text text‌textandtext»)."""
                 if not win.winfo_exists():
                     return
                 if TV_SNAP_DEBUG_NO_ANIM:
@@ -3812,7 +3812,7 @@ class MomentumApp(_MOM_BASE):
                     _hide_this()
                     return
                 exit_tr = SnapShowTrace("EXIT DEBUG", TV_SNAP_SHOW_DEBUG)
-                exit_tr.step("Exit animation start")   # نسخهٔ ۱۰٫۲۰ — بند ۱۱
+                exit_tr.step("Exit animation start")   # versiontechnical note 10technical note20 — technical note 11
                 _run_anim(y_final, y_start, _hide_this, anim_trace=exit_tr,
                           anim_tag="EXIT")
 
@@ -3831,25 +3831,25 @@ class MomentumApp(_MOM_BASE):
                         trace.finish()
                     except Exception:
                         pass
-                # نسخهٔ ۱۰٫۲۲ — [SNAPSHOT_STATE] VISIBLE (SHOWING → VISIBLE)
+                # versiontechnical note 10technical note22 — [SNAPSHOT_STATE] VISIBLE (SHOWING → VISIBLE)
                 self._snap_state_event(
                     "VISIBLE", SnapshotState.VISIBLE, key=key,
                     extra=("entry=%.0fms"
                            % ((time.perf_counter()
                                - self._snap_state_since) * 1000.0)))
-                # پایان ورود → ماندن به مدت تنظیم‌شده → خروج با همان سبک
+                # end andtechnical noteandtechnical note → technical note to technical note technical note‌technical note → technical noteandtechnical note with same lightweight
                 _schedule(max(1, int(float(seconds) * 1000.0)), _begin_exit)
-                # لایهٔ ۳ — تضمین پایان: حتی اگر خروجِ نرم گیر کند،
-                # بعد از (ماندن + انیمیشن + حاشیه) پنهان‌سازی اجباری
+                # layertechnical note 3 — technical note end: technical note if technical noteandtechnical note smooth technical note technical note
+                # after from (technical note + technical note + technical note) hidden‌technical notefromtechnical note technical notewithtechnical note
                 _schedule(max(1, int((float(seconds)
                                       + TV_SNAP_ANIM_MS / 1000.0 + 1.2)
                                      * 1000.0)), _hide_this)
 
             def _entry_watchdog():
-                """لایهٔ ۲ — اگر ورود کامل نشده بود، UI خودش کار را تمام
-                می‌کند: پنجره زور به مکان نهایی می‌رود و چرخه ادامه
-                می‌یابد. (ترد مرده / ردشدن کراس‌ترد / afterِ کارنکرده —
-                هیچ‌کدام دیگر نمی‌توانند جلوی دیده‌شدن نمودار را بگیرند.)"""
+                """layertext 2 — if andtextandtext complete text textandtext UI textandtext text text text
+                text‌text: window textandtext to text text text‌textandtext and cycle resume
+                text‌ortext. (text text / text text‌text / aftertext text —
+                text‌codetext text text‌textandtext textandtext text‌text chart text text.)"""
                 if life["entry_done"] or not win.winfo_exists():
                     return
                 cur = _current_y()
@@ -3861,8 +3861,8 @@ class MomentumApp(_MOM_BASE):
                     except Exception:
                         pass
                 if TV_SNAP_DEBUG_ANIM_NO_MOVE:
-                    # نسخهٔ ۱۰٫۲۰ — تست ب: هیچ حرکتی مجاز نیست؛ فقط چرخهٔ
-                    # عمر کامل شود (پنجره ثابت زیر صفحه می‌ماند)
+                    # versiontechnical note 10technical note20 — test technical note: technical note technical note technical notefrom is nottechnical note only cycletechnical note
+                    # technical note complete technical noteandtechnical note (window technical note technical note technical note technical note‌technical note)
                     if trace is not None:
                         try:
                             trace.step("Watchdog rescue move suppressed "
@@ -3876,9 +3876,9 @@ class MomentumApp(_MOM_BASE):
                 _entry_done()
 
             _schedule(int(TV_SNAP_ANIM_MS + 600), _entry_watchdog)
-            # v10.28 — SHOWING (مسیر Tk/Legacy): پنجره ساخته/پذیرفته شده و
-            # ورود در همین تیک شروع می‌شود (هر سه شاخه: انیمیشن/پرش/
-            # SINGLE-MOVE) — نقطهٔ مصرف تراکنشی.
+            # v10.28 — SHOWING (path Tk/Legacy): window technical note/technical note technical note and
+            # andtechnical noteandtechnical note in technical note technical note start technical note‌technical noteandtechnical note (technical note technical note technical note: technical note/technical note/
+            # SINGLE-MOVE) — technical note technical note technical note.
             _ck_tk = key if key is not None else ("end" if at_end else "?")
             if at_end or _ck_tk == "end":
                 self._snap_show_event("confirm_end", _ck_tk)
@@ -3887,9 +3887,9 @@ class MomentumApp(_MOM_BASE):
             self._snap_show_stage(
                 _ck_tk, "SHOWING (Tk window accepted — entry starting)")
             if TV_SNAP_DEBUG_NO_ANIM:
-                # --- بند ۱۰ کاربر — تست بدون انیمیشن: Show → ثابت ---
-                # (نسخهٔ ۱۰٫۲۱ = TEST 1 — ENTRY ANIMATION OFF؛ مدت همان یک
-                # SetWindowPosِ پرش مستقیم هم ثبت می‌شود — شاهد تست ۱)
+                # --- technical note 10 user — test without technical note: Show → technical note ---
+                # (versiontechnical note 10technical note21 = TEST 1 — ENTRY ANIMATION OFFtechnical note technical note same technical note
+                # SetWindowPostechnical note technical note direct technical note register technical note‌technical noteandtechnical note — technical note test 1)
                 if trace is not None:
                     trace.step("DEBUG NO-ANIM: direct jump to final position")
                 t_mv = trace.begin() if trace is not None else 0.0
@@ -3910,9 +3910,9 @@ class MomentumApp(_MOM_BASE):
                 _entry_done()
                 return
             if TV_SNAP_DEBUG_ANIM_SINGLE_MOVE:
-                # --- نسخهٔ ۱۰٫۲۱ — تست ۳ کاربر: فقط «یک» SetWindowPos در
-                # لحظهٔ ورود + بلوک اندازه‌گیری کامل [SNAPSHOT SINGLE-MOVE
-                # TEST]؛ بدون انیمیشن/ترد/هیچ حرکت دیگری در ثانیهٔ اول.
+                # --- versiontechnical note 10technical note21 — test 3 user: only «technical note» SetWindowPos in
+                # momenttechnical note andtechnical noteandtechnical note + technical noteandtechnical note technical notefromtechnical note‌technical note complete [SNAPSHOT SINGLE-MOVE
+                # TEST]technical note without technical note/technical note/technical note technical note technical note in secondtechnical note first.
                 if trace is not None:
                     trace.step("DEBUG SINGLE-MOVE: one measured SetWindowPos "
                                "to final position (TEST 3)")
@@ -3934,14 +3934,14 @@ class MomentumApp(_MOM_BASE):
 
     def _snap_single_move_test(self, st, x: int, y_final: int,
                                trace=None) -> None:
-        """نسخهٔ ۱۰٫۲۱ — تست ۳ کاربر: «فقط یک SetWindowPos در لحظهٔ ورود».
-        پنجره از قبل Preload شده و زیر صفحه است؛ Show انجام شده؛ این‌جا
-        فقط «همان یک» جابه‌جایی به مکان نهایی انجام و با Performance
-        Counter اندازه‌گیری می‌شود (بعدش هیچ حرکتی انجام نمی‌شود).
-        نکتهٔ تشخیصی مهم: این فراخوانی «روی UI-Thread» است (هم‌ترد با
-        مالک پنجره) — پس انتظارِ پیام کراس‌ترد در کار نیست؛ اگر همین هم
-        ~100-200ms طول بکشد، هزینه داخل خود فراخوانی/DWM/composition
-        است، نه زمان‌بندی انیمیشن یا صف UI."""
+        """versiontext 10text21 — test 3 user: «only text SetWindowPos in momenttext andtextandtext».
+        window from before Preload text and text text istext Show text text text‌text
+        only «same text» textto‌text to text text text and with Performance
+        Counter textfromtext‌text text‌textandtext (aftertext text text text text‌textandtext).
+        text detectiontext text: text textandtext «textandtext UI-Thread» is (text‌text with
+        text window) — text text message text‌text in text is nottext if text text
+        ~100-200ms length text text inside textandtext textandtext/DWM/composition
+        istext text time‌text text or text UI."""
         hwnd = st.get("hwnd")
         y0 = st.get("y_start")
         try:
@@ -3958,7 +3958,7 @@ class MomentumApp(_MOM_BASE):
             t0 = time.perf_counter()
             rec = None
             if os.name == "nt" and hwnd:
-                # مسیر تلمتری کامل (تست ۵): قبل/بعد + GetLastError + پشته
+                # path technical note complete (test 5): before/after + GetLastError + technical note
                 rec = _win32_swp_debug(hwnd, x, int(y_final),
                                        "single_move_test")
             else:
@@ -4013,7 +4013,7 @@ class MomentumApp(_MOM_BASE):
         s = self.snap_engine.s
         win = tk.Toplevel(self)
         self._snap_dlg = win
-        win.title("⚙ تنظیمات اسنپ‌شات نمودار TV")
+        win.title("⚙ text textagetext‌text chart TV")
         win.configure(bg="#0d1420")
         win.resizable(False, False)
         win.transient(self)
@@ -4037,7 +4037,7 @@ class MomentumApp(_MOM_BASE):
                      fg="#00f5d4", bg="#0d1420", anchor="e").pack(
                 fill="x", padx=16, pady=(12, 2))
 
-        def _spin_row(parent, label, var, lo, hi, unit="دقیقه", enabled_var=None):
+        def _spin_row(parent, label, var, lo, hi, unit="minute", enabled_var=None):
             row = tk.Frame(parent, bg="#0d1420")
             row.pack(fill="x", padx=20, pady=3)
             chk = tk.Checkbutton(row, text=label, variable=enabled_var,
@@ -4058,12 +4058,12 @@ class MomentumApp(_MOM_BASE):
             sp.pack(side="left")
             return sp
 
-        _title("زمان‌بندی نمایش در حین بازی (اسنپ یک دقیقه قبل گرفته می‌شود)")
-        _spin_row(win, "نیمهٔ اول", v["h1_minute"],
+        _title("time‌text display in text withtext (textagetext text minute before text text‌textandtext)")
+        _spin_row(win, "text first", v["h1_minute"],
                   *TV_SNAP_RANGES["h1"], enabled_var=v["h1_enabled"])
-        _spin_row(win, "نیمهٔ دوم", v["h2_minute"],
+        _spin_row(win, "text second", v["h2_minute"],
                   *TV_SNAP_RANGES["h2"], enabled_var=v["h2_enabled"])
-        _spin_row(win, "وقت‌های اضافه", v["et_minute"],
+        _spin_row(win, "andtext‌text text", v["et_minute"],
                   *TV_SNAP_RANGES["et"], enabled_var=v["et_enabled"])
 
         def _restore_defaults():
@@ -4074,16 +4074,16 @@ class MomentumApp(_MOM_BASE):
             v["end_seconds"].set("20")
             v["end_enabled"].set(True)
 
-        tk.Button(win, text="↺ بازگشت به پیش‌فرض (۴۳ / ۸۵ / ۱۱۶)",
+        tk.Button(win, text="↺ withtext to default (43 / 85 / 116)",
                   font=("Segoe UI", 9, "bold"), bg="#1a2336", fg="#00b4d8",
                   relief="flat", cursor="hand2", activebackground="#1a2336",
                   activeforeground="#ffffff",
                   command=_restore_defaults).pack(fill="x", padx=20, pady=(6, 0))
 
-        _title("نمایش و ذخیره")
+        _title("display and save")
         row_secs = tk.Frame(win, bg="#0d1420")
         row_secs.pack(fill="x", padx=20, pady=3)
-        tk.Label(row_secs, text="مدت نمایش روی صفحه (ثانیهٔ واقعی)",
+        tk.Label(row_secs, text="text display textandtext text (secondtext real)",
                  font=("Segoe UI", 10), fg="#e6edf5", bg="#0d1420").pack(side="right")
         sp_secs = tk.Spinbox(row_secs, textvariable=v["show_seconds"],
                              from_=5, to=300, width=5, justify="center",
@@ -4095,7 +4095,7 @@ class MomentumApp(_MOM_BASE):
 
         row_end = tk.Frame(win, bg="#0d1420")
         row_end.pack(fill="x", padx=20, pady=3)
-        tk.Checkbutton(row_end, text="نمایش در پایان بازی (پایان ۹۰+ و ۱۲۰+)",
+        tk.Checkbutton(row_end, text="display in match end (end 90+ and 120+)",
                        variable=v["end_enabled"], font=("Segoe UI", 10),
                        fg="#e6edf5", bg="#0d1420", activebackground="#0d1420",
                        selectcolor="#101a2c", anchor="e",
@@ -4107,22 +4107,22 @@ class MomentumApp(_MOM_BASE):
                             relief="flat", highlightthickness=1,
                             highlightbackground="#2e384d")
         sp_end.pack(side="left")
-        tk.Label(row_end, text="ثانیه", font=("Segoe UI", 9), fg="#7f8fa6",
+        tk.Label(row_end, text="second", font=("Segoe UI", 9), fg="#7f8fa6",
                  bg="#0d1420").pack(side="left", padx=(4, 0))
 
-        tk.Checkbutton(win, text="ذخیرهٔ دائمی نمودارها (آخرین نمودار هر بازی در پوشهٔ Momentum_Saves)",
+        tk.Checkbutton(win, text="savetext text charttext (latest chart text withtext in foldertext Momentum_Saves)",
                        variable=v["permanent_save"], font=("Segoe UI", 10),
                        fg="#e6edf5", bg="#0d1420", activebackground="#0d1420",
                        selectcolor="#101a2c", anchor="e",
                        justify="right").pack(fill="x", padx=20, pady=3)
-        tk.Checkbutton(win, text="ثبت تاریخ و زمان شروع بازی (بالای نمودار)",
+        tk.Checkbutton(win, text="register untiltext and time start withtext (withtext chart)",
                        variable=v["timestamp"], font=("Segoe UI", 10),
                        fg="#e6edf5", bg="#0d1420", activebackground="#0d1420",
                        selectcolor="#101a2c", anchor="e",
                        justify="right").pack(fill="x", padx=20, pady=3)
 
-        # --- نسخهٔ ۱۰٫۲۴ — آرشیو کامل رخدادهای بازی (خروجی/ورودی) ---
-        _title("آرشیو رخدادهای بازی (خروجی ZIP + رندر دوباره)")
+        # --- versiontechnical note 10technical note24 — archive complete technical notedatatechnical note withtechnical note (output/input) ---
+        _title("archive textdatatext withtext (output ZIP + render again)")
 
         def _archive_export_now():
             def _w():
@@ -4133,13 +4133,13 @@ class MomentumApp(_MOM_BASE):
                 try:
                     if p:
                         messagebox.showinfo(
-                            "آرشیو رخدادهای بازی",
-                            "آرشیو کامل ساخته شد:\n" + str(p), parent=win)
+                            "archive textdatatext withtext",
+                            "archive complete text text:\n" + str(p), parent=win)
                     else:
                         messagebox.showerror(
-                            "آرشیو رخدادهای بازی",
-                            "ساخت آرشیو ناموفق بود "
-                            "(دادهٔ بازیِ کافی در دسترس نیست؟)", parent=win)
+                            "archive textdatatext withtext",
+                            "text archive failed textandtext "
+                            "(datatext withtext text in text is nottext)", parent=win)
                 except Exception:
                     pass
 
@@ -4150,9 +4150,9 @@ class MomentumApp(_MOM_BASE):
             try:
                 from tkinter import filedialog as _fd
                 p = _fd.askopenfilename(
-                    parent=win, title="انتخاب فایل آرشیو (ZIP یا JSON)",
-                    filetypes=[("آرشیو Momentum", "*.zip *.json"),
-                               ("همهٔ فایل‌ها", "*.*")])
+                    parent=win, title="text file archive (ZIP or JSON)",
+                    filetypes=[("archive Momentum", "*.zip *.json"),
+                               ("text file‌text", "*.*")])
             except Exception:
                 return
             if not p:
@@ -4167,30 +4167,30 @@ class MomentumApp(_MOM_BASE):
                     if out:
                         try:
                             if os.name == "nt":
-                                os.startfile(out)   # باز شدن در تصویرِ‌نما
+                                os.startfile(out)   # withtechnical note technical note in technical noteandtechnical note‌technical note
                         except Exception:
                             pass
                         messagebox.showinfo(
-                            "رندر دوباره از آرشیو",
-                            "نمودار از آرشیو ساخته شد:\n" + str(out),
+                            "render again from archive",
+                            "chart from archive text text:\n" + str(out),
                             parent=win)
                     else:
                         messagebox.showerror(
-                            "رندر دوباره از آرشیو",
-                            "خواندن/رندر آرشیو ناموفق بود.", parent=win)
+                            "render again from archive",
+                            "read/render archive failed textandtext.", parent=win)
                 except Exception:
                     pass
 
             threading.Thread(target=_w, daemon=True,
                              name="archive-render").start()
 
-        tk.Button(win, text="⬇ خروجی کامل رخدادهای بازی (ZIP — همین لحظه)",
+        tk.Button(win, text="⬇ output complete textdatatext withtext (ZIP — text moment)",
                   font=("Segoe UI", 9, "bold"), bg="#14405e", fg="#8ecdf7",
                   relief="flat", cursor="hand2", activebackground="#14405e",
                   activeforeground="#ffffff",
                   command=_archive_export_now).pack(fill="x", padx=20,
                                                     pady=(4, 0), ipady=3)
-        tk.Button(win, text="⟳ رندر دوبارهٔ نمودار از فایل آرشیو (ZIP/JSON)",
+        tk.Button(win, text="⟳ render againtext chart from file archive (ZIP/JSON)",
                   font=("Segoe UI", 9, "bold"), bg="#14405e", fg="#8ecdf7",
                   relief="flat", cursor="hand2", activebackground="#14405e",
                   activeforeground="#ffffff",
@@ -4210,8 +4210,8 @@ class MomentumApp(_MOM_BASE):
             new_s["timestamp"] = bool(v["timestamp"].get())
             self.snap_engine.s = new_s
             snap_save_settings(self._script_dir, new_s)
-            # نسخهٔ ۱۰٫۱۵ — پنجرهٔ پیش‌ساخته ممکن است با تنظیمات جدید (دقیقهٔ
-            # هدف/مدت نمایش) دیگر معتبر نباشد → باطل می‌شود
+            # versiontechnical note 10technical note15 — windowtechnical note technical note‌technical note possible is with technical note new (minutetechnical note
+            # technical note/technical note display) technical note valid technical notewithtechnical note → withtechnical note technical note‌technical noteandtechnical note
             for _k in self.snap_engine.mid:
                 self.snap_engine.mid[_k]["pre"] = False
             for _k in self.snap_engine.end:
@@ -4220,7 +4220,7 @@ class MomentumApp(_MOM_BASE):
                 self._discard_snapshot_preload()
             except Exception:
                 pass
-            self._tv_dirty = True       # مُهر تاریخ/زمان ممکن است عوض شود
+            self._tv_dirty = True       # technical note untiltechnical note/time possible is technical noteandtechnical note technical noteandtechnical note
             try:
                 win.destroy()
             except Exception:
@@ -4234,11 +4234,11 @@ class MomentumApp(_MOM_BASE):
 
         btns = tk.Frame(win, bg="#0d1420")
         btns.pack(fill="x", padx=20, pady=(10, 14))
-        tk.Button(btns, text="✓ ذخیره", font=("Segoe UI", 10, "bold"),
+        tk.Button(btns, text="✓ save", font=("Segoe UI", 10, "bold"),
                   bg="#1a6b4a", fg="#ffffff", relief="flat", cursor="hand2",
                   activebackground="#1a6b4a", activeforeground="#ffffff",
                   command=_save).pack(side="right", padx=(8, 0), ipadx=14)
-        tk.Button(btns, text="انصراف", font=("Segoe UI", 10),
+        tk.Button(btns, text="text", font=("Segoe UI", 10),
                   bg="#415a77", fg="#ffffff", relief="flat", cursor="hand2",
                   activebackground="#415a77", activeforeground="#ffffff",
                   command=_cancel).pack(side="right", ipadx=10)
@@ -4250,17 +4250,17 @@ class MomentumApp(_MOM_BASE):
 
     @staticmethod
     def _gaussian_smooth(vals: List[float], sigma_samples: float) -> List[float]:
-        """نسخه ۲: Gaussian smoothing واقعی (نه میانگین متحرک) — فقط لایه نمایش.
-        ورودی sigma بر حسب «نمونه» است و بالادست از GAUSSIAN_SIGMA (ثانیه بازی)
-        بر اساس فاصله موثر نمونه‌ها محاسبه می‌شود؛ در نتیجه رفتار smoothing
-        مستقل از نرخ نمونه‌برداری/دانمپلینگ، همیشه یکسان است.
-        لبه‌ها با حالت edge-padding حفظ می‌شوند (بدون افت/بیاس ابتدای سری).
-        RAW MOMENTUM دست‌نخورده می‌ماند.
+        """version 2: Gaussian smoothing real (text textortext text) — only layer display.
+        input sigma text text «sample» is and withtext from GAUSSIAN_SIGMA (second withtext)
+        text text distance textandtext sample‌text textto text‌textandtext in text textuntiltext smoothing
+        independent from text sampling/text always text is.
+        textto‌text with text edge-padding text text‌textandtext (without decrease/textortext text text).
+        RAW MOMENTUM unchanged text‌text.
         """
         return _gauss_smooth_impl(vals, sigma_samples)
 
     def _display_value(self, raw: float) -> float:
-        """Normalizing فقط در Presentation Layer — Raw Momentum overwrite نمی‌شود"""
+        """Normalizing only in Presentation Layer — Raw Momentum overwrite text‌textandtext"""
         mode = self.config.DISPLAY_NORMALIZATION
         rng = self.config.DISPLAY_RANGE
         if mode == "raw":
@@ -4268,30 +4268,30 @@ class MomentumApp(_MOM_BASE):
         if mode == "peak":
             peak = max(rng * 0.5, self._display_peak)
             return (raw / peak) * rng
-        # fixed (پیش‌فرض): soft-clipping پایدار در بازه ±DISPLAY_RANGE
+        # fixed (default): soft-clipping technical note in withtechnical note ±DISPLAY_RANGE
         return rng * math.tanh(raw / max(1.0, self.config.DISPLAY_SOFT_SCALE))
 
     def _ui_post(self, fn, *args):
-        """جایگزین امن self.after(0, ...) برای فراخوانی‌های کراس‌ترد:
-          * بعد از شروع بستن (_closing) هیچ callback تازه‌ای صف نمی‌شود؛
-          * خود callback هم روی UI-Thread اول «_closing» را چک می‌کند و
-            TclError (ویجت نابودشده) را بی‌صدا می‌گذارد — دیگر خطای
-            «invalid command name» و فریزِ بستن برنامه رخ نمی‌دهد.
-        نسخهٔ ۱۰٫۲۰ — بند ۱۲ کاربر: callback های مرتبط با Snapshot
-        (نمایش / پیش‌بارگذاری / پنهان‌سازی) با Name / Scheduled /
-        Executed / Latency / Duration لاگ می‌شوند (فقط وقتی
-        TV_SNAP_SHOW_DEBUG) — تأخیر صف after در هر dispatch دیده می‌شود.
-        v10.28 — خروجی bool + گزارش شکست صف/اجرا + fail-event برای Show
-        (پورت v1.3 از 2017 — ریشهٔ «۴۳/۸۵ نمایش داده نشد و دیگر تلاش نشد»:
-        قبلاً شکست after/callback کاملاً بی‌صدا بلعیده می‌شد)."""
+        """fallback text self.after(0, ...) for textandtext‌text text‌text:
+          * after from start text (_closing) text callback fresh‌text text text‌textandtext
+          * textandtext callback text textandtext UI-Thread first «_closing» text text text‌text and
+            TclError (andtext textandtext) text text‌text text‌text — text Errortext
+            «invalid command name» and frozentext text text text text‌text.
+        versiontext 10text20 — text 12 user: callback text text with Snapshot
+        (display / text‌withtext / hidden‌textfromtext) with Name / Scheduled /
+        Executed / Latency / Duration log text‌textandtext (only when
+        TV_SNAP_SHOW_DEBUG) — delay text after in text dispatch text text‌textandtext.
+        v10.28 — output bool + text text text/text + fail-event for Show
+        (textandtext v1.3 from 2017 — text «43/85 display data text and text text text»:
+        beforetext text after/callback completetext text‌text text text‌text)."""
         _nm = getattr(fn, "__name__", "callback")
         _is_show = _nm in ("_show_snapshot_overlay", "_show_snapshot_overlay_gpu")
         _is_snap = _is_show or _nm in ("_prepare_snapshot_overlay",
                                        "_hide_snapshot_overlay")
         _log_cb = bool(TV_SNAP_SHOW_DEBUG) and _is_snap
-        # v10.28 — مبدأ زمانی برای لاگ EXECUTED همیشه برای Show فعال است
+        # v10.28 — technical note timetechnical note for log EXECUTED always for Show active is
         _sched = time.perf_counter() if (_log_cb or _is_show) else 0.0
-        # v10.28 — کلید Snapshot برای رویداد fail/show (آخرین آرگومان dispatch)
+        # v10.28 — totaltechnical note Snapshot for technical noteandtechnical note fail/show (latest technical noteandtechnical note dispatch)
         _ev_key = args[-1] if (_is_show and args) else None
 
         def _report_fail(reason: str):
@@ -4312,7 +4312,7 @@ class MomentumApp(_MOM_BASE):
             _t_exec = time.perf_counter()
             try:
                 fn(*args)
-                # v10.28 — مرحلهٔ EXECUTED برای Show (لاگ همیشه-فعل)
+                # v10.28 — technical note EXECUTED for Show (log always-technical note)
                 if _is_show:
                     try:
                         self._snap_show_stage(
@@ -4359,7 +4359,7 @@ class MomentumApp(_MOM_BASE):
             self.after(0, _safe)
             return True
         except Exception as ex:
-            # v10.28 — شکست Scheduling هرگز بی‌صدا نمی‌ماند (رفع «کوری» مسیر)
+            # v10.28 — technical note Scheduling never technical note‌technical note technical note‌technical note (technical note «technical noteandtechnical note» path)
             _report_fail(f"after(0) scheduling failed: "
                          f"{type(ex).__name__}: {ex}")
             return False
