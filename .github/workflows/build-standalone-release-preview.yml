@@ -45,7 +45,16 @@ jobs:
         shell: pwsh
         run: |
           & "$env:GITHUB_WORKSPACE\packaging\build-standalone.ps1"
-          & "$env:ProgramFiles(x86)\Inno Setup 6\ISCC.exe" "$env:GITHUB_WORKSPACE\packaging\VAR-Mods-2026-standalone.iss"
+          $iscc = (Get-Command iscc.exe -ErrorAction SilentlyContinue).Source
+          if(!$iscc) {
+            $candidates = @(
+              "$env:ProgramFiles\Inno Setup 6\ISCC.exe",
+              "$env:ProgramFiles(x86)\Inno Setup 6\ISCC.exe"
+            )
+            $iscc = $candidates | Where-Object { Test-Path $_ } | Select-Object -First 1
+          }
+          if(!$iscc) { throw "Inno Setup compiler was not found." }
+          & $iscc "$env:GITHUB_WORKSPACE\packaging\VAR-Mods-2026-standalone.iss"
           if($LASTEXITCODE -ne 0) { throw "Standalone installer build failed." }
 
       - name: Validate installer contents
