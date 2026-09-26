@@ -7,6 +7,9 @@ numpy
 panda3d
 pillow
 pymem
+psutil
 pyqt6
+pyqt6-multimedia
 pyqt6-webengine
+pywinstyles
 ursina
