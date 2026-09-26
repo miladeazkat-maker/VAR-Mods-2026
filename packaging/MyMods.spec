@@ -1,8 +1,7 @@
 # -*- mode: python ; coding: utf-8 -*-
 from pathlib import Path
 
-SPEC_DIR = Path(__file__).resolve().parent
-ROOT = SPEC_DIR.parent
+ROOT = Path.cwd().resolve()
 
 a = Analysis(
     [str(ROOT / "MyMods.py")],
