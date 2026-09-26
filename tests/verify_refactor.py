@@ -53,7 +53,44 @@ def normalize_ast(node: ast.AST) -> ast.AST:
     return normalized
 
 
-def collect_symbols(tree: ast.AST) -> set[str]:
+
+
+
+def first_ast_difference(left: ast.AST, right: ast.AST, path: str = "root"):
+    if type(left) is not type(right):
+        return path, ast.dump(left, include_attributes=False)[:2000], ast.dump(right, include_attributes=False)[:2000]
+    for field in left._fields:
+        left_value = getattr(left, field)
+        right_value = getattr(right, field)
+        child_path = f"{path}.{field}"
+        if isinstance(left_value, ast.AST):
+            difference = first_ast_difference(left_value, right_value, child_path)
+            if difference:
+                return difference
+        elif isinstance(left_value, list):
+            if len(left_value) != len(right_value):
+                return child_path, f"list[{len(left_value)}]", f"list[{len(right_value)}]"
+            for index, (left_item, right_item) in enumerate(zip(left_value, right_value)):
+                if isinstance(left_item, ast.AST):
+                    difference = first_ast_difference(left_item, right_item, f"{child_path}[{index}]")
+                    if difference:
+                        return difference
+                elif left_item != right_item:
+                    return child_path, repr(left_item)[:2000], repr(right_item)[:2000]
+        elif isinstance(left_value, str):
+            continue
+        elif left_value != right_value:
+            return child_path, repr(left_value)[:2000], repr(right_value)[:2000]
+    return None
+
+
+def node_type_counts(tree: ast.AST) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for node in ast.walk(tree):
+        key = type(node).__name__
+        counts[key] = counts.get(key, 0) + 1
+    return counts
+\ndef collect_symbols(tree: ast.AST) -> set[str]:
     result: set[str] = set()
 
     def add_target(target: ast.AST) -> None:
