@@ -35,6 +35,7 @@ import secrets
 import threading
 import traceback
 import importlib.util
+import runpy
 import subprocess
 from ctypes import wintypes
 
@@ -1712,6 +1713,11 @@ class _ProcessHost:
             except Exception:
                 pass
             if getattr(sys, "frozen", False):
+                env = kwargs.get("env") or os.environ.copy()
+                env["VAR_MODS_BACKEND_DIR"] = os.path.join(
+                    ROOT_DIR, self.entry["folder"])
+                env["VAR_MODS_INSTALL_DIR"] = ROOT_DIR
+                kwargs["env"] = env
                 backend_args = [
                     sys.executable,
                     "--embedded-backend",
@@ -2621,7 +2627,65 @@ class BridgeWindow(QMainWindow):
 # =============================================================================
 # Startup / Shutdown
 # =============================================================================
+def run_embedded_backend():
+    """Run a process-mode backend from the PyInstaller bundle using this same EXE."""
+    try:
+        idx = sys.argv.index("--embedded-backend")
+    except ValueError:
+        return False
+
+    if len(sys.argv) < idx + 3:
+        _fatal_box("Embedded backend arguments are incomplete.")
+        return True
+
+    folder = str(sys.argv[idx + 1]).strip().replace("\\", "/")
+    module_name = str(sys.argv[idx + 2]).strip()
+    entry = next(
+        (
+            value for value in MOD_REGISTRY.values()
+            if value.get("mode") == "process"
+            and value.get("folder") == folder
+            and value.get("module") == module_name
+        ),
+        None,
+    )
+    if entry is None:
+        _fatal_box(f"Unknown embedded backend: {folder}/{module_name}")
+        return True
+
+    backend_path = os.path.join(
+        BUNDLE_DIR,
+        folder.replace("/", os.sep),
+        module_name + ".py",
+    )
+    if not os.path.exists(backend_path):
+        _fatal_box(f"Embedded backend file not found:\n{backend_path}")
+        return True
+
+    physical_backend_dir = os.path.join(
+        ROOT_DIR,
+        folder.replace("/", os.sep),
+    )
+    os.environ["VAR_MODS_BACKEND_DIR"] = physical_backend_dir
+    os.environ["VAR_MODS_INSTALL_DIR"] = ROOT_DIR
+
+    backend_dir = os.path.dirname(backend_path)
+    if backend_dir not in sys.path:
+        sys.path.insert(0, backend_dir)
+
+    original_argv = sys.argv[:]
+    sys.argv = [backend_path] + sys.argv[idx + 3:]
+    try:
+        runpy.run_path(backend_path, run_name="__main__")
+    finally:
+        sys.argv = original_argv
+    return True
+
+
 def main():
+    if "--embedded-backend" in sys.argv:
+        run_embedded_backend()
+        return
     if sys.platform == "win32" and not acquire_single_instance():
         _fatal_box("Mod Bridge is already running.")
         return
