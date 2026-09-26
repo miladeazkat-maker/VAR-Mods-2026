@@ -3,7 +3,8 @@ name: Build Python Library Downloader
 on:
   push:
     branches:
-      - refactor/momentum-modularization
+      - main
+      - "refactor/**"
     paths-ignore:
       - "Python Library Downloader.exe"
   workflow_dispatch:
@@ -23,7 +24,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.13"
 
       - name: Install PyInstaller
         run: python -m pip install --upgrade pip pyinstaller
