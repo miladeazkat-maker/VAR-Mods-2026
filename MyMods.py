@@ -97,7 +97,15 @@ else:
     APP_DIR = os.path.abspath(os.path.dirname(sys.argv[0]))
 os.chdir(APP_DIR)
 
-def check_and_elevate_admin():
+def if "--package-smoke" in sys.argv:
+    try:
+        from PyQt6.QtCore import QT_VERSION_STR
+        from PyQt6.QtMultimedia import QMediaPlayer
+        sys.exit(0)
+    except Exception as _exc:
+        raise RuntimeError(f"Standalone MyMods package smoke test failed: {_exc}")
+
+check_and_elevate_admin():
     if sys.platform == "win32":
         try:
             is_admin = ctypes.windll.shell32.IsUserAnAdmin() != 0
