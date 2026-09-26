@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import ast
+import difflib
 import re
 import subprocess
 import tokenize
@@ -90,6 +91,38 @@ def node_type_counts(tree: ast.AST) -> dict[str, int]:
         key = type(node).__name__
         counts[key] = counts.get(key, 0) + 1
     return counts
+
+
+def top_level_signature(node: ast.AST) -> tuple[str, str]:
+    kind = type(node).__name__
+    if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+        return kind, getattr(node, "name", "")
+    if isinstance(node, ast.Assign):
+        names = []
+        for target in node.targets:
+            if isinstance(target, ast.Name):
+                names.append(target.id)
+        return kind, "=".join(names)
+    if isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name):
+        return kind, node.target.id
+    if isinstance(node, ast.Import):
+        return kind, ",".join(alias.name for alias in node.names)
+    if isinstance(node, ast.ImportFrom):
+        return kind, f"from {node.module or ''}"
+    return kind, ""
+
+
+def report_top_level_alignment(original_tree: ast.AST, current_tree: ast.AST) -> None:
+    original_items = [top_level_signature(node) for node in original_tree.body]
+    current_items = [top_level_signature(node) for node in current_tree.body]
+    matcher = difflib.SequenceMatcher(a=original_items, b=current_items, autojunk=False)
+    for tag, i1, i2, j1, j2 in matcher.get_opcodes():
+        if tag != "equal":
+            print(f"Top-level AST mismatch: {tag} original[{i1}:{i2}] modular[{j1}:{j2}]")
+            print("  original:", original_items[i1:i2])
+            print("  modular :", current_items[j1:j2])
+            break
+
 
 def collect_symbols(tree: ast.AST) -> set[str]:
     result: set[str] = set()
@@ -237,6 +270,7 @@ def main() -> None:
             print("First AST difference:", path)
             print("Original:", left_dump)
             print("Modular:", right_dump)
+            report_top_level_alignment(normalize_ast(original_tree), normalize_ast(current_tree))
         raise AssertionError(
             "The modular Momentum source does not match the original monolith AST "
             "after ignoring string literal contents. This indicates a code-structure change."
