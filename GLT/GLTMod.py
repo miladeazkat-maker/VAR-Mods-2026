@@ -103,7 +103,10 @@ if not ctypes.windll.shell32.IsUserAnAdmin():
     sys.exit()
 
 import traceback as _traceback
-CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+CURRENT_DIR = os.environ.get(
+    "VAR_MODS_BACKEND_DIR",
+    os.path.dirname(os.path.abspath(__file__))
+)
 _CRASH_LOG = os.path.join(CURRENT_DIR, "crash_log.txt")
 _LOG_PATH = os.path.join(CURRENT_DIR, "debug_log.txt")
 
