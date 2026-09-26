@@ -28,7 +28,7 @@ foreach($file in $topFiles) {
   Copy-Item (Join-Path $Root $file) (Join-Path $Stage $file) -Force
 }
 
-$dirs = @("GLT","HeatMap","MomentumMatch","SAOTMod","RefereeView","PT","Background")
+$dirs = @("GLT","HeatMap","MomentumMatch","SAOTMod","RefereeView","Background")
 foreach($dir in $dirs) {
   Copy-Item (Join-Path $Root $dir) (Join-Path $Stage $dir) -Recurse -Force
 }
@@ -61,6 +61,14 @@ if($executables.Count -ne 3) {
 }
 
 $requiredExeNames = @("MyMods.exe","ModBridge.exe","Asset Downloader.exe")
+
+Write-Host "Standalone EXE smoke tests:"
+& "$StageMyMods.exe" --package-smoke
+if($LASTEXITCODE -ne 0) { throw "MyMods standalone smoke test failed." }
+& "$StageModBridge.exe" --package-smoke
+if($LASTEXITCODE -ne 0) { throw "ModBridge embedded-backend smoke test failed." }
+& "$StageAsset Downloader.exe" --package-smoke
+if($LASTEXITCODE -ne 0) { throw "Asset Downloader standalone smoke test failed." }
 foreach($name in $requiredExeNames) {
   if(!(Test-Path (Join-Path $Stage $name))) {
     throw "Required executable is missing: $name"
