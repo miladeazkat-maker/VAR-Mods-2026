@@ -1862,6 +1862,30 @@ def run_selftest(render_png: bool = True) -> int:
     return 0
 
 
+def main():
+    if not acquire_single_instance():
+        clog("[Momentum] another Match Momentum backend is already running.")
+        return
+    try:
+        app = MomentumApp()
+    except Exception as ex:
+        if _MOM_BASE is _HeadlessTkBase:
+            raise
+        print(f"[Momentum] GUI window init failed "
+              f"({type(ex).__name__}: {ex}) — restarting as pure headless "
+              f"backend (set MOM_GUI=0 to silence)", flush=True)
+        globals()["_MOM_BASE"] = _HeadlessTkBase
+        globals()["MomentumApp"] = type("MomentumApp", (_HeadlessTkBase,),
+                                        dict(MomentumApp.__dict__))
+        app = MomentumApp()
+    try:
+        app.run_forever()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        app.on_close()
+
+
 # =============================================================================
 # Entry point (headless service started by ModBridge.py)
 # =============================================================================
