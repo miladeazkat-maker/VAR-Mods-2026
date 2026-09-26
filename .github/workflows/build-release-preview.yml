@@ -44,7 +44,7 @@ jobs:
       - name: Build v1.0.0 installer preview
         shell: pwsh
         run: |
-          & "$env:GITHUB_WORKSPACE\packaging\build-release-preview.ps1"
+          & "$env:GITHUB_WORKSPACE\packaging\build-standalone-preview.ps1"
 
       - name: Upload installer preview
         uses: actions/upload-artifact@v4
@@ -52,6 +52,6 @@ jobs:
           name: VAR-Mods-2026-v1.0.0-installer-preview
           path: |
             dist/VAR-Mods-2026-v1.0.0-Setup.exe
-            dist/v1.0.0-size-report.txt
+            dist/v1.0.0-standalone-size-report.txt
           if-no-files-found: error
           retention-days: 14
