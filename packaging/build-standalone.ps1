@@ -13,7 +13,7 @@ New-Item -ItemType Directory -Force -Path $Dist, $Build, $Stage | Out-Null
 
 function Build-Exe($specFile, $exeName) {
   Write-Host "== Build $exeName =="
-  python -m PyInstaller --onefile --noconsole --clean --noconfirm (Join-Path $Packaging $specFile)
+  python -m PyInstaller --clean --noconfirm (Join-Path $Packaging $specFile)
   if($LASTEXITCODE -ne 0) { throw "$exeName build failed." }
   $built = Join-Path $Root ("dist\" + $exeName + ".exe")
   if(!(Test-Path $built)) { throw "PyInstaller did not produce $built" }
