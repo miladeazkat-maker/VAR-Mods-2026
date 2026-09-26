@@ -1858,4 +1858,11 @@ def launch():
 
 
 if __name__ == "__main__":
+    if "--package-smoke" in sys.argv:
+        try:
+            if not QT_AVAILABLE:
+                raise RuntimeError("Qt is unavailable in the packaged executable")
+            sys.exit(0)
+        except Exception as _exc:
+            raise RuntimeError(f"Standalone Asset Downloader package smoke test failed: {_exc}")
     raise SystemExit(launch())
