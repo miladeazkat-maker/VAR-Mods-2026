@@ -24,7 +24,7 @@ class MomentumApp(_MOM_BASE):
         self.pass_engine = PassEngine()
         self.shot_engine = ShotEngine()
 
-        self.dbg = DebugLogger(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+        self.dbg = DebugLogger(os.path.join(_MOMENTUM_DATA_DIR,
                                             DEBUG_LOG_FILENAME))
         self._init_pipeline_health()
 
@@ -101,7 +101,7 @@ class MomentumApp(_MOM_BASE):
         }
         self._team_color_sig = None
         self.team_colors = TeamColorResolver(
-            json_path=os.path.join(os.path.dirname(os.path.abspath(__file__)),
+            json_path=os.path.join(_MOMENTUM_DATA_DIR,
                                     TEAM_COLOR_JSON_FILENAME),
             logger=self.dbg,
             pt=PT)   # [PT v2.3.0] color‌technical note from PT/teams_players_PES2021.txt
@@ -129,7 +129,7 @@ class MomentumApp(_MOM_BASE):
         self._team_ident_last = {"home": None, "away": None}
 
         # --- snapshot display (GPU overlay only — settings from ModsConfig) ---
-        self._script_dir = os.path.dirname(os.path.abspath(__file__))
+        self._script_dir = _MOMENTUM_DATA_DIR
         self.snap_engine = TVSnapshotEngine(mom_load_settings())
         self._snap_overlay = None
         self._snap_overlay_photo = None
@@ -205,7 +205,7 @@ class MomentumApp(_MOM_BASE):
         self._team_logo_path = {"home": None, "away": None}
         self._team_logo_photo = {"home": None, "away": None}
         self.team_tracker = TeamIdentityTracker(
-            db_dir=os.path.join(os.path.dirname(os.path.abspath(__file__)), TEAM_DB_DIRNAME),
+            db_dir=os.path.join(_MOMENTUM_DATA_DIR, TEAM_DB_DIRNAME),
             logger=self.dbg,
             pt=PT)   # [PT v2.3.0] Team ID from chaintechnical note new + logo from Asset.zip
         self._team_loop_running = True
