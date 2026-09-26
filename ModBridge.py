@@ -122,6 +122,7 @@ if getattr(sys, 'frozen', False):
     ROOT_DIR = os.path.abspath(os.path.dirname(sys.executable))
 else:
     ROOT_DIR = os.path.abspath(os.path.dirname(__file__))
+BUNDLE_DIR = os.path.abspath(getattr(sys, "_MEIPASS", ROOT_DIR))
 os.chdir(ROOT_DIR)
 
 LOG_FILE = os.path.join(ROOT_DIR, "ModBridge_log.txt")
@@ -1516,13 +1517,18 @@ class BackendHost:
         self.load()
 
     def load(self):
-        folder = os.path.join(ROOT_DIR, self.entry["folder"])
+        if getattr(sys, "frozen", False):
+            folder = os.path.join(BUNDLE_DIR, self.entry["folder"])
+        else:
+            folder = os.path.join(ROOT_DIR, self.entry["folder"])
         path = os.path.join(folder, self.entry["module"] + ".py")
         if not os.path.exists(path):
             self._set_state("BACKEND NOT FOUND", "#ff4770")
             self.bridge.log(f"[{self.mod_name}] backend file missing: {path}")
             return
         try:
+            if folder not in sys.path:
+                sys.path.insert(0, folder)
             spec = importlib.util.spec_from_file_location(
                 f"modbridge_backend_{self.entry['module']}", path)
             module = importlib.util.module_from_spec(spec)
@@ -1643,7 +1649,8 @@ class _ProcessHost:
 
     # --- process management -------------------------------------------------
     def _backend_path(self):
-        return os.path.join(ROOT_DIR, self.entry["folder"],
+        base = BUNDLE_DIR if getattr(sys, "frozen", False) else ROOT_DIR
+        return os.path.join(base, self.entry["folder"],
                             self.entry["module"] + ".py")
 
     def _spawn(self):
@@ -1704,9 +1711,21 @@ class _ProcessHost:
                 kwargs["env"] = env
             except Exception:
                 pass
+            if getattr(sys, "frozen", False):
+                backend_args = [
+                    sys.executable,
+                    "--embedded-backend",
+                    self.entry["folder"],
+                    self.entry["module"],
+                ]
+                spawn_cwd = ROOT_DIR
+            else:
+                backend_args = [sys.executable, os.path.abspath(path)]
+                spawn_cwd = os.path.dirname(path)
+
             self.proc = subprocess.Popen(
-                [sys.executable, os.path.abspath(path)],
-                cwd=os.path.dirname(path), **kwargs)
+                backend_args,
+                cwd=spawn_cwd, **kwargs)
             self._last_spawn_mono = time.monotonic()   # [suite] v2.1.1
             self._set_state("RUNNING", "#2ecc71")
             self.bridge.log(f"[{self.mod_name}] backend process started "
@@ -2695,4 +2714,23 @@ def _shutdown(bridge):
 Bridge.shutdown = _shutdown
 
 if __name__ == "__main__":
-    main()
+    if "--embedded-backend" in sys.argv:
+        try:
+            _idx = sys.argv.index("--embedded-backend")
+            _folder = sys.argv[_idx + 1]
+            _module = sys.argv[_idx + 2]
+            _source = os.path.join(BUNDLE_DIR, _folder, _module + ".py")
+            if not os.path.exists(_source):
+                raise FileNotFoundError(f"Embedded backend not found: {_source}")
+
+            os.environ["VAR_MODS_INSTALL_DIR"] = ROOT_DIR
+            os.environ["VAR_MODS_BACKEND_DIR"] = os.path.join(ROOT_DIR, _folder)
+
+            import runpy as _runpy
+            sys.argv = [_source] + sys.argv[_idx + 3:]
+            _runpy.run_path(_source, run_name="__main__")
+        except Exception as _exc:
+            _log("Embedded backend failed:", repr(_exc))
+            raise
+    else:
+        main()
