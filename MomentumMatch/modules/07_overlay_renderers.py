@@ -1,15 +1,15 @@
 class GPUOverlayRenderer:
-    """نسخهٔ ۱۰٫۲۳ — Renderer واقعی Game Overlay (گزینهٔ ۲ گزارش کاربر:
-    OpenGL Overlay با ModernGL + GLFW — ساده‌تر و قابل‌اتکا در پایتون).
+    """versiontext 10text23 — Renderer real Game Overlay (text 2 text user:
+    OpenGL Overlay with ModernGL + GLFW — text‌text and text‌text in textandtext).
 
-    State (مشخصات کاربر):
-      HIDDEN → READY → ANIMATING(ورود) → VISIBLE → ANIMATING(خروج) → HIDDEN
+    State (specification user):
+      HIDDEN → READY → ANIMATING(andtextandtext) → VISIBLE → ANIMATING(textandtext) → HIDDEN
 
-    Thread Model (گزارش کاربر):
+    Thread Model (text user):
       Main/UI Thread ── queue.put ──► GPU Render Thread (GLFW+ModernGL)
-      * Show/Hide فقط پیام است؛ هیچ فراخوانی گرافیکی/ویندوزی از UI.
-      * ترد رندر «مالک» پنجره/Context است؛ با vsync همگام و در بیکاری
-        منتظر پیام (هیچ CPU Busy Loop؛ اولویت ترد هم دستکاری نمی‌شود)."""
+      * Show/Hide only message istext text textandtext text/andtextandtext from UI.
+      * text render «text» window/Context istext with vsync synchronized and in text
+        text message (text CPU Busy Looptext firstandtext text text text text‌textandtext)."""
 
     ST_HIDDEN = "HIDDEN"
     ST_READY = "READY"
@@ -35,15 +35,15 @@ class GPUOverlayRenderer:
         self._stop = False
         self._anim = None
         self._visible_img = False
-        # v10.29 (پورت v1.2.2 از 2017) — پنجرهٔ اورلی فقط هنگام نمایش
-        # واقعی دیده می‌شود (نه از INIT) + hide رهاشده دیگر گم نمی‌شود
+        # v10.29 (technical noteandtechnical note v1.2.2 from 2017) — windowtechnical note technical noteandtechnical note only technical note display
+        # real technical note technical note‌technical noteandtechnical note (technical note from INIT) + hide technical note technical note technical note technical note‌technical noteandtechnical note
         self._win_visible = False
         self._hide_pending = False
         self._anim_stats = {}
-        # refs ترد رندر (فقط در همان ترد لمس می‌شوند)
+        # refs technical note render (only in same technical note technical note technical note‌technical noteandtechnical note)
         self._glfw = self._mg = self._win = self._ctx = None
         self._prog = self._vao = self._tex = None
-        # نسخهٔ ۱۰٫۲۴ — حالت «رندر برداری»: آیتم‌های تجزیه‌شدهٔ scene (GL objects)
+        # versiontechnical note 10technical note24 — technical note «render technical note»: technical note‌technical note technical note‌technical note scene (GL objects)
         self._scene = None
         self._sprog_edge = self._sprog_tex = None
         self._cur_travel = 0.0
@@ -51,7 +51,7 @@ class GPUOverlayRenderer:
                                         name="gpu-overlay", daemon=True)
         self._thread.start()
 
-    # ---------- API امن از هر ترد (همه غیرمسدود — فقط پیام) ----------
+    # ---------- API technical note from technical note technical note (technical note technical noteandtechnical note — only message) ----------
     def wait_init(self, timeout: float = 4.0) -> bool:
         self._ready_ev.wait(timeout)
         return self._init_error is None
@@ -89,30 +89,30 @@ class GPUOverlayRenderer:
 
     def upload_png_rgba(self, raw, w, h, dx, dy, travel, key,
                         keep_state: bool = False) -> None:
-        """آپلود/تعویض Texture از UI-Thread (Preload / retune) — فقط پیام."""
+        """textandtext/textandtext Texture from UI-Thread (Preload / retune) — only message."""
         self._put(("upload", bytes(raw), int(w), int(h), int(dx), int(dy),
                    int(travel), key, bool(keep_state)))
 
     def upload_scene(self, scene, key=None, keep_state: bool = False) -> None:
-        """نسخهٔ ۱۰٫۲۴ — آپلود «صحنهٔ برداری» (رندر خط/fill با AA واقعی روی GPU):
-        scene دیکشنری خالصِ ساخته‌شده در ترد Worker است (build_gpu_graph_scene)
-        — ترد رندر آن را به Vertex Buffer/Texture/Draw-call تبدیل می‌کند.
-        انیمیشن/Show/Hide عیناً مثل مسیر تکستچر قبلی است (حرکت فقط Shader)."""
+        """versiontext 10text24 — textandtext «scenetext text» (render line/fill with AA real textandtext GPU):
+        scene text text built in text Worker is (build_gpu_graph_scene)
+        — text render text text to Vertex Buffer/Texture/Draw-call text text‌text.
+        text/Show/Hide text text path text beforetext is (text only Shader)."""
         self._put(("scene", scene, key, bool(keep_state)))
 
     def show(self, dur_ms: int = TV_SNAP_ANIM_MS, key=None) -> float:
-        """Show — «نمایش یک آبجکت آماده»: فقط یک queue.put (زیر ~۰٫۱ms)."""
+        """Show — «display text text text»: only text queue.put (text ~0text1ms)."""
         t = time.perf_counter()
         self._put(("show", float(max(0.0, dur_ms)) / 1000.0, t, key))
         return t
 
     def hide(self, dur_ms: int = TV_SNAP_ANIM_MS) -> None:
-        """خروج انیمیشنی (Shader) — باز هم فقط پیام."""
+        """textandtext text (Shader) — withtext text only message."""
         self._put(("hide", float(max(0.0, dur_ms)) / 1000.0,
                    time.perf_counter()))
 
     def hide_now(self) -> None:
-        """شفاف‌شدن فوری (بدون انیمیشن) — یک پیام."""
+        """text‌text immediate (without text) — text message."""
         self._put(("hide_now", time.perf_counter()))
 
     def shutdown(self, timeout: float = 1.5) -> None:
@@ -137,8 +137,8 @@ class GPUOverlayRenderer:
             pass
 
     def _apply_win32_styles(self, hwnd) -> str:
-        """یک‌بار در شروع — Topmost + click-through. در طول انیمیشن «هیچ»
-        فراخوانی ویندوزی انجام نمی‌شود (حرکت فقط uniform روی GPU است)."""
+        """text‌withtext in start — Topmost + click-through. in length text «text»
+        textandtext andtextandtext text text‌textandtext (text only uniform textandtext GPU is)."""
         if sys.platform != "win32" or not hwnd:
             return "n/a (non-Windows)"
         try:
@@ -167,7 +167,7 @@ class GPUOverlayRenderer:
                 except Exception:
                     pass
             user32.SetWindowPos(hwnd, -1, 0, 0, 0, 0,
-                                0x0001 | 0x0002 | 0x0010)  # TOPMOST یک‌بار
+                                0x0001 | 0x0002 | 0x0010)  # TOPMOST technical note‌withtechnical note
             return (f"0x{old:08X} → 0x{new:08X} "
                     + ("LAYERED|TRANSPARENT|NOACTIVATE|TOOLWINDOW"
                        if self._ct else "NOACTIVATE|TOOLWINDOW")
@@ -182,7 +182,7 @@ class GPUOverlayRenderer:
                 import moderngl as _mg
             except Exception as ex:
                 self._init_error = (f"package import failed: "
-                                    f"{type(ex).__name__}: {ex} — اجرا کنید: "
+                                    f"{type(ex).__name__}: {ex} — text text: "
                                     "pip install moderngl glfw")
                 self._ready_ev.set()
                 return
@@ -200,9 +200,9 @@ class GPUOverlayRenderer:
             _glfw.window_hint(_glfw.FLOATING, True)
             _glfw.window_hint(_glfw.TRANSPARENT_FRAMEBUFFER, True)
             _glfw.window_hint(_glfw.DOUBLEBUFFER, True)
-            # نسخهٔ ۱۰٫۲۴ — MSAA برای لبه‌های سختِ عناصر مات (خط صفر/گل)؛
-            # لبهٔ منحنی/fill خودش AA تحلیلی در Fragment Shader دارد. اگر
-            # پیکسل‌فرمت MSAA+شفاف روی این سیستم ساخته نشد → بدون MSAA.
+            # versiontechnical note 10technical note24 — MSAA for technical noteto‌technical note technical note technical note technical note (line technical note/technical note)technical note
+            # technical notetotechnical note technical note/fill technical noteandtechnical note AA technical note in Fragment Shader technical note. if
+            # technical note‌technical note MSAA+technical note technical noteandtechnical note technical note technical note technical note technical note → without MSAA.
             _glfw.window_hint(_glfw.SAMPLES, 4)
             win = _glfw.create_window(sw_, sh_, "momentum-gpu-overlay",
                                       None, None)
@@ -211,8 +211,8 @@ class GPUOverlayRenderer:
                 win = _glfw.create_window(sw_, sh_, "momentum-gpu-overlay",
                                           None, None)
             if not win:
-                self._init_error = ("glfw.create_window failed — پنجرهٔ "
-                                    "شفاف ساخته نشد (DWM/driver?)")
+                self._init_error = ("glfw.create_window failed — windowtext "
+                                    "text text text (DWM/driver?)")
                 self._ready_ev.set()
                 _glfw.terminate()
                 return
@@ -226,7 +226,7 @@ class GPUOverlayRenderer:
                 ctx.disable(_mg.DEPTH_TEST)
             except Exception:
                 pass
-            # نسخهٔ ۱۰٫۲۴ — ترکیب premultiplied-alpha برای رندر برداری چندلایه
+            # versiontechnical note 10technical note24 — technical note premultiplied-alpha for render technical note technical notelayer
             try:
                 ctx.enable(_mg.BLEND)
                 ctx.blend_func = (_mg.ONE, _mg.ONE_MINUS_SRC_ALPHA)
@@ -243,17 +243,17 @@ class GPUOverlayRenderer:
             prog["u_surf"].value = (float(sw_), float(sh_))
             self._prog = prog
             self._vao = vao
-            # یک فریم کاملاً شفاف قبل از نمایان‌شدن (بدون فلش)
+            # technical note frame completetechnical note technical note before from technical noteortechnical note‌technical note (without technical note)
             ctx.clear(0.0, 0.0, 0.0, 0.0)
             _glfw.swap_buffers(win)
-            # v10.29 (پورت v1.2.2 از 2017) — رفع «نمودار تا ابد در گوشهٔ
-            # تصویر ماند»: پنجره در INIT دیگر نمایش داده نمی‌شود. سیاست
-            # جدید: پنجره فقط با فرمان واقعی «show» نمایان می‌شود
-            # (_win_show) و بعد از پایان انیمیشن خروج (یا hide_now) در
-            # سطح خود ویندوز مخفی می‌شود (_win_hide) — خروج نمودار از
-            # صفحه دیگر ONLY به ارائهٔ فریم شفاف از ترد رندر وابسته
-            # نیست؛ اگر hide گم/رها شود یا ترد رندر کند شود، خودِ پنجره
-            # از صفحه خارج می‌شود.
+            # v10.29 (technical noteandtechnical note v1.2.2 from 2017) — technical note «chart until technical note in technical noteandtechnical note
+            # technical noteandtechnical note technical note»: window in INIT technical note display data technical note‌technical noteandtechnical note. technical noteis
+            # new: window only with technical note real «show» technical noteortechnical note technical note‌technical noteandtechnical note
+            # (_win_show) and after from end technical note technical noteandtechnical note (or hide_now) in
+            # level technical noteandtechnical note andtechnical noteandtechnical note technical note technical note‌technical noteandtechnical note (_win_hide) — technical noteandtechnical note chart from
+            # technical note technical note ONLY to technical note frame technical note from technical note render andtechnical note
+            # is nottechnical note if hide technical note/technical note technical noteandtechnical note or technical note render technical note technical noteandtechnical note technical noteandtechnical note window
+            # from technical note technical note technical note‌technical noteandtechnical note.
             self._win_visible = False
             try:
                 styles = self._apply_win32_styles(_glfw.get_win32_window(win))
@@ -293,7 +293,7 @@ class GPUOverlayRenderer:
                     "Commands: upload / scene / show / hide — Show = "
                     "queue.put only",
                 ])
-            # ---------------- حلقهٔ اصلی رندر ----------------
+            # ---------------- technical note original render ----------------
             while not self._stop:
                 if self._anim is not None:
                     _glfw.poll_events()
@@ -301,10 +301,10 @@ class GPUOverlayRenderer:
                     if self._stop:
                         break
                     if self._anim is None:
-                        continue          # انیمیشن همین حالا تمام/لغو شد
+                        continue          # technical note technical note technical note technical note/technical noteand technical note
                     self._frame()
                 else:
-                    # --- IDLE — هیچ CPU Busy Loop: انتظار پیام ---
+                    # --- IDLE — technical note CPU Busy Loop: technical note message ---
                     try:
                         cmd = self._q.get(timeout=0.25)
                     except Exception:
@@ -345,9 +345,9 @@ class GPUOverlayRenderer:
                 pass
 
     def _win_show(self) -> None:
-        """v10.29 (پورت v1.2.2 از 2017) — نمایان‌کردن پنجرهٔ اورلی
-        (فقط از ترد رندر). فقط همزمان با شروع واقعی انیمیشن ورود
-        صدا زده می‌شود — بین نمایش‌ها هیچ پنجره‌ای روی بازی نیست."""
+        """v10.29 (textandtext v1.2.2 from 2017) — textortext‌text windowtext textandtext
+        (only from text render). only simultaneous with start real text andtextandtext
+        text text text‌textandtext — text display‌text text window‌text textandtext withtext is not."""
         if self._win_visible:
             return
         try:
@@ -357,11 +357,11 @@ class GPUOverlayRenderer:
             pass
 
     def _win_hide(self) -> None:
-        """v10.29 (پورت v1.2.2 از 2017) — مخفی‌کردن پنجرهٔ اورلی در
-        «سطح خود ویندوز» (فقط از ترد رندر). بعد از آخرین فریم شفافِ
-        انیمیشن خروج (یا hide_now) صدا زده می‌شود — حتی اگر ارائهٔ
-        فریم شفاف به هر دلیلی ناموفق باشد، خودِ پنجره از صفحه خارج
-        می‌شود؛ دیگر هیچ نموداری «تا ابد» در گوشهٔ تصویر نمی‌ماند."""
+        """v10.29 (textandtext v1.2.2 from 2017) — text‌text windowtext textandtext in
+        «level textandtext andtextandtext» (only from text render). after from latest frame text
+        text textandtext (or hide_now) text text text‌textandtext — text if text
+        frame text to text text failed withtext textandtext window from text text
+        text‌textandtext text text charttext «until text» in textandtext textandtext text‌text."""
         if not self._win_visible:
             return
         try:
@@ -390,7 +390,7 @@ class GPUOverlayRenderer:
             p = 1.0
         self._ctx.clear(0.0, 0.0, 0.0, 0.0)
         if self._scene is not None:
-            # نسخهٔ ۱۰٫۲۴ — رندر برداری: همهٔ عناصر با همان transform shader
+            # versiontechnical note 10technical note24 — render technical note: technical note technical note with same transform shader
             self._draw_scene_frame(p, a["dir"])
         else:
             self._prog["u_progress"].value = p
@@ -407,10 +407,10 @@ class GPUOverlayRenderer:
             self._anim_end(a)
 
     def _draw_scene_frame(self, progress: float, direction: float) -> None:
-        """نسخهٔ ۱۰٫۲۴ — یک فریم کامل از صحنهٔ برداری (بدون هیچ آپلود مجدد):
-        ترتیب آیتم‌ها = ترتیب zorder قبلی (bg → glow → fill → marker-glow
-        → خط صفر/عمودی → خط گل → توپ → پرچم → مُهر). CPU در هر فریم فقط
-        uniform می‌فرستد — هیچ Vertex/Texture بازسازی‌شونده‌ای انجام نمی‌شود."""
+        """versiontext 10text24 — text frame complete from scenetext text (without text textandtext text):
+        order text‌text = order zorder beforetext (bg → glow → fill → marker-glow
+        → line text/textandtext → line text → ball → text → text). CPU in text frame only
+        uniform text‌text — text Vertex/Texture withtextfromtext‌textandtext‌text text text‌textandtext."""
         edge, tex = self._sprog_edge, self._sprog_tex
         for prog in (edge, tex):
             if prog is None:
@@ -435,7 +435,7 @@ class GPUOverlayRenderer:
                 continue
 
     def _scene_release(self) -> None:
-        """آزادسازی منابع GL صحنهٔ فعلی (فقط در ترد رندر)."""
+        """freetextfromtext text GL scenetext text (only in text render)."""
         items = self._scene
         self._scene = None
         if not items:
@@ -458,9 +458,9 @@ class GPUOverlayRenderer:
                 pass
 
     def _scene_load(self, scene, key, keep_state: bool) -> None:
-        """نسخهٔ ۱۰٫۲۴ — تبدیل scene → منابع GL (یک‌بار در Preload):
-        Vertex Buffer هر آیتم + Textureها + سه برنامهٔ Shader. بعد از این،
-        هر فریم فقط uniform عوض می‌کند (صفر کارِ ساخت در لحظهٔ Show)."""
+        """versiontext 10text24 — text scene → text GL (text‌withtext in Preload):
+        Vertex Buffer text text + Texturetext + text text Shader. after from text
+        text frame only uniform textandtext text‌text (text text text in momenttext Show)."""
         t0 = time.perf_counter()
         try:
             ctx = self._ctx
@@ -495,7 +495,7 @@ class GPUOverlayRenderer:
                                    "clip": bool(it.get("clip")),
                                    "mode": mg.TRIANGLES,
                                    "count": int(len(verts))})
-                else:  # "edge" — نوار/باند با لبهٔ AA تحلیلی
+                else:  # "edge" — technical noteandtechnical note/withtechnical note with technical notetotechnical note AA technical note
                     vao = ctx.vertex_array(self._sprog_edge,
                                            [(vbo, "2f 1f", "a_px", "a_d")])
                     parsed.append({"prog": "edge", "vao": vao, "vbo": vbo,
@@ -532,7 +532,7 @@ class GPUOverlayRenderer:
                     ])
             if self._anim is None:
                 if self._visible_img and keep_state:
-                    # re-blit فوری (retune در جریان نمایش) — همان مکان
+                    # re-blit immediate (retune in technical noteortechnical note display) — same technical note
                     self._ctx.clear(0.0, 0.0, 0.0, 0.0)
                     self._draw_scene_frame(1.0, 1.0)
                     self._glfw.swap_buffers(self._win)
@@ -555,17 +555,17 @@ class GPUOverlayRenderer:
         self._visible_img = bool(entering)
         self._anim = None
         if not entering:
-            # v10.29 (پورت v1.2.2 از 2017) — پایان انیمیشن خروج: آخرین
-            # فریم (کاملاً شفاف) همین حالا ارائه شده است — پنجره در سطح
-            # خود ویندوز مخفی می‌شود؛ حتی اگر ارائهٔ فریم بعدی به هر
-            # دلیلی ناموفق باشد، نمودار از صفحه خارج شده است.
+            # v10.29 (technical noteandtechnical note v1.2.2 from 2017) — end technical note technical noteandtechnical note: latest
+            # frame (completetechnical note technical note) technical note technical note technical note technical note is — window in level
+            # technical noteandtechnical note andtechnical noteandtechnical note technical note technical note‌technical noteandtechnical note technical note if technical note frame aftertechnical note to technical note
+            # technical note failed withtechnical note chart from technical note technical note technical note is.
             self._win_hide()
         elif self._hide_pending:
-            # v10.29 — hide در جریان انیمیشن ورود رسیده بود و (در نسخهٔ
-            # قبلی) کاملاً drop می‌شد؛ اگر زنجیرهٔ after طرف UI هم گم
-            # می‌شد، نمودار تا ابد روی صفحه می‌ماند. حالا همین‌جا
-            # انیمیشن خروج با همان سبک/مدت شروع می‌شود (خروج نرم حفظ
-            # می‌شود) و پایانش _win_hide را هم در بر دارد.
+            # v10.29 — hide in technical noteortechnical note technical note andtechnical noteandtechnical note technical note technical noteandtechnical note and (in versiontechnical note
+            # beforetechnical note) completetechnical note drop technical note‌technical note if chaintechnical note after technical note UI technical note technical note
+            # technical note‌technical note chart until technical note technical noteandtechnical note technical note technical note‌technical note. technical note technical note‌technical note
+            # technical note technical noteandtechnical note with same lightweight/technical note start technical note‌technical noteandtechnical note (technical noteandtechnical note smooth technical note
+            # technical note‌technical noteandtechnical note) and endtechnical note _win_hide technical note technical note in technical note technical note.
             self._hide_pending = False
             self._anim = {"start": time.perf_counter(),
                           "dur": max(1e-3, TV_SNAP_ANIM_MS / 1000.0),
@@ -603,7 +603,7 @@ class GPUOverlayRenderer:
             (_, raw, w, h, dx, dy, travel, key, keep_state) = cmd
             t0 = time.perf_counter()
             try:
-                # نسخهٔ ۱۰٫۲۴ — بیت‌مپ جایگزین scene می‌شود (مسیرهای دو مسیره)
+                # versiontechnical note 10technical note24 — technical note‌technical note fallback scene technical note‌technical noteandtechnical note (pathtechnical note technical noteand pathtechnical note)
                 self._scene_release()
                 if self._tex is not None:
                     self._tex.release()
@@ -635,7 +635,7 @@ class GPUOverlayRenderer:
                         ])
                 if self._anim is None:
                     if self._visible_img:
-                        # re-blit فوری (retune در جریان نمایش) — همان مکان
+                        # re-blit immediate (retune in technical noteortechnical note display) — same technical note
                         self._prog["u_progress"].value = 1.0
                         self._prog["u_dir"].value = 1.0
                         self._ctx.clear(0.0, 0.0, 0.0, 0.0)
@@ -651,7 +651,7 @@ class GPUOverlayRenderer:
                     f"key={key} | {type(ex).__name__}: {ex}",
                 ])
         elif kind == "scene":
-            # نسخهٔ ۱۰٫۲۴ — صحنهٔ برداری (build_gpu_graph_scene در ترد Worker)
+            # versiontechnical note 10technical note24 — scenetechnical note technical note (build_gpu_graph_scene in technical note Worker)
             (_, _scene_data, key, keep_state) = cmd
             try:
                 if self._tex is not None:
@@ -667,9 +667,9 @@ class GPUOverlayRenderer:
                                 [f"key={key} — upload must happen first"])
                 return
             lat_ms = (time.perf_counter() - put_t) * 1000.0
-            # v10.29 (پورت v1.2.2 از 2017) — پنجره فقط در لحظهٔ Show
-            # واقعی نمایان می‌شود؛ show تازه هر hide معلقی را هم باطل
-            # می‌کند (باگ «نمودار تا ابد ماند» — خروج تضمینی).
+            # v10.29 (technical noteandtechnical note v1.2.2 from 2017) — window only in momenttechnical note Show
+            # real technical noteortechnical note technical note‌technical noteandtechnical note show fresh technical note hide technical note technical note technical note withtechnical note
+            # technical note‌technical note (withtechnical note «chart until technical note technical note» — technical noteandtechnical note technical note).
             self._win_show()
             self._hide_pending = False
             self._anim = {"start": time.perf_counter(),
@@ -690,11 +690,11 @@ class GPUOverlayRenderer:
         elif kind == "hide":
             (_, dur, put_t) = cmd
             if self._anim is not None:
-                # v10.29 — قبلاً اینجا hide «کاملاً رها» می‌شد؛ اگر زنجیرهٔ
-                # after طرف UI هم گم می‌شد، نمودار برای همیشه روی صفحه
-                # می‌ماند (ریشهٔ باگ «نمودار 116 نمایش داده شد و تمام
-                # نشد»). حالا ثبت می‌شود و بلافاصله پس از پایان انیمیشن
-                # جاری، خروج نرم اجرا می‌شود (_anim_end → _hide_pending).
+                # v10.29 — beforetechnical note technical note hide «completetechnical note technical note» technical note‌technical note if chaintechnical note
+                # after technical note UI technical note technical note technical note‌technical note chart for always technical noteandtechnical note technical note
+                # technical note‌technical note (technical note withtechnical note «chart 116 display data technical note and technical note
+                # technical note»). technical note register technical note‌technical noteandtechnical note and technical notedistance technical note from end technical note
+                # currenttechnical note technical noteandtechnical note smooth technical note technical note‌technical noteandtechnical note (_anim_end → _hide_pending).
                 self._hide_pending = True
                 return
             if ((self._tex is None and self._scene is None)
@@ -717,13 +717,13 @@ class GPUOverlayRenderer:
                     ])
         elif kind == "hide_now":
             self._anim = None
-            self._hide_pending = False   # v10.29 — پاک‌سازی hide معلق
+            self._hide_pending = False   # v10.29 — cleanup hide technical note
             was = self._visible_img
             self._visible_img = False
             self._set_state(self.ST_HIDDEN)
             if was and (self._tex is not None or self._scene is not None) \
                     and self._glfw is not None:
-                # یک فریم کاملاً شفاف ارائه کن
+                # technical note frame completetechnical note technical note technical note technical note
                 try:
                     self._ctx.clear(0.0, 0.0, 0.0, 0.0)
                     self._glfw.swap_buffers(self._win)
@@ -733,9 +733,9 @@ class GPUOverlayRenderer:
                     self._log_block("[OVERLAY_STATE] HIDDEN (hide_now — GPU)",
                                     ["Transparent frame presented — "
                                      "screen fully clear"])
-            # v10.29 (پورت v1.2.2 از 2017) — پنجره در هر حالت در سطح خود
-            # ویندوز مخفی می‌شود (حتی بدون محتوا) — تضمین ساختاری خروج
-            # همهٔ نمودارها بعد از زمان مشخص‌شده.
+            # v10.29 (technical noteandtechnical note v1.2.2 from 2017) — window in technical note technical note in level technical noteandtechnical note
+            # andtechnical noteandtechnical note technical note technical note‌technical noteandtechnical note (technical note without technical noteandtechnical note) — technical note structuretechnical note technical noteandtechnical note
+            # technical note charttechnical note after from time technical note‌technical note.
             self._win_hide()
         elif kind == "stop":
             self._stop = True
@@ -1310,39 +1310,39 @@ class Win32OverlayRenderer:
         self._pump_messages()
 
 # =====================================================================
-# ۲۵٫۶ — رندر برداری GPU برای نمودار (نسخهٔ ۱۰٫۲۴ — درخواست کاربر)
+# 25technical note6 — render technical note GPU for chart (versiontechnical note 10technical note24 — request user)
 # ---------------------------------------------------------------------
-# «نمودار قبل از رسیدن به GPU تبدیل به Bitmap می‌شود؛ در نتیجه Shader
-#  نمی‌تواند Anti-Aliasing واقعی روی منحنی انجام دهد.» (گزارش کاربر)
+# «chart before from technical note to GPU technical note to Bitmap technical note‌technical noteandtechnical note in technical note Shader
+#  technical note‌technical noteandtechnical note Anti-Aliasing real technical noteandtechnical note technical note technical note technical note.» (technical note user)
 #
-# پاسخ معماری — Pipeline جدید:
-#   Momentum Data ──► _tv_curve_core (همان ریاضی قبلی — بدون تغییر شکل)
-#        ──► Vertex Buffer (پنل px) ──► GPU Draw ──► Fragment Shader AA
-#        ──► GPU Surface ──► Overlay (انیمیشن Shader — عین ۱۰٫۲۳)
+# passtechnical note architecture — Pipeline new:
+#   Momentum Data ──► _tv_curve_core (same technical noteortechnical note beforetechnical note — unchanged technical notetotal)
+#        ──► Vertex Buffer (technical note px) ──► GPU Draw ──► Fragment Shader AA
+#        ──► GPU Surface ──► Overlay (technical note Shader — technical note 10technical note23)
 #
-#   * خط/fill: هر ناحیه با «فاصلهٔ علامت‌دار تا مرز» (v_d) ساخته می‌شود؛
-#     Fragment Shader آلفای لبه را با smoothstep حساب می‌کند (AA واقعی،
-#     مستقل از رزولوشن، بدون Supersampling).
-#   * عناصر نرم (پس‌زمینه، درخشش بلورشده، پرچم، توپ، مُهر) طبیعتاً تصویرند
-#     و مثل قبل Texture می‌مانند (درخشش خودِ بلور گاوسی است — دندانه ندارد).
-#   * Matplotlib از مسیر «نمایش» حذف می‌شود؛ فقط تولید تصویر ثابت
-#     (ذخیرهٔ دائمی/تب اصلی) باقی می‌ماند.
-#   * هر دو مسیر از یک ریاضی مشترک (_tv_curve_core) تغذیه می‌شوند تا شکل
-#     نمودار «مو‌به‌مو» همان قبلی باشد (تغییر شکل ممنوع — شرط کاربر).
+#   * line/fill: technical note technical note with «distancetechnical note technical note‌technical note until boundary» (v_d) technical note technical note‌technical noteandtechnical note
+#     Fragment Shader technical note technical noteto technical note with smoothstep technical note technical note‌technical note (AA realtechnical note
+#     independent from technical noteandtechnical noteandtechnical note without Supersampling).
+#   * technical note smooth (technical note‌pitchtechnical note intechnical note technical noteandtechnical note technical note balltechnical note technical note) technical noteuntiltechnical note technical noteandtechnical note
+#     and technical note before Texture technical note‌technical note (intechnical note technical noteandtechnical note technical noteandtechnical note technical noteandtechnical note is — technical note technical note).
+#   * Matplotlib from path «display» technical note technical note‌technical noteandtechnical note only technical noteandtechnical note technical noteandtechnical note technical note
+#     (savetechnical note technical note/technical note original) withtechnical note technical note‌technical note.
+#   * technical note technical noteand path from technical note technical noteortechnical note shared (_tv_curve_core) technical note technical note‌technical noteandtechnical note until technical notetotal
+#     chart «technical noteand‌to‌technical noteand» same beforetechnical note withtechnical note (change technical notetotal technical notemenutechnical note — technical note user).
 # =====================================================================
 
 _SCENE_VERT_SRC = """
 #version 330 core
-layout(location = 0) in vec2 a_px;      // مختصات در فضای پنل (px تصویر مرجع)
-layout(location = 1) in float a_d;      // فاصلهٔ علامت‌دار تا مرز (px پنل؛ منفی = داخل)
-uniform vec2  u_surf;                   // اندازهٔ سطح ثابت (px)
-uniform vec3  u_view;                   // (dx, dy, k) — نگاشت پنل → سطح
-uniform float u_travel;                 // فاصلهٔ عمودی حرکت (px سطح)
-uniform float u_progress;               // 0..1 — CPU فقط زمان می‌فرستد
-uniform float u_dir;                    // +1 ورود | -1 خروج
+layout(location = 0) in vec2 a_px;      // coordinates in text text (px textandtext text)
+layout(location = 1) in float a_d;      // distancetext text‌text until boundary (px text text = inside)
+uniform vec2  u_surf;                   // textfromtext level text (px)
+uniform vec3  u_view;                   // (dx, dy, k) — text text → level
+uniform float u_travel;                 // distancetext textandtext text (px level)
+uniform float u_progress;               // 0..1 — CPU only time text‌text
+uniform float u_dir;                    // +1 andtextandtext | -1 textandtext
 out vec2  v_px;
 out float v_d;
-float ease_in_out(float p) {            // عیناً snap_ease_in_out (۱۰٫۱۳)
+float ease_in_out(float p) {            // text snap_ease_in_out (10text13)
     p = clamp(p, 0.0, 1.0);
     if (p < 0.5) return 4.0 * p * p * p;
     float q = 2.0 * p - 2.0;
@@ -1352,7 +1352,7 @@ void main() {
     v_px = a_px;
     v_d = a_d;
     float e = ease_in_out(u_progress);
-    float t = (u_dir > 0.0) ? (1.0 - e) : e;   // ۱ = زیر صفحه | ۰ = مکان نهایی
+    float t = (u_dir > 0.0) ? (1.0 - e) : e;   // 1 = text text | 0 = text text
     vec2 sp = vec2(u_view.x + a_px.x * u_view.z,
                    u_view.y + a_px.y * u_view.z + t * u_travel);
     float cx = (sp.x / u_surf.x) * 2.0 - 1.0;
@@ -1364,12 +1364,12 @@ void main() {
 _SCENE_EDGE_FRAG_SRC = """
 #version 330 core
 in vec2  v_px;
-in float v_d;                           // فاصلهٔ علامت‌دار تا مرز (px پنل)
-uniform vec4  u_color;                  // rgb + آلفای پایه
-uniform vec4  u_clip;                   // (x0, y0, x1, y1) در فضای پنل
+in float v_d;                           // distancetext text‌text until boundary (px text)
+uniform vec4  u_color;                  // rgb + text text
+uniform vec4  u_clip;                   // (x0, y0, x1, y1) in text text
 uniform float u_clip_on;
-uniform vec3  u_view;                   // فقط k لازم است
-uniform float u_feather;                // نسخهٔ ۱۰٫۲۶ — نرمی اضافهٔ لبه (px سطح؛ ۰=خاموش)
+uniform vec3  u_view;                   // only k textfromtext is
+uniform float u_feather;                // versiontext 10text26 — smoothing text textto (px leveltext 0=textandtext)
 out vec4 frag;
 void main() {
     if (u_clip_on > 0.5) {
@@ -1378,12 +1378,12 @@ void main() {
             discard;
         }
     }
-    float s  = v_d * u_view.z;          // فاصله در px سطح
+    float s  = v_d * u_view.z;          // distance in px level
     float aa = clamp(fwidth(s) * 0.8, 0.4, 1.5);
-    aa = max(aa, u_feather);            // feather فقط برای fill (لبهٔ مخملی — عین مرجع کاربر)
+    aa = max(aa, u_feather);            // feather only for fill (texttotext text — text text user)
     float a  = u_color.a * (1.0 - smoothstep(-aa, aa, s));
     a = clamp(a, 0.0, 1.0);
-    frag = vec4(u_color.rgb * a, a);    // premultiplied برای DWM
+    frag = vec4(u_color.rgb * a, a);    // premultiplied for DWM
 }
 """
 
@@ -1392,7 +1392,7 @@ _SCENE_TEX_FRAG_SRC = """
 in vec2  v_px;
 in float v_d;
 uniform sampler2D u_tex;
-uniform vec4  u_rect;                   // (x0, y0, x1, y1) در فضای پنل
+uniform vec4  u_rect;                   // (x0, y0, x1, y1) in text text
 uniform vec4  u_clip;
 uniform float u_clip_on;
 out vec4 frag;
@@ -1405,7 +1405,7 @@ void main() {
     }
     vec2 uv = (v_px - u_rect.xy) / max(vec2(1e-6), u_rect.zw - u_rect.xy);
     vec4 c = texture(u_tex, clamp(uv, 0.0, 1.0));
-    frag = vec4(c.rgb * c.a, c.a);      // premultiplied برای DWM
+    frag = vec4(c.rgb * c.a, c.a);      // premultiplied for DWM
 }
 """
 
