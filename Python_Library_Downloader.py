@@ -123,8 +123,7 @@ def probe_python_exe(python_bin):
         lines = [x.strip() for x in r.stdout.splitlines() if x.strip()]
         if len(lines) < 2:
             return None
-        path = lines[0]
-        version = lines[1]
+        path, version = lines[0], lines[1]
         if os.path.exists(path):
             return path, version
     except Exception:
@@ -208,6 +207,7 @@ def get_host_python_info(require_compatible=False):
         result = probe_python_exe(candidate)
         if not result:
             continue
+
         path, version = result
         version_key = version_tuple(version)
         major_minor = version_key[:2]
@@ -536,7 +536,8 @@ def fetch_pypi_metadata(pkg_name):
 # ============================================================================
 
 class GlassButton(tk.Canvas):
-    THEMES = {        "primary": {
+    THEMES = {
+        "primary": {
             "top": "#0284c7", "bottom": "#0369a1", "border": "#38bdf8", "rim": "#7dd3fc", "text": "#ffffff",
             "h_top": "#0ea5e9", "h_bottom": "#0284c7", "h_border": "#bae6fd",
             "a_top": "#0369a1", "a_bottom": "#075985",
@@ -935,6 +936,7 @@ class App:
 
         lib_header = tk.Frame(lib_card, bg=self.card_bg)
         lib_header.pack(fill="x", pady=(0, 8))
+
         tk.Label(lib_header, text="Required Modding Libraries", bg=self.card_bg, fg=self.text,
                  font=("Segoe UI", 9, "bold")).pack(side="left")
 
@@ -1130,7 +1132,7 @@ class App:
         elif installed_key[:2] != (3, 13):
             self.py_badge.config(text="INCOMPATIBLE", bg="#382914", fg=self.amber)
             self.py_main_info.config(text=f"Python {installed} detected — Python 3.13.x required", fg=self.amber)
-            self.py_sub_info.config(text=f"This suite uses Python {PYTHON_COMPATIBLE_SERIES}.x for binary-library compatibility.")
+            self.py_sub_info.config(text="This suite uses Python 3.13.x for reliable binary-library compatibility.")
             self.py_action_btn.configure(text="Install Python 3.13", state="normal", kind="warning")
         elif installed_key < target_key:
             self.py_badge.config(text="UPDATE AVAILABLE", bg="#382914", fg=self.amber)
@@ -1259,12 +1261,10 @@ class App:
                     inst_size = get_installed_package_size(pkg_name) if inst_ver else None
                     remote_ver, remote_size = None, None
                     err = None
-
                     try:
                         remote_ver, remote_size = fetch_pypi_metadata(pkg_name)
                     except Exception as exc:
                         err = str(exc)
-
                     return pkg_name, inst_ver, remote_ver, inst_size, remote_size, err
 
                 futures = [pool.submit(inspect_single, name) for name, _, _ in REQUIRED_PACKAGES]
@@ -1337,7 +1337,6 @@ class App:
         def worker():
             python_bin = python_info["path"]
             self.post(self.log, f"Using Python {python_info['version']}: {python_bin}")
-
             cmd = build_pip_command(python_bin, pkg_name)
             self.post(self.log, "Running: " + " ".join(f'"{x}"' if " " in x else x for x in cmd))
 
@@ -1388,7 +1387,8 @@ class App:
         threading.Thread(target=worker, daemon=True).start()
     def package_succeeded(self, pkg_name):
         self.busy = False
-        self.status_badge.config(text="READY", bg="#0a2a1d", fg=self.green)        self.rows[pkg_name]["spinner"].stop()
+        self.status_badge.config(text="READY", bg="#0a2a1d", fg=self.green)
+        self.rows[pkg_name]["spinner"].stop()
         self.act_title.config(text="Task Monitor: Idle")
         self.check_libraries()
 
@@ -1479,9 +1479,8 @@ class App:
                 total_pkgs = len(REQUIRED_PACKAGES)
 
                 for idx, (pkg_name, label, _) in enumerate(REQUIRED_PACKAGES, start=1):
-                    row = self.rows[pkg_name]
                     inst_ver = host_installed.get(pkg_name.lower())
-                    latest_ver = row.get("latest_ver")
+                    latest_ver = self.rows[pkg_name].get("latest_ver")
 
                     if not inst_ver or (latest_ver and compare_versions(inst_ver, latest_ver) < 0):
                         self.post(self.log, f"Installing {label} ({idx}/{total_pkgs})...")
