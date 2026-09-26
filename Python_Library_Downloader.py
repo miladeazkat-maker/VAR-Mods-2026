@@ -171,7 +171,7 @@ def get_host_python_candidates():
         )
         if r.returncode == 0:
             for line in r.stdout.splitlines():
-                match = re.search(r"([A-Za-z]:\\.*python\\.exe)\\s*$", line.strip(), re.IGNORECASE)
+                match = re.search(r"([A-Za-z]:\\.*python\.exe)\s*$", line.strip(), re.IGNORECASE)
                 if match:
                     add(match.group(1))
     except Exception:
