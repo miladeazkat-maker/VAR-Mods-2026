@@ -96,7 +96,7 @@ def _suite_harden_stdio():
 
 _suite_harden_stdio()
 
-# گرفتن دسترسی ادمین
+# technical note access technical note
 if not ctypes.windll.shell32.IsUserAnAdmin():
     script_path = os.path.abspath(sys.argv[0])
     ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, f'"{script_path}"', None, 1)
@@ -113,7 +113,7 @@ def flog(tag, msg):
     line = f"[{ts}][{tag}] {msg}"
     try:
         _log_file.write(line + "\n")
-        _log_file.flush()  # ذخیره درجا روی هارد دیسک
+        _log_file.flush()  # save intechnical note technical noteandtechnical note technical note technical note
     except: pass
 
 # ============================================================================
@@ -396,7 +396,7 @@ try:
     _wp = WindowProperties()
     _wp.setSize(WIN_W, WIN_H)
     _wp.setOrigin(0, 0)
-    _wp.setCursorHidden(True)   # ماوس روی پنجره‌ی اورسینا دیده نمی‌شود
+    _wp.setCursorHidden(True)   # technical noteandtechnical note technical noteandtechnical note window‌technical note technical noteandtechnical note technical note technical note‌technical noteandtechnical note
     base.win.requestProperties(_wp)
 
     GWL_EXSTYLE = -20
@@ -665,7 +665,7 @@ try:
         return 'white_cube'
 
     def generate_grass_texture(path_str, flog=None):
-        # بافت جزئیات چمن (خاکستری خنثی) — دانه‌ریز یکنواخت بدون لکه‌های تیره، سبک عکس‌های مرجع
+        # technical notedecrease technical noteortechnical note technical note (technical note technical note) — technical note‌technical note technical noteandtechnical note without technical note‌technical note technical note lightweight image‌technical note technical note
         if os.path.exists(path_str):
             return True
         try:
@@ -691,18 +691,18 @@ try:
 
 
     def generate_goal_env_overlay(path_str, flog=None):
-        # لایه محیطی پشت دروازه (RGBA):
-        #   * لکه‌های زرد فرسوده فقط در نوار بین خط دروازه و تابلوها (z = 0 تا 10.5)
-        #   * سایه سقف: قوس موازی خط عرضی زمین روی نوار زرد + تابلوها (مثل عکس مرجع)
-        #   * تاریکی فقط برای قسمت‌های دورتر از تابلوها (z > 10.5)
-        # مختصات بافت: بالای تصویر = لبه جلویی (z=-24 سمت زمین)، پایین تصویر = z=+45.5 پشت تابلوها
+        # layer technical note technical note inandfromtechnical note (RGBA):
+        #   * technical note‌technical note technical note technical noteandtechnical note only in technical noteandtechnical note technical note line inandfromtechnical note and untiltechnical noteandtechnical note (z = 0 until 10.5)
+        #   * technical note limit: technical noteandtechnical note technical noteandfromtechnical note line widthtechnical note pitch technical noteandtechnical note technical noteandtechnical note technical note + untiltechnical noteandtechnical note (technical note image technical note)
+        #   * untiltechnical note only for technical noteside‌technical note technical noteandtechnical note from untiltechnical noteandtechnical note (z > 10.5)
+        # coordinates technical notedecrease: withtechnical note image = technical noteto technical noteandtechnical note (z=-24 side pitch)technical note below image = z=+45.5 technical note untiltechnical noteandtechnical note
         if os.path.exists(path_str):
             return True
         try:
             from PIL import Image, ImageFilter
             import numpy as np
             W, H = 2048, 1024
-            Z_FRONT, Z_BACK = -24.0, 45.5   # پوشش 69.5 متری: از روی چمن زمین تا پشت تابلوها
+            Z_FRONT, Z_BACK = -24.0, 45.5   # technical noteandtechnical note 69.5 technical note: from technical noteandtechnical note technical note pitch until technical note untiltechnical noteandtechnical note
             BOARD_Z = 10.5
             rng = np.random.default_rng(777)
             zz = Z_FRONT + (np.arange(H, dtype=np.float32) / (H - 1)) * (Z_BACK - Z_FRONT)
@@ -713,10 +713,10 @@ try:
                 t = np.clip((v - e0) / (e1 - e0 + 1e-6), 0.0, 1.0)
                 return t * t * (3.0 - 2.0 * t)
 
-            # --- لکه‌های زرد فرسوده — کم، نامنظم و کم‌رنگ مثل عکس مرجع:
-            #     * آستانه بالاتر => تعداد لکه‌ها کمتر
-            #     * نزدیک خط دروازه ماسک می‌شوند (تا z~3.6 تقریباً هیچ لکه‌ای نیست)
-            #     * شفافیت هر ناحیه تصادفی (نویز کم‌فرکانس) ---
+            # --- technical note‌technical note technical note technical noteandtechnical note — technical note nametechnical note and technical note‌color technical note image technical note:
+            #     * threshold above => count technical note‌technical note technical note
+            #     * technical note line inandfromtechnical note technical note technical note‌technical noteandtechnical note (until z~3.6 technical notewithtechnical note technical note technical note‌technical note is not)
+            #     * technical note technical note technical note technical note (technical noteandtechnical note technical note‌technical note) ---
             cells = rng.normal(0.0, 1.0, (9, 44)).astype(np.float32)
             cells = (cells - cells.min()) / (cells.max() - cells.min() + 1e-6)
             blotch = np.asarray(Image.fromarray((cells * 255.0).astype('uint8')).resize((W, H), Image.BICUBIC).filter(ImageFilter.GaussianBlur(9)), dtype=np.float32) / 255.0
@@ -725,12 +725,12 @@ try:
             blotch2 = np.asarray(Image.fromarray((cells2 * 255.0).astype('uint8')).resize((W, H), Image.BICUBIC).filter(ImageFilter.GaussianBlur(2.6)), dtype=np.float32) / 255.0
             blotch = np.clip(blotch * 0.74 + blotch2 * 0.36 - 0.08, 0.0, 1.0)
             strip = smoothstep(0.5, 2.0, ZZ) * (1.0 - smoothstep(7.0, 10.2, ZZ))
-            near_fade = 1.0 - 0.85 * smoothstep(3.6, 0.7, ZZ)   # ماسک نزدیک دروازه
+            near_fade = 1.0 - 0.85 * smoothstep(3.6, 0.7, ZZ)   # technical note technical note inandfromtechnical note
             arand_c = rng.normal(0.0, 1.0, (7, 26)).astype(np.float32)
             arand_c = (arand_c - arand_c.min()) / (arand_c.max() - arand_c.min() + 1e-6)
             arand = np.asarray(Image.fromarray((arand_c * 255.0).astype('uint8')).resize((W, H), Image.BICUBIC).filter(ImageFilter.GaussianBlur(4)), dtype=np.float32) / 255.0
-            ascale = 0.25 + 0.75 * arand    # شفافیت تصادفی هر ناحیه
-            # تراکم بیشتر سمت گوشه سایه‌دار (x منفی) مثل مرجع
+            ascale = 0.25 + 0.75 * arand    # technical note technical note technical note technical note
+            # technical note technical note side technical noteandtechnical note technical note‌technical note (x technical note) technical note technical note
             side_bias = np.clip((-xs - 10.0) / 40.0, 0.0, 1.0) * 0.10
             ymask = np.clip((blotch - 0.47 + side_bias[None, :]) * 3.4, 0.0, 1.0) * strip * near_fade
             yalpha = ymask * 0.42 * ascale
@@ -742,19 +742,19 @@ try:
             ycol[..., 1] = 0.60 + 0.16 * grain
             ycol[..., 2] = 0.25 + 0.10 * grain
 
-            # --- سایه خود تابلوها: نوار باریک نرم چسبیده به جلوی تابلو (سراسر عرض) ---
+            # --- technical note technical noteandtechnical note untiltechnical noteandtechnical note: technical noteandtechnical note withtechnical note smooth technical note to technical noteandtechnical note untiltechnical noteand (technical note width) ---
             dark = np.exp(-((ZZ - (BOARD_Z - 1.0)) ** 2) / (2.0 * 1.2 ** 2)) * 0.12
 
-            # --- سایه سقف استادیوم: قوس موازی خط عرضی زمین (مثل عکس مرجع) —
-            #     خمیدگی به سمت «داخل» زمین (مثل مرجع): میانه قوس (x=0) عقب‌ترین نقطه (z≈4.6) و
-            #     دو سر قوس به سمت خط دروازه می‌آیند؛ سایه 4.6-0.0032x² موازی لبه سقف است و
-            #     در کل عرض زمین روی لکه‌های زرد + تابلوهای تبلیغاتی می‌افتد
-            #     سایه روی لکه‌های زرد + تابلوهای تبلیغاتی پشت زمین می‌افتد ---
+            # --- technical note limit istechnical noteandtechnical note: technical noteandtechnical note technical noteandfromtechnical note line widthtechnical note pitch (technical note image technical note) —
+            #     technical note to side «inside» pitch (technical note technical note): technical noteortechnical note technical noteandtechnical note (x=0) technical note‌technical note technical note (z≈4.6) and
+            #     technical noteand technical note technical noteandtechnical note to side line inandfromtechnical note technical note‌technical note technical note 4.6-0.0032x² technical noteandfromtechnical note technical noteto limit is and
+            #     in total width pitch technical noteandtechnical note technical note‌technical note technical note + untiltechnical noteandtechnical note technical note technical note‌decreasetechnical note
+            #     technical note technical noteandtechnical note technical note‌technical note technical note + untiltechnical noteandtechnical note technical note technical note pitch technical note‌decreasetechnical note ---
             z_edge = 4.6 - 0.0032 * xs ** 2
             s_cur = smoothstep(0.0, 2.6, ZZ - z_edge[None, :]) * 0.52
-            s_cur *= (1.0 - smoothstep(48.0, 58.0, np.abs(xs)))[None, :]   # محو سایه قبل از لبه بافت
+            s_cur *= (1.0 - smoothstep(48.0, 58.0, np.abs(xs)))[None, :]   # technical noteand technical note before from technical noteto technical notedecrease
 
-            # --- تاریکی فقط دورتر از تابلوها ---
+            # --- untiltechnical note only technical noteandtechnical note from untiltechnical noteandtechnical note ---
             dark += smoothstep(BOARD_Z + 0.6, BOARD_Z + 3.6, ZZ) * 0.42
             dark += smoothstep(BOARD_Z + 7.0, BOARD_Z + 19.0, ZZ) * 0.18
 
@@ -763,7 +763,7 @@ try:
             dark_w = np.clip(total_dark / (total_dark + yalpha + 1e-6), 0.0, 1.0)[..., None]
             rgb = ycol * (1.0 - dark_w)
             rgba = np.dstack([rgb, alpha])
-            rgba = rgba[::-1, :, :]   # Panda3D کارت را V-برعکس نمونه‌برداری می‌کند: سطر ۰ تصویر <- حاشیه پایین کارت (z دور)
+            rgba = rgba[::-1, :, :]   # Panda3D card technical note V-technical noteimage sampling technical note‌technical note: technical note 0 image <- technical note below card (z technical noteandtechnical note)
             img = Image.fromarray((np.clip(rgba, 0.0, 1.0) * 255.0).astype('uint8'))
             os.makedirs(os.path.dirname(path_str), exist_ok=True)
             img.save(path_str)
@@ -773,7 +773,7 @@ try:
             if flog: flog("GLT", "goal env overlay generation failed: " + repr(e))
             return False
     def generate_board_strip(path_str, flog=None):
-        # نوار تابلوهای تبلیغاتی LED — 8 پیام انگلیسی درباره PES MODS BY MILAD
+        # technical noteandtechnical note untiltechnical noteandtechnical note technical note LED — 8 message technical note inwithtechnical note PES MODS BY MILAD
         if os.path.exists(path_str):
             return True
         try:
@@ -816,7 +816,7 @@ try:
                 else:
                     font_use = font
                 d.text((x0 + (PW - tw) / 2 - bbox[0], (PH - 12 - th) / 2 - bbox[1]), txt, font=font_use, fill=(235, 245, 255))
-            # بافت نقطه‌ای LED (خطوط افقی محو)
+            # technical notedecrease technical note‌technical note LED (lineandtechnical note technical note technical noteand)
             for yy in range(1, PH, 3):
                 d.line([(0, yy), (PW * 8, yy)], fill=(17, 44, 126), width=1)
             os.makedirs(os.path.dirname(path_str), exist_ok=True)
@@ -827,17 +827,17 @@ try:
             if flog: flog("GLT", "board strip generation failed: " + repr(e))
             return False
     def generate_goal_net_texture(path_str, flog=None):
-        # تور دروازه — شبکه مربعی سفید با نخ‌های ضخیم نیمه‌مات روی پس‌زمینه‌ی کاملا شفاف
+        # technical noteandtechnical note inandfromtechnical note — technical note technical note technical note with technical note‌technical note technical note technical note‌technical note technical noteandtechnical note technical note‌pitchtechnical note‌technical note completetechnical note technical note
         if os.path.exists(path_str):
             return True
         try:
             from PIL import Image, ImageDraw
             S = 512
-            cell = 64          # ۸ خانه در هر تایل؛ هر خانه معادل 0.12 متر تور
-            lw = 12            # نخ‌های ضخیم‌تر تا تور در فواصل دور و زوایای مایل هم دیده شود
+            cell = 64          # 8 technical note in technical note untiltechnical note technical note technical note technical note 0.12 technical note technical noteandtechnical note
+            lw = 12            # technical note‌technical note technical note‌technical note until technical noteandtechnical note in technical noteandtechnical note technical noteandtechnical note and technical noteandtechnical noteortechnical note technical note technical note technical note technical noteandtechnical note
             img = Image.new("RGBA", (S, S), (255, 255, 255, 0))
             d = ImageDraw.Draw(img)
-            col = (255, 255, 255, 235)   # آلفای بالا برای دیده شدن تور از فاصله‌ی دور
+            col = (255, 255, 255, 235)   # technical note withtechnical note for technical note technical note technical noteandtechnical note from distance‌technical note technical noteandtechnical note
             for i in range(0, S + 1, cell):
                 d.line([(i, 0), (i, S)], fill=col, width=lw)
                 d.line([(0, i), (S, i)], fill=col, width=lw)
@@ -864,9 +864,9 @@ try:
     post_r = Entity(model='cube', scale=(0.12, 2.44, 0.12), x=3.66, y=1.22, color=color.white, unlit=True)
     bar = Entity(model='cube', scale=(7.44, 0.12, 0.12), y=2.50, color=color.white, unlit=True)
 
-    # --- تور دروازه: با افزودن net_parts به حلقه‌های تیرک، تور همیشه همگام با تیرک‌ها نمایان/مخفی می‌شود ---
+    # --- technical noteandtechnical note inandfromtechnical note: with technical noteandtechnical note net_parts to technical note‌technical note posttechnical note technical noteandtechnical note always synchronized with post‌technical note technical noteortechnical note/technical note technical note‌technical noteandtechnical note ---
     net_tex = get_safe_texture(tex_paths["net"])
-    # تور از دور و در زوایای مایل محو می‌شد: mipmap + anisotropic برای وضوح نخ‌ها در هر فاصله و زاویه
+    # technical noteandtechnical note from technical noteandtechnical note and in technical noteandtechnical noteortechnical note technical note technical noteand technical note‌technical note: mipmap + anisotropic for andtechnical noteandtechnical note technical note‌technical note in technical note distance and technical noteandtechnical note
     try:
         from panda3d.core import SamplerState
         net_tex.filtering = 'mipmap'
@@ -874,21 +874,21 @@ try:
         net_tex._texture.setAnisotropicDegree(8)
     except Exception:
         pass
-    # تور سقف: از زیر بردار به‌صورت کاملا افقی تا عمق 1.7 متر پشت خط دروازه — فرم مکعبی مدرن
+    # technical noteandtechnical note limit: from technical note technical note to‌technical noteandtechnical note completetechnical note technical note until technical note 1.7 technical note technical note line inandfromtechnical note — technical note technical note technical noteintechnical note
     net_top = Entity(model='cube', scale=(7.44, 0.02, 1.7), position=(0, 2.44, 0.85), texture=net_tex, texture_scale=(7.75, 1.77), unlit=True)
-    # دیوار پشت تور: کاملا عمودی تا سطح زمین — جعبه‌ی مکعبی مدرن
+    # technical noteandtechnical note technical note technical noteandtechnical note: completetechnical note technical noteandtechnical note until level pitch — box‌technical note technical note technical noteintechnical note
     net_back = Entity(model='cube', scale=(7.44, 2.44, 0.02), position=(0, 1.22, 1.7), texture=net_tex, texture_scale=(7.75, 2.54), unlit=True)
 
     def _net_side_mesh():
-        # مستطیل تور کناری در صفحه‌ی x=0: (z,y) = (0,0),(1.7,0),(1.7,2.44),(0,2.44) — پروفیل مکعبی مدرن
+        # technical note technical noteandtechnical note technical note in technical note‌technical note x=0: (z,y) = (0,0),(1.7,0),(1.7,2.44),(0,2.44) — technical noteandtechnical note technical note technical noteintechnical note
         vs = [Vec3(0, 0, 0), Vec3(0, 0, 1.7), Vec3(0, 2.44, 1.7), Vec3(0, 2.44, 0)]
         uvs = [(v[2] / 0.96, v[1] / 0.96) for v in vs]
-        tris = [(0, 1, 2), (0, 2, 3), (0, 2, 1), (0, 3, 2)]   # دو جهت برای دوسویه دیده شدن
+        tris = [(0, 1, 2), (0, 2, 3), (0, 2, 1), (0, 3, 2)]   # technical noteand technical note for technical noteandtechnical noteandtechnical note technical note technical note
         return Mesh(vertices=vs, triangles=tris, uvs=uvs)
 
     net_side_l = Entity(model=_net_side_mesh(), position=(-3.66, 0, 0), texture=net_tex, unlit=True)
     net_side_r = Entity(model=_net_side_mesh(), position=(3.66, 0, 0), texture=net_tex, unlit=True)
-    # قاب پشت تور: دو تیرک عمودی عقب + ریل بالا و پایین — ظاهر مدرن دروازه‌های جعبه‌ای
+    # technical note technical note technical noteandtechnical note: technical noteand post technical noteandtechnical note technical note + technical note withtechnical note and below — technical note technical noteintechnical note inandfromtechnical note‌technical note box‌technical note
     net_frame_l = Entity(model='cube', scale=(0.06, 2.44, 0.06), position=(-3.66, 1.22, 1.7), color=color.white, unlit=True)
     net_frame_r = Entity(model='cube', scale=(0.06, 2.44, 0.06), position=(3.66, 1.22, 1.7), color=color.white, unlit=True)
     net_frame_top = Entity(model='cube', scale=(7.44, 0.06, 0.06), position=(0, 2.44, 1.7), color=color.white, unlit=True)
@@ -899,8 +899,8 @@ try:
     ball_shadow = Entity(model='circle', scale=0.22, y=0.01, x=0, z=0, color=color.hsv(0, 0, 0, 0.4), rotation_x=90)
 
     line_thickness = 0.12
-    six_yard_depth = 5.5   # استاندارد؛ دقیقاً روی مرز نوار اول چمن
-    six_yard_x = 9.16      # استاندارد؛ عرض محوطه دروازه 18.32 متر
+    six_yard_depth = 5.5   # istechnical note exactly technical noteandtechnical note boundary technical noteandtechnical note first technical note
+    six_yard_x = 9.16      # istechnical note width technical noteandtechnical note inandfromtechnical note 18.32 technical note
     side_length = six_yard_depth + (line_thickness / 2)
     side_z = -(side_length / 2)
     front_length = (six_yard_x * 2) + line_thickness
@@ -912,18 +912,18 @@ try:
     pen_area_right = Entity(model='cube', scale=(line_thickness, 0.01, 16.5), x=20.16, z=-8.25, y=0.008, color=color.white)
     pen_area_front = Entity(model='cube', scale=(40.32 + line_thickness, 0.01, line_thickness), x=0, z=-16.5, y=0.008, color=color.white)
 
-    # 2. نقطه پنالتی (فاصله 11 متری)
+    # 2. technical note penalty (distance 11 technical note)
     pen_spot = Entity(model=Circle(resolution=32), scale=(0.24, 0.24, 0.24), x=0, z=-11.0, y=0.008, color=color.white, rotation_x=90)
 
-    # 3. اصلاح عرض خط دروازه برای پوشش کل زمین و اضافه کردن خطوط طولی (Touchlines)
-    # زمین استاندارد عرض 68 متر دارد، پس مرزها در 34 و -34 هستند.
+    # 3. technical note width line inandfromtechnical note for technical noteandtechnical note total pitch and technical note technical note lineandtechnical note lengthtechnical note (Touchlines)
+    # pitch istechnical note width 68 technical note technical note technical note boundarytechnical note in 34 and -34 technical note.
     goal_line.scale = (68.0, 0.01, line_thickness)
     touchline_l = Entity(model='cube', scale=(line_thickness, 0.01, 52.5), x=-34.0, z=-26.25, y=0.008, color=color.white)
     touchline_r = Entity(model='cube', scale=(line_thickness, 0.01, 52.5), x=34.0, z=-26.25, y=0.008, color=color.white)
 
-    # --- تابع کمکی هوشمند برای رسم خطوط قوسی کاملاً نرم ---
-    # این تابع با استفاده از ریاضیات، مستطیل‌های ریزی را با زاویه دقیق به هم می‌چسباند 
-    # تا هیچ فاصله‌ای بینشان نیفتد و قوس کاملاً صاف (Vector-like) دیده شود.
+    # --- untiltechnical note technical note smart for technical note lineandtechnical note technical noteandtechnical note completetechnical note smooth ---
+    # technical note untiltechnical note with istechnical note from technical noteortechnical noteortechnical note technical note‌technical note technical note technical note with technical noteandtechnical note technical note to technical note technical note‌technical notewithtechnical note 
+    # until technical note distance‌technical note technical note technical note and technical noteandtechnical note completetechnical note technical note (Vector-like) technical note technical noteandtechnical note.
     def create_smooth_arc(center_x, center_z, radius, start_angle, end_angle, segments=50):
         arc_parent = Entity()
         angle_step = (end_angle - start_angle) / segments
@@ -934,7 +934,7 @@ try:
             x1, z1 = center_x + math.cos(a1) * radius, center_z + math.sin(a1) * radius
             x2, z2 = center_x + math.cos(a2) * radius, center_z + math.sin(a2) * radius
             
-            # فاصله دقیق دو نقطه
+            # distance technical note technical noteand technical note
             dist = math.sqrt((x2 - x1)**2 + (z2 - z1)**2)
             mid_x, mid_z = (x1 + x2) / 2, (z1 + z2) / 2
             
@@ -942,19 +942,19 @@ try:
             seg.position = Vec3(mid_x, 0.008, mid_z)
             seg.look_at(Vec3(x2, 0.008, z2))
             
-            # طول را کمی بیشتر میدهیم (dist + 0.02) تا گوشه‌ها کاملاً در هم فرو بروند و بریدگی دیده نشود
+            # length technical note technical note technical note technical note (dist + 0.02) until technical noteandtechnical note‌technical note completetechnical note in technical note technical noteand technical noteandtechnical note and technical note technical note technical noteandtechnical note
             seg.scale = (line_thickness, 0.01, dist + 0.02)
         return arc_parent
 
-    # 4. قوس پشت محوطه جریمه (Penalty Arc)
-    # این قوس دقیقا قسمتی از دایره به مرکز نقطه پنالتی و شعاع 9.15 است که بیرون محوطه میفتد
+    # 4. technical noteandtechnical note technical note technical noteandtechnical note technical note (Penalty Arc)
+    # technical note technical noteandtechnical note technical note technical notesidetechnical note from technical note to technical note technical note penalty and radius 9.15 is technical note outside technical noteandtechnical note technical note
     penalty_arc = create_smooth_arc(0, -11.0, 9.15, -143.04, -36.96, segments=50)
 
-    # 5. خطوط کرنر (Corner Arcs) - شعاع استاندارد 1 متر
+    # 5. lineandtechnical note technical note (Corner Arcs) - radius istechnical note 1 technical note
     corner_arc_left = create_smooth_arc(-34.0, 0, 1.0, -90, 0, segments=20)
     corner_arc_right = create_smooth_arc(34.0, 0, 1.0, 180, 270, segments=20)
 
-    # جبران دقت بافر عمق در فواصل دور (ضد پرپر زدن): خطوط سفید همیشه روی چمن و لایه محیطی
+    # technical note technical note buffer technical note in technical noteandtechnical note technical noteandtechnical note (technical note technical note technical note): lineandtechnical note technical note always technical noteandtechnical note technical note and layer technical note
     for _ln in (goal_line, six_yard_left, six_yard_right, six_yard_front, pen_area_left,
                 pen_area_right, pen_area_front, touchline_l, touchline_r, penalty_arc,
                 corner_arc_left, corner_arc_right, pen_spot, ball_shadow):
@@ -963,16 +963,16 @@ try:
         except Exception:
             pass
 
-    # --- استایل 1 (T5): زمین چمن واقعی با نوارهای استاندارد روشن/تیره ---
-    STRIPE_LENGTH = 5.5   # مرز هر نوار روی خط محوطه دروازه (5.5) و محوطه جریمه (16.5=3×5.5)
-    STRIPE_COUNT = 21            # 21 نوار × 5.5 متر = 115.5 متر (پوشش کامل زمین ۱۰۵ متری + حاشیه)
-    STRIPE_HALF_WIDTH = 34.06    # نیم‌عرض استاندارد زمین (34) + نصف ضخامت خط لمسی
-    STRIPE_COLOR_LIGHT = color.rgb(0.435, 0.685, 0.170)   # سبز کمرنگ — کالیبره با عکس خود بازی
-    STRIPE_COLOR_DARK = color.rgb(0.355, 0.565, 0.130)    # سبز پررنگ — کالیبره با عکس خود بازی
-    # رنگ نوار اولِ چسبیده به خط عرضی زمین بر اساس دروازه تشخیص داده شده:
-    #   دروازه چپ (x منفی)   -> نوار اول کمرنگ (سپس کمرنگ/پررنگ یکی‌درمیان)
-    #   دروازه راست (x مثبت) -> نوار اول پررنگ
-    # (برای تغییر، مقدار True/False هر سمت را عوض کنید)
+    # --- istechnical note 1 (T5): pitch technical note real with technical noteandtechnical note istechnical note technical noteandtechnical note/technical note ---
+    STRIPE_LENGTH = 5.5   # boundary technical note technical noteandtechnical note technical noteandtechnical note line technical noteandtechnical note inandfromtechnical note (5.5) and technical noteandtechnical note technical note (16.5=3×5.5)
+    STRIPE_COUNT = 21            # 21 technical noteandtechnical note × 5.5 technical note = 115.5 technical note (technical noteandtechnical note complete pitch 105 technical note + technical note)
+    STRIPE_HALF_WIDTH = 34.06    # technical note‌width istechnical note pitch (34) + technical note technical note line technical note
+    STRIPE_COLOR_LIGHT = color.rgb(0.435, 0.685, 0.170)   # technical note technical notecolor — calibrated with image technical noteandtechnical note withtechnical note
+    STRIPE_COLOR_DARK = color.rgb(0.355, 0.565, 0.130)    # technical note technical notecolor — calibrated with image technical noteandtechnical note withtechnical note
+    # color technical noteandtechnical note firsttechnical note technical note to line widthtechnical note pitch technical note technical note inandfromtechnical note detection data technical note:
+    #   inandfromtechnical note technical note (x technical note)   -> technical noteandtechnical note first technical notecolor (technical note technical notecolor/technical notecolor technical note‌intechnical noteortechnical note)
+    #   inandfromtechnical note technical noteis (x technical noteregister) -> technical noteandtechnical note first technical notecolor
+    # (for changetechnical note value True/False technical note side technical note technical noteandtechnical note technical note)
     FIRST_STRIPE_DARK = {"left": False, "right": True}
     stripe_group = Entity(enabled=False)
     stripe_entities = []
@@ -992,7 +992,7 @@ try:
             pass
 
     def update_stripe_colors():
-        # اعمال رنگ نوارها بر اساس دروازه تشخیص داده شده (چپ/راست) — در شروع انیمیشن صدا زده می‌شود
+        # technical note color technical noteandtechnical note technical note technical note inandfromtechnical note detection data technical note (technical note/technical noteis) — in start technical note technical note technical note technical note‌technical noteandtechnical note
         try:
             first_dark = FIRST_STRIPE_DARK[get_goal_side()]
         except Exception:
@@ -1002,7 +1002,7 @@ try:
             st.color = STRIPE_COLOR_DARK if is_dark else STRIPE_COLOR_LIGHT
 
     def apply_ground_theme(theme_name):
-        # تم زمین: استایل 1 = چمن تولیدشده + نوارهای واقعی | استایل 2 = تکسچر T6 (دقیقاً مانند قبل)
+        # technical note pitch: istechnical note 1 = technical note technical noteandtechnical note + technical noteandtechnical note real | istechnical note 2 = technical note T6 (exactly technical note before)
         if theme_name == "T5":
             _gen = tex_paths["grass_gen"] if os.path.exists(tex_paths["grass_gen"]) else tex_paths["t5"]
             ground.texture = get_safe_texture(_gen)
@@ -1017,7 +1017,7 @@ try:
             for _env in t5_env_nodes:
                 _env.hide()
 
-    # --- محیط استادیوم استایل 1: لایه پشت دروازه + تابلوهای تبلیغاتی (Panda3D خام برای کنترل دقیق جهت) ---
+    # --- technical note istechnical noteandtechnical note istechnical note 1: layer technical note inandfromtechnical note + untiltechnical noteandtechnical note technical note (Panda3D technical note for technical note technical note technical note) ---
     from panda3d.core import CardMaker, TransparencyAttrib, TextureStage as _P3DTexStage, Texture as _P3DTexture
     t5_env_nodes = []
 
@@ -1052,11 +1052,11 @@ try:
             except: pass
             return None
 
-    # لایه محیطی پشت دروازه (120x69.5 متر، از روی چمن زمین z=-24 تا پشت تابلوها z=+45.5)
+    # layer technical note technical note inandfromtechnical note (120x69.5 technical note from technical noteandtechnical note technical note pitch z=-24 until technical note untiltechnical noteandtechnical note z=+45.5)
     _env_ov = _make_env_card("t5_goal_env", -60, 60, -24, 45.5, tex_paths["grass_overlay"], (0, 0.0075, 0), _p=-90.0, _alpha=True, _bias=2)
-    # تابلوی پشت دروازه (رو به زمین در z=+10.5؛ تا x=±45.4 امتداد یافته برای آب‌بندی گوشه‌ها)
+    # untiltechnical noteandtechnical note technical note inandfromtechnical note (technical noteand to pitch in z=+10.5technical note until x=±45.4 technical note technical notedecreasetechnical note for technical note‌technical note technical noteandtechnical note‌technical note)
     _env_b1 = _make_env_card("t5_board_back", -45.4, 45.4, 0, 1, tex_paths["board_strip"], (0, 0, 10.5), _h=0.0)
-    # تابلوهای کناری دقیقاً روی x=±45 (لبه تابلوی پشت) از z=+10.7 تا z=-45 — گوشه کامل بدون روزنه
+    # untiltechnical noteandtechnical note technical note exactly technical noteandtechnical note x=±45 (technical noteto untiltechnical noteandtechnical note technical note) from z=+10.7 until z=-45 — technical noteandtechnical note complete without technical noteweighttechnical note
     _env_b2 = _make_env_card("t5_board_left", -27.85, 27.85, 0, 1, tex_paths["board_strip"], (-45, 0, -17.15), _h=90.0)
     _env_b3 = _make_env_card("t5_board_right", -27.85, 27.85, 0, 1, tex_paths["board_strip"], (45, 0, -17.15), _h=-90.0)
     for _env_n in (_env_ov, _env_b1, _env_b2, _env_b3):
@@ -1064,10 +1064,10 @@ try:
             _env_n.hide()
             t5_env_nodes.append(_env_n)
 
-    # --- لبه استادیوم: دیوار سکو + سقف قوسی — بخش خمیده موازی خط عرضی زمین (مثل عکس مرجع):
-    #     خمیدگی به سمت «داخل» زمین: مرکز قوس (x=0) عقب‌ترین نقطه (z=15.5) و دو سر قوس
-    #     به سمت خط دروازه/خطوط لمسی می‌آیند — هم‌شکل سایه (4.6-0.0032x²) → سایه موازی سقف
-    #     (کاسه استادیوم)؛ unlit برای سیلوئت تیره یکدست ---
+    # --- technical noteto istechnical noteandtechnical note: technical noteandtechnical note technical noteand + limit technical noteandtechnical note — section technical note technical noteandfromtechnical note line widthtechnical note pitch (technical note image technical note):
+    #     technical note to side «inside» pitch: technical note technical noteandtechnical note (x=0) technical note‌technical note technical note (z=15.5) and technical noteand technical note technical noteandtechnical note
+    #     to side line inandfromtechnical note/lineandtechnical note technical note technical note‌technical note — technical note‌technical notetotal technical note (4.6-0.0032x²) → technical note technical noteandfromtechnical note limit
+    #     (technical note istechnical noteandtechnical note)technical note unlit for technical noteandtechnical note technical note technical notecodetechnical note ---
     _ROOF_Z = 15.5
     _ROOF_K = 0.0032
     _ROOF_SEGS = 19
@@ -1087,7 +1087,7 @@ try:
     t5_env_nodes.append(_roof_group)
 
     def update_env_mirror():
-        # آینه‌سازی لایه محیطی برای دروازه چپ تا سایه همیشه سمت گوشه‌ی نزدیک به دوربین باشد
+        # technical note‌technical notefromtechnical note layer technical note for inandfromtechnical note technical note until technical note always side technical noteandtechnical note‌technical note technical note to technical noteandtechnical note withtechnical note
         try:
             _mir = -1.0 if get_goal_side() == "left" else 1.0
             if _env_ov is not None:
@@ -1161,9 +1161,9 @@ try:
     last_live_coords = None
     unchanged_count = 0
     tap_min_diff = float('inf')
-    tap_target_coords = None       # مختصات فریم کمترین خطا در فاز تپ (هدف برگشت)
-    back_best_diff = float('inf')  # بهترین اختلاف در فاز برگشت
-    back_taps = 0                  # شمارنده تپ‌های برگشت
+    tap_target_coords = None       # coordinates frame technical note Error in technical notefrom technical note (target technical note)
+    back_best_diff = float('inf')  # totechnical note technical note in technical notefrom technical note
+    back_taps = 0                  # counter technical note‌technical note technical note
     speed_ok_count = 0
     current_glt_scenario = 0
     manual_record_state = "IDLE"
@@ -1179,7 +1179,7 @@ try:
     ui_progress = 0.0
 
     is_animating_camera = False
-    goal_ui_fired = False   # آیا GOAL/NO GOAL در این پخش نمایش داده شده است
+    goal_ui_fired = False   # technical noteor GOAL/NO GOAL in technical note technical note display data technical note is
     anim_state = None
     anim_start_time = 0
     anim_duration = 1.0
@@ -1188,10 +1188,10 @@ try:
 
     f1_pos = Vec3(0, 0, 0)
     f1_rot = Vec3(0, 0, 0)
-    f1_look_rot = Vec3(0, 0, 0)         # زاویه‌ی look_at از f1_pos به توپ (برای pre_align)
-    f1_look_rot_actual = Vec3(0, 0, 0)  # زاویه‌ی واقعی پایان move_backward (برای post_unalign)
+    f1_look_rot = Vec3(0, 0, 0)         # technical noteandtechnical note‌technical note look_at from f1_pos to ball (for pre_align)
+    f1_look_rot_actual = Vec3(0, 0, 0)  # technical noteandtechnical note‌technical note real end move_backward (for post_unalign)
     f2_pos = Vec3(0, 0, 0)
-    f2_pos_end = Vec3(0, 0, 0)          # موقعیت دوربین پس از جابجایی 0.11 در hold_top
+    f2_pos_end = Vec3(0, 0, 0)          # position technical noteandtechnical note technical note from technical note 0.11 in hold_top
     f2_rot_start = Vec3(0, 0, 0) 
     f2_rot_end = Vec3(0, 0, 0)
     target_yaw_anim = 0.0
@@ -1453,7 +1453,7 @@ try:
         try:
             with open(BACKUP_FILE, "r") as f:
                 data = json.load(f)
-            # بازیابی مقدار HUD از بکاپ ضدکرش (Crash Persistence) پیش از پردازش آفست‌ها
+            # recovery value HUD from technical note technical note (Crash Persistence) technical note from technical notefromtechnical note technical note‌technical note
             if "hud" in data:
                 try:
                     h_info = data.pop("hud")
@@ -1532,7 +1532,7 @@ try:
             out_json = {}
             for offset, b in backup_data["patches"].items():
                 if b: out_json[str(offset)] = b.hex()
-            # Crash Persistence: ذخیره آدرس و مقدار اصلی HUD در بکاپ ضدکرش
+            # Crash Persistence: save address and value original HUD in technical note technical note
             if hud_address and hud_original_val is not None:
                 out_json["hud"] = {"address": hud_address, "val": hud_original_val}
             os.makedirs(os.path.dirname(BACKUP_FILE), exist_ok=True)
@@ -1648,7 +1648,7 @@ try:
             except Exception as e:
                 flog("CLEANUP", f"backup-file removal failed: {e!r}")
 
-        # بازگردانی امن مقدار اصلی HUD (پوشش خروج اضطراری و _shutdown_cleanup نیز)
+        # restore technical note value original HUD (technical noteandtechnical note technical noteandtechnical note technical note and _shutdown_cleanup technical note)
         try:
             restore_hud()
         except Exception as e:
@@ -1757,10 +1757,10 @@ try:
             return False
 
     # ------------------------------------------------------------------
-    # سیستم مخفی‌سازی HUD (AOB Scan پس‌زمینه):
-    # اسکن یک‌باره الگوی بایتی HUD در یک ترد مجزا بلافاصله پس از اتصال؛
-    # آدرس کش می‌شود، هنگام قفل دوربین 0x00 نوشته شده و در بازگردانی/خروج
-    # اضطراری مقدار اصلی ترمیم می‌شود. بکاپ ضدکرش در mem_backup.json.
+    # system technical note‌technical notefromtechnical note HUD (AOB Scan technical note‌pitchtechnical note):
+    # technical note technical note‌withtechnical note technical noteandtechnical note bytetechnical note HUD in technical note technical note technical note technical notedistance technical note from connectiontechnical note
+    # address technical note technical note‌technical noteandtechnical note technical note technical note technical noteandtechnical note 0x00 technical noteandtechnical note technical note and in restore/technical noteandtechnical note
+    # technical note value original technical note technical note‌technical noteandtechnical note. technical note technical note in mem_backup.json.
     # ------------------------------------------------------------------
     class _MBI64(ctypes.Structure):
         _fields_ = [
@@ -1777,7 +1777,7 @@ try:
 
     def scan_hud_pattern_async():
         global hud_address, hud_scan_done
-        # الگوی دقیق 30 بایتی بعد از بایت اول (هدف) برای نسخه 2021 / FL 2026
+        # technical noteandtechnical note technical note 30 bytetechnical note after from byte first (target) for version 2021 / FL 2026
         pattern = b'\x00\x78\x00\x00\x00\x00\x00\x00\x00\x41\x46\x47\x00\x42\x48\x52\x00\x42\x47\x44\x00\x42\x54\x4E\x00\x42\x52\x4E\x00\x4B\x48'
         mbi = _MBI64()
         mbi_size = ctypes.sizeof(mbi)
@@ -1787,33 +1787,33 @@ try:
 
         flog("HUD", "Starting 64-bit Full RAM AOB scanner for PES 2021...")
 
-        # تا زمان پیدا شدن آدرس در حین بازی، اسکن در پس‌زمینه تکرار می‌شود
+        # until time technical note technical note address in technical note withtechnical note technical note in technical note‌pitchtechnical note technical note technical note‌technical noteandtechnical note
         while _tk_alive and not hud_address:
             if not pm or not pm.process_handle:
                 time.sleep(1)
                 continue
 
             curr_addr = 0x00010000
-            max_addr = 0x00007FFFFFFF0000  # فضای آدرس‌دهی 64 بیتی برنامه در ویندوز
+            max_addr = 0x00007FFFFFFF0000  # technical note address‌technical note 64 technical note technical notenametechnical note in andtechnical noteandtechnical note
 
             try:
                 while curr_addr < max_addr and not hud_address:
                     if VirtualQueryEx(pm.process_handle, ctypes.c_void_p(curr_addr), ctypes.byref(mbi), mbi_size) == 0:
                         break
 
-                    # فقط بلاک‌های تخصیص‌یافته (MEM_COMMIT = 0x1000) و قابل‌خواندن
+                    # only technical note‌technical note allocation‌technical notedecreasetechnical note (MEM_COMMIT = 0x1000) and technical note‌read
                     is_committed = (mbi.State == 0x1000)
-                    is_readable = not (mbi.Protect & 0x101)  # حذف PAGE_NOACCESS و PAGE_GUARD
+                    is_readable = not (mbi.Protect & 0x101)  # technical note PAGE_NOACCESS and PAGE_GUARD
 
                     if is_committed and is_readable and mbi.RegionSize > 0:
-                        # محدود کردن سقف خواندن به 16 مگابایت در هر صفحه جهت مصرف بهینه رم
+                        # technical noteandtechnical note technical note limit read to 16 technical notebyte in technical note technical note technical note technical note totechnical note technical note
                         read_size = min(mbi.RegionSize, 16 * 1024 * 1024)
                         try:
                             page_bytes = _rpm(pm.process_handle, curr_addr, read_size)
                             idx = page_bytes.find(pattern)
                             if idx != -1:
                                 matched_addr = curr_addr + idx
-                                hud_address = matched_addr - 1  # بایت اول هدایت به مقدار اصلی HUD
+                                hud_address = matched_addr - 1  # byte first technical note to value original HUD
                                 hud_scan_done = True
                                 flog("HUD", f"PES 2021 HUD byte found in RAM at: 0x{hud_address:X}")
                                 return
@@ -1856,7 +1856,7 @@ try:
             return False
 
     def connect_to_game():
-        # متغیر aux_state_address به خط زیر اضافه شد
+        # technical note aux_state_address to line technical note technical note technical note
         global pm, base_address, cam3_height_address, state_static_address, aux_state_address, connection_time
         try:
             pm = pymem.Pymem(config_data["process_name"])
@@ -1870,7 +1870,7 @@ try:
                     if pattern_location: cam3_height_address = pattern_location + 12
                 except: pass
             connection_time = time.time()
-            # One-Time Background Scan: شروع اسکن AOB صفحه HUD در ترد مجزا
+            # One-Time Background Scan: start technical note AOB technical note HUD in technical note technical note
             threading.Thread(target=scan_hud_pattern_async, daemon=True).start()
             return True
         except: return False
@@ -1908,7 +1908,7 @@ try:
             ver_addr = get_ptr_addr([0x037F4A08, 0x8, 0x10, 0x0, 0x8])
             if ver_addr: safe_write_float(ver_addr, v_rot)
             
-            # تزریق مستقیم مقدار زوم (عدد اعشاری) به آفست مد نظر
+            # technical note direct value technical noteandtechnical note (number decimaltechnical note) to technical note technical note technical note
             if zoom_val is not None:
                 safe_write_float(base_address + ZOOM_INSTRUCTION_OFFSET, zoom_val)
             return True
@@ -1917,8 +1917,8 @@ try:
             return False
 
     # ------------------------------------------------------------------
-    # قفل دوربین چهارم (کد 03): مود GLT فقط باید روی دوربین چهارم اجرا شود
-    # پوینتر ۱ بایتی انتخاب دوربین: 00=دوربین اول ... 03=دوربین ما (چهارم)
+    # technical note technical noteandtechnical note technical note (code 03): technical noteandtechnical note GLT only must technical noteandtechnical note technical noteandtechnical note technical note run technical noteandtechnical note
+    # pointer 1 bytetechnical note technical note technical noteandtechnical note: 00=technical noteandtechnical note first ... 03=technical noteandtechnical note technical note (technical note)
     # ------------------------------------------------------------------
     # Cheat Engine equivalent pointer chain for FL_2026 / PES2021.
     # FL_2026.exe + 037F0AC8 -> QWORD
@@ -1935,7 +1935,7 @@ try:
     cam4_thread_started = False
     cam4_mutex = threading.Lock()
 
-    # متغیرهای سیستم مخفی‌سازی HUD
+    # technical note system technical note‌technical notefromtechnical note HUD
     hud_address = None
     hud_original_val = None
     hud_scan_done = False
@@ -1959,7 +1959,7 @@ try:
             pass
 
     def cam4_addr():
-        # پیمایش دقیق زنجیره پوینتر 64 بیتی دقیقاً مثل استایل نسخه 2017
+        # technical note technical note chain pointer 64 technical note exactly technical note istechnical note version 2017
         if not pm or not base_address:
             return None
         try:
@@ -1988,7 +1988,7 @@ try:
                 if curr_b == 0xFF:
                     return False
                 
-                # رفع کرش: اگر مقدار None بود ذخیره کن حتی اگر 03 باشد (مقدار پیش‌فرض 00 در نظر گرفته شود)
+                # technical note technical note: if value None technical noteandtechnical note save technical note technical note if 03 withtechnical note (value default 00 in technical note technical note technical noteandtechnical note)
                 if cam4_saved_value is None:
                     cam4_saved_address = a
                     cam4_saved_value = curr_b if curr_b != CAM4_LOCK_VAL else 0x00
@@ -1996,7 +1996,7 @@ try:
 
                 cam4_write_byte(a, CAM4_LOCK_VAL)
 
-            # حلقه پایدارسازی خواندن
+            # technical note technical notefromtechnical note read
             rb = None
             for _ in range(10):
                 time.sleep(0.01)
@@ -2022,7 +2022,7 @@ try:
             return False
 
     def cam4_enforce_loop():
-        # رفع باگ قفل مداوم Mutex: شرط بیرون از lock قرار گرفت دقیقاً مانند 2017
+        # technical note withtechnical note technical note technical noteandtechnical note Mutex: technical note outside from lock technical note technical note exactly technical note 2017
         while True:
             if cam4_lock_flag:
                 try:
@@ -2080,26 +2080,26 @@ try:
         
         if state_name == "fade_in":
             global goal_ui_fired
-            goal_ui_fired = False   # برای هر پخش جدید، تریگر ۹۰٪ ریست می‌شود
+            goal_ui_fired = False   # for technical note technical note newtechnical note technical note 90technical note reset technical note‌technical noteandtechnical note
             camera.position = f1_pos
             camera.rotation = f1_rot
             for post_ent in [post_l, post_r, bar] + net_parts:
                 post_ent.enabled = True
                 post_ent.color = color.rgba(1, 1, 1, 0.0)
         elif state_name == "pre_align":
-            # دوربین در f1_pos با f1_rot است؛ شروع چرخش نرم به سمت توپ
+            # technical noteandtechnical note in f1_pos with f1_rot istechnical note start technical note smooth to side ball
             camera.position = f1_pos
             camera.rotation = f1_rot
-            # تیرک‌ها و تور در طول چرخش سر دوربین نمایان می‌مانند (بدون خاموشی ناگهانی)
+            # post‌technical note and technical noteandtechnical note in length technical note technical note technical noteandtechnical note technical noteortechnical note technical note‌technical note (without technical noteandtechnical note technical note)
             for post_ent in [post_l, post_r, bar] + net_parts: post_ent.enabled = True
         elif state_name == "move_forward":
             for post_ent in [post_l, post_r, bar] + net_parts: 
                 post_ent.enabled = True
                 post_ent.color = color.white
         elif state_name == "post_unalign":
-            # دوربین در f1_pos است و از زاویه‌ی واقعی پایان move_backward به f1_rot برمی‌گردد
+            # technical noteandtechnical note in f1_pos is and from technical noteandtechnical note‌technical note real end move_backward to f1_rot technical note‌technical note
             camera.position = f1_pos
-            # تیرک‌ها و تور در طول چرخش برگشت سر دوربین نمایان می‌مانند
+            # post‌technical note and technical noteandtechnical note in length technical note technical note technical note technical noteandtechnical note technical noteortechnical note technical note‌technical note
             for post_ent in [post_l, post_r, bar] + net_parts: post_ent.enabled = True
         elif state_name == "fade_out":
             camera.position = f1_pos
@@ -2256,21 +2256,21 @@ try:
         ball_shadow.x = ball.x
         ball_shadow.z = ball.z
         
-        # محل قرارگیری دوربین بالای توپ
+        # technical note technical note technical noteandtechnical note withtechnical note ball
         cam_glt_y = ball.y + 5.3
         cam_glt_z = ball.z - 0.11
         
         f2_pos = Vec3(ball.x, cam_glt_y, cam_glt_z)
-        # چون فقط چرخش داریم، نقطه پایان جابجایی برابر با همان نقطه است
+        # because only technical note technical note technical note end technical note technical note with same technical note is
         f2_pos_end = Vec3(ball.x, cam_glt_y, cam_glt_z)
         
-        # محاسبه‌ی زاویه‌ی look_at از f1_pos به توپ برای pre_align (بدون پرش)
+        # technical noteto‌technical note technical noteandtechnical note‌technical note look_at from f1_pos to ball for pre_align (without technical note)
         camera.position = f1_pos
         camera.look_at(Vec3(ball.x, ball.y, ball.z))
         f1_look_rot = Vec3(camera.rotation[0], camera.rotation[1], camera.rotation[2])
-        camera.rotation = f1_rot  # بازگشت به زاویه‌ی کالیبره‌شده
+        camera.rotation = f1_rot  # withtechnical note to technical noteandtechnical note‌technical note calibrated‌technical note
         
-        # مقادیر placeholder؛ زاویه‌ی واقعی در پایان move_forward با مثلثات محاسبه می‌شود
+        # technical note placeholdertechnical note technical noteandtechnical note‌technical note real in end move_forward with technical note technical noteto technical note‌technical noteandtechnical note
         f2_rot_start = Vec3(0, 0, 0)
         f2_rot_end = Vec3(0, 0, 0)
         
@@ -2281,27 +2281,27 @@ try:
             hwnd = base.win.get_window_handle().get_int_handle()
             user32.SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, screen_width, screen_height - 1, 0)
             user32.SetForegroundWindow(hwnd)
-            user32.SetCursorPos(2, screen_height - 3)   # ماوس به گوشه‌ی پایین چپ منتقل می‌شود
+            user32.SetCursorPos(2, screen_height - 3)   # technical noteandtechnical note to technical noteandtechnical note‌technical note below technical note technical note technical note‌technical noteandtechnical note
         except: pass
         
-        # ترتیب انیمیشن: ظاهر شدن → تراز کردن توپ (pre_align) → حرکت (2.5s) → چرخش+جابجایی (1s)
+        # order technical note: technical note technical note → technical notefrom technical note ball (pre_align) → technical note (2.5s) → technical note+technical note (1s)
         root.after(400, lambda: start_custom_anim("fade_in", 1.0, 
             lambda: start_custom_anim("pre_align", 1.0,
             lambda: start_custom_anim("move_forward", 2.5, 
             lambda: start_custom_anim("hold_top", 1.0, seq_anim_1_done)))))
 
     def seq_anim_1_done():
-        # شروع/پنهان‌سازی GOAL/NO GOAL به تیک ۹۰٪ move_forward منتقل شد (+۴۴۵۰ms = دقیقاً زمان پایان قبلی)
+        # start/hidden‌technical notefromtechnical note GOAL/NO GOAL to technical note 90technical note move_forward technical note technical note (+4450ms = exactly time end beforetechnical note)
         
-        # ترتیب برگشت: توقف (3s) → چرخش+جابجایی برگشت (1s) → حرکت برگشت (2.5s) → unalign (0.4s) → محو شدن
+        # order technical note: stop (3s) → technical note+technical note technical note (1s) → technical note technical note (2.5s) → unalign (0.4s) → technical noteand technical note
         root.after(3000, lambda: start_custom_anim("hold_top", 1.0, 
             lambda: start_custom_anim("move_backward", 2.5, 
             lambda: start_custom_anim("post_unalign", 1.0,
             lambda: start_custom_anim("fade_out", 1.0, seq_anim_2_done)))))
 
     def seq_anim_2_done():
-        # پایان انیمیشن اورسینا: هنوز قفل 03 نباید آزاد شود.
-        # بازی اکنون به مرحله ادامه Replay برمی‌گردد و قفل تا ریست نهایی نگه داشته می‌شود.
+        # end technical note technical noteandtechnical note: still technical note 03 technical notemust free technical noteandtechnical note.
+        # withtechnical note technical noteandtechnical note to technical note resume Replay technical note‌technical note and technical note until reset technical note technical note technical note technical note‌technical noteandtechnical note.
         root.after(400, seq_resume_playback)
 
     def seq_resume_playback():
@@ -2317,11 +2317,11 @@ try:
         
         playback_routine()
 
-    FREEZE_SPHERE_RADIUS = 6.0    # شعاع کره‌ی اطراف محل فریم فریز برای ورود به اسلوموشن (متر)
-    FREEZE_CIRCLE_RADIUS = 1.5    # شعاع کره‌ی اطراف محل فریم فریز برای ورود به تپینگ (متر) - مخصوص نسخه 2021
-    SLOWDOWN_EXIT_MARGIN = 0.5    # هیسترزیس خروج از اسلوموشن؛ اگر توپ از کره خارج شد، برگشت به سرعت عادی (متر)
-    SPEED_ARM_LIMIT = 1.0         # حداکثر جابجایی طبیعی توپ در هر تیک (متر)؛ بیشتر از این یعنی پرش/جاروبِ ریوایند
-    SPEED_ARM_TICKS = 4           # تعداد تیک متوالی با جابجایی طبیعی لازم برای فعال شدن تریگرهای کره‌ی فریز
+    FREEZE_SPHERE_RADIUS = 6.0    # radius technical note‌technical note technical note technical note frame frozen for andtechnical noteandtechnical note to technical noteandtechnical noteandtechnical note (technical note)
+    FREEZE_CIRCLE_RADIUS = 1.5    # radius technical note‌technical note technical note technical note frame frozen for andtechnical noteandtechnical note to technical note (technical note) - technical noteandtechnical note version 2021
+    SLOWDOWN_EXIT_MARGIN = 0.5    # technical note technical noteandtechnical note from technical noteandtechnical noteandtechnical note if ball from technical note technical note technical note technical note to technical note technical note (technical note)
+    SPEED_ARM_LIMIT = 1.0         # technical note technical note technical note ball in technical note technical note (technical note)technical note technical note from technical note technical note technical note/technical noteandtechnical note technical noteandtechnical note
+    SPEED_ARM_TICKS = 4           # count technical note technical noteandtechnical note with technical note technical note technical notefromtechnical note for active technical note technical note technical note‌technical note frozen
 
     _log_tick_counter = 0
 
@@ -2358,7 +2358,7 @@ try:
 
         dist_freeze = calc_dist(live, freeze_frame)
 
-        # ثبت وضعیت توپ هر ۵۰ فریم در لاگ جهت اطمینان از پیشرفت
+        # register andtechnical note ball technical note 50 frame in log technical note technical note from technical note
         _log_tick_counter += 1
         if _log_tick_counter % 50 == 0:
             flog("TRACK", f"State: {playback_state} | Dist: {dist_freeze:.2f}m | Ball: ({live[0]:.2f}, {live[1]:.2f}, {live[2]:.2f})")
@@ -2425,7 +2425,7 @@ try:
             if worst_axis_diff > tap_min_diff:
                 playback_state = "STEP_BACK"
                 back_best_diff = worst_axis_diff
-                back_taps = 1  # تپ اول همینجا ثبت می‌شود
+                back_taps = 1  # technical note first technical note register technical note‌technical noteandtechnical note
                 last_live_coords = None
                 unchanged_count = 0
                 press_key(vk_back, scan_back)
@@ -2454,14 +2454,14 @@ try:
             diff_y = abs(live[2] - _tgt[2])
             worst_axis_diff = max(diff_x, diff_h, diff_y)
 
-            # اگر با تپ اول به هدف رسیدیم یا قبلاً ۲ تپ انجام شده، انیمیشن اجرا شود
+            # if with technical note first to target technical note or beforetechnical note 2 technical note technical note technical note technical note run technical noteandtechnical note
             if worst_axis_diff <= 0.005 or back_taps >= 2 or unchanged_count > 8:
                 playback_state = "IDLE"
                 flog("GLT", f"Step-back finished at tap {back_taps}! Starting execute_animation...")
                 root.after(150, execute_animation)
                 return
 
-            # در غیر این صورت تپ دوم (نهایی) زده می‌شود
+            # in technical note technical note technical noteandtechnical note technical note second (technical note) technical note technical note‌technical noteandtechnical note
             back_taps += 1
             press_key(vk_back, scan_back)
             root.after(15, lambda: release_key(vk_back, scan_back))
@@ -2517,16 +2517,16 @@ try:
             
             raw_state_str = "STOP"
             if state_static_address:
-                # خواندن وضعیت پیش‌فرض
+                # read andtechnical note default
                 status = safe_read_int(state_static_address)
                 
-                # خواندن وضعیت از طریق پوینتر کمکی
+                # read andtechnical note from technical note pointer technical note
                 aux_val = -1
                 aux_addr = get_ptr_addr([0x037F4820, 0xA20])
                 if aux_addr:
                     aux_val = safe_read_int(aux_addr)
 
-                # بررسی شروط (اگر استاتوس 131 بود یا مقدار پوینتر کمکی 18 بود)
+                # check technical noteandtechnical note (if istechnical noteandtechnical note 131 technical noteandtechnical note or value pointer technical note 18 technical noteandtechnical note)
                 if status == 131 or aux_val == 15: 
                     raw_state_str = "REPLAY"
                 elif status == 128: 
@@ -2819,9 +2819,9 @@ try:
             root.after(16, manual_recording_routine)
 
     # ------------------------------------------------------------------
-    # سد محکم (Hard Barrier): پیش از هرگونه نوشتن مختصات دوربین، باید مقدار
-    # انتخاب‌گر دوربین دقیقاً 0x03 باقی مانده باشد؛ در غیر این صورت کل
-    # پروسه بازپخش ABORT شده، هیچ مختصاتی نوشته نمی‌شود و قفل آزاد می‌گردد.
+    # technical note technical note (Hard Barrier): technical note from technical noteandtechnical note write coordinates technical noteandtechnical note must value
+    # technical note‌technical note technical noteandtechnical note exactly 0x03 withtechnical note technical note withtechnical note in technical note technical note technical noteandtechnical note total
+    # process withtechnical note ABORT technical note technical note coordinatestechnical note technical noteandtechnical note technical note‌technical noteandtechnical note and technical note free technical note‌technical note.
     # ------------------------------------------------------------------
 
 
@@ -2842,7 +2842,7 @@ try:
         speed_ok_count = 0
         last_live_coords = None
         
-        # ۱. فوکوس قطعی روی بازی تا دکمه‌های ریوایند دریافت شوند
+        # 1. technical noteandtechnical noteandtechnical note deterministic technical noteandtechnical note withtechnical note until button‌technical note technical noteandtechnical note intechnical notedecrease technical noteandtechnical note
         focus_and_click_game()
         
         prof = get_profile_keys()
@@ -2875,7 +2875,7 @@ try:
             flog("PLAY", "Sending D (Rewind replay)...")
             press_key(vk_d, scan_d)
             root.after(120, lambda: release_key(vk_d, scan_d))
-            # فرصت ۱ ثانیه‌ای به بازی برای بازگشت ریپلی به ابتدای حرکت
+            # technical note 1 second‌technical note to withtechnical note for withtechnical note technical note to technical note technical note
             root.after(1000, step5)
             
         def step5():
@@ -2887,7 +2887,7 @@ try:
         root.after(100, step2)
 
     def start_play_chain():
-        # بررسی مجدد سد محکم پس از اتمام 80 میلی‌ثانیه تاخیر
+        # check technical note technical note technical note technical note from technical note 80 technical note‌second untiltechnical note
         if not verify_cam4_hard_barrier():
             flog("PLAY", "Hard Barrier Failed: Camera is not 03 after delay. Aborting playback!")
             restore_original_state()
@@ -2919,7 +2919,7 @@ try:
             root.after(200, step3)
             
         def step3():
-            # اعمال قطعی پریست فقط پس از رد شدن از سد محکم
+            # technical note deterministic technical notereset only technical note from technical note technical note from technical note technical note
             if not apply_preset(1):
                 flog("PLAY", "Apply preset failed. Aborting!")
                 restore_original_state()
@@ -3124,7 +3124,7 @@ try:
     ctk_label_proc.pack(pady=(15, 0), padx=20, anchor="w")
 
     proc_var = tk.StringVar(value=config_data["process_name"])
-    # حذف PES 2017 از گزینه‌های لیست دراپ‌داون
+    # technical note PES 2017 from technical note‌technical note technical note intechnical note‌technical noteandtechnical note
     proc_menu = tk.OptionMenu(scrollable_frame, proc_var, "FL_2026.exe", "PES2021.exe",
                               command=on_process_change)
     proc_menu.configure(bg="#242424", fg="white", activebackground="#242424", activeforeground="white", bd=0, relief="flat", highlightthickness=0)
@@ -3249,7 +3249,7 @@ try:
 
         if is_animating_camera:
             t = min((time.time() - anim_start_time) / anim_duration, 1.0)
-            progress = ease_in_out_bezier(t) # استفاده از تابع نرم‌کننده برای تمام حرکات
+            progress = ease_in_out_bezier(t) # istechnical note from untiltechnical note smooth‌technical note for technical note technical note
             
             if anim_state == "fade_in":
                 set_window_opacity(t)
@@ -3258,16 +3258,16 @@ try:
                 for post_ent in [post_l, post_r, bar] + net_parts: post_ent.color = color.rgba(1, 1, 1, t)
                 
             elif anim_state == "pre_align":
-                # چرخش بسیار نرم بدون پرش
+                # technical note technical noteortechnical note smooth without technical note
                 camera.position = f1_pos
                 camera.rotation = lerp_rot(f1_rot, f1_look_rot, progress)
                 camera.fov = 20.69
                 set_window_opacity(1.0)
-                # تیرک‌ها و تور در طول چرخش سر دوربین نمایان می‌مانند (بدون خاموشی ناگهانی)
+                # post‌technical note and technical noteandtechnical note in length technical note technical note technical noteandtechnical note technical noteortechnical note technical note‌technical note (without technical noteandtechnical note technical note)
                 for post_ent in [post_l, post_r, bar] + net_parts: post_ent.enabled = True
 
             elif anim_state == "move_forward":
-                # حرکت با پیشروی نرم، قفل روی توپ
+                # technical note with technical noteandtechnical note smoothtechnical note technical note technical noteandtechnical note ball
                 camera.position = lerp(f1_pos, f2_pos, progress)
                 camera.look_at(Vec3(ball.x, ball.y, ball.z))
                 camera.fov = 20.69 
@@ -3279,16 +3279,16 @@ try:
                         post_ent.enabled = True; post_ent.color = color.rgba(1, 1, 1, post_alpha)
                 else:
                     for post_ent in [post_l, post_r, bar] + net_parts: post_ent.enabled = False
-                # نمایش GOAL/NO GOAL وقتی دوربین ۹۰٪ مسیر پرواز را رفته (۱۰٪ مانده به بالای توپ)
+                # display GOAL/NO GOAL when technical noteandtechnical note 90technical note path technical noteandfrom technical note technical note (10technical note technical note to withtechnical note ball)
                 if not goal_ui_fired and t >= 0.9:
                     goal_ui_fired = True
                     show_goal_ui_animation()
-                    root.after(4450, hide_goal_ui_animation)   # ۲۵۰ms باقی‌مانده پرواز + ۱۰۰۰ms hold_top + ۳۲۰۰ms مثل قبل
+                    root.after(4450, hide_goal_ui_animation)   # 250ms withtechnical note‌technical note technical noteandfrom + 1000ms hold_top + 3200ms technical note before
 
                     
             elif anim_state == "hold_top":
-                # بدون چرخش ۹۰ درجه: دوربین دقیقاً بالای توپ می‌ماند (همان f2_pos با آفست 0.11)
-                # و با همان جهت look_at از بغل به توپ نگاه می‌کند؛ خط دروازه در کادر عمود دیده می‌شود
+                # without technical note 90 intechnical note: technical noteandtechnical note exactly withtechnical note ball technical note‌technical note (same f2_pos with technical note 0.11)
+                # and with same technical note look_at from technical note to ball technical note technical note‌technical note line inandfromtechnical note in technical notein technical noteandtechnical note technical note technical note‌technical noteandtechnical note
                 camera.position = f2_pos
                 camera.rotation = f2_rot_start
                 camera.fov = 20.69
@@ -3297,7 +3297,7 @@ try:
 
 
             elif anim_state == "move_backward":
-                # برگشت نرم مسیر، دوباره قفل روی توپ
+                # technical note smooth pathtechnical note again technical note technical noteandtechnical note ball
                 camera.position = lerp(f2_pos, f1_pos, progress)
                 camera.look_at(Vec3(ball.x, ball.y, ball.z))
                 camera.fov = 20.69
@@ -3312,31 +3312,31 @@ try:
                     for post_ent in [post_l, post_r, bar] + net_parts: post_ent.enabled = False
 
             elif anim_state == "post_unalign":
-                # برگشت زاویه به حالت اولیه کالیبره شده
+                # technical note technical noteandtechnical note to technical note firsttechnical note calibrated technical note
                 camera.position = f1_pos
                 camera.rotation = lerp_rot(f1_look_rot_actual, f1_rot, progress)
                 camera.fov = 20.69
                 set_window_opacity(1.0)
-                # تیرک‌ها و تور در طول چرخش برگشت سر دوربین نمایان می‌مانند
+                # post‌technical note and technical noteandtechnical note in length technical note technical note technical note technical noteandtechnical note technical noteortechnical note technical note‌technical note
                 for post_ent in [post_l, post_r, bar] + net_parts: post_ent.enabled = True
                     
             elif anim_state == "fade_out":
                 set_window_opacity(1.0 - t)
                 camera.position = f1_pos
                 camera.rotation = f1_rot
-                camera.fov = 20.50   # دقیقا fov نمای اولیه؛ فریم آخر بدون هیچ انحرافی بر اولین فریم انیمیشن منطبق می‌شود
+                camera.fov = 20.50   # technical note fov technical note firsttechnical note frame technical note without technical note technical note technical note firsttechnical note frame technical note technical note technical note‌technical noteandtechnical note
                 for post_ent in [post_l, post_r, bar] + net_parts: post_ent.color = color.rgba(1, 1, 1, 1.0 - t)
 
-            # --- لاجیک اتمام هر انیمیشن ---
+            # --- technical note technical note technical note technical note ---
             if t >= 1.0:
                 if anim_state == "move_forward":
-                    # مختصات دوربینی که با look_at به توپ نگاه می‌کرد دقیقاً ذخیره می‌شود
+                    # coordinates technical noteandtechnical note technical note with look_at to ball technical note technical note‌technical note exactly save technical note‌technical noteandtechnical note
                     f2_rot_start = Vec3(camera.rotation[0], camera.rotation[1], camera.rotation[2])
-                    # زاویه نهایی تعریف می‌شود: شیب (Pitch) و انحراف (Roll) دست نخورده می‌ماند، فقط افق (Yaw) 90 می‌شود
+                    # technical noteandtechnical note technical note technical note technical note‌technical noteandtechnical note: technical note (Pitch) and technical note (Roll) technical note technical noteandtechnical note technical note‌technical note only technical note (Yaw) 90 technical note‌technical noteandtechnical note
                     f2_rot_end = Vec3(f2_rot_start[0], target_yaw_anim, f2_rot_start[2])
                     
                 elif anim_state == "move_backward":
-                    # ذخیره زاویه برگشت
+                    # save technical noteandtechnical note technical note
                     f1_look_rot_actual = Vec3(camera.rotation[0], camera.rotation[1], camera.rotation[2])
                     
                 is_animating_camera = False
