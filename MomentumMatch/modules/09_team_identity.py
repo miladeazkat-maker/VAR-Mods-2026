@@ -47,7 +47,7 @@ class TeamIdentityTracker:
     def __init__(self, db_dir: Optional[str] = None, logger=None,
                  proc_names=TEAM_TRACKER_PROC_NAMES, api=None,
                  pid_finder=None, base_finder=None, pt=None):
-        self.db_dir = db_dir or os.path.join(os.path.dirname(os.path.abspath(__file__)),
+        self.db_dir = db_dir or os.path.join(_MOMENTUM_DATA_DIR,
                                              TEAM_DB_DIRNAME)
         self.logger = logger
         self.proc_names = tuple(proc_names)
@@ -954,13 +954,13 @@ def mom_load_settings():
     is the base; ModsConfig.json mm_* keys (frontend) override it."""
     s = dict(TV_SNAP_DEFAULTS)
     try:
-        _base = snap_load_settings(os.path.dirname(os.path.abspath(__file__)))
+        _base = snap_load_settings(_MOMENTUM_DATA_DIR)
         if isinstance(_base, dict):
             s.update(_base)
     except Exception:
         pass
     try:
-        path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+        path = os.path.join(_MOMENTUM_DATA_DIR,
                             "..", MODS_CONFIG_FILENAME)
         if os.path.isfile(path):
             with open(path, "r", encoding="utf-8") as f:
