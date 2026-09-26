@@ -122,7 +122,8 @@ def check_and_elevate_admin():
             if int(res) > 32:
                 sys.exit(0)
 
-check_and_elevate_admin()
+if "--package-smoke" not in sys.argv:
+    check_and_elevate_admin()
 
 # -------------------------------------------------------------
 # PyQt Widgets and GUI Imports (Compatible with PyQt6 and PyQt5)
