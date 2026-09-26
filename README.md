@@ -246,6 +246,26 @@ Asset extraction is designed to avoid unpacking the complete asset archive when 
 
 ## 9. Installation
 
+### Required Python Packages
+
+The runtime dependencies are maintained in `requirements.txt`. The current suite requires:
+
+| Package | Role |
+|---|---|
+| `customtkinter` | Themed UI components used by the desktop tools. |
+| `keyboard` | Global hotkey/input handling. |
+| `matplotlib` | Chart generation and offline rendering. |
+| `moderngl` | Modern OpenGL GPU rendering. |
+| `glfw` | OpenGL context and overlay-window management. |
+| `numpy` | Numerical processing and telemetry calculations. |
+| `panda3d` | 3D/game rendering support used by project components. |
+| `pillow` | Image processing and asset preparation. |
+| `pymem` | Windows process-memory access support. |
+| `pyqt6` | Main desktop GUI framework. |
+| `pyqt6-webengine` | Embedded web content support. |
+| `ursina` | 3D/game-engine support used by project components. |
+
+
 ### Automated Installation
 
 The repository includes:
