@@ -35,7 +35,6 @@ import secrets
 import threading
 import traceback
 import importlib.util
-import runpy
 import subprocess
 from ctypes import wintypes
 
@@ -2627,61 +2626,6 @@ class BridgeWindow(QMainWindow):
 # =============================================================================
 # Startup / Shutdown
 # =============================================================================
-def run_embedded_backend():
-    """Run a process-mode backend from the PyInstaller bundle using this same EXE."""
-    try:
-        idx = sys.argv.index("--embedded-backend")
-    except ValueError:
-        return False
-
-    if len(sys.argv) < idx + 3:
-        _fatal_box("Embedded backend arguments are incomplete.")
-        return True
-
-    folder = str(sys.argv[idx + 1]).strip().replace("\\", "/")
-    module_name = str(sys.argv[idx + 2]).strip()
-    entry = next(
-        (
-            value for value in MOD_REGISTRY.values()
-            if value.get("mode") == "process"
-            and value.get("folder") == folder
-            and value.get("module") == module_name
-        ),
-        None,
-    )
-    if entry is None:
-        _fatal_box(f"Unknown embedded backend: {folder}/{module_name}")
-        return True
-
-    backend_path = os.path.join(
-        BUNDLE_DIR,
-        folder.replace("/", os.sep),
-        module_name + ".py",
-    )
-    if not os.path.exists(backend_path):
-        _fatal_box(f"Embedded backend file not found:\n{backend_path}")
-        return True
-
-    physical_backend_dir = os.path.join(
-        ROOT_DIR,
-        folder.replace("/", os.sep),
-    )
-    os.environ["VAR_MODS_BACKEND_DIR"] = physical_backend_dir
-    os.environ["VAR_MODS_INSTALL_DIR"] = ROOT_DIR
-
-    backend_dir = os.path.dirname(backend_path)
-    if backend_dir not in sys.path:
-        sys.path.insert(0, backend_dir)
-
-    original_argv = sys.argv[:]
-    sys.argv = [backend_path] + sys.argv[idx + 3:]
-    try:
-        runpy.run_path(backend_path, run_name="__main__")
-    finally:
-        sys.argv = original_argv
-    return True
-
-
 def main():
     if "--embedded-backend" in sys.argv:
         run_embedded_backend()
@@ -2801,22 +2745,49 @@ if __name__ == "__main__":
         print("Standalone ModBridge package smoke test passed")
         sys.exit(0)
     if "--embedded-backend" in sys.argv:
+        _idx = sys.argv.index("--embedded-backend")
         try:
-            _idx = sys.argv.index("--embedded-backend")
             _folder = sys.argv[_idx + 1]
             _module = sys.argv[_idx + 2]
-            _source = os.path.join(BUNDLE_DIR, _folder, _module + ".py")
-            if not os.path.exists(_source):
-                raise FileNotFoundError(f"Embedded backend not found: {_source}")
+        except IndexError:
+            _log("Embedded backend failed: incomplete command line")
+            raise SystemExit(2)
 
-            os.environ["VAR_MODS_INSTALL_DIR"] = ROOT_DIR
-            os.environ["VAR_MODS_BACKEND_DIR"] = os.path.join(ROOT_DIR, _folder)
+        _source = os.path.join(BUNDLE_DIR, _folder, _module + ".py")
+        if not os.path.exists(_source):
+            _log("Embedded backend failed: source not found: " + _source)
+            raise SystemExit(2)
 
-            import runpy as _runpy
-            sys.argv = [_source] + sys.argv[_idx + 3:]
-            _runpy.run_path(_source, run_name="__main__")
-        except Exception as _exc:
-            _log("Embedded backend failed:", repr(_exc))
+        os.environ["VAR_MODS_INSTALL_DIR"] = ROOT_DIR
+        os.environ["VAR_MODS_BACKEND_DIR"] = os.path.join(ROOT_DIR, _folder)
+
+        _backend_dir = os.path.dirname(_source)
+        if _backend_dir not in sys.path:
+            sys.path.insert(0, _backend_dir)
+
+        _original_argv = sys.argv[:]
+        sys.argv = [_source] + sys.argv[_idx + 3:]
+        _namespace = {
+            "__name__": "__main__",
+            "__file__": _source,
+            "__package__": None,
+            "__cached__": None,
+        }
+
+        try:
+            with open(_source, "r", encoding="utf-8") as _backend_file:
+                _backend_source = _backend_file.read()
+            exec(
+                compile(_backend_source, _source, "exec"),
+                _namespace,
+                _namespace,
+            )
+        except SystemExit:
             raise
+        except Exception as _exc:
+            _log("Embedded backend failed: " + repr(_exc))
+            raise SystemExit(1)
+        finally:
+            sys.argv = _original_argv
     else:
         main()
