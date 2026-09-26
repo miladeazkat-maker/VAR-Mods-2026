@@ -312,6 +312,30 @@ def get_host_installed_packages(python_bin=None):
 
     return {}
 
+
+def get_python_target_dir():
+    """Return the deterministic per-user Python 3.13 installation directory."""
+    local_app = os.environ.get("LOCALAPPDATA")
+    if local_app:
+        return Path(local_app) / "Programs" / "Python" / "Python313"
+    return Path.home() / "AppData" / "Local" / "Programs" / "Python" / "Python313"
+
+
+def build_pip_command(python_bin, pkg_name):
+    """Build a pip command that prefers wheels and forbids source builds for native graphics packages."""
+    cmd = [
+        python_bin, "-m", "pip", "install",
+        "--upgrade",
+        "--prefer-binary",
+    ]
+    normalized = pkg_name.lower()
+    if normalized == "moderngl":
+        cmd.append("--only-binary=moderngl,glcontext")
+    elif normalized == "glfw":
+        cmd.append("--only-binary=glfw")
+    cmd.append(pkg_name)
+    return cmd
+
 # ============================================================================
 # COLOR MATH & ARCHITECTURE HELPERS
 # ============================================================================
@@ -512,8 +536,7 @@ def fetch_pypi_metadata(pkg_name):
 # ============================================================================
 
 class GlassButton(tk.Canvas):
-    THEMES = {
-        "primary": {
+    THEMES = {        "primary": {
             "top": "#0284c7", "bottom": "#0369a1", "border": "#38bdf8", "rim": "#7dd3fc", "text": "#ffffff",
             "h_top": "#0ea5e9", "h_bottom": "#0284c7", "h_border": "#bae6fd",
             "a_top": "#0369a1", "a_bottom": "#075985",
@@ -562,7 +585,8 @@ class GlassButton(tk.Canvas):
         self.is_hover = False
         self.is_down = False
 
-        self.bind("<Enter>", self._on_enter)        self.bind("<Leave>", self._on_leave)
+        self.bind("<Enter>", self._on_enter)
+        self.bind("<Leave>", self._on_leave)
         self.bind("<Button-1>", self._on_press)
         self.bind("<ButtonRelease-1>", self._on_release)
 
@@ -911,7 +935,6 @@ class App:
 
         lib_header = tk.Frame(lib_card, bg=self.card_bg)
         lib_header.pack(fill="x", pady=(0, 8))
-
         tk.Label(lib_header, text="Required Modding Libraries", bg=self.card_bg, fg=self.text,
                  font=("Segoe UI", 9, "bold")).pack(side="left")
 
@@ -1011,6 +1034,7 @@ class App:
     def _on_mousewheel(self, event):
         if self.main_canvas.winfo_exists():
             self.main_canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+
     def post(self, fn, *args):
         with self.queue_lock:
             self.events_queue.append((fn, args))
@@ -1062,16 +1086,19 @@ class App:
         self.py_refresh_btn.configure(state="disabled")
 
         def worker():
-            installed = platform.python_version()
+            info = get_host_python_info(require_compatible=False)
+            installed = info["version"] if info else "Not installed"
+            host_path = info["path"] if info else None
             try:
                 latest, url = fetch_latest_python_installer()
-                self.post(self.python_checked, installed, latest, url, None)
+                self.post(self.python_checked, installed, latest, url, None, host_path)
             except Exception as exc:
-                self.post(self.python_checked, installed, None, None, str(exc))
+                self.post(self.python_checked, installed, None, None, str(exc), host_path)
 
         threading.Thread(target=worker, daemon=True).start()
 
-    def python_checked(self, installed, latest, url, error):
+
+    def python_checked(self, installed, latest, url, error, host_path=None):
         self.py_spinner.stop()
         self.py_refresh_btn.configure(state="normal")
 
@@ -1085,26 +1112,38 @@ class App:
 
         self.python_target_ver = latest
         self.python_target_url = url
+        self.host_python_path = host_path
 
-        cmp = compare_versions(installed, latest)
-        if cmp < 0:
+        if host_path:
+            self.log(f"Host Python detected: {installed} ({host_path})")
+        else:
+            self.log("No host Python interpreter detected.", "WARN")
+
+        installed_key = version_tuple(installed)
+        target_key = version_tuple(latest)
+
+        if installed == "Not installed":
+            self.py_badge.config(text="INSTALL REQUIRED", bg="#331c1f", fg=self.red)
+            self.py_main_info.config(text=f"Compatible Python {latest} is required", fg=self.red)
+            self.py_sub_info.config(text=f"Python {PYTHON_COMPATIBLE_SERIES}.x will be installed for the modding suite.")
+            self.py_action_btn.configure(text="Install Python", state="normal", kind="primary")
+        elif installed_key[:2] != (3, 13):
+            self.py_badge.config(text="INCOMPATIBLE", bg="#382914", fg=self.amber)
+            self.py_main_info.config(text=f"Python {installed} detected — Python 3.13.x required", fg=self.amber)
+            self.py_sub_info.config(text=f"This suite uses Python {PYTHON_COMPATIBLE_SERIES}.x for binary-library compatibility.")
+            self.py_action_btn.configure(text="Install Python 3.13", state="normal", kind="warning")
+        elif installed_key < target_key:
             self.py_badge.config(text="UPDATE AVAILABLE", bg="#382914", fg=self.amber)
             self.py_main_info.config(text=f"Python Update Available: {installed} → {latest}", fg=self.amber)
-            self.py_sub_info.config(text=f"Official Windows Installer verified ({get_windows_arch().upper()})")
+            self.py_sub_info.config(text=f"Compatible Windows host interpreter detected ({get_windows_arch().upper()})")
             self.py_action_btn.configure(text="Update Python", state="normal", kind="warning")
             self.log(f"Python update available: {installed} -> {latest}")
-        elif cmp == 0:
-            self.py_badge.config(text="UP TO DATE", bg="#0a2a1d", fg=self.green)
-            self.py_main_info.config(text=f"Python {installed} • Current Stable Release", fg=self.green)
-            self.py_sub_info.config(text="CPython interpreter is up to date and optimal.")
-            self.py_action_btn.configure(text="Up to Date", state="disabled", kind="secondary")
-            self.log(f"Python {installed} is up to date.")
         else:
-            self.py_badge.config(text="NEWER / DEV", bg="#0a2a1d", fg=self.cyan)
-            self.py_main_info.config(text=f"Python {installed} (Preview / Newer)", fg=self.cyan)
-            self.py_sub_info.config(text=f"Current stable is {latest}. No downgrade needed.")
+            self.py_badge.config(text="UP TO DATE", bg="#0a2a1d", fg=self.green)
+            self.py_main_info.config(text=f"Python {installed} • Compatible", fg=self.green)
+            self.py_sub_info.config(text=f"Host interpreter: {host_path}")
             self.py_action_btn.configure(text="Up to Date", state="disabled", kind="secondary")
-
+            self.log(f"Compatible host Python {installed} is ready.")
     def python_action(self):
         if self.busy:
             return
@@ -1114,7 +1153,7 @@ class App:
         self.busy = True
         self.status_badge.config(text="WORKING", bg="#382914", fg=self.amber)
         self.py_action_btn.configure(text="Installing...", state="disabled", kind="secondary")
-        self.act_title.config(text="Task Monitor: Installing CPython Runtime...")
+        self.act_title.config(text="Task Monitor: Installing Compatible CPython...")
 
         cache_dir = Path.home() / "Downloads" / "PES_MODS_Python"
         cache_dir.mkdir(parents=True, exist_ok=True)
@@ -1126,7 +1165,7 @@ class App:
                     latest, url = fetch_latest_python_installer()
 
                 installer_path = cache_dir / Path(url).name
-                self.post(self.log, f"Downloading Python {latest} installer...")
+                self.post(self.log, f"Downloading compatible Python {latest} installer...")
 
                 def dl_callback(done, total, pct, speed):
                     txt = f"Downloading Python {latest} ({format_bytes(done)} / {format_bytes(total)} - {pct:.1f}%)"
@@ -1134,25 +1173,48 @@ class App:
 
                 download_file_monitored(url, installer_path, dl_callback)
 
-                self.post(self.set_inst_progress, 60, "Executing silent CPython installation...")
-                self.post(self.log, "Executing automatic silent CPython installation...")
+                target_dir = get_python_target_dir()
+                target_dir.mkdir(parents=True, exist_ok=True)
+                self.post(self.set_inst_progress, 60, "Installing Python 3.13 for the modding suite...")
+                self.post(self.log, f"Installing Python {latest} to {target_dir}")
 
                 res = run_process([
-                    str(installer_path), "/quiet", "InstallAllUsers=0", "PrependPath=1",
-                    "Include_pip=1", "Include_launcher=1", "Include_test=0", "SimpleInstall=0"
+                    str(installer_path),
+                    "/quiet",
+                    "InstallAllUsers=0",
+                    f"TargetDir={target_dir}",
+                    "PrependPath=1",
+                    "Include_pip=1",
+                    "Include_launcher=1",
+                    "Include_test=0",
+                    "SimpleInstall=0",
                 ])
                 if res.returncode not in (0, 3010):
                     err_msg = res.stderr.strip() or res.stdout.strip() or f"Installer exit code {res.returncode}"
                     raise RuntimeError(err_msg)
 
-                inject_host_site_packages()
-                self.post(self.set_inst_progress, 100, "Python installation completed (100%)")
-                self.post(self.python_done, True, f"Python {latest} successfully installed/updated.")
+                new_info = get_host_python_info(require_compatible=True)
+                target_python = target_dir / "python.exe"
+                if target_python.exists():
+                    probe = probe_python_exe(str(target_python))
+                    if probe and version_tuple(probe[1])[:2] == (3, 13):
+                        new_info = {
+                            "path": probe[0],
+                            "version": probe[1],
+                            "version_key": version_tuple(probe[1]),
+                            "major_minor": (3, 13),
+                        }
+
+                if not new_info or new_info["major_minor"] != (3, 13):
+                    raise RuntimeError("Python installation finished, but a compatible Python 3.13 interpreter could not be verified.")
+
+                self.host_python_path = new_info["path"]
+                self.post(self.set_inst_progress, 100, f"Python {new_info['version']} installed successfully (100%)")
+                self.post(self.python_done, True, f"Python {new_info['version']} is installed and ready at {new_info['path']}.")
             except Exception as e:
                 self.post(self.python_done, False, str(e))
 
         threading.Thread(target=worker, daemon=True).start()
-
     def python_done(self, ok, msg):
         self.busy = False
         self.status_badge.config(text="READY", bg="#0a2a1d", fg=self.green)
@@ -1173,7 +1235,7 @@ class App:
     def check_libraries(self):
         self.lib_spinner.start()
         self.lib_refresh_btn.configure(state="disabled")
-        self.log("Inspecting host Python packages and querying PyPI...")
+        self.log("Inspecting the compatible host Python package environment...")
 
         for row in self.rows.values():
             row["spinner"].start()
@@ -1182,23 +1244,18 @@ class App:
             row["button"].configure(text="Checking...", state="disabled", kind="secondary")
 
         def worker():
-            # Bridge directly into the host Python's package index
-            host_installed = get_host_installed_packages()
+            info = get_host_python_info(require_compatible=True)
+            if info:
+                self.post(self.log, f"Using host Python {info['version']}: {info['path']}")
+                host_installed = get_host_installed_packages(info["path"])
+            else:
+                self.post(self.log, "No compatible Python 3.13 interpreter is available yet.", "WARN")
+                host_installed = {}
 
             results = []
             with ThreadPoolExecutor(max_workers=6) as pool:
                 def inspect_single(pkg_name):
-                    importlib.invalidate_caches()
-                    # 1. First consult host packages (Solves frozen EXE blind-spot)
                     inst_ver = host_installed.get(pkg_name.lower())
-
-                    # 2. Fallback to direct metadata search
-                    if not inst_ver:
-                        try:
-                            inst_ver = metadata.version(pkg_name)
-                        except Exception:
-                            pass
-
                     inst_size = get_installed_package_size(pkg_name) if inst_ver else None
                     remote_ver, remote_size = None, None
                     err = None
@@ -1217,7 +1274,6 @@ class App:
             self.post(self.libraries_checked, results)
 
         threading.Thread(target=worker, daemon=True).start()
-
     def libraries_checked(self, results):
         self.lib_spinner.stop()
         self.lib_refresh_btn.configure(state="normal")
@@ -1252,12 +1308,22 @@ class App:
         self.log("Library status synchronization complete.")
 
     def package_action(self, pkg_name):
-        """Native, direct pip execution with live stream output."""
+        """Install a package into the compatible host Python with wheel-first behavior."""
         if self.busy:
             return
+
         row = self.rows[pkg_name]
         action = row["button"].cget("text")
         if action not in ("Install", "Update", "Reinstall"):
+            return
+
+        python_info = get_host_python_info(require_compatible=True)
+        if not python_info:
+            messagebox.showerror(
+                "Python 3.13 Required",
+                "A compatible Python 3.13 installation is required before libraries can be installed. "
+                "Use the Python installation button above first.",
+            )
             return
 
         self.busy = True
@@ -1266,52 +1332,63 @@ class App:
         row["spinner"].start()
 
         self.act_title.config(text=f"Task Monitor: {action}ing {row['label']}...")
-        self.set_inst_progress(10, f"Initializing pip install for {row['label']}...")
+        self.set_inst_progress(10, f"Initializing pip for {row['label']}...")
 
         def worker():
-            python_bin = get_real_python_exe()
-            self.post(self.log, f"Running: {python_bin} -m pip install --upgrade {pkg_name}")
+            python_bin = python_info["path"]
+            self.post(self.log, f"Using Python {python_info['version']}: {python_bin}")
 
-            cmd = [python_bin, "-m", "pip", "install", "--upgrade", pkg_name]
-            flags = subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0
+            cmd = build_pip_command(python_bin, pkg_name)
+            self.post(self.log, "Running: " + " ".join(f'"{x}"' if " " in x else x for x in cmd))
 
-            proc = subprocess.Popen(
-                cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                text=True, encoding="utf-8", errors="replace", creationflags=flags
-            )
+            try:
+                flags = subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0
+                proc = subprocess.Popen(
+                    cmd,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                    text=True,
+                    encoding="utf-8",
+                    errors="replace",
+                    creationflags=flags,
+                )
 
-            progress_val = 20
-            error_lines = []
-            for line in proc.stdout:
-                clean_line = line.strip()
-                if clean_line:
-                    self.post(self.log, f"[pip] {clean_line}")
-                    if "ERROR:" in clean_line:
-                        error_lines.append(clean_line)
-                    if "Downloading" in clean_line:
-                        progress_val = min(65, progress_val + 10)
-                        self.post(self.set_inst_progress, progress_val, f"Downloading: {clean_line[:60]}...")
-                    elif "Installing collected packages" in clean_line or "Running setup.py" in clean_line:
-                        progress_val = 85
-                        self.post(self.set_inst_progress, progress_val, "Installing package files...")
+                progress_val = 20
+                error_lines = []
+                for line in proc.stdout:
+                    clean_line = line.strip()
+                    if clean_line:
+                        self.post(self.log, f"[pip] {clean_line}")
+                        if "ERROR:" in clean_line:
+                            error_lines.append(clean_line)
+                        if "Downloading" in clean_line:
+                            progress_val = min(65, progress_val + 10)
+                            self.post(self.set_inst_progress, progress_val, f"Downloading: {clean_line[:60]}...")
+                        elif "Installing collected packages" in clean_line or "Running setup.py" in clean_line:
+                            progress_val = 85
+                            self.post(self.set_inst_progress, progress_val, "Installing package files...")
 
-            proc.wait()
-            if proc.returncode != 0:
-                err_msg = "\n".join(error_lines) if error_lines else f"Pip exit code {proc.returncode}"
-                self.post(self.package_failed, pkg_name, err_msg)
-                return
+                proc.wait()
+                if proc.returncode != 0:
+                    err_msg = "\n".join(error_lines) if error_lines else f"Pip exit code {proc.returncode}"
+                    if pkg_name.lower() == "moderngl":
+                        err_msg += (
+                            "\n\nModernGL/glcontext installation is restricted to binary wheels "
+                            "so the downloader will not attempt a local C/C++ build."
+                        )
+                    self.post(self.package_failed, pkg_name, err_msg)
+                    return
 
-            inject_host_site_packages()
-            self.post(self.set_inst_progress, 100, f"{row['label']} successfully installed! (100%)")
-            self.post(self.log, f"{row['label']} installed successfully.")
-            self.post(self.package_succeeded, pkg_name)
+                self.post(self.set_inst_progress, 100, f"{row['label']} successfully installed! (100%)")
+                self.post(self.log, f"{row['label']} installed successfully.")
+                self.post(self.package_succeeded, pkg_name)
+            except Exception as exc:
+                self.post(self.package_failed, pkg_name, str(exc))
 
         threading.Thread(target=worker, daemon=True).start()
-
     def package_succeeded(self, pkg_name):
         self.busy = False
-        self.status_badge.config(text="READY", bg="#0a2a1d", fg=self.green)
-        self.rows[pkg_name]["spinner"].stop()
+        self.status_badge.config(text="READY", bg="#0a2a1d", fg=self.green)        self.rows[pkg_name]["spinner"].stop()
         self.act_title.config(text="Task Monitor: Idle")
         self.check_libraries()
 
@@ -1331,26 +1408,32 @@ class App:
     def quick_install(self):
         if self.busy:
             return
+
         self.busy = True
         self.status_badge.config(text="WORKING", bg="#382914", fg=self.amber)
         self.hero_btn.configure(state="disabled", text="Installing...")
         self.lib_refresh_btn.configure(state="disabled")
         self.act_title.config(text="Task Monitor: Running Full Automatic Setup...")
-        self.log("Automatic setup initiated: Running native pip install for all libraries...")
+        self.log("Automatic setup initiated: preparing the compatible Python runtime and libraries...")
 
         cache_dir = Path.home() / "Downloads" / "PES_MODS_Python"
         cache_dir.mkdir(parents=True, exist_ok=True)
 
         def worker():
-            python_bin = get_real_python_exe()
             try:
-                # 1. Update Python if needed
-                installed_py = platform.python_version()
+                info = get_host_python_info(require_compatible=False)
                 latest_py, url_py = fetch_latest_python_installer()
+                target_key = version_tuple(latest_py)
 
-                if compare_versions(installed_py, latest_py) < 0:
+                needs_python = (
+                    info is None
+                    or info["major_minor"] != (3, 13)
+                    or info["version_key"] < target_key
+                )
+
+                if needs_python:
                     installer_path = cache_dir / Path(url_py).name
-                    self.post(self.log, f"Downloading Python {latest_py}...")
+                    self.post(self.log, f"Downloading compatible Python {latest_py}...")
 
                     def py_dl_cb(done, total, pct, speed):
                         txt = f"Downloading Python {latest_py} ({format_bytes(done)} / {format_bytes(total)} - {pct:.1f}%)"
@@ -1358,6 +1441,133 @@ class App:
 
                     download_file_monitored(url_py, installer_path, py_dl_cb)
 
-                    self.post(self.set_inst_progress, 40, "Executing silent CPython installation...")
+                    target_dir = get_python_target_dir()
+                    target_dir.mkdir(parents=True, exist_ok=True)
+                    self.post(self.set_inst_progress, 40, "Installing compatible Python 3.13...")
                     res = run_process([
-                        str(installer_path), "/quiet", "InstallAllUsers=0", "PrependPath=1",
+                        str(installer_path),
+                        "/quiet",
+                        "InstallAllUsers=0",
+                        f"TargetDir={target_dir}",
+                        "PrependPath=1",
+                        "Include_pip=1",
+                        "Include_launcher=1",
+                        "Include_test=0",
+                        "SimpleInstall=0",
+                    ])
+                    if res.returncode not in (0, 3010):
+                        err_msg = res.stderr.strip() or res.stdout.strip() or f"Python Installer exit code {res.returncode}"
+                        raise RuntimeError(err_msg)
+
+                info = get_host_python_info(require_compatible=True)
+                if not info:
+                    raise RuntimeError(
+                        "Python 3.13 could not be verified after installation. "
+                        "The modding libraries were not installed."
+                    )
+
+                python_bin = info["path"]
+                self.host_python_path = python_bin
+                self.post(self.log, f"Using host Python {info['version']}: {python_bin}")
+
+                self.post(self.set_inst_progress, 45, "Updating pip package manager...")
+                res = run_process([python_bin, "-m", "pip", "install", "--upgrade", "--prefer-binary", "pip"])
+                if res.returncode != 0:
+                    raise RuntimeError(f"Pip upgrade failed: {res.stderr.strip() or res.stdout.strip()}")
+
+                host_installed = get_host_installed_packages(python_bin)
+                total_pkgs = len(REQUIRED_PACKAGES)
+
+                for idx, (pkg_name, label, _) in enumerate(REQUIRED_PACKAGES, start=1):
+                    row = self.rows[pkg_name]
+                    inst_ver = host_installed.get(pkg_name.lower())
+                    latest_ver = row.get("latest_ver")
+
+                    if not inst_ver or (latest_ver and compare_versions(inst_ver, latest_ver) < 0):
+                        self.post(self.log, f"Installing {label} ({idx}/{total_pkgs})...")
+                        step_pct = int(45 + (idx / total_pkgs) * 50)
+                        self.post(self.set_inst_progress, step_pct, f"Installing {label} ({idx}/{total_pkgs})...")
+
+                        cmd = build_pip_command(python_bin, pkg_name)
+                        self.post(self.log, "Running: " + " ".join(f'"{x}"' if " " in x else x for x in cmd))
+                        flags = subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0
+
+                        proc = subprocess.Popen(
+                            cmd,
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.STDOUT,
+                            text=True,
+                            encoding="utf-8",
+                            errors="replace",
+                            creationflags=flags,
+                        )
+
+                        errs = []
+                        for line in proc.stdout:
+                            c_line = line.strip()
+                            if c_line:
+                                self.post(self.log, f"[{label}] {c_line}")
+                                if "ERROR:" in c_line:
+                                    errs.append(c_line)
+
+                        proc.wait()
+                        if proc.returncode != 0:
+                            details = "\n".join(errs) if errs else f"code {proc.returncode}"
+                            if pkg_name.lower() == "moderngl":
+                                details += "\nModernGL/glcontext requires compatible binary wheels; no source build is attempted."
+                            raise RuntimeError(f"{label} error: {details}")
+
+                        host_installed = get_host_installed_packages(python_bin)
+
+                self.post(self.set_inst_progress, 100, "All compatible Python packages installed! (100%)")
+                self.post(self.quick_done, True, f"Setup completed with Python {info['version']} at {python_bin}.")
+            except Exception as e:
+                self.post(self.quick_done, False, str(e))
+
+        threading.Thread(target=worker, daemon=True).start()
+    def quick_done(self, ok, msg):
+        self.busy = False
+        self.status_badge.config(text="READY", bg="#0a2a1d", fg=self.green)
+        self.hero_btn.configure(state="normal", text="Install All")
+        self.lib_refresh_btn.configure(state="normal")
+        self.act_title.config(text="Task Monitor: Idle")
+        self.log(msg, "INFO" if ok else "ERROR")
+
+        self.check_python()
+        self.check_libraries()
+
+        if ok:
+            messagebox.showinfo("Setup Completed", msg)
+        else:
+            messagebox.showerror("Setup Error", msg)
+
+
+# ============================================================================
+# ENTRY POINT WITH ADMIN PRIVILEGES
+# ============================================================================
+
+def main():
+    if os.name != "nt":
+        temp_root = tk.Tk()
+        temp_root.withdraw()
+        messagebox.showerror("Windows Required", "This utility is optimized specifically for Windows 10/11.")
+        temp_root.destroy()
+        return
+
+    # 1. Elevate to Admin without jumping to System32
+    ensure_admin()
+
+    # 2. High-DPI Display Scaling
+    try:
+        from ctypes import windll
+        windll.shcore.SetProcessDpiAwareness(1)
+    except Exception:
+        pass
+
+    root = tk.Tk()
+    App(root)
+    root.mainloop()
+
+
+if __name__ == "__main__":
+    main()
