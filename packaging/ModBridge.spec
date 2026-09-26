@@ -2,8 +2,7 @@
 from pathlib import Path
 from PyInstaller.building.datastruct import Tree
 
-SPEC_DIR = Path(__file__).resolve().parent
-ROOT = SPEC_DIR.parent
+ROOT = Path.cwd().resolve()
 
 backend_datas = []
 for folder, prefix in (
