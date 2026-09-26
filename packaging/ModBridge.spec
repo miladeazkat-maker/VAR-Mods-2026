@@ -1,6 +1,5 @@
 # -*- mode: python ; coding: utf-8 -*-
 from pathlib import Path
-from PyInstaller.utils.hooks import collect_all, collect_submodules
 
 ROOT = Path(SPECPATH).resolve().parent
 
@@ -12,6 +11,7 @@ backend_sources = [
     (ROOT / "RefereeView" / "RefereeView.py", "RefereeView"),
     (ROOT / "MomentumMatch" / "MomentumMod.py", "MomentumMatch"),
 ]
+
 momentum_modules = [
     "01_runtime.py",
     "02_memory.py",
@@ -32,65 +32,103 @@ backend_sources += [
 
 datas = [(str(src), dest) for src, dest in backend_sources]
 
-# Backend assets are bundled as internal resources. The installed copy of
-# these files is still kept for frontend previews/configuration, but ModBridge
-# must also work when its backend code executes from PyInstaller's bundle.
-runtime_asset_roots = [
-    ("GLT", "GLT"),
-    ("HeatMap", "HeatMap"),
-    ("MomentumMatch", "MomentumMatch"),
-    ("SAOTMod", "SAOTMod"),
-    ("RefereeView", "RefereeView"),
-]
-for folder, dest in runtime_asset_roots:
+# Bundle backend resource files internally for --embedded-backend execution.
+runtime_asset_roots = ["GLT", "HeatMap", "MomentumMatch", "SAOTMod", "RefereeView"]
+for folder in runtime_asset_roots:
     root = ROOT / folder
     if root.exists():
         for item in root.rglob("*"):
             if item.is_file() and item.suffix.lower() not in {".py", ".pyc", ".pyo"}:
-                datas.append((str(item), dest + "/" + str(item.relative_to(root).parent).replace("\\", "/")))
-binaries = []
+                dest = folder + "/" + str(item.relative_to(root).parent).replace("\\", "/")
+                datas.append((str(item), dest))
+
 hiddenimports = [
-    "PyQt6",
+    # Bridge UI
     "PyQt6.QtCore",
     "PyQt6.QtGui",
     "PyQt6.QtWidgets",
     "PyQt6.QtWebEngineWidgets",
     "PyQt6.QtWebEngineCore",
+
+    # Native memory / process packages
     "pymem",
     "pymem.process",
     "pymem.pattern",
+
+    # Backend dependencies
     "numpy",
+    "matplotlib",
+    "matplotlib.backends.backend_agg",
+    "matplotlib.backends.backend_tkagg",
+    "matplotlib.ticker",
+    "matplotlib.patches",
+    "matplotlib.lines",
+    "matplotlib.offsetbox",
     "PIL",
     "PIL.Image",
     "PIL.ImageTk",
-    "matplotlib",
-    "matplotlib.backends.backend_agg",
+    "PIL.ImageDraw",
+    "PIL.ImageFilter",
     "moderngl",
     "glcontext",
     "glfw",
     "panda3d",
+    "panda3d.core",
     "ursina",
+    "customtkinter",
+    "keyboard",
+    "psutil",
+    "pywinstyles",
+
+    # Dynamically loaded backend modules
+    "GLTMod",
+    "HeatMapMod",
+    "BroadcastRenderer",
+    "SAOTMod",
+    "RefereeView",
+    "MomentumMod",
 ]
-for pkg in ("PyQt6", "matplotlib", "panda3d", "ursina", "moderngl", "glcontext", "glfw", "PIL", "pymem"):
-    try:
-        d, b, h = collect_all(pkg)
-        datas += d
-        binaries += b
-        hiddenimports += h
-    except Exception:
-        try:
-            hiddenimports += collect_submodules(pkg)
-        except Exception:
-            pass
 
 a = Analysis(
     [str(ROOT / "ModBridge.py")],
-    pathex=[str(ROOT)],
-    binaries=binaries,
+    pathex=[
+        str(ROOT),
+        str(ROOT / "GLT"),
+        str(ROOT / "HeatMap"),
+        str(ROOT / "SAOTMod"),
+        str(ROOT / "RefereeView"),
+        str(ROOT / "MomentumMatch"),
+    ],
+    binaries=[],
     datas=datas,
     hiddenimports=hiddenimports,
+    excludes=[
+        "PyQt5",
+        # PyQt6 modules unrelated to this bridge/backend stack.
+        "PyQt6.Qt3DCore",
+        "PyQt6.Qt3DAnimation",
+        "PyQt6.Qt3DExtras",
+        "PyQt6.Qt3DInput",
+        "PyQt6.Qt3DLogic",
+        "PyQt6.Qt3DRender",
+        "PyQt6.Qt3DQuick",
+        "PyQt6.Qt3DQuickAnimation",
+        "PyQt6.Qt3DQuickExtras",
+        "PyQt6.Qt3DQuickInput",
+        "PyQt6.Qt3DQuickRender",
+        "PyQt6.Qt3DQuickScene2D",
+        "PyQt6.Qt3DQuickScene3D",
+        "PyQt6.QtSql",
+        "PyQt6.QtQuick3D",
+        "PyQt6.QtQuick3DAssetUtils",
+        "PyQt6.QtQuick3DHelpers",
+        "PyQt6.QtQuick3DParticleEffects",
+        "PyQt6.QtQuick3DPhysics",
+        "PyQt6.QtWebView",
+    ],
     noarchive=False,
 )
+
 pyz = PYZ(a.pure)
 
 exe = EXE(
