@@ -19,52 +19,52 @@
 #     player's heat map can be viewed (and shown on the GPU broadcast).
 # =====================================================================
 # =====================================================================
-# HeatMap FL_2026 — پورت نسخهٔ 2017 روی بازی 2026
+# HeatMap FL_2026 — technical noteandtechnical note versiontechnical note 2017 technical noteandtechnical note withtechnical note 2026
 # ---------------------------------------------------------------------
-# این فایل عین HeatMap_PES2017.py است؛ فقط «لایهٔ دریافت داده از بازی»
-# با معماری finalmomentum_2026 (Momentum) جایگزین شده است:
+# technical note file technical note HeatMap_PES2017.py istechnical note only «layertechnical note intechnical notedecrease data from withtechnical note»
+# with architecture finalmomentum_2026 (Momentum) fallback technical note is:
 #
-#   ۱) پروسهٔ بازی: FL_2026.exe (به‌جای pes2017.exe)
+#   1) processtechnical note withtechnical note: FL_2026.exe (to‌technical note pes2017.exe)
 #
-#   ۲) مختصات بازیکنان — بدون هیچ هوکی (عین Momentum):
-#      آرایهٔ پوینتری FL_2026.exe+0x036F3FC0 → ۲۲ صندلی ۸ بایتی؛
-#      زنجیرهٔ هر صندلی:  [seat] → +0x7D8 → +0xA08 → +0x188 → +0xD0
-#      (x طولی در +0x0 و z عرضی در +0x8 — مقیاس 1.0 مثل Momentum)
-#      صندلی‌های 0..10 = میزبان و 11..21 = مهمان — بدون منطق پیچیدهٔ
-#      تفکیک تیم (برخلاف 2017 که ۲۵ موجودیت با هوک شکار می‌شد).
+#   2) coordinates players — without technical note hooktechnical note (technical note Momentum):
+#      technical note pointertechnical note FL_2026.exe+0x036F3FC0 → 22 technical note 8 bytetechnical note
+#      chaintechnical note technical note technical note:  [seat] → +0x7D8 → +0xA08 → +0x188 → +0xD0
+#      (x lengthtechnical note in +0x0 and z widthtechnical note in +0x8 — technical noteortechnical note 1.0 technical note Momentum)
+#      technical note‌technical note 0..10 = Home and 11..21 = Away — without technical note technical note
+#      technical note team (technical note 2017 technical note 25 technical noteandtechnical noteandtechnical note with hook technical note technical note‌technical note).
 #
-#   ۳) مختصات توپ — هوک Momentum:
+#   3) coordinates ball — hook Momentum:
 #      FL_2026.exe+0x176A3A2 - 0F 29 80 50 04 00 00 - movaps [rax+450],xmm0
-#      Cave دستور اصلی را اجرا + xmm0 را در slot ذخیره می‌کند؛
-#      خواندن ۱۲ بایت: (x طولی، y ارتفاع، z عرضی).
+#      Cave instruction original technical note run + xmm0 technical note in slot save technical note‌technical note
+#      read 12 byte: (x lengthtechnical note y heighttechnical note z widthtechnical note).
 #
-#   ۴) زمان مسابقه — عین TimeHooker در Momentum (هیچ تغییری نه):
+#   4) match time — technical note TimeHooker in Momentum (technical note changetechnical note technical note):
 #      FL_2026.exe+0x20F1CDA - 89 86 40010000 - mov [rsi+140],eax
-#      Minutes = [RSI+0x13C] ، Seconds = [RSI+0x140]
-#      (Fallback: float در FL_2026.exe+0x0372D114)
+#      Minutes = [RSI+0x13C] technical note Seconds = [RSI+0x140]
+#      (Fallback: float in FL_2026.exe+0x0372D114)
 #
-#   ۵) کد بازیکن — هوک جدید (مشخصات کاربر):
-#      FL_2026.exe+A83964 - 44 89 67 08 - mov [rdi+08],r12d   ← خط اول
-#      FL_2026.exe+A83968 - 89 77 0C    - mov [rdi+0C],esi    ← خط دوم (پشتیبان)
-#      خط اول همیشه «شمارهٔ بازیکن» را می‌نویسد (r12d)؛ Cave هر دو دستور
-#      اصلی را اجرا و r12d را در slot ذخیره می‌کند. مقدار 1..11 = میزبان و
-#      12..22 = مهمان (برای مهمان همیشه ۱۱ کم می‌شود: 12 → 1).
+#   5) code player — hook new (specification user):
+#      FL_2026.exe+A83964 - 44 89 67 08 - mov [rdi+08],r12d   ← line first
+#      FL_2026.exe+A83968 - 89 77 0C    - mov [rdi+0C],esi    ← line second (technical notewithtechnical note)
+#      line first always «numbertechnical note player» technical note technical note‌technical noteandtechnical note (r12d)technical note Cave technical note technical noteand instruction
+#      original technical note run and r12d technical note in slot save technical note‌technical note. value 1..11 = Home and
+#      12..22 = Away (for Away always 11 technical note technical note‌technical noteandtechnical note: 12 → 1).
 #
-#   ۶) تشخیص لیگ/تیم، منوی انتخاب، شروع مسابقه و نیمه‌ها — عین Momentum:
-#      * بایت منو: FL_2026.exe+0x36F9AE0 — فقط ۹ ⇒ اجرای تشخیص تیم
-#        (خواندن زندهٔ دو طرف؛ بقیهٔ وضعیت‌ها = قفل روی آخرین انتخاب)
-#      * زنجیره‌های home/away و اسلات‌ها (عرض 112) عین Momentum
-#      * وضعیت مسابقه: FL_2026.exe+0x372D148 — بایت 128/129 = PLAYING
-#      * چرخهٔ عمر: Watchdog/TimeDrop/TRB (عین نسخهٔ ۱۰٫۳/۱۰٫۷ Momentum)
-#        → HT / ET1 / ET2 / NEW_MATCH ؛ قرینه در نیمهٔ دوم و وقت اضافهٔ دوم
+#   6) detection league/teamtechnical note menutechnical note technical note start match and technical note‌technical note — technical note Momentum:
+#      * byte menu: FL_2026.exe+0x36F9AE0 — only 9 ⇒ run detection team
+#        (read livetechnical note technical noteand technical note technical note andtechnical note‌technical note = technical note technical noteandtechnical note latest technical note)
+#      * chain‌technical note home/away and technical note‌technical note (width 112) technical note Momentum
+#      * andtechnical note match: FL_2026.exe+0x372D148 — byte 128/129 = PLAYING
+#      * cycletechnical note technical note: Watchdog/TimeDrop/TRB (technical note versiontechnical note 10technical note3/10technical note7 Momentum)
+#        → HT / ET1 / ET2 / NEW_MATCH technical note technical note in technical note second and extra timetechnical note second
 #
-#   ۷) بقیهٔ برنامه (رسم هیت‌مپ، رندر سه‌بعدی، اورلی خودکار، GUI،
-#      پایگاه دادهٔ قابل‌ویرایش pes2017_teams.json و بقیهٔ فایل‌های JSON)
-#      عیناً و بدون هیچ تغییری از نسخهٔ 2017 حفظ شده است.
+#   7) technical note technical notenametechnical note (technical note heatmaptechnical note render technical note‌aftertechnical note technical noteandtechnical note automatictechnical note GUItechnical note
+#      databasetechnical note technical note‌andtechnical note pes2017_teams.json and technical note file‌technical note JSON)
+#      technical note and without technical note changetechnical note from versiontechnical note 2017 technical note technical note is.
 #
-# نکتهٔ اجرا: مانند قبل نیاز به Run as Admin و نصب numpy/pillow دارد.
-# اگر برنامه بدون Restore بسته شود، هوک‌های مانده از جلسهٔ قبل در اتصال
-# بعدی «پذیرفته» می‌شوند (Adopt) یا به منبع جایگزین سقوط می‌کند.
+# technical note run: technical note before technical noteortechnical note to Run as Admin and install numpy/pillow technical note.
+# if technical notenametechnical note without Restore technical note technical noteandtechnical note hook‌technical note technical note from technical note before in connection
+# aftertechnical note «technical note» technical note‌technical noteandtechnical note (Adopt) or to source fallback drop technical note‌technical note.
 # =====================================================================
 import os
 import sys
@@ -83,25 +83,25 @@ import socket
 from ctypes import wintypes
 
 # -------------------------------------------------------------
-# سیستم مدیریت خطا و بارگذاری کتابخانه‌ها
+# system Administratortechnical note Error and withtechnical note technical noteuntiltechnical note‌technical note
 # -------------------------------------------------------------
 def fatal_error(msg):
-    ctypes.windll.user32.MessageBoxW(0, f"خطایی رخ داد:\n\n{msg}", "FL_2026 Tracker Error", 0x10)
+    ctypes.windll.user32.MessageBoxW(0, f"Errortext text text:\n\n{msg}", "FL_2026 Tracker Error", 0x10)
     sys.exit(1)
 
 try:
     import tkinter as tk
     from tkinter import messagebox, ttk, filedialog
 except Exception as e:
-    fatal_error(f"کتابخانه Tkinter یافت نشد:\n{e}")
+    fatal_error(f"textuntiltext Tkinter textdecrease text:\n{e}")
 
 try:
     import numpy as np
     from PIL import Image, ImageTk, ImageDraw, ImageFilter, ImageFont
 except ImportError:
-    fatal_error("برای رسم هیت‌مپ نصب numpy و pillow الزامی است:\npip install numpy pillow")
+    fatal_error("for text heatmap install numpy and pillow text is:\npip install numpy pillow")
 
-# پوشه اجرای اسکریپت (مبنای مسیر پوشه‌های players و Football_Database و renders)
+# folder run technical note (technical note path folder‌technical note players and Football_Database and renders)
 SCRIPT_DIR = os.path.dirname(os.path.abspath(sys.argv[0])) if (sys.argv and sys.argv[0]) else os.getcwd()
 
 # ---------------------------------------------------------------------
@@ -177,19 +177,19 @@ def _suite_harden_stdio():
 _suite_harden_stdio()
 
 # ---------------------------------------------------------------------
-# [PT v2.3.0] PT DATA SOURCE — مشترک با Match Momentum (فایل‌های یکسان):
+# [PT v2.3.0] PT DATA SOURCE — shared with Match Momentum (file‌technical note technical note):
 #   PES MODS/PT/Asset.zip + PES MODS/PT/teams_players_PES2021.txt
-#   (پوشهٔ PT کنار MyMods.py است — یک سطح بالاتر از این اسکریپت)
-# محتوا: نام/رنگ تیم‌ها از txt ؛ لوگو/پرچم (Teams/{id}.png) و عکس چهرهٔ
-# 192x192 بازیکن (Players/{pes_id}.png) از Asset.zip — بدون بازکردن کل zip
-# (استخراج تک‌فایلی با کش PT_Cache/). دیتابیس قدیمی pes2017 همان‌طور که
-# هست به‌عنوان fallback می‌ماند: PT نبود ⇒ رفتار قبلی بدون هیچ تغییر.
-# (بعد از _suite_harden_stdio — هر print باید روی استریم سخت‌شده برود)
+#   (foldertechnical note PT technical note MyMods.py is — technical note level above from technical note technical note)
+# technical noteandtechnical note: name/color team‌technical note from txt technical note logo/technical note (Teams/{id}.png) and image facetechnical note
+# 192x192 player (Players/{pes_id}.png) from Asset.zip — without withtechnical note total zip
+# (istechnical note technical note‌filetechnical note with technical note PT_Cache/). technical noteuntiltechnical note legacy pes2017 same‌technical noteandtechnical note technical note
+# technical note to‌technical noteandtechnical note fallback technical note‌technical note: PT technical noteandtechnical note ⇒ technical noteuntiltechnical note beforetechnical note without technical note change.
+# (after from _suite_harden_stdio — technical note print must technical noteandtechnical note istechnical note technical note‌technical note technical noteandtechnical note)
 # ---------------------------------------------------------------------
-# [PT v2.3.3] خوانندهٔ PT «داخل همین فایل» جاسازی شده است — دیگر هیچ
-# نیازی به فایل بیرونی PTData.py نیست. قبل از این نسخه، استقراری که
-# PTData.py را نداشت بی‌صدا همهٔ امکانات PT را از دست می‌داد (بدون نام
-# تیم/رنگ/لوگو/چهره). سورس پایین عین PTData.py رسمی است — بدون تغییر.
+# [PT v2.3.3] technical noteandtechnical note PT «inside technical note file» technical notefromtechnical note technical note is — technical note technical note
+# technical noteortechnical note to file outsidetechnical note PTData.py is not. before from technical note versiontechnical note istechnical note technical note
+# PTData.py technical note technical note technical note‌technical note technical note technical note PT technical note from technical note technical note‌technical note (without name
+# team/color/logo/face). technical noteandtechnical note below technical note PTData.py technical note is — unchanged.
 _PTDATA_EMBEDDED_SOURCE = r'''# -*- coding: utf-8 -*-
 """
 PTData.py — PT 数据源（Heat Map / Broadcast 与 Match Momentum 共用）
@@ -699,7 +699,7 @@ if __name__ == "__main__":
 
 
 def _load_embedded_ptdata():
-    """اجرای سورس جاسازی‌شدهٔ PTData در یک ماژول ایزوله — همان API قدیمی."""
+    """run textandtext textfromtext‌text PTData in text textandtext textandtext — same API legacy."""
     import types
     _mod = types.ModuleType("PTData_embedded")
     _g = _mod.__dict__
@@ -725,13 +725,13 @@ if PTData is not None:
         print(f"[PT] data source init failed: {_pt_init_ex}")
 
 def pt_active():
-    """PT data source فعال یا None — همهٔ شاخه‌های PT از همین گیت می‌روند"""
+    """PT data source active or None — text text‌text PT from text text text‌textandtext"""
     if PT is not None and PT.available():
         return PT
     return None
 
 # -------------------------------------------------------------
-# ۱. مجوز دسترسی ادمین
+# 1. technical noteandtechnical note access technical note
 # -------------------------------------------------------------
 def check_admin():
     try:
@@ -750,27 +750,27 @@ if (not check_admin()) and sys.platform == "win32" \
     except SystemExit:
         raise
     except Exception as e:
-        fatal_error(f"خطا در دریافت مجوز ادمین: {e}")
+        fatal_error(f"Error in intextdecrease textandtext text: {e}")
 # [SUITE v1.0.0] non-Windows (tests) / HM_NO_ELEVATE: continue unelevated
 
 # -------------------------------------------------------------
-# ۲. پایگاه تیم‌ها و بازیکنان — فقط از pes2017_teams.json (نسخه ۱۶٫۰)
-#    هیچ لیست داخلی در کد وجود ندارد؛ نام تیم، مسیر پرچم/لوگو و نام + مسیر
-#    عکس تک‌تک بازیکنان از فایل قابل‌ویرایش کاربر خوانده می‌شود:
-#        pes2017_teams.json   (کنار اسکریپت یا داخل Football_Database)
-#    ساختار: {"teams": {"league:team": {"name", "flag", "players": {...}}}}
-#    اگر فایل نبود، برنامه یک اسکلت خالیِ مستند می‌سازد تا شما آن را پر کنید
-#    (نسخهٔ کاملِ ۷۵ تیم/۱۷۵۲ بازیکن همراه ZIP ارائه می‌شود).
-#    عکس چهره (360x360): players/{league}/{team}/{code}.png   (پیش‌فرض)
-#    لوگو       (512x512): Football_Database/{league}/{team}.png (پیش‌فرض)
+# 2. technical note team‌technical note and players — only from pes2017_teams.json (version 16technical note0)
+#    technical note technical note internal in code andtechnical noteandtechnical note technical note team nametechnical note path technical note/logo and name + path
+#    image technical note‌technical note players from file technical note‌andtechnical note user technical noteandtechnical note technical note‌technical noteandtechnical note:
+#        pes2017_teams.json   (technical note technical note or inside Football_Database)
+#    structure: {"teams": {"league:team": {"name", "flag", "players": {...}}}}
+#    if file technical noteandtechnical note technical notenametechnical note technical note technical notetotaltechnical note emptytechnical note technical note technical note‌technical notefromtechnical note until technical note technical note technical note technical note technical note
+#    (versiontechnical note completetechnical note 75 team/1752 player technical note ZIP technical note technical note‌technical noteandtechnical note).
+#    image face (360x360): players/{league}/{team}/{code}.png   (default)
+#    logo       (512x512): Football_Database/{league}/{team}.png (default)
 # -------------------------------------------------------------
-# تیم‌های پیش‌فرض تا قبل از تشخیص (کلاسیک: بارسلونا - رئال مادرید)
+# team‌technical note default until before from detection (totaltechnical note: withtechnical noteandtechnical note - technical note technical noteintechnical note)
 DEFAULT_HOME_KEY = (7, 3)
 DEFAULT_AWAY_KEY = (7, 15)
 
 # -------------------------------------------------------------
-# ۳. تعاریف Win32 API و ثابت‌های حافظه — نسخهٔ FL_2026
-#    (ساختارها/ابزارها عین finalmomentum_2026 — هوک‌های 2017 حذف شدند)
+# 3. technical note Win32 API and technical note‌technical note memory — versiontechnical note FL_2026
+#    (structuretechnical note/tooltechnical note technical note finalmomentum_2026 — hook‌technical note 2017 technical note technical note)
 # -------------------------------------------------------------
 # [SUITE v1.0.0] platform guard: the module must import on non-Windows
 # (bridge tests run headless Linux); every memory API stays Windows-only.
@@ -829,7 +829,7 @@ class MEMORY_BASIC_INFORMATION(ctypes.Structure):
         ("Type", wintypes.DWORD)
     ]
 
-# --- امضای توابع (عین Momentum — بازگشت c_void_p برای آدرس‌های ۶۴ بیتی) ---
+# --- technical note technical noteandtechnical note (technical note Momentum — withtechnical note c_void_p for address‌technical note 64 technical note) ---
 if sys.platform == "win32":   # [SUITE v1.0.0] Windows-only prototypes
     kernel32.OpenProcess.restype = wintypes.HANDLE
     kernel32.OpenProcess.argtypes = [wintypes.DWORD, wintypes.BOOL, wintypes.DWORD]
@@ -845,7 +845,7 @@ if sys.platform == "win32":   # [SUITE v1.0.0] Windows-only prototypes
     kernel32.ReadProcessMemory.argtypes = [wintypes.HANDLE, ctypes.c_void_p, ctypes.c_void_p, ctypes.c_size_t, ctypes.POINTER(ctypes.c_size_t)]
 
 def get_fl_pid():
-    """پیدا کردن PID بازی — عین get_pid_by_name در Momentum (FL_2026.exe)"""
+    """text text PID withtext — text get_pid_by_name in Momentum (FL_2026.exe)"""
     snapshot = kernel32.CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0)
     entry = PROCESSENTRY32()
     entry.dwSize = ctypes.sizeof(PROCESSENTRY32)
@@ -860,7 +860,7 @@ def get_fl_pid():
     return None
 
 def get_fl_base(pid):
-    """آدرس پایهٔ ماژول FL_2026.exe — عین get_module_base در Momentum"""
+    """address text textandtext FL_2026.exe — text get_module_base in Momentum"""
     snapshot = kernel32.CreateToolhelp32Snapshot(TH32CS_SNAPMODULE | TH32CS_SNAPMODULE32, pid)
     entry = MODULEENTRY32()
     entry.dwSize = ctypes.sizeof(MODULEENTRY32)
@@ -875,7 +875,7 @@ def get_fl_base(pid):
     return None
 
 def safe_read(hp, addr, size):
-    """خواندن امن حافظه — عین Momentum"""
+    """read text memory — text Momentum"""
     buf = ctypes.create_string_buffer(size)
     read = ctypes.c_size_t()
     if kernel32.ReadProcessMemory(hp, ctypes.c_void_p(addr), buf, size, ctypes.byref(read)) and read.value == size:
@@ -883,7 +883,7 @@ def safe_read(hp, addr, size):
     return None
 
 def safe_write(hp, addr, data):
-    """نوشتن امن حافظه (با VirtualProtectEx) — عین Momentum"""
+    """write text memory (with VirtualProtectEx) — text Momentum"""
     size = len(data)
     old = wintypes.DWORD()
     if not kernel32.VirtualProtectEx(hp, ctypes.c_void_p(addr), size, PAGE_EXECUTE_READWRITE, ctypes.byref(old)):
@@ -895,7 +895,7 @@ def safe_write(hp, addr, data):
     return bool(res and written.value == size)
 
 def allocate_near_target(hp, target_addr, size=4096):
-    """تخصیص Cave نزدیک هدف (برای jmp rel32) — عین Momentum"""
+    """allocation Cave text target (for jmp rel32) — text Momentum"""
     mbi = MEMORY_BASIC_INFORMATION()
     curr = (target_addr - 0x10000) & ~0xFFFF
     min_addr = max(0x10000, target_addr - 0x70000000)
@@ -917,77 +917,77 @@ def allocate_near_target(hp, target_addr, size=4096):
     return None
 
 # -------------------------------------------------------------
-# ثابت‌های بازی FL_2026 — همه عین finalmomentum_2026
+# technical note‌technical note withtechnical note FL_2026 — technical note technical note finalmomentum_2026
 # -------------------------------------------------------------
 GAME_PROCESS_NAME   = "FL_2026.exe"
 
-# --- هوک توپ (GameEngine در Momentum) ---
+# --- ball hook (GameEngine in Momentum) ---
 BALL_HOOK_OFFSET    = 0x176A3A2
 BALL_ORIG_BYTES     = b'\x0F\x29\x80\x50\x04\x00\x00'   # movaps [rax+0x450],xmm0
 
-# --- هوک زمان مسابقه (TimeHooker در Momentum — بدون هیچ تغییری) ---
+# --- hook match time (TimeHooker in Momentum — without technical note changetechnical note) ---
 TIME_HOOK_OFFSET    = 0x20F1CDA
 TIME_ORIG_BYTES     = b'\x89\x86\x40\x01\x00\x00'       # mov [rsi+00000140],eax
 TIME_MINUTES_OFFSET = 0x13C
 TIME_SECONDS_OFFSET = 0x140
 
-# --- هوک کد بازیکن (مشخصات کاربر — FL_2026.exe+A83964) ---
+# --- hook code player (specification user — FL_2026.exe+A83964) ---
 PLAYER_CODE_HOOK_OFFSET = 0xA83964
 PLAYER_CODE_ORIG_BYTES  = b'\x44\x89\x67\x08\x89\x77\x0C'  # mov [rdi+08],r12d ; mov [rdi+0C],esi
 
-# --- آرایهٔ بازیکنان (بدون هوک — فقط پوینتر؛ عین Momentum) ---
+# --- technical note players (without hook — only pointertechnical note technical note Momentum) ---
 PLAYERS_ARRAY_OFFSET = 0x036F3FC0
 PLAYER_SEAT_COUNT    = 22
 PLAYER_LINK_OFFSETS  = (0x7D8, 0xA08, 0x188)   # p1 → p2 → p3 → p4
-PLAYER_COORD_OFFSET  = 0xD0                    # x طولی در +0x0 ، z عرضی در +0x8
+PLAYER_COORD_OFFSET  = 0xD0                    # x lengthtechnical note in +0x0 technical note z widthtechnical note in +0x8
 
-# --- وضعیت مسابقه و زمان جایگزین ---
-MATCH_STATE_OFFSET = 0x372D148    # بایت — 128/129 = PLAYING (عین Momentum)
-MATCH_TIME_OFFSET  = 0x0372D114   # float — فقط Fallback (عین Momentum)
+# --- andtechnical note match and time fallback ---
+MATCH_STATE_OFFSET = 0x372D148    # byte — 128/129 = PLAYING (technical note Momentum)
+MATCH_TIME_OFFSET  = 0x0372D114   # float — only Fallback (technical note Momentum)
 
-# --- تشخیص تیم‌ها (TeamIdentityTracker در Momentum) ---
-TEAM_MENU_STATE_OFFSET = 0x036F9AE0   # بایت وضعیت منو (خواندن مستقیم base+آفست — عین بقیهٔ آفست‌ها)
-# [PT v2.3.1] شرط اجرای تشخیص تیم: فقط وقتی بایت منو = ۹ باشد (قبلاً ۱۰۰ بود).
+# --- detection team‌technical note (TeamIdentityTracker in Momentum) ---
+TEAM_MENU_STATE_OFFSET = 0x036F9AE0   # byte andtechnical note menu (read direct base+technical note — technical note technical note technical note‌technical note)
+# [PT v2.3.1] technical note run detection team: only when byte menu = 9 withtechnical note (beforetechnical note 100 technical noteandtechnical note).
 TEAM_MENU_DETECT_VALUE = 9
-TEAM_SLOT_COUNT        = 37           # تعداد اسلات‌های هر لیگ
-TEAM_SLOT_STRIDE       = 112          # فاصلهٔ اسلات‌ها (بایت)
+TEAM_SLOT_COUNT        = 37           # count technical note‌technical note technical note league
+TEAM_SLOT_STRIDE       = 112          # distancetechnical note technical note‌technical note (byte)
 
 # --- [PT v2.3.0] NEW POINTER SPECS (user spec — Cheat Engine hex notation) ---
-# شناسهٔ تیم میزبان/مهمان (روش جدید — جایگزین زنجیرهٔ league/slots):
-#   پایه  = "FL_2026.exe"+0x03705E20 → deref → +0x98 → deref → +0x228
-#   [پایانی]     (۴ بایت) = Team ID میزبان
-#   [پایانی + 4] (۴ بایت) = Team ID مهمان
-# نام/رنگ تیم از teams_players_PES2021.txt ؛ لوگو/پرچم از Asset.zip
-# (Teams/{id}.png). اعتبارسنجی: هر دو ID باید در دیتابیس PT باشند.
+# technical note team Home/Away (technical noteandtechnical note new — fallback chaintechnical note league/slots):
+#   technical note  = "FL_2026.exe"+0x03705E20 → deref → +0x98 → deref → +0x228
+#   [endtechnical note]     (4 byte) = Team ID Home
+#   [endtechnical note + 4] (4 byte) = Team ID Away
+# name/color team from teams_players_PES2021.txt technical note logo/technical note from Asset.zip
+# (Teams/{id}.png). technical notewithtechnical noteagetechnical note: technical note technical noteand ID must in technical noteuntiltechnical note PT withtechnical note.
 TEAM_ID_PTR_OFFSET   = 0x03705E20
 TEAM_ID_CHAIN        = (0x98, 0x228)
-# اسلاتِ بازیکن جاری در لیست تیمش (روش جدید — جایگزین کد 1..22 برای هویت):
-#   پایه = "FL_2026.exe"+0x036F4270 → deref → +0x74 ⇒ ۱ بایت = Slot
-#   (نمونهٔ کاربر: بارسلونا Slot 04 = Eric García — در txt همین‌گونه است)
+# technical note player current in technical note teamtechnical note (technical noteandtechnical note new — fallback code 1..22 for technical noteandtechnical note):
+#   technical note = "FL_2026.exe"+0x036F4270 → deref → +0x74 ⇒ 1 byte = Slot
+#   (sampletechnical note user: withtechnical noteandtechnical note Slot 04 = Eric García — in txt technical note‌technical noteandtechnical note is)
 PLAYER_SLOT_PTR_OFFSET = 0x036F4270
 PLAYER_SLOT_CHAIN      = (0x74,)
 
-# --- چرخهٔ عمر مسابقه (MomentumScoringConfig در Momentum) ---
-MATCH_RESTART_DELTA    = 5.0      # افت ناگهانی زمان بازی = ری‌استارت
-HT_HARD_MIN_FIRST_HALF = 2700.0   # 45*60 — حداقل زمان نیمه اول برای HT واقعی
+# --- cycletechnical note technical note match (MomentumScoringConfig in Momentum) ---
+MATCH_RESTART_DELTA    = 5.0      # decrease technical note time withtechnical note = restart
+HT_HARD_MIN_FIRST_HALF = 2700.0   # 45*60 — technical note time first half for HT real
 HT_RESUME_LOWER_SLACK  = 30.0
 HT_RESUME_TOLERANCE    = 600.0
-NEW_GAME_MAX_START     = 180.0    # از سرگیری زیر این مقدار = بازی جدید
+NEW_GAME_MAX_START     = 180.0    # resume technical note technical note value = withtechnical note new
 ET_RESET_TOLERANCE     = 720.0
-TRB_ZERO_T             = 1.0      # تایمر ≤ ۱ ثانیه ⇒ «صفر شده»
-TRB_RISE_T             = 2.0      # عبور به بالای ۲ ثانیه ⇒ «شروع به بالا رفتن»
-TRB_COOLDOWN_SEC       = 20.0     # فاصلهٔ حداقلی دو نوسازی متوالی
+TRB_ZERO_T             = 1.0      # untiltechnical note ≤ 1 second ⇒ «technical note technical note»
+TRB_RISE_T             = 2.0      # technical noteandtechnical note to withtechnical note 2 second ⇒ «start to rise»
+TRB_COOLDOWN_SEC       = 20.0     # distancetechnical note technical note technical noteand technical noteandtechnical notefromtechnical note technical noteandtechnical note
 
-# عنوان نیمه + قرینه — مطابق نسخهٔ 2017 (نیمهٔ دوم و وقت اضافهٔ دوم قرینه)
+# technical noteandtechnical note technical note + technical note — technical note versiontechnical note 2017 (technical note second and extra timetechnical note second technical note)
 PERIOD_TITLES = {
-    1: ("نیمه اول", False),
-    2: ("نیمه دوم", True),
-    3: ("وقت اضافه اول", False),
-    4: ("وقت اضافه دوم", True),
+    1: ("first half", False),
+    2: ("second half", True),
+    3: ("extra time first", False),
+    4: ("extra time second", True),
 }
 
 # -------------------------------------------------------------
-# وضعیت اجرا، هوک‌ها و داده‌های زنده
+# andtechnical note runtechnical note hook‌technical note and data live
 # -------------------------------------------------------------
 h_process = None
 base_addr = None
@@ -999,12 +999,12 @@ pcode_hook_addr = 0; pcode_cave_addr = 0; pcode_data_addr = 0
 is_hooked = False
 is_running = True
 
-status_msg = "در حال اتصال به بازی..."
-current_code = None      # کد بازیکن از هوک A83964 (1..22 خام)
+status_msg = "currently connection to withtext..."
+current_code = None      # code player from hook A83964 (1..22 technical note)
 
 display_minute = 0
 display_second = 0
-period_title = "در انتظار شروع"
+period_title = "in text start"
 is_clock_active = False
 is_inverted_active = False
 diff_val = 0
@@ -1019,8 +1019,8 @@ match_reset_event = False
 ball_pos = {"x": 0.0, "z": 0.0, "valid": False}
 initial_discovered_codes = set()
 
-# وضعیت چرخهٔ عمر مسابقه (عین Momentum — Worker تغییر می‌دهد)
-half_number = 1          # 1=نیمه اول 2=نیمه دوم 3=وقت اضافه اول 4=وقت اضافه دوم
+# andtechnical note cycletechnical note technical note match (technical note Momentum — Worker change technical note‌technical note)
+half_number = 1          # 1=first half 2=second half 3=extra time first 4=extra time second
 ht_pending = False
 ht_prev_end_t = 0.0
 seen_max_t = 0.0
@@ -1030,22 +1030,22 @@ trb_last_fire_wall = 0.0
 last_auto_reset_wall = 0.0
 match_entities_built = False
 
-# متغیرهای تیمی پویا (کلید تیم = "league:team" در pes2017_teams.json)
+# technical note teamtechnical note technical noteandor (totaltechnical note team = "league:team" in pes2017_teams.json)
 home_team_key = DEFAULT_HOME_KEY
 away_team_key = DEFAULT_AWAY_KEY
-home_team_name = None       # مقدار واقعی بعد از تعریف توابع (پایین‌تر)
+home_team_name = None       # value real after from technical note technical noteandtechnical note (below‌technical note)
 away_team_name = None
 home_players_dict = {}
 away_players_dict = {}
 
-# جفت خام تشخیص‌داده‌شده از حافظه (league_id, val) + مسیر لوگوی باشگاه
+# technical note technical note detection‌data‌technical note from memory (league_id, val) + path logotechnical note withtechnical note
 home_team_id_info = None
 away_team_id_info = None
-home_team_logo = None      # مسیر PNG لوگو (Football_Database)
+home_team_logo = None      # path PNG logo (Football_Database)
 away_team_logo = None
 
 # -------------------------------------------------------------
-# ابعاد فیزیکی و کالیبراسیون (عین 2017 — بدون تغییر)
+# technical note physical and technical noteandtechnical note (technical note 2017 — unchanged)
 # -------------------------------------------------------------
 TOTAL_ENGINE_X_MIN = -55.0
 TOTAL_ENGINE_X_MAX =  55.0
@@ -1077,11 +1077,11 @@ CALIB_DEFAULTS = {"gain": 3.30, "ceiling": 0.4, "gamma": 0.85,
 
 OUTFIELD_INDICES = list(range(1, 11)) + list(range(12, 22))
 active_filter_indices = list(OUTFIELD_INDICES)
-current_filter_label = "همه بازیکنان (۲۰ بازیکن فعال)"
+current_filter_label = "text players (20 player active)"
 current_mode_type = "TEAM"
 
 # -------------------------------------------------------------
-# چرخهٔ عمر مسابقه — توابع خالص (عین Momentum نسخهٔ ۱۰٫۳؛ قابل تست)
+# cycletechnical note technical note match — technical noteandtechnical note technical note (technical note Momentum versiontechnical note 10technical note3technical note testable)
 # -------------------------------------------------------------
 
 # =====================================================================
@@ -1516,14 +1516,14 @@ SUMMARY_CTRL = MatchSummaryController()
 
 
 def fl_compute_total_seconds(minutes, seconds):
-    """عین TimeHooker.compute_total_seconds در Momentum:
-       ثانیه معمولی (0..59) ⇒ minutes*60+seconds ؛ در غیر این صورت خودِ مقدار"""
+    """text TimeHooker.compute_total_seconds in Momentum:
+       second textandtext (0..59) ⇒ minutes*60+seconds text in text text textandtext textandtext value"""
     if seconds <= 59:
         return float(minutes * 60 + seconds)
     return float(seconds)
 
 def should_flag_time_drop(prev_t, current_t, min_delta):
-    """آیا افت بزرگ زمان بازی باید «علامت» بخورد؟ (عین Momentum)"""
+    """textor decrease text time withtext must «text» textandtext (text Momentum)"""
     if prev_t is None or prev_t <= 0:
         return False
     return (prev_t - current_t) > min_delta
@@ -1534,43 +1534,43 @@ def classify_resume_after_drop(prev_end_t, current_t, half_number, *,
                                ht_resume_tolerance=600.0,
                                new_game_max_start=180.0,
                                et_reset_tolerance=720.0):
-    """تصمیم قطعی پس از از سرگیری PLAYING (عین Momentum — بدون تغییر):
-       خروجی: HT | NEW_MATCH | ET1 | ET2 | KEPT"""
-    # ۱) بازی جدید — تایمر ≈ صفر (قوی‌ترین سیگنال؛ مقدم بر HT)
+    """text deterministic text from resume PLAYING (text Momentum — unchanged):
+       output: HT | NEW_MATCH | ET1 | ET2 | KEPT"""
+    # 1) withtechnical note new — untiltechnical note ≈ technical note (technical noteandtechnical note‌technical note technical note technical note technical note HT)
     if current_t <= new_game_max_start:
         return "NEW_MATCH"
-    # ۲-د) شروع نیمهٔ دوم وقت اضافه — ریست ۱۰۵ از بالای ۱۰۵
+    # 2-technical note) start technical note second extra time — reset 105 from withtechnical note 105
     if (half_number == 3
             and prev_end_t > 105.0 * 60.0
             and (105.0 * 60.0 - ht_resume_lower_slack) <= current_t
             and current_t <= 105.0 * 60.0 + et_reset_tolerance):
         return "ET2"
-    # ۲-ج) شروع وقت اضافه — ریست ۹۰ از بالای ۹۰
+    # 2-technical note) start extra time — reset 90 from withtechnical note 90
     if (half_number == 2
             and prev_end_t > 90.0 * 60.0
             and (90.0 * 60.0 - ht_resume_lower_slack) <= current_t
             and current_t <= 90.0 * 60.0 + et_reset_tolerance):
         return "ET1"
-    # ۲) HT — قانون سخت
+    # 2) HT — rule technical note
     if (half_number == 1
             and prev_end_t >= ht_hard_min
             and (ht_hard_min - ht_resume_lower_slack) <= current_t
             and current_t <= ht_hard_min + ht_resume_tolerance):
         return "HT"
-    # ۳) حفظ نمودار
+    # 3) technical note chart
     return "KEPT"
 
 def is_new_match_watchdog(seen_max_t, current_t, new_game_max_start, min_delta):
-    """Watchdog مستقل بازی جدید (عین Momentum — بدون تغییر)"""
+    """Watchdog independent withtext new (text Momentum — unchanged)"""
     if current_t > new_game_max_start:
         return False
     return seen_max_t > (max(new_game_max_start, current_t) + min_delta)
 
 # -------------------------------------------------------------
-# نصب / برداشتن هوک‌ها (توپ / زمان / کد بازیکن)
+# install / technical note hook‌technical note (ball / time / code player)
 # -------------------------------------------------------------
 def fl_install_ball_hook():
-    """نصب هوک توپ — عین GameEngine._install_ball_hook در Momentum
+    """install ball hook — text GameEngine._install_ball_hook in Momentum
     [SUITE v2.1.5] bridge-only when the bridge answers: a refused request
     NEVER falls back to a local install — a second local hook on this
     shared site (Match Momentum reads the same buffer) is exactly what
@@ -1613,7 +1613,7 @@ def fl_install_ball_hook():
     return bool(safe_write(h_process, ball_hook_addr, patch))
 
 def fl_adopt_ball_hook():
-    """اتصال به هوک توپِ نصب‌مانده از جلسهٔ قبل — عین Momentum"""
+    """connection to ball hooktext install‌text from text before — text Momentum"""
     global ball_hook_addr, ball_cave_addr, ball_data_addr
     curr = safe_read(h_process, base_addr + BALL_HOOK_OFFSET, 7)
     if not curr or curr[0] != 0xE9:
@@ -1625,7 +1625,7 @@ def fl_adopt_ball_hook():
     return True
 
 def fl_install_time_hook():
-    """نصب هوک زمان — عین TimeHooker.hook در Momentum (بدون هیچ تغییری)
+    """install time hook — text TimeHooker.hook in Momentum (without text changetext)
     [SUITE v2.1.5] bridge-only when the bridge answers (kind=rsi): the
     SAME site is used by Momentum's TimeHooker, so ONE bridge-owned hook
     feeds both mods from one RSI slot; a refusal NEVER falls back to a
@@ -1649,27 +1649,27 @@ def fl_install_time_hook():
         return False
     time_hook_addr = base_addr + TIME_HOOK_OFFSET
 
-    # راستی‌آزمایی امضای دستور اصلی قبل از هرگونه نوشتن
+    # technical noteistechnical note‌technical note technical note instruction original before from technical noteandtechnical note write
     curr = safe_read(h_process, time_hook_addr, len(TIME_ORIG_BYTES))
     if curr is None:
-        raise Exception("خواندن حافظه Time Hook ممکن نشد.")
+        raise Exception("read memory Time Hook possible text.")
     if curr == TIME_ORIG_BYTES:
-        pass  # حالت عادی
+        pass  # technical note technical note
     elif curr[0] == 0xE9:
-        raise Exception("Time Hook قبلا نصب شده است (اجرای قبلی Restore نشده). بازی را ری‌استارت کنید.")
+        raise Exception("Time Hook beforetext install text is (run beforetext Restore text). withtext text restart text.")
     else:
-        raise Exception("امضای دستور زمان مطابقت ندارد: " + curr.hex().upper() +
-                        " (آفست 0x20F1CDA نیاز به بازبینی دارد)")
+        raise Exception("text instruction time text text: " + curr.hex().upper() +
+                        " (text 0x20F1CDA textortext to withtext text)")
 
     time_cave_addr = allocate_near_target(h_process, time_hook_addr, 128)
     if not time_cave_addr:
-        raise Exception("خطا در تخصیص حافظه برای Time Hook.")
+        raise Exception("Error in memory allocation for Time Hook.")
 
-    time_data_addr = time_cave_addr + 0x40   # slot 8 بایتی RSI
+    time_data_addr = time_cave_addr + 0x40   # slot 8 bytetechnical note RSI
     code_start = time_cave_addr + 0x20
 
-    # ---------- Cave (عین Momentum) ----------
-    # mov [rsi+0x140], eax      ; دستور اصلی بازی       (6)
+    # ---------- Cave (technical note Momentum) ----------
+    # mov [rsi+0x140], eax      ; instruction original withtechnical note       (6)
     # push rax                  ;                        (1)
     # pushfq                    ;                        (1)
     # mov rax, rsi              ;                        (3)
@@ -1690,18 +1690,18 @@ def fl_install_time_hook():
     cave += struct.pack('<i', rel_jmp_back)
 
     if not safe_write(h_process, time_cave_addr, b'\x00' * 8):
-        raise Exception("پاک‌سازی slot زمان ناموفق بود.")
+        raise Exception("cleanup slot time failed textandtext.")
     if not safe_write(h_process, code_start, bytes(cave)):
-        raise Exception("نوشتن کد Time Hook در Cave ناموفق بود.")
+        raise Exception("write code Time Hook in Cave failed textandtext.")
 
     patch = b'\xE9' + struct.pack('<i', code_start - (time_hook_addr + 5)) + b'\x90'
     if not safe_write(h_process, time_hook_addr, patch):
-        raise Exception("نصب Patch Time Hook روی بازی ناموفق بود.")
+        raise Exception("install Patch Time Hook textandtext withtext failed textandtext.")
     return True
 
 def fl_adopt_time_hook():
-    """اتصال به Time Hookِ نصب‌مانده از جلسهٔ قبل — فقط با راستی‌آزمایی
-       بایت‌های Cave (الگوی عین GoalHooker._parse_existing_cave_code)"""
+    """connection to Time Hooktext install‌text from text before — only with textistext‌text
+       byte‌text Cave (textandtext text GoalHooker._parse_existing_cave_code)"""
     global time_hook_addr, time_cave_addr, time_data_addr
     curr = safe_read(h_process, base_addr + TIME_HOOK_OFFSET, len(TIME_ORIG_BYTES))
     if not curr or curr[0] != 0xE9:
@@ -1714,7 +1714,7 @@ def fl_adopt_time_hook():
     expected = bytes(bytearray(TIME_ORIG_BYTES) + bytearray([0x50, 0x9C, 0x48, 0x89, 0xF0, 0x48, 0xA3]))
     if bytes(code[:13]) != expected:
         return False
-    slot = struct.unpack('<Q', code[13:21])[0]     # imm64 دستور mov [slot], rax
+    slot = struct.unpack('<Q', code[13:21])[0]     # imm64 instruction mov [slot], rax
     if not slot or slot < 0x10000:
         return False
     time_hook_addr = base_addr + TIME_HOOK_OFFSET
@@ -1723,11 +1723,11 @@ def fl_adopt_time_hook():
     return True
 
 def fl_install_pcode_hook():
-    """نصب هوک کد بازیکن (FL_2026.exe+A83964 — مشخصات کاربر):
-       خط اول (4 بایت): mov [rdi+08],r12d — همیشه شمارهٔ بازیکن را می‌نویسد
-       خط دوم (3 بایت): mov [rdi+0C],esi — کد پشتیبان (بازیابی هر دو خط)
-       Cave هر دو دستور اصلی را اجرا + r12d را در slot ذخیره می‌کند
-       و به target+7 برمی‌گردد (پچ ۷ بایتی: E9 rel32 + دو NOP).
+    """install hook code player (FL_2026.exe+A83964 — specification user):
+       line first (4 byte): mov [rdi+08],r12d — always numbertext player text text‌textandtext
+       line second (3 byte): mov [rdi+0C],esi — code textwithtext (recovery text textand line)
+       Cave text textand instruction original text run + r12d text in slot save text‌text
+       and to target+7 text‌text (text 7 bytetext: E9 rel32 + textand NOP).
     [SUITE v2.1.5] bridge-only when the bridge answers (kind=r12d) —
     unique site, but still owned by the bridge so it participates in
     adopt/reset/ref-count hygiene; a refusal NEVER falls back to a local
@@ -1753,29 +1753,29 @@ def fl_install_pcode_hook():
 
     curr = safe_read(h_process, pcode_hook_addr, len(PLAYER_CODE_ORIG_BYTES))
     if curr is None:
-        raise Exception("خواندن حافظه هوک کد بازیکن ممکن نشد.")
+        raise Exception("read memory hook code player possible text.")
     if curr == PLAYER_CODE_ORIG_BYTES:
-        pass  # حالت عادی
+        pass  # technical note technical note
     elif curr[0] == 0xE9:
-        raise Exception("هوک کد بازیکن قبلا نصب شده است (اجرای قبلی Restore نشده).")
+        raise Exception("hook code player beforetext install text is (run beforetext Restore text).")
     else:
-        raise Exception("امضای دستور کد بازیکن مطابقت ندارد: " + curr.hex().upper() +
-                        " (آفست 0xA83964 نیاز به بازبینی دارد)")
+        raise Exception("text instruction code player text text: " + curr.hex().upper() +
+                        " (text 0xA83964 textortext to withtext text)")
 
     pcode_cave_addr = allocate_near_target(h_process, pcode_hook_addr, 128)
     if not pcode_cave_addr:
-        raise Exception("خطا در تخصیص حافظه برای هوک کد بازیکن.")
+        raise Exception("Error in memory allocation for hook code player.")
 
-    pcode_data_addr = pcode_cave_addr + 0x60    # slot 8 بایتی کد بازیکن
+    pcode_data_addr = pcode_cave_addr + 0x60    # slot 8 bytetechnical note code player
     code_start = pcode_cave_addr + 0x20
 
     # ---------- Cave ----------
-    # mov [rdi+08], r12d        ; دستور اصلی بازی — خط اول   (4)
-    # mov [rdi+0C], esi         ; دستور اصلی بازی — خط دوم   (3)
+    # mov [rdi+08], r12d        ; instruction original withtechnical note — line first   (4)
+    # mov [rdi+0C], esi         ; instruction original withtechnical note — line second   (3)
     # push rax                  ;                              (1)
     # pushfq                    ;                              (1)
-    # mov eax, r12d             ; کد بازیکن                    (3)
-    # mov [data_addr], rax      ; capture کد بازیکن           (10)
+    # mov eax, r12d             ; code player                    (3)
+    # mov [data_addr], rax      ; capture code player           (10)
     # popfq                     ;                              (1)
     # pop rax                   ;                              (1)
     # jmp rel32 -> target+7                                  (5)
@@ -1793,17 +1793,17 @@ def fl_install_pcode_hook():
     cave += struct.pack('<i', rel_jmp_back)
 
     if not safe_write(h_process, pcode_cave_addr, b'\x00' * 128):
-        raise Exception("پاک‌سازی Cave کد بازیکن ناموفق بود.")
+        raise Exception("cleanup Cave code player failed textandtext.")
     if not safe_write(h_process, code_start, bytes(cave)):
-        raise Exception("نوشتن کد هوک کد بازیکن در Cave ناموفق بود.")
+        raise Exception("write code hook code player in Cave failed textandtext.")
 
     patch = b'\xE9' + struct.pack('<i', code_start - (pcode_hook_addr + 5)) + b'\x90\x90'
     if not safe_write(h_process, pcode_hook_addr, patch):
-        raise Exception("نصب Patch هوک کد بازیکن ناموفق بود.")
+        raise Exception("install Patch hook code player failed textandtext.")
     return True
 
 def fl_adopt_pcode_hook():
-    """اتصال به هوک کد بازیکنِ نصب‌مانده از جلسهٔ قبل — با راستی‌آزمایی Cave"""
+    """connection to hook code playertext install‌text from text before — with textistext‌text Cave"""
     global pcode_hook_addr, pcode_cave_addr, pcode_data_addr
     curr = safe_read(h_process, base_addr + PLAYER_CODE_HOOK_OFFSET, len(PLAYER_CODE_ORIG_BYTES))
     if not curr or curr[0] != 0xE9:
@@ -1816,7 +1816,7 @@ def fl_adopt_pcode_hook():
     expected = bytes(bytearray(PLAYER_CODE_ORIG_BYTES) + bytearray([0x50, 0x9C, 0x44, 0x89, 0xE0, 0x48, 0xA3]))
     if bytes(code[:14]) != expected:
         return False
-    slot = struct.unpack('<Q', code[14:22])[0]    # imm64 دستور mov [slot], rax
+    slot = struct.unpack('<Q', code[14:22])[0]    # imm64 instruction mov [slot], rax
     if not slot or slot < 0x10000:
         return False
     pcode_hook_addr = base_addr + PLAYER_CODE_HOOK_OFFSET
@@ -1825,7 +1825,7 @@ def fl_adopt_pcode_hook():
     return True
 
 def fl_install_all_hooks():
-    """نصب سه هوک در لحظهٔ اتصال — عین جریان initialize در Momentum
+    """install text hook in momenttext connection — text textortext initialize in Momentum
     [SUITE v2.1.5] bridge mode: the three installs are pure REQUESTS —
     the bridge builds/adopts/shares each hook and hands back the shared
     data address; a refusal never falls back to local bytes (the periodic
@@ -1835,15 +1835,15 @@ def fl_install_all_hooks():
 
     if hm_bridge() is not None:
         if not fl_install_ball_hook():
-            warnings.append("هوک توپ: درخواست پل رد شد — تلاش مجدد خودکار")
+            warnings.append("ball hook: request text text text — text text automatic")
         try:
             if not fl_install_time_hook():
-                warnings.append("Time Hook: درخواست پل رد شد — تلاش مجدد خودکار")
+                warnings.append("Time Hook: request text text text — text text automatic")
         except Exception as e:
             warnings.append(f"Time Hook: {e}")
         try:
             if not fl_install_pcode_hook():
-                warnings.append("Player-Code Hook: درخواست پل رد شد — تلاش مجدد خودکار")
+                warnings.append("Player-Code Hook: request text text text — text text automatic")
         except Exception as e:
             warnings.append(f"Player-Code Hook: {e}")
         for w in warnings:
@@ -1852,44 +1852,44 @@ def fl_install_all_hooks():
 
     # --- standalone path (no bridge at all — verbatim original flow) ---
 
-    # --- هوک توپ ---
+    # --- ball hook ---
     curr_b = safe_read(h_process, base_addr + BALL_HOOK_OFFSET, 7)
     if curr_b and curr_b[0] == 0xE9:
         if fl_adopt_ball_hook():
-            warnings.append("هوک توپ: نصب جلسهٔ قبل پذیرفته شد (Adopt)")
+            warnings.append("ball hook: install text before text text (Adopt)")
         else:
-            warnings.append("هوک توپ: Adopt ناموفق بود")
+            warnings.append("ball hook: Adopt failed textandtext")
     elif curr_b and bytes(curr_b) == BALL_ORIG_BYTES:
         if not fl_install_ball_hook():
-            warnings.append("خطا در نصب هوک توپ")
+            warnings.append("Error in install ball hook")
     else:
-        warnings.append("امضای هوک توپ مطابقت ندارد")
+        warnings.append("text ball hook text text")
 
-    # --- هوک زمان (عین Momentum) ---
+    # --- time hook (technical note Momentum) ---
     try:
         fl_install_time_hook()
     except Exception as e:
         if fl_adopt_time_hook():
-            warnings.append("Time Hook: نصب جلسهٔ قبل پذیرفته شد (Adopt)")
+            warnings.append("Time Hook: install text before text text (Adopt)")
         else:
-            warnings.append(f"Time Hook: {e} (از زمان جایگزین استفاده می‌شود)")
+            warnings.append(f"Time Hook: {e} (from time fallback istext text‌textandtext)")
 
-    # --- هوک کد بازیکن (A83964) ---
+    # --- hook code player (A83964) ---
     try:
         fl_install_pcode_hook()
     except Exception as e:
         if fl_adopt_pcode_hook():
-            warnings.append("Player-Code Hook: نصب جلسهٔ قبل پذیرفته شد (Adopt)")
+            warnings.append("Player-Code Hook: install text before text text (Adopt)")
         else:
-            warnings.append(f"Player-Code Hook: {e} (شناسایی اسامی غیرفعال)")
+            warnings.append(f"Player-Code Hook: {e} (text text disabled)")
 
     for w in warnings:
         print(f"[HOOK] {w}", flush=True)
     return warnings
 
 def fl_verify_and_repair_hooks():
-    """نوسازی سریع هوک‌ها در شروع دست جدید — عین verify_and_repair_hooks
-       در Momentum (فقط هوک‌های توپ/زمان/کد بازیکن این برنامه).
+    """textandtextfromtext fast hook‌text in start text new — text verify_and_repair_hooks
+       in Momentum (only hook‌text ball/time/code player text textnametext).
        [SUITE v1.0.0] bridge mode: status + reset_request only — the bridge
        rebuilds a dead hook and hands back the (possibly new) slot."""
     global ball_hook_addr, ball_cave_addr, ball_data_addr
@@ -1947,7 +1947,7 @@ def fl_verify_and_repair_hooks():
         return rep
 
     # --- local path (verbatim original) ---
-    # --- توپ: امضا E9 = نصب (Adopt) | ORIG = نصب مجدد ---
+    # --- ball: technical note E9 = install (Adopt) | ORIG = install technical note ---
     try:
         curr = safe_read(h_process, base_addr + BALL_HOOK_OFFSET, 7)
         if curr is None:
@@ -1961,7 +1961,7 @@ def fl_verify_and_repair_hooks():
     except Exception as ex:
         rep["ball"] = f"error:{type(ex).__name__}"
 
-    # --- زمان: ORIG ⇒ نصب مجدد | E9 ⇒ نصب مانده (خوب) ---
+    # --- time: ORIG ⇒ install technical note | E9 ⇒ install technical note (technical noteandtechnical note) ---
     try:
         curr = safe_read(h_process, base_addr + TIME_HOOK_OFFSET, len(TIME_ORIG_BYTES))
         if curr is None:
@@ -1982,7 +1982,7 @@ def fl_verify_and_repair_hooks():
     except Exception as ex:
         rep["time"] = f"error:{type(ex).__name__}"
 
-    # --- کد بازیکن: همان الگوی زمان ---
+    # --- code player: same technical noteandtechnical note time ---
     try:
         curr = safe_read(h_process, base_addr + PLAYER_CODE_HOOK_OFFSET, len(PLAYER_CODE_ORIG_BYTES))
         if curr is None:
@@ -2007,7 +2007,7 @@ def fl_verify_and_repair_hooks():
 
 
 def cleanup_hooks():
-    """بازیابی کامل بایت‌های اصلی بازی + آزادسازی Cave‌ها + بستن هندل
+    """recovery complete byte‌text original withtext + freetextfromtext Cave‌text + text text
     [SUITE v1.0.0] bridge mode: the bridge OWNS the bytes — we only send
     hook_release for the three sites and close the process handle."""
     global h_process, is_hooked
@@ -2057,7 +2057,7 @@ def cleanup_hooks():
 
 
 # -------------------------------------------------------------
-# خوانندگان دادهٔ بازی (توپ / زمان / بازیکنان / کد بازیکن)
+# technical noteandtechnical note datatechnical note withtechnical note (ball / time / players / code player)
 # -------------------------------------------------------------
 def _mem_read_u64(addr):
     if not h_process or not addr or addr < 0x10000:
@@ -2069,8 +2069,8 @@ def _mem_read_u64(addr):
     return None
 
 def fl_read_match_state():
-    """بایت وضعیت مسابقه — عین GameEngine.read_match_state در Momentum:
-       128/129 = PLAYING ، بقیه = STOP"""
+    """byte andtext match — text GameEngine.read_match_state in Momentum:
+       128/129 = PLAYING text text = STOP"""
     if not h_process or not base_addr:
         return "STOP"
     raw = _mem_read_u8(base_addr + MATCH_STATE_OFFSET)
@@ -2079,10 +2079,10 @@ def fl_read_match_state():
     return "STOP"
 
 def fl_read_game_clock():
-    """منبع واحد زمان مسابقه — عین GameEngine.read_game_clock در Momentum:
-       ۱) TimeHooker (RSI+0x13C دقیقه / RSI+0x140 ثانیه) — منبع اصلی
-       ۲) MATCH_TIME_OFFSET (float) — فقط Fallback
-       خروجی: (total_match_seconds, minutes|None, seconds|None)"""
+    """source andtext match time — text GameEngine.read_game_clock in Momentum:
+       1) TimeHooker (RSI+0x13C minute / RSI+0x140 second) — source original
+       2) MATCH_TIME_OFFSET (float) — only Fallback
+       output: (total_match_seconds, minutes|None, seconds|None)"""
     if time_data_addr and h_process:
         raw = safe_read(h_process, time_data_addr, 8)
         if raw:
@@ -2093,10 +2093,10 @@ def fl_read_game_clock():
                 if raw_m and raw_s:
                     minutes = struct.unpack('<I', raw_m)[0]
                     seconds = struct.unpack('<I', raw_s)[0]
-                    # گاردهای عقلایی بودن مقادیر (عین Momentum)
+                    # technical note technical note technical noteandtechnical note technical note (technical note Momentum)
                     if not (minutes > 300 or seconds > 10800):
                         return fl_compute_total_seconds(minutes, seconds), minutes, seconds
-    # --- زمان جایگزین (Fallback — عین Momentum) ---
+    # --- time fallback (Fallback — technical note Momentum) ---
     if h_process and base_addr:
         raw = safe_read(h_process, base_addr + MATCH_TIME_OFFSET, 4)
         if raw:
@@ -2104,8 +2104,8 @@ def fl_read_game_clock():
     return None, None, None
 
 def fl_read_ball_xz():
-    """مختصات توپ از slot هوک — عین GameEngine.read_ball در Momentum:
-       Raw Float0 = طولی (x) ، Float1 = ارتفاع ، Float2 = عرضی (z)"""
+    """coordinates ball from slot hook — text GameEngine.read_ball in Momentum:
+       Raw Float0 = lengthtext (x) text Float1 = height text Float2 = widthtext (z)"""
     if not ball_data_addr or not h_process:
         return None
     raw = safe_read(h_process, ball_data_addr, 12)
@@ -2115,7 +2115,7 @@ def fl_read_ball_xz():
     return None
 
 def fl_read_player_coords(seat):
-    """مختصات یک صندلی از آرایهٔ بازیکنان — زنجیرهٔ عین Momentum:
+    """coordinates text text from text players — chaintext text Momentum:
        [base+0x36F3FC0 + seat*8] → +0x7D8 → +0xA08 → +0x188 → +0xD0"""
     if not h_process or not base_addr or seat is None:
         return None
@@ -2136,15 +2136,15 @@ def fl_read_player_coords(seat):
     raw = safe_read(h_process, p4 + PLAYER_COORD_OFFSET, 12)
     if not raw:
         return None
-    x = struct.unpack('<f', raw[0:4])[0]    # طولی
-    z = struct.unpack('<f', raw[8:12])[0]   # عرضی
+    x = struct.unpack('<f', raw[0:4])[0]    # lengthtechnical note
+    z = struct.unpack('<f', raw[8:12])[0]   # widthtechnical note
     return x, z
 
 def fl_read_all_players():
-    """همهٔ ۲۲ صندلی — عین GameEngine.read_players در Momentum
-       (صندلی 0..10 = میزبان / 11..21 = مهمان).
-       اگر «هر» صندلی نامعتبر بود None برمی‌گردد (ساخت موجودیت‌ها
-       تا تیک بعدی به تعویق می‌افتد)."""
+    """text 22 text — text GameEngine.read_players in Momentum
+       (text 0..10 = Home / 11..21 = Away).
+       if «text» text invalid textandtext None text‌text (text textandtextandtext‌text
+       until text aftertext to textandtext text‌decreasetext)."""
     if not h_process or not base_addr:
         return None
     out = []
@@ -2173,8 +2173,8 @@ def fl_read_all_players():
     return out
 
 def fl_read_player_code():
-    """آخرین کد بازیکن نوشته‌شده توسط هوک A83964 (r12d).
-       مقدار خام 1..22 — 1..11 میزبان / 12..22 مهمان (منهای ۱۱)."""
+    """latest code player textandtext‌text textandtext hook A83964 (r12d).
+       value text 1..22 — 1..11 Home / 12..22 Away (text 11)."""
     if not pcode_data_addr or not h_process:
         return None
     raw = safe_read(h_process, pcode_data_addr, 4)
@@ -2183,8 +2183,8 @@ def fl_read_player_code():
     return None
 
 # -------------------------------------------------------------
-# ۴. خواندن حافظه + پایگاه دادهٔ تیم‌ها (لایهٔ داده — بدون تغییر از 2017)
-#    تشخیص تیم از حافظه: FL2026TeamTracker (بخش ۴٫۵) عین Momentum
+# 4. read memory + databasetechnical note team‌technical note (layertechnical note data — unchanged from 2017)
+#    detection team from memory: FL2026TeamTracker (section 4technical note5) technical note Momentum
 # -------------------------------------------------------------
 def _mem_read_u8(addr):
     if not h_process or not addr or addr < 0x10000:
@@ -2227,9 +2227,9 @@ def _mem_resolve_chain(base_address, offsets):
     return None
 
 def _mem_resolve_chain_u64(base_address, offsets):
-    """[PT v2.3.0] زنجیرهٔ ۶۴بیتی — دقیقاً معنای FL2026TeamTracker._resolve_chain:
-       اول deref آدرس شروع، بعد برای هر آفست به‌جز آخری deref؛ آخری فقط جمع
-       می‌شود (معنای «if not curr» برای صفر/خواندن ناموفق حفظ شده است)."""
+    """[PT v2.3.0] chaintext 64text — exactly text FL2026TeamTracker._resolve_chain:
+       first deref address starttext after for text text to‌text text dereftext text only text
+       text‌textandtext (text «if not curr» for text/read failed text text is)."""
     try:
         curr = _mem_read_u64(base_address)
         if not curr:
@@ -2246,12 +2246,12 @@ def _mem_resolve_chain_u64(base_address, offsets):
         return None
 
 def _mem_resolve_chain_u32(base_address, offsets):
-    """[PT v2.3.2] زنجیره با «پوینترهای ۴ بایتی» — طبق تأکید صریح کاربر
-    («پوینتر ۴ بایتی» ، «هر دو آدرس ۴ بایت هستند») سلول‌های این زنجیره باید
-    ۴ بایتی خوانده شوند. خواندن ۸ بایتی، ۴ بایتِ بعدیِ سلول را به‌عنوان
-    dword بالا بلعیده و آدرس‌ها را خراب می‌کند (دلیلِ «تیم‌ها پیدا نمی‌شوند»
-    در تست میدانی). معنا دقیقاً عین _mem_resolve_chain_u64 است: اول deref
-    آدرس شروع، برای هر آفست به‌جز آخری deref، آخری فقط جمع می‌شود."""
+    """[PT v2.3.2] chain with «pointertext 4 bytetext» — text text text user
+    («pointer 4 bytetext» text «text textand address 4 byte text») textandtext‌text text chain must
+    4 bytetext textandtext textandtext. read 8 bytetext 4 bytetext aftertext textandtext text to‌textandtext
+    dword withtext text and address‌text text broken text‌text (text «team‌text text text‌textandtext»
+    in test text). text exactly text _mem_resolve_chain_u64 is: first deref
+    address starttext for text text to‌text text dereftext text only text text‌textandtext."""
     try:
         curr = _mem_read_u32(base_address)
         if not curr:
@@ -2270,10 +2270,10 @@ def _mem_resolve_chain_u32(base_address, offsets):
 _PT_CHAIN_DIAG = {"t": 0.0, "msg": None}
 
 def _pt_chain_diag(msg, force=False):
-    """[PT v2.3.2] لاگ تشخیصی میدانی — هر تغییر وضعیت زنجیره یک خط
-    کنترل‌شده در backend_log می‌نویسد (حداقل فاصله ۳ ثانیه؛ force برای
-    پیام‌های موفقیت). با این لاگ، اولین تست میدانی نشان می‌دهد کدام hop
-    با Cheat Engine فرق دارد (پهنای deref، آدرس نهایی، مقادیر خام)."""
+    """[PT v2.3.2] log detectiontext text — text change andtext chain text line
+    text‌text in backend_log text‌textandtext (text distance 3 secondtext force for
+    message‌text successfultext). with text logtext firsttext test text text text‌text codetext hop
+    with Cheat Engine text text (text dereftext address text text text)."""
     now = time.monotonic()
     if not force and msg == _PT_CHAIN_DIAG["msg"] \
             and now - _PT_CHAIN_DIAG["t"] < 3.0:
@@ -2288,14 +2288,14 @@ def _pt_chain_diag(msg, force=False):
         pass
 
 def fl_read_team_ids():
-    """[PT v2.3.0/v2.3.2] شناسهٔ تیم میزبان/مهمان با زنجیرهٔ کاربر:
-       [[base+0x03705E20]+0x98]+0x228 ⇒ ۴ بایت = میزبان ؛ +۴ بایت بعد = مهمان.
-       [v2.3.2] پوینترهای زنجیره «۴ بایتی» خوانده می‌شوند (تأکید کاربر) —
-       اندازه‌گیری میدانی کاربر: میزبان @6E948708 و مهمان @6E94870C یعنی
-       مهمان = آدرس میزبان + ۴ بایت (معادل آخرین آفست 0x22C) و هر دو مقدار
-       ۴ بایتی‌اند. اگر مسیر ۴ بایتی اعتبار نگشت، مسیر ۸ بایتیِ قدیم به‌عنوان
-       fallback امتحان می‌شود؛ هر دو مسیر در پایان همان اعتبارسنجی دیتابیس
-       PT را دارند (مقدار زبالهٔ حافظه هرگز تیم نمی‌سازد)."""
+    """[PT v2.3.0/v2.3.2] text team Home/Away with chaintext user:
+       [[base+0x03705E20]+0x98]+0x228 ⇒ 4 byte = Home text +4 byte after = Away.
+       [v2.3.2] pointertext chain «4 bytetext» textandtext text‌textandtext (text user) —
+       textfromtext‌text text user: Home @6E948708 and Away @6E94870C text
+       Away = address Home + 4 byte (text latest text 0x22C) and text textand value
+       4 bytetext‌text. if path 4 bytetext textwithtext text path 8 bytetext text to‌textandtext
+       fallback text text‌textandtext text textand path in end same textwithtextagetext textuntiltext
+       PT text text (value textwithtext memory never team text‌textfromtext)."""
     PTx = pt_active()
     if PTx is None or not h_process or not base_addr:
         return None
@@ -2307,7 +2307,7 @@ def fl_read_team_ids():
                            f"(base+{TEAM_ID_PTR_OFFSET:#x} {TEAM_ID_CHAIN})")
             continue
         home = _mem_read_u32(final)
-        # مهمان = آدرس میزبان + ۴ بایت (کاربر: 6E948708 → 6E94870C) — نه +۱
+        # Away = address Home + 4 byte (user: 6E948708 → 6E94870C) — technical note +1
         away = _mem_read_u32(final + 4)
         if home is None or away is None:
             _pt_chain_diag(f"{tag}: id read failed at final={final:#x}")
@@ -2323,12 +2323,12 @@ def fl_read_team_ids():
     return None
 
 def fl_read_player_slot():
-    """[PT v2.3.0/v2.3.2] اسلاتِ بازیکن جاری: [[base+0x036F4270]+0x74] — ۱ بایت.
-       این مقدار «Slot بازیکن در لیست تیمش» است (مثلاً بارسلونا 04 =
-       Eric García)؛ با teams_players_PES2021.txt به نام/پس‌زمینه/سن/
-       شماره پیراهن و PES ID (عکس چهره از Asset.zip) ترجمه می‌شود.
-       [v2.3.2] deref های زنجیره ۴ بایتی (پوینتر ۴ بایتی — تأکید کاربر)
-       با fallback ۸ بایتی؛ خودِ Slot همان ۱ بایت می‌ماند."""
+    """[PT v2.3.0/v2.3.2] text player current: [[base+0x036F4270]+0x74] — 1 byte.
+       text value «Slot player in text teamtext» is (text withtextandtext 04 =
+       Eric García)text with teams_players_PES2021.txt to name/text‌pitchtext/age/
+       number shirt and PES ID (image face from Asset.zip) text text‌textandtext.
+       [v2.3.2] deref text chain 4 bytetext (pointer 4 bytetext — text user)
+       with fallback 8 bytetext textandtext Slot same 1 byte text‌text."""
     PTx = pt_active()
     if PTx is None or not h_process or not base_addr:
         return None
@@ -2344,12 +2344,12 @@ def fl_read_player_slot():
     return None
 
 def classify_team_selection(a, b):
-    """نسخه ۱۲٫۰ — هویت تیم = جفت خام (league_id, val) عین momentum
-    (TeamIdentityTracker: ident = (league, img) خام — بدون lookup برعکس).
-    نسخه ۱۶٫۰ — مرجع نام/رستر: pes2017_teams.json؛ مرجع کمکی نام:
-    pes2017_leagues_data.json؛ مرجع لوگو: مسیر دلخواه فایل یا
-    Football_Database/{lg}/{val}.png — برای «همهٔ» تیم‌های بازی کار می‌کند.
-    اعتبارسنجی عین momentum: league در 0..25، val >= 0"""
+    """version 12text0 — textandtext team = text text (league_id, val) text momentum
+    (TeamIdentityTracker: ident = (league, img) text — without lookup textimage).
+    version 16text0 — text name/text: pes2017_teams.jsontext text text name:
+    pes2017_leagues_data.jsontext text logo: path textandtext file or
+    Football_Database/{lg}/{val}.png — for «text» team‌text withtext text text‌text.
+    textwithtextagetext text momentum: league in 0..25text val >= 0"""
     try:
         lg, val = int(a), int(b)
     except (TypeError, ValueError):
@@ -2359,14 +2359,14 @@ def classify_team_selection(a, b):
     return (lg, val)
 
 # ---------------------------------------------------------------------
-# نسخه ۱۱٫۰ — منبع رسمی نام تیم‌ها: pes2017_leagues_data.json (عین momentum)
-# ساختار: { "league": { "teams": { "team": {"name": ..., "colors": {...}} } } }
-# اولویت مسیر: ۱) Football_Database/pes2017_leagues_data.json کنار اسکریپت
-#              ۲) pes2017_leagues_data.json کنار اسکریپت (سازگاری)
-# خواندن با کش mtime است — اگر کاربر فایل را ویرایش کند بدون ری‌استارت اعمال می‌شود.
-# نسخه ۱۶٫۰ — این فایل فقط «کمکی» است؛ مرجع اصلی pes2017_teams.json است.
-# نسخه ۱۳٫۰ — لایهٔ مستعار pes2017_team_aliases.json (پایین‌تر) + شاهدسنجی
-# خواندن جبرانی اضافه شد (رفع «اسپانیا L20T49» و «تیم خیالی وسط بازی»).
+# version 11technical note0 — source technical note team name‌technical note: pes2017_leagues_data.json (technical note momentum)
+# structure: { "league": { "teams": { "team": {"name": ..., "colors": {...}} } } }
+# firstandtechnical note path: 1) Football_Database/pes2017_leagues_data.json technical note technical note
+#              2) pes2017_leagues_data.json technical note technical note (compatibility)
+# read with technical note mtime is — if user file technical note andtechnical note technical note without restart technical note technical note‌technical noteandtechnical note.
+# version 16technical note0 — technical note file only «technical note» istechnical note technical note original pes2017_teams.json is.
+# version 13technical note0 — layertechnical note technical note pes2017_team_aliases.json (below‌technical note) + technical noteagetechnical note
+# read technical note technical note technical note (technical note «technical noteor L20T49» and «team technical noteortechnical note andtechnical note withtechnical note»).
 # ---------------------------------------------------------------------
 TEAM_DATA_JSON_CANDIDATES = (
     os.path.join(SCRIPT_DIR, "Football_Database", "pes2017_leagues_data.json"),
@@ -2377,8 +2377,8 @@ _team_json_cache = {"path": None, "mtime": None, "data": None,
 _team_json_lock = threading.Lock()
 
 def _team_json_data():
-    """خواندن pes2017_leagues_data.json با کش mtime — عین رویکرد momentum
-    (فایل نبود/خراب بود ⇒ None و ادامه با pes2017_teams.json/مستعارها)"""
+    """read pes2017_leagues_data.json with text mtime — text textandtext momentum
+    (file textandtext/broken textandtext ⇒ None and resume with pes2017_teams.json/text)"""
     active_path = None
     for cand in TEAM_DATA_JSON_CANDIDATES:
         try:
@@ -2425,21 +2425,21 @@ def _team_json_data():
     return data
 
 # ---------------------------------------------------------------------
-# نسخه ۱۳٫۰ — لایهٔ مستعار تیم‌ها: pes2017_team_aliases.json
+# version 13technical note0 — layertechnical note technical note team‌technical note: pes2017_team_aliases.json
 #
-# مسئله: مقدار خامِ خوانده‌شده از حافظهٔ بازی برای «همان» تیم می‌تواند با
-# شمارهٔ پوشه‌های دانلودشده (players/{lg}/{tm}/ و Football_Database/{lg}/{tm}.png)
-# فرق کند — مثال کاربر: اسپانیا در پوشه‌ها 20/28 است ولی بازی 20/49 گزارش
-# می‌کند ⇒ نام/لوگو/رستر پیدا نمی‌شد و «L20T49» نمایش داده می‌شد؛ یا خواندن
-# جبرانی خارج از منو مقدار بی‌معنا می‌گرفت و «تیم خیالی» ثبت می‌شد.
+# technical note: value technical note technical noteandtechnical note‌technical note from memorytechnical note withtechnical note for «same» team technical note‌technical noteandtechnical note with
+# numbertechnical note folder‌technical note technical noteandtechnical note (players/{lg}/{tm}/ and Football_Database/{lg}/{tm}.png)
+# technical note technical note — technical note user: technical noteor in folder‌technical note 20/28 is andtechnical note withtechnical note 20/49 technical note
+# technical note‌technical note ⇒ name/logo/technical note technical note technical note‌technical note and «L20T49» display data technical note‌technical note or read
+# technical note technical note from menu value technical note‌technical note technical note‌technical note and «team technical noteortechnical note» register technical note‌technical note.
 #
-# راه‌حل: فایل اختیاری کنار اسکریپت (بدون ری‌استارت اعمال می‌شود — کش mtime):
+# technical note‌technical note: file optional technical note technical note (without restart technical note technical note‌technical noteandtechnical note — technical note mtime):
 #   {
-#     "aliases": { "20:49": [20, 28] },   ← شناسهٔ خام بازی → شناسهٔ واقعی پوشه‌ها
-#     "names":   { "20:49": "SPAIN" }     ← نام دستی برای شناسه‌ای که پوشه ندارد
+#     "aliases": { "20:49": [20, 28] },   ← technical note technical note withtechnical note → technical note real folder‌technical note
+#     "names":   { "20:49": "SPAIN" }     ← name technical note for technical note‌technical note technical note folder technical note
 #   }
-# ترتیب اعمال در apply_team_detection: شناسهٔ خام → alias_team_key → بقیهٔ زنجیره
-# (نام/لوگو/رستر/عکس همه با شناسهٔ واقعی پوشه‌ها کار می‌کنند)
+# order technical note in apply_team_detection: technical note technical note → alias_team_key → technical note chain
+# (name/logo/technical note/image technical note with technical note real folder‌technical note technical note technical note‌technical note)
 # ---------------------------------------------------------------------
 ALIAS_JSON_CANDIDATES = (
     os.path.join(SCRIPT_DIR, "pes2017_team_aliases.json"),
@@ -2450,8 +2450,8 @@ _alias_lock = threading.Lock()
 _catchup_ignored_logged = set()
 
 def _alias_data():
-    """خواندن pes2017_team_aliases.json با کش mtime (عین رویکرد leagues_data);
-    فایل نبود/خراب بود ⇒ None و ادامه بدون مستعار"""
+    """read pes2017_team_aliases.json with text mtime (text textandtext leagues_data);
+    file textandtext/broken textandtext ⇒ None and resume without text"""
     active_path = None
     for cand in ALIAS_JSON_CANDIDATES:
         try:
@@ -2502,15 +2502,15 @@ def _alias_data():
     return data
 
 def _alias_raw_id(team_key):
-    """کلید (lg,tm) → شناسهٔ متنی 'lg:tm' برای جست‌وجو در فایل مستعارها"""
+    """totaltext (lg,tm) → text text 'lg:tm' for text‌andtextand in file text"""
     try:
         return f"{int(team_key[0])}:{int(team_key[1])}"
     except Exception:
         return None
 
 def alias_team_key(team_key):
-    """کلید خام تشخیصی → کلید واقعی پوشه‌ها (بخش aliases)؛
-    بدون نگاشت معتبر ⇒ همان کلید ورودی (بدون تغییر)"""
+    """totaltext text detectiontext → totaltext real folder‌text (section aliases)text
+    without text valid ⇒ same totaltext input (unchanged)"""
     if team_key is None:
         return None
     raw = _alias_raw_id(team_key)
@@ -2530,8 +2530,8 @@ def alias_team_key(team_key):
     return team_key
 
 def alias_team_name(team_key):
-    """نام دستی از بخش names — برای کلیدی که در هیچ منبع دیگری نیست؛
-    ناشناخته ⇒ None"""
+    """name text from section names — for totaltext text in text source text is nottext
+    unknown ⇒ None"""
     if team_key is None:
         return None
     raw = _alias_raw_id(team_key)
@@ -2546,36 +2546,36 @@ def alias_team_name(team_key):
     return None
 
 # ---------------------------------------------------------------------
-# نسخه ۱۵٫۰ — دیتابیس قابل‌ویرایش کاربر: pes2017_teams.json
+# version 15technical note0 — technical noteuntiltechnical note technical note‌andtechnical note user: pes2017_teams.json
 #
-# یک فایل واحد برای «نام نمایشی تیم + مسیر لوگو/پرچم + نام و عکس تک‌تک
-# بازیکنان». کاربر خودش این فایل را ویرایش می‌کند (مثلاً اضافه‌کردن تیم‌های
-# ملی) و برنامه بدون ری‌استارت تغییرات را می‌گیرد (کش mtime — عین leagues_data).
+# technical note file andtechnical note for «name displaytechnical note team + path logo/technical note + name and image technical note‌technical note
+# players». user technical noteandtechnical note technical note file technical note andtechnical note technical note‌technical note (technical note technical note‌technical note team‌technical note
+# technical note) and technical notenametechnical note without restart changetechnical note technical note technical note‌technical note (technical note mtime — technical note leagues_data).
 #
-# ساختار:
+# structure:
 # {
 #   "teams": {
-#     "league:team": {                      ← همان شماره‌های پوشه‌های واقعی
-#         "name":  "SPAIN"  یا  null,       ← null = خودکار (leagues_data)
-#         "flag":  "Football_Database/20/28.png"  یا null,  ← null = مسیر پیش‌فرض
+#     "league:team": {                      ← same number‌technical note folder‌technical note real
+#         "name":  "SPAIN"  or  null,       ← null = automatic (leagues_data)
+#         "flag":  "Football_Database/20/28.png"  or null,  ← null = path default
 #         "players": {
-#             "9": "L. Messi",                                   ← فقط نام
-#             "10": {"name": "X. Y", "photo": "players/7/3/10.png"}  ← نام + عکس
+#             "9": "L. Messi",                                   ← only name
+#             "10": {"name": "X. Y", "photo": "players/7/3/10.png"}  ← name + image
 #         }
 #     }
 #   }
 # }
 #
-# قواعد:
-#  • کلید = "league:team" — هم با شمارهٔ پوشه‌ها («20:28») و هم با شناسهٔ خام
-#    بازی («20:49») کار می‌کند؛ لودر هر دو سبک را می‌گردد (نسخه ۱۶٫۰). برای
-#    لوگوی قراردادی بهتر است نگاشت در بخش aliases فایل pes2017_team_aliases.json
-#    هم بماند (مثال: «20:49»: [20, 28]).
-#  • مسیر نسبی نسبت به پوشهٔ برنامه است؛ / و \ هر دو پذیرفته می‌شوند.
-#  • اگر مسیر دلخواه پیدا نشد، مسیر پیش‌فرضِ «همان تیم» امتحان می‌شود —
-#    برنامه هرگز لوگوی/عکسِ تیم دیگری نمایش نمی‌دهد (درس باگ v11).
-#  • اگر فایل اصلاً نباشد، برنامه یک «اسکلت خالیِ مستند» می‌سازد (نسخه ۱۶٫۰ —
-#    لیست داخلی حذف شد؛ دیتابیس کامل را از ZIP کپی کنید یا دستی پر کنید).
+# technical noteandtechnical note:
+#  • totaltechnical note = "league:team" — technical note with numbertechnical note folder‌technical note («20:28») and technical note with technical note technical note
+#    withtechnical note («20:49») technical note technical note‌technical note technical noteandin technical note technical noteand lightweight technical note technical note‌technical note (version 16technical note0). for
+#    logotechnical note technical note totechnical note is technical note in section aliases file pes2017_team_aliases.json
+#    technical note technical note (technical note: «20:49»: [20, 28]).
+#  • path technical note ratio to foldertechnical note technical notenametechnical note istechnical note / and \ technical note technical noteand technical note technical note‌technical noteandtechnical note.
+#  • if path technical noteandtechnical note technical note technical note path defaulttechnical note «same team» technical note technical note‌technical noteandtechnical note —
+#    technical notenametechnical note never logotechnical note/imagetechnical note team technical note display technical note‌technical note (intechnical note withtechnical note v11).
+#  • if file technical note technical notewithtechnical note technical notenametechnical note technical note «technical notetotaltechnical note emptytechnical note technical note» technical note‌technical notefromtechnical note (version 16technical note0 —
+#    technical note internal technical note technical note technical noteuntiltechnical note complete technical note from ZIP technical note technical note or technical note technical note technical note).
 # ---------------------------------------------------------------------
 TEAMS_JSON_CANDIDATES = (
     os.path.join(SCRIPT_DIR, "pes2017_teams.json"),
@@ -2586,9 +2586,9 @@ _teams_db_json_cache = {"path": None, "mtime": None, "data": None,
 _teams_db_json_lock = threading.Lock()
 
 def _seed_teams_json():
-    """نسخه ۱۶٫۰ — اگر pes2017_teams.json نبود → ساخت «اسکلت خالیِ مستند».
-    هیچ لیست داخلی وجود ندارد؛ دیتابیس کامل (۷۵ تیم/۱۷۵۲ بازیکن) همراه ZIP
-    ارائه می‌شود — این فقط برای اولین اجرای بدون فایل است."""
+    """version 16text0 — if pes2017_teams.json textandtext → text «texttotaltext emptytext text».
+    text text internal andtextandtext text textuntiltext complete (75 team/1752 player) text ZIP
+    text text‌textandtext — text only for firsttext run without file is."""
     path = TEAMS_JSON_CANDIDATES[0]
     try:
         doc = {
@@ -2627,8 +2627,8 @@ def _seed_teams_json():
         return False
 
 def _teams_db_json_data():
-    """خواندن pes2017_teams.json با کش mtime (عین leagues_data/aliases)؛
-    فایل نبود ⇒ بذر خودکار یک‌بار، سپس خواندن؛ خراب ⇒ None (فقط لیست داخلی)"""
+    """read pes2017_teams.json with text mtime (text leagues_data/aliases)text
+    file textandtext ⇒ text automatic text‌withtext text readtext broken ⇒ None (only text internal)"""
     active_path = None
     for cand in TEAMS_JSON_CANDIDATES:
         try:
@@ -2692,11 +2692,11 @@ def _teams_db_json_data():
     return data
 
 def _alias_reverse_raw(team_key):
-    """نسخه ۱۶٫۰ — وارونِ نگاشت مستعارها: کلید واقعی پوشه‌ها → شناسهٔ خام بازی.
-    مثال: aliases «20:49»: [20, 28] ⇒ برای (20, 28) رشتهٔ «20:49» برگردانده
-    می‌شود. کاربرد: کاربر ممکن است در pes2017_teams.json تیم را با شناسهٔ خام
-    بازی کلید بزند (اسپانیا «20:49») در حالی که زنجیره با شناسهٔ پوشه‌ها
-    ((20, 28)) کار می‌کند — با این جست‌وجو هر دو سبک کلیدزنی کار می‌کند."""
+    """version 16text0 — andtextandtext text text: totaltext real folder‌text → text text withtext.
+    text: aliases «20:49»: [20, 28] ⇒ for (20, 28) stringtext «20:49» text
+    text‌textandtext. usage: user possible is in pes2017_teams.json team text with text text
+    withtext totaltext text (textor «20:49») currentlytext text chain with text folder‌text
+    ((20, 28)) text text‌text — with text text‌andtextand text textand lightweight totaltext text text‌text."""
     if team_key is None:
         return None
     try:
@@ -2716,10 +2716,10 @@ def _alias_reverse_raw(team_key):
     return None
 
 def _teams_db_entry(team_key):
-    """ورودی کامل تیم از pes2017_teams.json — dict یا None
-    نسخه ۱۶٫۰ — جست‌وجوی کلید به سه شکل: «lg:tm» مستقیم، شکل کانونیِ
-    مستعارشده، و وارونِ مستعار (شناسهٔ خام بازی) — تا هم کلیدزنی با
-    شناسهٔ پوشه‌ها («20:28») و هم با شناسهٔ خام بازی («20:49») کار کند."""
+    """input complete team from pes2017_teams.json — dict or None
+    version 16text0 — text‌andtextandtext totaltext to text texttotal: «lg:tm» directtext texttotal textandtext
+    text and andtextandtext text (text text withtext) — until text totaltext with
+    text folder‌text («20:28») and text with text text withtext («20:49») text text."""
     if team_key is None:
         return None
     raw = _alias_raw_id(team_key)
@@ -2751,8 +2751,8 @@ def _teams_db_entry(team_key):
     return None
 
 def team_json_name(team_key):
-    """نام نمایشی از pes2017_teams.json — فقط اگر کاربر صریحاً مقدار داده باشد
-    (null/رشتهٔ خالی ⇒ None تا منابع خودکار حفظ شوند)"""
+    """name displaytext from pes2017_teams.json — only if user text value data withtext
+    (null/stringtext empty ⇒ None until text automatic text textandtext)"""
     ent = _teams_db_entry(team_key)
     if not ent:
         return None
@@ -2762,7 +2762,7 @@ def team_json_name(team_key):
     return None
 
 def team_json_flag(team_key):
-    """مسیر دلخواه لوگو/پرچم از pes2017_teams.json — رشته یا None"""
+    """path textandtext logo/text from pes2017_teams.json — string or None"""
     ent = _teams_db_entry(team_key)
     if not ent:
         return None
@@ -2772,7 +2772,7 @@ def team_json_flag(team_key):
     return None
 
 def _resolve_asset_path(p):
-    """مسیر نسبی نسبت به پوشهٔ برنامه؛ / و \\ هر دو؛ نامعتبر ⇒ None"""
+    """path text ratio to foldertext textnametext / and \\ text textandtext invalid ⇒ None"""
     if not isinstance(p, str) or not p.strip():
         return None
     p = p.strip()
@@ -2784,8 +2784,8 @@ def _resolve_asset_path(p):
     return os.path.join(SCRIPT_DIR, *norm.split("/"))
 
 def team_json_player_entry(team_key, code):
-    """ورودی بازیکن از pes2017_teams.json → {"name": str|None, "photo": str|None}
-    دو شکل پذیرفته می‌شود: "9": "Name"  یا  "9": {"name": ..., "photo": ...}"""
+    """input player from pes2017_teams.json → {"name": str|None, "photo": str|None}
+    textand texttotal text text‌textandtext: "9": "Name"  or  "9": {"name": ..., "photo": ...}"""
     if code is None or team_key is None:
         return None
     ent = _teams_db_entry(team_key)
@@ -2811,9 +2811,9 @@ def team_json_player_entry(team_key, code):
     return None
 
 def team_roster(team_key):
-    """رستر نهایی {code: name} — [PT v2.3.0] حالت PT: کلید = Slot بازیکن در
-    لیست تیم (۰..۲۵ — مستقیم از teams_players_PES2021.txt)؛ در غیر این صورت
-    فقط pes2017_teams.json (نسخه ۱۶٫۰)؛ کلیدهای عددی به int نرمال می‌شوند"""
+    """text text {code: name} — [PT v2.3.0] text PT: totaltext = Slot player in
+    text team (0..25 — direct from teams_players_PES2021.txt)text in text text textandtext
+    only pes2017_teams.json (version 16text0)text totaltext numbertext to int smoothtext text‌textandtext"""
     PTx = pt_active()
     if PTx is not None and PTData is not None \
             and PTData.PTDataSource.is_pt_key(team_key):
@@ -2845,10 +2845,10 @@ def team_roster(team_key):
     return roster
 
 def team_name_from_json(team_key):
-    """نام تیم (league, team) از pes2017_leagues_data.json — منطق عین
-    TeamColorResolver.team_name در momentum: کلیدهای رایج نام بررسی می‌شوند؛
-    در ساختارهای قدیمی هر مقدار رشته‌ای غیر colors هم پذیرفته می‌شود.
-    ناشناخته ⇒ None"""
+    """team name (league, team) from pes2017_leagues_data.json — text text
+    TeamColorResolver.team_name in momentum: totaltext text name check text‌textandtext
+    in structuretext legacy text value string text colors text text text‌textandtext.
+    unknown ⇒ None"""
     if team_key is None:
         return None
     try:
@@ -2876,14 +2876,14 @@ def team_name_from_json(team_key):
         return None
 
 def team_display_name(team_key):
-    """نام نمایشی تیم — اولویت ۰: [PT v2.3.0] teams_players_PES2021.txt
-       (کلید (-1, team_id) — دیتابیس رسمی ۷۴۹ تیمی)
-       اولویت ۱: pes2017_teams.json (دیتابیس قابل‌ویرایش کاربر —
-       نسخه ۱۵٫۰؛ فقط وقتی کاربر صریحاً نام گذاشته باشد)
-       اولویت ۲: pes2017_leagues_data.json (مرجع رسمی momentum)
-       اولویت ۳: بخش names در pes2017_team_aliases.json
-       ناشناخته ⇒ شناسه L{league}T{team} (نسخه ۱۶٫۰ — لیست داخلی حذف شد)
-       (مطابق momentum: تشخیص تیم باید همیشه برای کاربر visible باشد)"""
+    """name displaytext team — firstandtext 0: [PT v2.3.0] teams_players_PES2021.txt
+       (totaltext (-1, team_id) — textuntiltext text 749 teamtext)
+       firstandtext 1: pes2017_teams.json (textuntiltext text‌andtext user —
+       version 15text0text only when user text name text withtext)
+       firstandtext 2: pes2017_leagues_data.json (text text momentum)
+       firstandtext 3: section names in pes2017_team_aliases.json
+       unknown ⇒ text L{league}T{team} (version 16text0 — text internal text text)
+       (text momentum: detection team must always for user visible withtext)"""
     PTx = pt_active()
     if PTx is not None and PTData is not None \
             and PTData.PTDataSource.is_pt_key(team_key):
@@ -2903,11 +2903,11 @@ def team_display_name(team_key):
         return "UNKNOWN TEAM"
 
 def team_logo_path(key):
-    """مسیر لوگوی 512x512 — اولویت ۰: [PT v2.3.0] Asset.zip →
-    Teams/{team_id}.png (استخراج تک‌فایلی با کش PT_Cache)؛ اولویت ۱: مسیر دلخواه
-    کاربر در pes2017_teams.json (نسخه ۱۵٫۰)؛ اولویت ۲: قرارداد momentum
-    Football_Database/{league}/{team}.png (نسخه ۱۱٫۰ — fallback ترتیب برعکس حذف شده؛ هر دو مسیر برای «همان تیم» اند و
-    برنامه هرگز لوگوی تیم دیگری نمایش نمی‌دهد؛ نبود تصویر = نمایش متنی)"""
+    """path logotext 512x512 — firstandtext 0: [PT v2.3.0] Asset.zip →
+    Teams/{team_id}.png (istext text‌filetext with text PT_Cache)text firstandtext 1: path textandtext
+    user in pes2017_teams.json (version 15text0)text firstandtext 2: text momentum
+    Football_Database/{league}/{team}.png (version 11text0 — fallback order textimage text text text textand path for «same team» text and
+    textnametext never logotext team text display text‌text textandtext image = display text)"""
     PTx = pt_active()
     if PTx is not None and PTData is not None \
             and PTData.PTDataSource.is_pt_key(key):
@@ -2935,21 +2935,21 @@ def team_logo_path(key):
         return None
 
 def team_photo_dir(key):
-    """پوشه عکس‌های چهره تیم: players/{league}/{team}/ (عکس‌ها 360x360)"""
+    """folder image‌text face team: players/{league}/{team}/ (image‌text 360x360)"""
     if key is None:
         return None
     lg, tm = key
     return os.path.join(PLAYERS_DIR, str(lg), str(tm))
 
 def team_has_evidence(team_key):
-    """نسخه ۱۳٫۰ — آیا برای این کلید «شاهد» واقعی وجود دارد؟
-    [PT v2.3.0] حالت PT: شاهد = وجود Team ID در teams_players_PES2021.txt.
-    شاهد = عضویت در pes2017_teams.json یا نام در leagues_data.json یا بخش
-    names مستعارها یا فایل لوگو (Football_Database/{lg}/{tm}.png) یا پوشهٔ عکس
-    (players/{lg}/{tm}/) — نسخه ۱۶٫۰: لیست داخلی حذف شد.
-    کاربرد: خواندن جبرانیِ خارج از منوی ۴۴ فقط وقتی ثبت می‌شود که شاهد باشد —
-    یعنی مقدار زبالهٔ حافظه در میانهٔ بازی هرگز «تیم خیالی» نمی‌سازد
-    (رفع گزارش L20T49 اسپانیا و کلاً «تیمی که چند دقیقه بعد عوض می‌شد»)."""
+    """version 13text0 — textor for text totaltext «text» real andtextandtext text
+    [PT v2.3.0] text PT: text = andtextandtext Team ID in teams_players_PES2021.txt.
+    text = textandtext in pes2017_teams.json or name in leagues_data.json or section
+    names text or file logo (Football_Database/{lg}/{tm}.png) or foldertext image
+    (players/{lg}/{tm}/) — version 16text0: text internal text text.
+    usage: read text text from menutext 44 only when register text‌textandtext text text withtext —
+    text value textwithtext memory in textortext withtext never «team textortext» text‌textfromtext
+    (text text L20T49 textor and totaltext «teamtext text text minute after textandtext text‌text»)."""
     PTx = pt_active()
     if PTx is not None and PTData is not None \
             and PTData.PTDataSource.is_pt_key(team_key):
@@ -2980,19 +2980,19 @@ def team_has_evidence(team_key):
     return False
 
 # -------------------------------------------------------------
-# نسخه ۱۵٫۱ — مقدار اولیهٔ نام نمایشی و رستر از pes2017_teams.json
-# (اگر کاربر در فایل نام/رستر گذاشته باشد، حتی قبل از اولین تشخیص هم
-#  اعمال می‌شود — نسخه ۱۶٫۰: دیگر هیچ منبع داخلی وجود ندارد). این همان زنجیرهٔ اولویتِ کامل
-# است: pes2017_teams.json → pes2017_leagues_data.json → مستعارها.
-# با اولین تشخیص تیم، update_team_assignment همین مقادیر را دوباره از همان
-# زنجیره تازه‌سازی می‌کند — پس رفتار در تمام طول برنامه یکدست است.
+# version 15technical note1 — value firsttechnical note name displaytechnical note and technical note from pes2017_teams.json
+# (if user in file name/technical note technical note withtechnical note technical note before from firsttechnical note detection technical note
+#  technical note technical note‌technical noteandtechnical note — version 16technical note0: technical note technical note source internal andtechnical noteandtechnical note technical note). technical note same chaintechnical note firstandtechnical note complete
+# is: pes2017_teams.json → pes2017_leagues_data.json → technical note.
+# with firsttechnical note detection teamtechnical note update_team_assignment technical note technical note technical note again from same
+# chain refresh technical note‌technical note — technical note technical noteuntiltechnical note in technical note length technical notenametechnical note technical notecodetechnical note is.
 # -------------------------------------------------------------
 home_team_name = team_display_name(home_team_key)
 away_team_name = team_display_name(away_team_key)
 home_players_dict = team_roster(home_team_key)
 away_players_dict = team_roster(away_team_key)
 def update_team_assignment(home_key, away_key):
-    """اعمال تیم‌های تشخیص‌داده‌شده روی اسم‌ها، رستر بازیکنان و لیست موجودیت‌ها"""
+    """text team‌text detection‌data‌text textandtext text‌text text players and text textandtextandtext‌text"""
     global home_team_key, away_team_key, home_team_name, away_team_name
     global home_players_dict, away_players_dict, entities_ready
 
@@ -3000,7 +3000,7 @@ def update_team_assignment(home_key, away_key):
     away_team_key = away_key
     home_team_name = team_display_name(home_key)
     away_team_name = team_display_name(away_key)
-    # نسخه ۱۵٫۰ — رستر از دیتابیس قابل‌ویرایش pes2017_teams.json (لیست داخلی fallback)
+    # version 15technical note0 — technical note from technical noteuntiltechnical note technical note‌andtechnical note pes2017_teams.json (technical note internal fallback)
     home_players_dict = team_roster(home_key)
     away_players_dict = team_roster(away_key)
 
@@ -3012,14 +3012,14 @@ def update_team_assignment(home_key, away_key):
     entities_ready = True
 
 def apply_team_detection(side, a, b):
-    """اعمال نتیجه تشخیص تیم (عین momentum) + بروزرسانی مسیر لوگوی باشگاه
-       (نسخه ۱۲٫۰ — رفع «میزبانی که ناگهان رئال‌مادرید می‌شود»:
-       منطق _other_team_key حذف شد — هرگز سمت مقابل به دیفالت forcibly
-       بازنویسی نمی‌شود؛ هر سمت فقط با تشخیص واقعی خودش عوض می‌شود.
-       لوگوی باقی‌مانده هم با تغییر تیم پاک می‌شود — عین momentum:
-       نبود تصویر = نمایش متنی «میزبان/مهمان»)
-       [PT v2.3.0] حالت جدید: a = PT_TEAM_LEAGUE_TAG (-1) و b = Team ID خام
-       از زنجیرهٔ پوینتری جدید؛ اعتبار = وجود ID در teams_players_PES2021.txt."""
+    """text result detection team (text momentum) + update path logotext withtext
+       (version 12text0 — text «Hometext text text text‌textintext text‌textandtext»:
+       text _other_team_key text text — never side text to text forcibly
+       withtextandtext text‌textandtext text side only with detection real textandtext textandtext text‌textandtext.
+       logotext withtext‌text text with change team text text‌textandtext — text momentum:
+       textandtext image = display text «Home/Away»)
+       [PT v2.3.0] text new: a = PT_TEAM_LEAGUE_TAG (-1) and b = Team ID text
+       from chaintext pointertext newtext textwithtext = andtextandtext ID in teams_players_PES2021.txt."""
     global home_team_id_info, away_team_id_info, home_team_logo, away_team_logo
     PTx = pt_active()
     if PTx is not None and PTData is not None:
@@ -3038,35 +3038,35 @@ def apply_team_detection(side, a, b):
     else:
         key = classify_team_selection(a, b)
         if key is not None:
-            # نسخه ۱۳٫۰ — نگاشت مستعار: شناسهٔ خام بازی → شناسهٔ واقعی پوشه‌ها
-            # (مثال کاربر: بازی 20/49 گزارش می‌کند ولی پوشه‌ها players/20/28 هستند؛
-            # بعد از نگاشت، نام/لوگو/رستر/عکس همه با شناسهٔ واقعی کار می‌کنند)
+            # version 13technical note0 — technical note technical note: technical note technical note withtechnical note → technical note real folder‌technical note
+            # (technical note user: withtechnical note 20/49 technical note technical note‌technical note andtechnical note folder‌technical note players/20/28 technical note
+            # after from technical note name/logo/technical note/image technical note with technical note real technical note technical note‌technical note)
             key = alias_team_key(key)
     logo = team_logo_path(key)
     if side == "home":
         changed = (home_team_id_info != (a, b))
         home_team_id_info = (a, b)
         if key and key != home_team_key:
-            home_team_logo = logo            # لوگوی تیم جدید یا None (پاک‌سازی)
-            update_team_assignment(key, away_team_key)   # سمت مقابل دست‌نخورده
+            home_team_logo = logo            # logotechnical note team new or None (cleanup)
+            update_team_assignment(key, away_team_key)   # side technical note unchanged
         elif key and key == home_team_key and logo and logo != home_team_logo:
-            home_team_logo = logo            # همان تیم — مسیر تازه‌شده
+            home_team_logo = logo            # same team — path fresh‌technical note
         return changed
     else:
         changed = (away_team_id_info != (a, b))
         away_team_id_info = (a, b)
         if key and key != away_team_key:
-            away_team_logo = logo            # لوگوی تیم جدید یا None (پاک‌سازی)
-            update_team_assignment(home_team_key, key)   # سمت مقابل دست‌نخورده
+            away_team_logo = logo            # logotechnical note team new or None (cleanup)
+            update_team_assignment(home_team_key, key)   # side technical note unchanged
         elif key and key == away_team_key and logo and logo != away_team_logo:
-            away_team_logo = logo            # همان تیم — مسیر تازه‌شده
+            away_team_logo = logo            # same team — path fresh‌technical note
         return changed
 
 # -------------------------------------------------------------
-# ۴٫۵ ردیاب هویت تیم‌ها — عین TeamIdentityTracker در Momentum (نسخهٔ ۱۰٫۵)
-#      بایت منو (base+0x36F9AE0): فقط ۹ ⇒ اجرای تشخیص → خواندن زندهٔ
-#      هر دو طرف؛ بقیهٔ وضعیت‌ها → قفل روی آخرین انتخاب معتبر.
-#      زنجیره‌ها و عرض اسلات (112) عین Momentum؛ خروجی (league, image).
+# 4technical note5 technical noteortechnical note technical noteandtechnical note team‌technical note — technical note TeamIdentityTracker in Momentum (versiontechnical note 10technical note5)
+#      byte menu (base+0x36F9AE0): only 9 ⇒ run detection → read livetechnical note
+#      technical note technical noteand technical note technical note andtechnical note‌technical note → technical note technical noteandtechnical note latest technical note valid.
+#      chain‌technical note and width technical note (112) technical note Momentumtechnical note output (league, image).
 # -------------------------------------------------------------
 class FL2026TeamTracker:
     SIDE_CHAINS = {
@@ -3082,13 +3082,13 @@ class FL2026TeamTracker:
 
     def __init__(self):
         self.ident = {"home": None, "away": None}
-        # [PT v2.3.0] آخرین جفت ID معتبر خوانده‌شده با زنجیرهٔ جدید
+        # [PT v2.3.0] latest technical note ID valid technical noteandtechnical note‌technical note with chaintechnical note new
         self._pt_ids_last = None
 
     def _resolve_chain(self, start_addr, offsets):
-        """دقیقاً مثل resolve_pointer_chain ابزار اصلی (عین Momentum):
-           اول deref آدرس شروع، بعد برای هر آفست به‌جز آخری deref؛
-           آخری فقط جمع می‌شود."""
+        """exactly text resolve_pointer_chain tool original (text Momentum):
+           first deref address starttext after for text text to‌text text dereftext
+           text only text text‌textandtext."""
         try:
             curr = _mem_read_u64(start_addr)
             if not curr:
@@ -3105,8 +3105,8 @@ class FL2026TeamTracker:
             return None
 
     def _read_side_ident(self, side):
-        """(league_id, image_id) یا None — عین Momentum: league باید معتبر
-           باشد و اسلات هدف (league+1) در بازهٔ 1..37 بیفتد."""
+        """(league_id, image_id) or None — text Momentum: league must valid
+           withtext and text target (league+1) in withtext 1..37 text."""
         try:
             lg_base_off, lg_chain = self.SIDE_CHAINS[side]["league"]
             lg_addr = self._resolve_chain(base_addr + lg_base_off, lg_chain)
@@ -3127,20 +3127,20 @@ class FL2026TeamTracker:
             return None
 
     def tick(self):
-        """یک گام ردیابی — از حلقهٔ ۳۰ هرتزی worker صدا زده می‌شود.
-           [PT v2.3.1] بایت منو یک‌بار در هر تیک خوانده می‌شود (همان
-           _mem_read_u8 که بقیهٔ مقادیر پوینتری را می‌خواند) و «هر دو» مسیر
-           فقط با منو = ۹ تشخیص را اجرا می‌کنند؛ بقیهٔ وضعیت‌ها ⇒ قفل روی
-           آخرین انتخاب معتبر (عین Momentum).
-           [PT v2.3.0] حالت PT: زنجیرهٔ پوینتری جدید کاربر (03705E20/98/228)
-           در هر تیکِ منو-۹ خوانده می‌شود؛ اعتبارسنجی = هر دو Team ID در
-           دیتابیس PT؛ تغییر ⇒ apply.
-           PT نبود ⇒ مسیر قدیمی (_legacy_tick — منو ۹ + league/slots)."""
+        """text text textortext — from text 30 text worker text text text‌textandtext.
+           [PT v2.3.1] byte menu text‌withtext in text text textandtext text‌textandtext (same
+           _mem_read_u8 text text text pointertext text text‌textandtext) and «text textand» path
+           only with menu = 9 detection text run text‌text text andtext‌text ⇒ text textandtext
+           latest text valid (text Momentum).
+           [PT v2.3.0] text PT: chaintext pointertext new user (03705E20/98/228)
+           in text text menu-9 textandtext text‌textandtext textwithtextagetext = text textand Team ID in
+           textuntiltext PTtext change ⇒ apply.
+           PT textandtext ⇒ path legacy (_legacy_tick — menu 9 + league/slots)."""
         if not h_process or not base_addr:
             return
         menu = _mem_read_u8(base_addr + TEAM_MENU_STATE_OFFSET)
         if menu is None:
-            return   # خواندن ناموفق ⇒ هیچ؛ آخرین انتخاب معتبر می‌ماند
+            return   # read failed ⇒ technical note latest technical note valid technical note‌technical note
         PTx = pt_active()
         if PTx is not None:
             if menu == TEAM_MENU_DETECT_VALUE:
@@ -3155,14 +3155,14 @@ class FL2026TeamTracker:
                         pass
                     apply_team_detection("home", PTData.PT_TEAM_LEAGUE_TAG, ids[0])
                     apply_team_detection("away", PTData.PT_TEAM_LEAGUE_TAG, ids[1])
-            # منو != ۹ ⇒ قفل: آخرین Team ID معتبر می‌ماند (عین مسیر قدیمی)
+            # menu != 9 ⇒ technical note: latest Team ID valid technical note‌technical note (technical note path legacy)
             return
         self._legacy_tick(menu)
 
     def _legacy_tick(self, menu):
-        """مسیر قدیمی (بدون PT) — خواندن فقط در منو ۹؛ بایت منو حالا یک‌بار
-           در tick بالاتر و با همان Reader بقیهٔ پوینترها خوانده می‌شود؛
-           بیرون از منو ۹ آخرین انتخاب معتبر قفل می‌ماند (عین Momentum)."""
+        """path legacy (without PT) — read only in menu 9text byte menu text text‌withtext
+           in tick above and with same Reader text pointertext textandtext text‌textandtext
+           outside from menu 9 latest text valid text text‌text (text Momentum)."""
         if not h_process or not base_addr:
             return
         if menu == TEAM_MENU_DETECT_VALUE:
@@ -3172,18 +3172,18 @@ class FL2026TeamTracker:
                     self.ident[side] = ident
                     print(f"[TEAM] ident {side} = league {ident[0]} / img {ident[1]}", flush=True)
                     apply_team_detection(side, ident[0], ident[1])
-        # منو != ۹ یا خواندن ناموفق → قفل: آخرین انتخاب معتبر می‌ماند
+        # menu != 9 or read failed → technical note: latest technical note valid technical note‌technical note
 
 # -------------------------------------------------------------
-# ۵. ساخت موجودیت‌های مسابقه + ریست + ترد پس‌زمینهٔ ۳۰ هرتز — نسخهٔ 2026
+# 5. technical note technical noteandtechnical noteandtechnical note‌technical note match + reset + technical note technical note‌pitchtechnical note 30 technical note — versiontechnical note 2026
 # -------------------------------------------------------------
 def build_match_entities():
-    """ساخت ۲۲ موجودیت از آرایهٔ پوینتری بازی (بدون هیچ هوکی):
-       صندلی‌های 0..10 = میزبان و 11..21 = مهمان (عین Momentum)؛
-       درون هر تیم، دروازه‌بان با کمینه/بیشینهٔ x مشخص می‌شود و ترتیب
-       نهایی مثل 2017 می‌شود:  [GK میزبان][۱۰ بازیکن میزبان مرتب‌شده با x]
-       [GK مهمان][۱۰ بازیکن مهمان مرتب‌شده با -x]  تا ایندکس‌های فیلتر
-       (OUTFIELD_INDICES = 1..10 و 12..21) و بقیهٔ برنامه بدون تغییر بمانند."""
+    """text 22 textandtextandtext from text pointertext withtext (without text hooktext):
+       text‌text 0..10 = Home and 11..21 = Away (text Momentum)text
+       inandtext text teamtext inandfromtext‌withtext with text/text x text text‌textandtext and order
+       text text 2017 text‌textandtext:  [GK Home][10 player Home text‌text with x]
+       [GK Away][10 player Away text‌text with -x]  until text‌text text
+       (OUTFIELD_INDICES = 1..10 and 12..21) and text textnametext unchanged text."""
     global entities, initial_discovered_codes, entities_ready, match_reset_event
     global entity_heatmaps, total_samples_taken, current_code
 
@@ -3194,21 +3194,21 @@ def build_match_entities():
     home = raw_players[0:11]
     away = raw_players[11:22]
 
-    # تفکیک گلرها (عین 2017: گلر میزبان کمینهٔ x / گلر مهمان بیشینهٔ x)
+    # technical note technical note (technical note 2017: technical note Home technical note x / technical note Away technical note x)
     home_gk = min(home, key=lambda p: p[1])
     away_gk = max(away, key=lambda p: p[1])
     home_fld = sorted([p for p in home if p is not home_gk], key=lambda p: p[1])
     away_fld = sorted([p for p in away if p is not away_gk], key=lambda p: -p[1])
 
-    ordered = [home_gk] + home_fld + [away_gk] + away_fld   # ۲۲ موجودیت
+    ordered = [home_gk] + home_fld + [away_gk] + away_fld   # 22 technical noteandtechnical noteandtechnical note
 
-    # ۱. پاکسازی کامل دیتای بازی قبل (هیت‌مپ + سمپل‌ها)
+    # 1. technical notefromtechnical note complete technical noteuntiltechnical note withtechnical note before (heatmap + technical note‌technical note)
     with heatmap_lock:
         entity_heatmaps.fill(0.0)
     total_samples_taken = 0
     current_code = None
 
-    # ۲. صفر کردن slot کد بازیکن تا مقدار بازی قبل منتقل نشود
+    # 2. technical note technical note slot code player until value withtechnical note before technical note technical noteandtechnical note
     if pcode_data_addr and h_process:
         try:
             safe_write(h_process, pcode_data_addr, b"\x00" * 8)
@@ -3221,12 +3221,12 @@ def build_match_entities():
         role = "GK" if idx in (0, 11) else "Field"
         team_title = home_team_name if team == 1 else away_team_name
         if role == "GK":
-            name = f"دروازه‌بان {team_title}"
+            name = f"inandfromtext‌withtext {team_title}"
         else:
-            name = f"بازیکن {team_title}"
+            name = f"player {team_title}"
         temp_entities.append({
             "id": idx + 1,
-            "seat": seat,               # صندلی آرایهٔ بازی (0..21) — پایدار در کل مسابقه
+            "seat": seat,               # technical note technical note withtechnical note (0..21) — technical note in total match
             "x": x,
             "z": z,
             "role": role,
@@ -3234,12 +3234,12 @@ def build_match_entities():
             "confirmed_name": None,
             "name": name,
             "code": None,
-            "status": "در انتظار لمس",
+            "status": "Waiting for input",
             "is_locked": False,
             "touch_start_time": None
         })
 
-    # ۳. ریست لیست موجودیت‌ها، کدهای کشف‌شده و ارسال سیگنال به GUI
+    # 3. reset technical note technical noteandtechnical noteandtechnical note‌technical note codetechnical note technical note‌technical note and technical note technical note to GUI
     with entities_lock:
         entities = temp_entities
         initial_discovered_codes.clear()
@@ -3248,9 +3248,9 @@ def build_match_entities():
     return True
 
 def perform_match_reset(start_t, now_wall, source=""):
-    """ریست کامل مسابقه (هیت‌مپ/کدها/فاز) — معادل _perform_reset در Momentum:
-       تایمر صفر شده و بالا رفته (TRB) یا Watchdog بازی جدید یا NEW_MATCH.
-       موجودیت‌ها در اولین تیک PLAYING بعدی دوباره ساخته می‌شوند."""
+    """reset complete match (heatmap/codetext/textfrom) — text _perform_reset in Momentum:
+       untiltext text text and withtext text (TRB) or Watchdog withtext new or NEW_MATCH.
+       textandtextandtext‌text in firsttext text PLAYING aftertext again text text‌textandtext."""
     global half_number, ht_pending, ht_prev_end_t, seen_max_t, last_auto_reset_wall
     global match_entities_built, entity_heatmaps, total_samples_taken
     global current_code, initial_discovered_codes, status_msg
@@ -3267,15 +3267,15 @@ def perform_match_reset(start_t, now_wall, source=""):
     last_auto_reset_wall = now_wall
     match_entities_built = False
     try:
-        AUTO_CTRL.reset()   # مسابقه جدید — از WAITING (بند ۳۶)
+        AUTO_CTRL.reset()   # match new — from WAITING (technical note 36)
     except Exception:
         pass
     try:
         SUMMARY_CTRL.reset()   # [SUITE v1.0.0] new match — re-arm the 91' popup
     except Exception:
         pass
-    print(f"[MatchLifecycle] NEW_MATCH ({source}) — تایمر "
-          f"{(start_t if start_t is not None else 0.0):.1f}s — ریست کامل مسابقه", flush=True)
+    print(f"[MatchLifecycle] NEW_MATCH ({source}) — untiltext "
+          f"{(start_t if start_t is not None else 0.0):.1f}s — reset complete match", flush=True)
 
 def hm_wait_for_game():
     """[SUITE v2.1.5] GAME DETECTION IS THE BRIDGE'S JOB: the bridge polls
@@ -3304,8 +3304,8 @@ def hm_wait_for_game():
                         pid, base = 0, 0
                     if pid and base:
                         return pid, base
-                status_msg = ("در انتظار اجرای FL_2026.exe... "
-                              "(پل در حال پایش بازی است)")
+                status_msg = ("Waiting for FL_2026.exe to start... "
+                              "(text currently monitoring withtext is)")
                 time.sleep(1.0)
                 continue
             # bridge unreachable right now — fall through to the local
@@ -3383,35 +3383,35 @@ def tracker_worker():
     global trb_armed, trb_last_fire_wall, last_auto_reset_wall, match_entities_built
 
     try:
-        status_msg = "در انتظار اجرای FL_2026.exe..."
+        status_msg = "Waiting for FL_2026.exe to start..."
         # [SUITE v2.1.5] bridge-first game detection (the bridge owns the
         # truth — this backend may have been opened BEFORE the game)
         pid, _gbase = hm_wait_for_game()
         if not is_running or not pid:
             return
 
-        status_msg = "بازی پیدا شد. در حال فعال‌سازی هوک‌های پایدار..."
+        status_msg = "withtext text text. currently activation hook‌text text..."
         h_process = kernel32.OpenProcess(PROCESS_ALL_ACCESS, False, pid)
         if not h_process:
-            status_msg = "خطا در دسترسی OpenProcess"
+            status_msg = "Error in access OpenProcess"
             return
 
         base_addr = _gbase or get_fl_base(pid)
         if not base_addr:
-            status_msg = "ماژول FL_2026.exe یافت نشد."
+            status_msg = "textandtext FL_2026.exe textdecrease text."
             return
 
-        # نصب سه هوک (توپ / زمان / کد بازیکن) — عین جریان Momentum
+        # install technical note hook (ball / time / code player) — technical note technical noteortechnical note Momentum
         warnings = fl_install_all_hooks()
 
         is_hooked = True
-        status_msg = "سیستم آماده است. در انتظار شروع مسابقه (PLAYING)..."
+        status_msg = "system text is. Waiting for match start (PLAYING)..."
         if warnings:
-            status_msg += " | هشدار: " + " | ".join(warnings)
+            status_msg += " | Warning: " + " | ".join(warnings)
 
         team_tracker = FL2026TeamTracker()
 
-        # --- وضعیت چرخهٔ عمر (عین Momentum) ---
+        # --- andtechnical note cycletechnical note technical note (technical note Momentum) ---
         half_number = 1
         ht_pending = False
         ht_prev_end_t = 0.0
@@ -3443,7 +3443,7 @@ def tracker_worker():
             elif dt < 0.005: dt = 0.005
 
             # ---------------------------------------------------------
-            # ۱) وضعیت مسابقه (بایت — 128/129 = PLAYING؛ عین Momentum)
+            # 1) andtechnical note match (byte — 128/129 = PLAYINGtechnical note technical note Momentum)
             # ---------------------------------------------------------
             # [SUITE v1.0.0] live settings refresh (MyMods may rewrite
             # ModsConfig.json; the bridge also hands settings at spawn)
@@ -3457,7 +3457,7 @@ def tracker_worker():
             is_playing = (m_state == "PLAYING")
 
             # ---------------------------------------------------------
-            # ۲) ساعت بازی — منبع واحد عین Momentum (TimeHooker → Fallback)
+            # 2) game clock — source andtechnical note technical note Momentum (TimeHooker → Fallback)
             # ---------------------------------------------------------
             total_t, g_min, g_sec = fl_read_game_clock()
             if total_t is not None:
@@ -3477,14 +3477,14 @@ def tracker_worker():
                 is_clock_active = False
 
             # ---------------------------------------------------------
-            # ۳) عنوان نیمه از ماشین فاز (عین Momentum: 1/2/3/4)
+            # 3) technical noteandtechnical note technical note from technical note technical notefrom (technical note Momentum: 1/2/3/4)
             # ---------------------------------------------------------
             period_title, is_inverted_active = PERIOD_TITLES.get(
-                half_number, ("نامشخص", False))
+                half_number, ("nametext", False))
 
             # ---------------------------------------------------------
-            # ۴) چرخهٔ عمر مسابقه — عین Momentum (نسخهٔ ۱۰٫۳ / ۱۰٫۷)
-            #    ردیاب‌های ساعت + علامت افت زمان (قبل از هر گیت داده‌ای)
+            # 4) cycletechnical note technical note match — technical note Momentum (versiontechnical note 10technical note3 / 10technical note7)
+            #    technical noteortechnical note‌technical note technical note + technical note decrease time (before from technical note technical note data‌technical note)
             # ---------------------------------------------------------
             if total_t is not None:
                 if total_t > seen_max_t:
@@ -3493,11 +3493,11 @@ def tracker_worker():
                     if not ht_pending:
                         ht_pending = True
                         ht_prev_end_t = prev_total_t
-                        print(f"[MatchLifecycle] افت زمان: {prev_total_t:.1f} → "
-                              f"{total_t:.1f} — در انتظار از سرگیری PLAYING", flush=True)
+                        print(f"[MatchLifecycle] decrease time: {prev_total_t:.1f} → "
+                              f"{total_t:.1f} — in text resume PLAYING", flush=True)
                 prev_total_t = total_t
 
-            # --- TRB: تایمر صفر شد و شروع به بالا رفتن کرد = دست جدید ---
+            # --- TRB: untiltechnical note technical note technical note and start to rise technical note = technical note new ---
             if total_t is not None:
                 t_val = float(total_t)
                 if t_val <= TRB_ZERO_T:
@@ -3509,18 +3509,18 @@ def tracker_worker():
                             and (now - last_auto_reset_wall) >= TRB_COOLDOWN_SEC):
                         trb_last_fire_wall = now
                         rep = fl_verify_and_repair_hooks()
-                        print(f"[NewHand] شروع دست جدید (TRB) — hooks: {rep}", flush=True)
+                        print(f"[NewHand] start text new (TRB) — hooks: {rep}", flush=True)
                         perform_match_reset(t_val, now, source="trb")
 
             if is_playing and total_t is not None:
-                # --- Watchdog بازی جدید (عین Momentum نسخهٔ ۱۰٫۳) ---
+                # --- Watchdog withtechnical note new (technical note Momentum versiontechnical note 10technical note3) ---
                 if is_new_match_watchdog(seen_max_t, total_t,
                                          NEW_GAME_MAX_START, MATCH_RESTART_DELTA):
                     rep = fl_verify_and_repair_hooks()
                     print(f"[MatchLifecycle] NEW_MATCH (watchdog) — hooks: {rep}", flush=True)
                     perform_match_reset(total_t, now, source="watchdog")
                 elif ht_pending:
-                    # --- تصمیم پس از افت زمان (عین Momentum نسخهٔ ۱۰٫۳) ---
+                    # --- technical note technical note from decrease time (technical note Momentum versiontechnical note 10technical note3) ---
                     verdict = classify_resume_after_drop(
                         ht_prev_end_t, total_t, half_number,
                         ht_hard_min=HT_HARD_MIN_FIRST_HALF,
@@ -3531,29 +3531,29 @@ def tracker_worker():
                     ht_pending = False
                     if verdict == "HT":
                         half_number = 2
-                        print("[MatchLifecycle] HT تأیید شد — شروع نیمه دوم (قرینه)", flush=True)
+                        print("[MatchLifecycle] HT confirmation text — start second half (text)", flush=True)
                     elif verdict == "ET1":
                         half_number = 3
-                        print("[MatchLifecycle] ET1 — شروع وقت اضافه اول", flush=True)
+                        print("[MatchLifecycle] ET1 — start extra time first", flush=True)
                     elif verdict == "ET2":
                         half_number = 4
-                        print("[MatchLifecycle] ET2 — شروع وقت اضافه دوم (قرینه)", flush=True)
+                        print("[MatchLifecycle] ET2 — start extra time second (text)", flush=True)
                     elif verdict == "NEW_MATCH":
                         perform_match_reset(total_t, now, source="time-drop")
-                    # KEPT → حفظ نمودار (پایان مسابقه/صفحه آمار)
+                    # KEPT → technical note chart (match end/technical note technical note)
 
             # ---------------------------------------------------------
-            # ۵) تشخیص تیم‌ها — عین Momentum (منوی ۱۰۰ + زنجیره‌ها)
+            # 5) detection team‌technical note — technical note Momentum (menutechnical note 100 + chain‌technical note)
             # ---------------------------------------------------------
             try:
                 team_tracker.tick()
             except Exception:
                 pass
 
-            # ─── Second Broadcast Layer — تیک کنترلر اورلی خودکار (زمان بازی؛ بند ۳)
-            #     فقط ماشین حالت سبک — Preload/رندر هرگز روی ترد ۳۰Hz انجام نمی‌شود
-            #     v14.0: اگر «زمان تقلبی» فعال باشد feed ساعت تقلبی جایگزین ساعت
-            #     واقعی بازی می‌شود (فقط برای همین کنترلر؛ GUI/شناسایی دست‌نخورده)
+            # ─── Second Broadcast Layer — technical note technical note technical noteandtechnical note automatic (time withtechnical note technical note 3)
+            #     only technical note technical note lightweight — Preload/render never technical noteandtechnical note technical note 30Hz technical note technical note‌technical noteandtechnical note
+            #     v14.0: if «time technical note» active withtechnical note feed technical note technical note fallback technical note
+            #     real withtechnical note technical note‌technical noteandtechnical note (only for technical note technical note GUI/technical note unchanged)
             try:
                 feed_sec = FAKE_CLOCK.game_sec()
                 if feed_sec is None:
@@ -3570,23 +3570,23 @@ def tracker_worker():
                 pass
 
             # ---------------------------------------------------------
-            # ۶) شروع مسابقه: ساخت ۲۲ موجودیت در اولین تیک PLAYING هر مسابقه
-            #    (اتصال وسط بازی هم همین‌جا پوشش داده می‌شود — عین Momentum)
+            # 6) start match: technical note 22 technical noteandtechnical noteandtechnical note in firsttechnical note technical note PLAYING technical note match
+            #    (connection andtechnical note withtechnical note technical note technical note‌technical note technical noteandtechnical note data technical note‌technical noteandtechnical note — technical note Momentum)
             # ---------------------------------------------------------
             if is_playing and not match_entities_built:
                 if build_match_entities():
                     match_entities_built = True
                     build_fail_count = 0
-                    status_msg = ("بازی جدید شناسایی شد. هیت‌مپ و اسامی ریست شدند؛ "
-                                  "ردیابی ۲۲ نفر (بدون هوک مختصات) فعال است.")
+                    status_msg = ("withtext new text text. heatmap and text reset text "
+                                  "textortext 22 text (without hook coordinates) active is.")
                 else:
                     build_fail_count += 1
                     if build_fail_count == 30:
-                        print("[ENTITIES] هنوز همهٔ ۲۲ صندلی بازیکن معتبر نیست — "
-                              "در حال تلاش مجدد در هر تیک...", flush=True)
+                        print("[ENTITIES] still text 22 text player valid is not — "
+                              "currently text text in text text...", flush=True)
 
             # ---------------------------------------------------------
-            # ۷) رصد توپ (هوک Momentum — slot xmm0)
+            # 7) technical note ball (hook Momentum — slot xmm0)
             # ---------------------------------------------------------
             b_valid = False
             ball_xz = fl_read_ball_xz()
@@ -3594,14 +3594,14 @@ def tracker_worker():
                 b_valid = True
 
             # ---------------------------------------------------------
-            # ۸) کد بازیکن (هوک A83964 — مقدار خام 1..22)
+            # 8) code player (hook A83964 — value technical note 1..22)
             # ---------------------------------------------------------
             raw_code = fl_read_player_code()
             if raw_code is not None and 1 <= raw_code <= 22:
                 current_code = raw_code
 
             # ---------------------------------------------------------
-            # ۹) بروزرسانی مختصات ۲۲ بازیکن (زنجیرهٔ پوینتری — بدون هوک)
+            # 9) update coordinates 22 player (chaintechnical note pointertechnical note — without hook)
             # ---------------------------------------------------------
             with entities_lock:
                 if ball_xz is not None:
@@ -3617,7 +3617,7 @@ def tracker_worker():
                 cur_list = list(entities)
 
             # ---------------------------------------------------------
-            # ۱۰) انباشت هیت‌مپ (عین 2017 — فقط ۲۲ موجودیت بدون داور)
+            # 10) technical notewithtechnical note heatmap (technical note 2017 — only 22 technical noteandtechnical noteandtechnical note without technical noteandtechnical note)
             # ---------------------------------------------------------
             if is_clock_active and len(cur_list) == 22:
                 with heatmap_lock:
@@ -3640,12 +3640,12 @@ def tracker_worker():
                 hz_sample_count += 1
 
             # ---------------------------------------------------------
-            # ۱۱) کشف تدریجی اسامی بازیکنان هنگام لمس توپ
-            #     [PT v2.3.0] هویت بازیکن = Slot پوینتر جدید (۱ بایت در
-            #     [[base+0x036F4270]+0x74]) + دیتابیس PT: نام/سن/شماره
-            #     پیراهن/PES ID (چهرهٔ 192x192 از Asset.zip). تیم از سمتِ
-            #     نزدیک‌ترین بازیکن به توپ (صندلی‌ها ثابت‌اند). PT نبود ⇒
-            #     روش قبلی: کد خام 1..22 از هوک A83964 (میزبان = 1..11).
+            # 11) technical note technical noteintechnical note technical note players technical note technical note ball
+            #     [PT v2.3.0] technical noteandtechnical note player = Slot pointer new (1 byte in
+            #     [[base+0x036F4270]+0x74]) + technical noteuntiltechnical note PT: name/age/number
+            #     shirt/PES ID (facetechnical note 192x192 from Asset.zip). team from sidetechnical note
+            #     nearest player to ball (technical note‌technical note technical note‌technical note). PT technical noteandtechnical note ⇒
+            #     technical noteandtechnical note beforetechnical note: code technical note 1..22 from hook A83964 (Home = 1..11).
             # ---------------------------------------------------------
             PTx = pt_active()
             if PTx is not None:
@@ -3682,10 +3682,10 @@ def tracker_worker():
                             else:
                                 elapsed = now - closest_p["touch_start_time"]
                                 if elapsed >= 1.0:
-                                    # [PT v2.3.0] هویت از Slot پوینتر + دیتابیس PT؛
-                                    # fallback = کد هوک (روش قبلی) وقتی PT نباشد.
-                                    # در حالت PT اگر Slot این تیک نخواند ⇒ تأیید
-                                    # به تعویق می‌افتد (هویت قفل‌شده خراب نمی‌شود).
+                                    # [PT v2.3.0] technical noteandtechnical note from Slot pointer + technical noteuntiltechnical note PTtechnical note
+                                    # fallback = code hook (technical noteandtechnical note beforetechnical note) when PT technical notewithtechnical note.
+                                    # currentlytechnical note PT if Slot technical note technical note technical noteandtechnical note ⇒ confirmation
+                                    # to technical noteandtechnical note technical note‌decreasetechnical note (technical noteandtechnical note technical note‌technical note broken technical note‌technical noteandtechnical note).
                                     slot_val = fl_read_player_slot()
                                     if PTx is not None and slot_val is None:
                                         closest_p["touch_start_time"] = None
@@ -3703,7 +3703,7 @@ def tracker_worker():
                                             code = int(slot_val)
                                             player_name = (_info.get("name")
                                                            if _info else None) \
-                                                or f"بازیکن ({slot_val})"
+                                                or f"player ({slot_val})"
                                             _pt_info = _info
                                         else:
                                             if verified_team is None:
@@ -3713,7 +3713,7 @@ def tracker_worker():
                                             roster = home_players_dict if target_team == 1 else away_players_dict
                                             _nm = roster.get(code)
                                             player_name = _nm if isinstance(_nm, str) \
-                                                else f"بازیکن ({code})"
+                                                else f"player ({code})"
 
                                         team_title = home_team_name if target_team == 1 else away_team_name
 
@@ -3724,21 +3724,21 @@ def tracker_worker():
                                                 closest_p["code"] = code
                                                 closest_p["confirmed_name"] = player_name
                                                 closest_p["name"] = f"[{team_title}] {player_name}"
-                                                closest_p["status"] = "ثبت اولیه"
+                                                closest_p["status"] = "register firsttext"
                                                 if len(initial_discovered_codes) < 22:
                                                     initial_discovered_codes.add((target_team, code))
                                                 need_menu_update = True
                                             else:
                                                 if closest_p["code"] != code:
                                                     if (target_team, code) in initial_discovered_codes:
-                                                        closest_p["status"] = "جابجایی"
+                                                        closest_p["status"] = "text"
                                                     else:
-                                                        closest_p["status"] = "تعویض"
+                                                        closest_p["status"] = "textandtext"
                                                     closest_p["code"] = code
                                                     closest_p["confirmed_name"] = player_name
                                                     closest_p["name"] = f"[{team_title}] {player_name}"
                                                     need_menu_update = True
-                                            # [PT v2.3.0] اطلاعات کامل بازیکن روی موجودیت
+                                            # [PT v2.3.0] information complete player technical noteandtechnical note technical noteandtechnical noteandtechnical note
                                             if _pt_info is not None:
                                                 closest_p["slot"] = int(slot_val) if slot_val is not None else closest_p.get("slot")
                                                 closest_p["pes_id"] = _pt_info.get("pes_id")
@@ -3766,10 +3766,10 @@ def tracker_worker():
             else: next_tick = time.monotonic()
 
     except Exception as ex:
-        status_msg = f"خطا: {ex}"
+        status_msg = f"Error: {ex}"
         traceback.print_exc()
 # -------------------------------------------------------------
-# ۶. پالت لالیگا و رندر زمین
+# 6. technical note technical noteleaguetechnical note and render pitch
 # -------------------------------------------------------------
 def build_laliga_smooth_lut():
     lut = np.zeros((256, 4), dtype=np.uint8)
@@ -3793,7 +3793,7 @@ def build_laliga_smooth_lut():
 LALIGA_LUT = build_laliga_smooth_lut()
 
 def render_calibrated_pitch(w, h):
-    # چمن کمی روشن‌تر از قبل (به درخواست کاربر) — همچنان تم تیره، نه به روشنایی عکس مرجع
+    # technical note technical note technical noteandtechnical note‌technical note from before (to request user) — technical note technical note technical note technical note to technical noteandtechnical note image technical note
     img = Image.new("RGBA", (w, h), (24, 46, 28, 255))
     draw = ImageDraw.Draw(img)
     px, py = 20, 20
@@ -3852,9 +3852,9 @@ def render_calibrated_pitch(w, h):
     return img
 
 # =============================================================
-# ۶.۵ رندر سه‌بعدی برودکاستی — کلید R یا دکمه «رندر سه‌بعدی»
-#     خروجی: تصویر گرافیکی شبیه پخش تلویزیونی؛ هیت‌مپ به‌عنوان
-#     تکسچر روی زمین سه‌بعدی (پرسپکتیو) + دروازه‌های تخت سه‌خطی
+# 6.5 render technical note‌aftertechnical note technical noteandtechnical noteistechnical note — totaltechnical note R or button «render technical note‌aftertechnical note»
+#     output: image technical note technical note technical note technical noteandtechnical noteandtechnical note heatmap to‌technical noteandtechnical note
+#     technical note technical noteandtechnical note pitch technical note‌aftertechnical note (technical noteand) + inandfromtechnical note‌technical note technical note technical note‌linetechnical note
 # === [3D-RENDER-BEGIN] ===
 # =============================================================
 
@@ -3864,31 +3864,31 @@ RENDER_HOTKEY = "R"
 
 PHOTO_EXTS = (".png", ".jpg", ".jpeg", ".webp", ".bmp")
 
-# ---------- ابعاد خروجی (مطابق تصویر مرجع) ----------
+# ---------- technical note output (technical note image technical note) ----------
 RENDER_W, RENDER_H = 1774, 887
-CANVAS_W_REF = 1012.0   # عرض بوم دوبعدی برای مقیاس‌گیری فیدر لبه‌ها
+CANVAS_W_REF = 1012.0   # width technical noteandtechnical note technical noteandaftertechnical note for technical noteortechnical note‌technical note technical notein technical noteto‌technical note
 
-# ---------- هندسه سکوی چمن (پرسپکتیو، اندازه‌گیری‌شده از مرجع) ----------
-PFL = (255.0, 288.0)    # گوشه دور-چپ سکوی چمن
-PFR = (1531.0, 288.0)   # گوشه دور-راست
-PNR = (1723.0, 783.0)   # گوشه نزدیک-راست
-PNL = (53.0, 783.0)     # گوشه نزدیک-چپ
+# ---------- technical note technical noteandtechnical note technical note (technical noteandtechnical note technical notefromtechnical note‌technical note‌technical note from technical note) ----------
+PFL = (255.0, 288.0)    # technical noteandtechnical note technical noteandtechnical note-technical note technical noteandtechnical note technical note
+PFR = (1531.0, 288.0)   # technical noteandtechnical note technical noteandtechnical note-technical noteis
+PNR = (1723.0, 783.0)   # technical noteandtechnical note technical note-technical noteis
+PNL = (53.0, 783.0)     # technical noteandtechnical note technical note-technical note
 
-R_PLAT_X = 3.6           # حاشیه چمن بیرون خطوط زمین (متر - محور طولی)
-R_PLAT_Z = 1.9           # حاشیه چمن بیرون خطوط زمین (متر - محور عرضی)
+R_PLAT_X = 3.6           # technical note technical note outside lineandtechnical note pitch (technical note - technical noteandtechnical note lengthtechnical note)
+R_PLAT_Z = 1.9           # technical note technical note outside lineandtechnical note pitch (technical note - technical noteandtechnical note widthtechnical note)
 TEX_X_MIN = PITCH_LINE_X_MIN - R_PLAT_X
 TEX_X_MAX = PITCH_LINE_X_MAX + R_PLAT_X
 TEX_Z_MIN = PITCH_LINE_Z_MIN - R_PLAT_Z
 TEX_Z_MAX = PITCH_LINE_Z_MAX + R_PLAT_Z
-TEX_W = 2244             # رزولوشن تکسچر تخت (حدود ۲۰ پیکسل بر متر)
+TEX_W = 2244             # technical noteandtechnical noteandtechnical note technical note technical note (technical noteandtechnical note 20 technical note technical note technical note)
 TEX_H = int(TEX_W * (TEX_Z_MAX - TEX_Z_MIN) / (TEX_X_MAX - TEX_X_MIN))
 
-# ---------- پالت چمن واقعی بازی (سبز اشباع، مطابق مرجع) ----------
-R_GRASS_DARK  = (34, 116, 16)          # راه‌راه تیره
-R_GRASS_LIGHT = (46, 172, 25)          # راه‌راه روشن
-R_LINE_COL    = (243, 250, 244, 240)   # خطوط سفید زمین
+# ---------- technical note technical note real withtechnical note (technical note technical notewithtechnical note technical note technical note) ----------
+R_GRASS_DARK  = (34, 116, 16)          # technical note‌technical note technical note
+R_GRASS_LIGHT = (46, 172, 25)          # technical note‌technical note technical noteandtechnical note
+R_LINE_COL    = (243, 250, 244, 240)   # lineandtechnical note technical note pitch
 
-# ---------- رنگ‌های قاب، پس‌زمینه و پنل‌ها ----------
+# ---------- color‌technical note technical note technical note‌pitchtechnical note and technical note‌technical note ----------
 BG_BASE_TOP  = (2, 24, 62)
 BG_BASE_BOT  = (0, 12, 34)
 BG_GLOW_COL  = (16, 78, 158)
@@ -3906,7 +3906,7 @@ TXT_WHITE    = (246, 250, 255, 255)
 _FONT_DIR = os.path.join(os.environ.get("WINDIR", r"C:\Windows"), "Fonts")
 def _f(name): return os.path.join(_FONT_DIR, name)
 
-# فونت‌های ویندوز که روی هر سیستم ویندوزی نصب هستند (Segoe UI / Arial)
+# technical noteandtechnical note‌technical note andtechnical noteandtechnical note technical note technical noteandtechnical note technical note system andtechnical noteandtechnical note install technical note (Segoe UI / Arial)
 F_TITLE_PATHS = [_f("seguibl.ttf"),  _f("segoeuib.ttf"), _f("arialbd.ttf")]
 F_BOLD_PATHS  = [_f("segoeuib.ttf"), _f("seguisb.ttf"),  _f("arialbd.ttf")]
 F_SEMI_PATHS  = [_f("seguisb.ttf"),  _f("segoeuib.ttf"), _f("arial.ttf")]
@@ -3936,14 +3936,14 @@ def fit_font(draw, text, candidates, max_size, max_width):
     return load_font(candidates, 12)
 
 def _tracked_text_width(draw, text, font, tracking):
-    """عرض متن با احتساب فاصله اضافه بین حروف (letter-spacing)"""
+    """width text with text distance text text textandtext (letter-spacing)"""
     if not text:
         return 0.0
     ws = [draw.textlength(ch, font=font) for ch in text]
     return sum(ws) + tracking * (len(text) - 1)
 
 def fit_font_tracked(draw, text, candidates, max_size, max_width, track_ratio=0.16):
-    """مثل fit_font ولی عرض با فاصله بین حروف محاسبه می‌شود؛ (فونت، فاصله) برمی‌گرداند"""
+    """text fit_font andtext width with distance text textandtext textto text‌textandtext (textandtext distance) text‌text"""
     size = max_size
     while size > 12:
         f = load_font(candidates, size)
@@ -3957,7 +3957,7 @@ def fit_font_tracked(draw, text, candidates, max_size, max_width, track_ratio=0.
     return load_font(candidates, 12), max(2, int(round(12 * track_ratio)))
 
 def _draw_tracked_text(draw, cx, cy, text, font, fill, tracking):
-    """متن با فاصله بین حروف، به‌صورت حرف‌به‌حرف؛ cx مرکز افقی متن است"""
+    """text with distance text textandtext to‌textandtext text‌to‌text cx text text text is"""
     if not text:
         return
     ws = [draw.textlength(ch, font=font) for ch in text]
@@ -3968,10 +3968,10 @@ def _draw_tracked_text(draw, cx, cy, text, font, fill, tracking):
         x += w + tracking
 
 def find_player_photo(team_key, code):
-    """مسیر عکس چهره بازیکن — اولویت ۰: [PT v2.3.0] Asset.zip →
-    Players/{pes_id}.png (192x192) — کد در حالت PT = Slot بازیکن در لیست تیم؛
-    اولویت ۱: مسیر دلخواه کاربر در pes2017_teams.json (نسخه ۱۵٫۰)؛
-    اولویت ۲: قرارداد players/{league}/{team}/{code}.png (همهٔ پسوندهای PHOTO_EXTS)"""
+    """path image face player — firstandtext 0: [PT v2.3.0] Asset.zip →
+    Players/{pes_id}.png (192x192) — code currentlytext PT = Slot player in text teamtext
+    firstandtext 1: path textandtext user in pes2017_teams.json (version 15text0)text
+    firstandtext 2: text players/{league}/{team}/{code}.png (text textandtext PHOTO_EXTS)"""
     if code is None or team_key is None:
         return None
     PTx = pt_active()
@@ -4005,8 +4005,8 @@ def find_player_photo(team_key, code):
     return None
 
 def find_team_logo(team_key):
-    """مسیر لوگوی 512x512 — اولویت: مسیر دلخواه pes2017_teams.json، سپس
-    قرارداد Football_Database/{league}/{team}.png (هر دو برای همان تیم)"""
+    """path logotext 512x512 — firstandtext: path textandtext pes2017_teams.jsontext text
+    text Football_Database/{league}/{team}.png (text textand for same team)"""
     return team_logo_path(team_key)
 
 def compute_density_snapshot(filter_indices):
@@ -4016,7 +4016,7 @@ def compute_density_snapshot(filter_indices):
         return np.sum(entity_heatmaps[filter_indices], axis=0)
 
 def density_to_heat_rgba(density, w, h, feather_px, mode_type="TEAM", lut=None):
-    """مثل لایه دوبعدی: بلور، کالیبراسیون، فیلتر کمینه و پالت → تصویر RGBA"""
+    """text layer textandaftertext: textandtext textandtext text text and text → image RGBA"""
     raw_max = float(density.max())
     if raw_max <= 0.01:
         return None
@@ -4048,7 +4048,7 @@ def density_to_heat_rgba(density, w, h, feather_px, mode_type="TEAM", lut=None):
     return Image.fromarray(lut_img[np.array(gray)])
 
 def build_broadcast_lut():
-    """پالت پخش تلویزیونی مطابق مرجع: سبز → زرد → نارنجی → قرمز روشن"""
+    """text text textandtextandtext text text: text → text → text → text textandtext"""
     stops = [
         (0.00, 60, 190, 30, 0),
         (0.06, 80, 208, 18, 80),
@@ -4075,7 +4075,7 @@ def build_broadcast_lut():
 BROADCAST_LUT = build_broadcast_lut()
 
 def _find_coeffs(pa, pb):
-    """هاوموگرافی خروجی→تکسچر برای Image.transform (چهار جفت نقطه)"""
+    """textandtextandtext output→text for Image.transform (text text text)"""
     matrix = []
     for p1, p2 in zip(pa, pb):
         matrix.append([p1[0], p1[1], 1, 0, 0, 0, -p2[0] * p1[0], -p2[0] * p1[1]])
@@ -4088,7 +4088,7 @@ def _find_coeffs(pa, pb):
         return np.linalg.lstsq(A, B, rcond=None)[0]
 
 def build_flat_pitch_texture(heat_rgba):
-    """تکسچر تخت سکوی چمن: چمن واقعی بازی (سبز اشباع + دانه علف + لکه) + راه‌راه + خطوط + هیت‌مپ"""
+    """text text textandtext text: text real withtext (text textwithtext + text text + text) + text‌text + lineandtext + heatmap"""
     rng = np.random.default_rng(7)
 
     xs = np.arange(TEX_W)
@@ -4098,10 +4098,10 @@ def build_flat_pitch_texture(heat_rgba):
     base[:] = R_GRASS_DARK
     base[:, light_cols] = R_GRASS_LIGHT
 
-    # دانه‌های ریز علف
+    # technical note‌technical note technical note technical note
     base += rng.normal(0.0, 8.5, (TEX_H, TEX_W, 1)).astype(np.float32)
 
-    # لکه‌های نرم بزرگ‌مقیاس (بافت طبیعی چمن بازی)
+    # technical note‌technical note smooth technical note‌technical noteortechnical note (technical notedecrease technical note technical note withtechnical note)
     m_small = rng.integers(0, 256, (max(2, TEX_H // 26), max(2, TEX_W // 26)), dtype=np.uint8)
     m_img = Image.fromarray(m_small).resize((TEX_W, TEX_H), Image.Resampling.BILINEAR)
     mottle = (np.asarray(m_img).astype(np.float32) - 127.5) / 127.5 * 14.0
@@ -4118,7 +4118,7 @@ def build_flat_pitch_texture(heat_rgba):
         cy = ((z - TEX_Z_MIN) / (TEX_Z_MAX - TEX_Z_MIN)) * TEX_H
         return cx, cy
 
-    ppm = TEX_W / (TEX_X_MAX - TEX_X_MIN)     # پیکسل بر متر (در هر دو محور یکسان)
+    ppm = TEX_W / (TEX_X_MAX - TEX_X_MIN)     # technical note technical note technical note (in technical note technical noteand technical noteandtechnical note technical note)
     lw = max(4, int(round(0.34 * ppm)))
     spot_r = max(4, int(round(0.22 * ppm)))
 
@@ -4153,23 +4153,23 @@ def build_flat_pitch_texture(heat_rgba):
     if heat_rgba is not None:
         img.alpha_composite(heat_rgba)
 
-    # دروازه‌ها — دقیقاً مثل نمای زنده برنامه: سه خط تخت روی چمن
-    # (دو تیرک + خط عقب؛ خط دروازه خودش جزو خطوط زمین است — بدون حجم سه‌بعدی و بدون تور)
+    # inandfromtechnical note‌technical note — exactly technical note technical note live technical notenametechnical note: technical note line technical note technical noteandtechnical note technical note
+    # (technical noteand post + line technical note line inandfromtechnical note technical noteandtechnical note technical noteand lineandtechnical note pitch is — without technical note technical note‌aftertechnical note and without technical noteandtechnical note)
     glw = max(3, int(round(lw * 0.72)))
     gcol = (238, 246, 239, 225)
     for sgn in (-1.0, 1.0):
-        g_out = w2c(sgn * 54.5, -3.66)            # گوشه بیرونی نزدیک
-        g_out2 = w2c(sgn * 54.5, 3.66)            # گوشه بیرونی دور
-        g_in  = w2c(sgn * 52.5, -3.66)            # تیرک نزدیک روی خط دروازه
-        g_in2 = w2c(sgn * 52.5, 3.66)             # تیرک دور روی خط دروازه
-        draw.line([g_in,  g_out],  fill=gcol, width=glw)   # تیرک نزدیک
-        draw.line([g_in2, g_out2], fill=gcol, width=glw)   # تیرک دور
-        draw.line([g_out, g_out2], fill=gcol, width=glw)   # خط عقب
+        g_out = w2c(sgn * 54.5, -3.66)            # technical noteandtechnical note outsidetechnical note technical note
+        g_out2 = w2c(sgn * 54.5, 3.66)            # technical noteandtechnical note outsidetechnical note technical noteandtechnical note
+        g_in  = w2c(sgn * 52.5, -3.66)            # post technical note technical noteandtechnical note line inandfromtechnical note
+        g_in2 = w2c(sgn * 52.5, 3.66)             # post technical noteandtechnical note technical noteandtechnical note line inandfromtechnical note
+        draw.line([g_in,  g_out],  fill=gcol, width=glw)   # post technical note
+        draw.line([g_in2, g_out2], fill=gcol, width=glw)   # post technical noteandtechnical note
+        draw.line([g_out, g_out2], fill=gcol, width=glw)   # line technical note
 
     return img
 
 def _circle_photo(canvas, photo_path, center, r, team_key=None, header_name=""):
-    """برش دایره‌ای عکس چهره بازیکن (منبع 360x360) + حلقه آبی روشن مطابق مرجع"""
+    """text text‌text image face player (source 360x360) + text text textandtext text text"""
     cx, cy = center
     glow = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
     gd = ImageDraw.Draw(glow)
@@ -4191,7 +4191,7 @@ def _circle_photo(canvas, photo_path, center, r, team_key=None, header_name=""):
         except Exception:
             pass
     else:
-        # عکس پیدا نشد → سیلوئت با حروف اول اسم
+        # image technical note technical note → technical noteandtechnical note with technical noteandtechnical note first technical note
         fill = (150, 12, 62, 255) if team_key == DEFAULT_HOME_KEY else (16, 45, 96, 255)
         d.ellipse([cx - r, cy - r, cx + r, cy + r], fill=fill)
         initials = "".join(w[0] for w in str(header_name).split()[:2]).upper() if header_name else "?"
@@ -4205,7 +4205,7 @@ def _circle_photo(canvas, photo_path, center, r, team_key=None, header_name=""):
     d.ellipse([cx - r, cy - r, cx + r, cy + r], outline=RING_COL, width=7)
 
 def _paste_logo(canvas, logo_path, box, fallback_key=None):
-    """چسباندن لوگوی 512x512 باشگاه در جعبه؛ در نبود فایل، سپر ساده با رنگ تیم"""
+    """textwithtext logotext 512x512 withtext in boxtext in textandtext filetext text text with color team"""
     x0, y0, max_w, max_h = box[0], box[1], box[2], box[3]
     if logo_path and os.path.isfile(logo_path):
         try:
@@ -4219,7 +4219,7 @@ def _paste_logo(canvas, logo_path, box, fallback_key=None):
             return
         except Exception:
             pass
-    # سپر جایگزین با رنگ‌های تیم
+    # technical note fallback with color‌technical note team
     lay = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
     dd = ImageDraw.Draw(lay)
     cx, cy = x0 + max_w / 2.0, y0 + max_h / 2.0
@@ -4249,7 +4249,7 @@ def _h_gradient_img(w, h, c_l, c_r):
     return Image.fromarray(np.repeat(row, h, axis=0).astype(np.uint8)).convert("RGBA")
 
 def _build_background():
-    """پس‌زمینه سرمه‌ای با هاله روشن مرکز-بالا (مطابق مرجع)"""
+    """text‌pitchtext text‌text with text textandtext text-withtext (text text)"""
     W, H = RENDER_W, RENDER_H
     t = np.linspace(0.0, 1.0, H).reshape(H, 1, 1)
     top = np.array(BG_BASE_TOP, dtype=np.float64).reshape(1, 1, 3)
@@ -4263,7 +4263,7 @@ def _build_background():
     return Image.fromarray(np.clip(bg, 0, 255).astype(np.uint8)).convert("RGBA")
 
 def render_broadcast_heatmap(density, header, mode_type="TEAM"):
-    """ساخت فریم نهایی 1774×887 — هیت‌مپ برنامه به‌صورت تکسچر روی چمن پرسپکتیو"""
+    """text frame text 1774×887 — heatmap textnametext to‌textandtext text textandtext text textand"""
     W, H = RENDER_W, RENDER_H
 
     feather_tex = calib_feather * (TEX_W / CANVAS_W_REF)
@@ -4273,16 +4273,16 @@ def render_broadcast_heatmap(density, header, mode_type="TEAM"):
     canvas = _build_background()
     d = ImageDraw.Draw(canvas, "RGBA")
 
-    # ---------- لایه اول: روبان‌ها، قاب، پنل عنوان، کارت ----------
-    # (عناصر نیمه‌شفاف روی Overlay رسم می‌شوند تا درست ترکیب شوند)
+    # ---------- layer first: technical noteandwithtechnical note‌technical note technical note technical note technical noteandtechnical note card ----------
+    # (technical note technical note‌technical note technical noteandtechnical note Overlay technical note technical note‌technical noteandtechnical note until correct technical note technical noteandtechnical note)
     ov = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     od = ImageDraw.Draw(ov)
 
-    # روبان‌های مورب ظریف گوشه‌ها
+    # technical noteandwithtechnical note‌technical note technical noteandtechnical note technical note technical noteandtechnical note‌technical note
     od.polygon([(22, 128), (22, 54), (148, 22), (226, 22)], fill=(120, 170, 235, 14))
     od.polygon([(W - 22, 128), (W - 22, 54), (W - 226, 22), (W - 148, 22)], fill=(120, 170, 235, 14))
 
-    # قاب نئونی (هاله جدا برای بلور)
+    # technical note technical noteandtechnical note (technical note technical note for technical noteandtechnical note)
     glow = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     gd = ImageDraw.Draw(glow)
     gd.rounded_rectangle([22, 22, W - 22, H - 22], radius=42, outline=(120, 168, 230, 190), width=8)
@@ -4291,7 +4291,7 @@ def render_broadcast_heatmap(density, header, mode_type="TEAM"):
     od.rounded_rectangle([22, 22, W - 22, H - 22], radius=42, outline=FRAME_COL, width=5)
     od.rounded_rectangle([34, 34, W - 34, H - 34], radius=32, outline=FRAME_INNER, width=1)
 
-    # پنل عنوان
+    # technical note technical noteandtechnical note
     PTL, PTR, PBR, PBL = (408, 6), (1408, 6), (1443, 106), (373, 106)
     tt = np.linspace(0.0, 1.0, 100).reshape(100, 1, 1)
     c_top = np.array(PANEL_TOP, dtype=np.float64).reshape(1, 1, 3)
@@ -4302,21 +4302,21 @@ def render_broadcast_heatmap(density, header, mode_type="TEAM"):
     ImageDraw.Draw(pmask).polygon([(PTL[0] - 373, 0), (PTR[0] - 373, 0), (PBR[0] - 373, 100), (PBL[0] - 373, 100)], fill=255)
     canvas.paste(pgrad, (373, 6), pmask)
 
-    # برش‌های مورب ظریف داخل پنل
+    # technical note‌technical note technical noteandtechnical note technical note inside technical note
     od.polygon([(560, 6), (700, 6), (640, 106), (500, 106)], fill=(255, 255, 255, 7))
     od.polygon([(1180, 6), (1300, 6), (1252, 106), (1132, 106)], fill=(0, 0, 0, 16))
 
-    # پنل کارت بازیکن/تیم
+    # technical note card player/team
     od.rounded_rectangle([55, 96, 1085, 278], radius=18, fill=(13, 42, 92, 55), outline=(86, 132, 198, 70), width=2)
 
-    # خطوط لبه پنل عنوان — بعد از پنل کارت تا زیرشان پنهان نشود
+    # lineandtechnical note technical noteto technical note technical noteandtechnical note — after from technical note card until technical note hidden technical noteandtechnical note
     for x in range(PTL[0], PTR[0], 4):
         f1 = math.exp(-(((x + 2) - W / 2) / 470.0) ** 2)
         od.rectangle([x, 5, x + 4, 7], fill=PANEL_EDGE_T + (int(30 + 200 * f1),))
         f2 = math.exp(-(((x + 2) - W / 2) / 620.0) ** 2)
         od.rectangle([x, 104, x + 4, 108], fill=PANEL_EDGE_B + (int(50 + 205 * f2),))
 
-    # عنوان (با فاصله بین حروف — درخواست کاربر)
+    # technical noteandtechnical note (with distance technical note technical noteandtechnical note — request user)
     title = "HEATMAP"
     f_title, tr_title = fit_font_tracked(od, title, F_TITLE_PATHS, 88, 620)
     _draw_tracked_text(od, W / 2 + 2, 62 + 3, title, f_title, (0, 10, 30, 150), tr_title)
@@ -4338,7 +4338,7 @@ def render_broadcast_heatmap(density, header, mode_type="TEAM"):
         name = header.get("text", "")
         max_bar_w = 1150
 
-    # ---------- نوار گرادیانی اسم ----------
+    # ---------- technical noteandtechnical note technical noteortechnical note technical note ----------
     f_name = fit_font(d, name, F_BOLD_PATHS, 48, 900)
     text_x = 385
     name_w = d.textlength(name, font=f_name)
@@ -4348,26 +4348,26 @@ def render_broadcast_heatmap(density, header, mode_type="TEAM"):
     ImageDraw.Draw(bmask).polygon([(0, 0), (bar_w, 0), (bar_w - bar_slant, bar_y1 - bar_y0), (0, bar_y1 - bar_y0)], fill=255)
     canvas.paste(bar_grad, (bar_x0, bar_y0), bmask)
 
-    # خط ظریف زیر نوار (در مرکز روشن‌تر)
+    # line technical note technical note technical noteandtechnical note (in technical note technical noteandtechnical note‌technical note)
     for x in range(bar_x0, bar_x0 + bar_w + 120, 4):
         f3 = math.exp(-((x - (bar_x0 + 160)) / 420.0) ** 2)
         od.rectangle([x, 187, x + 4, 190], fill=(110, 158, 225, int(60 + 150 * f3)))
 
-    # متن اسم
+    # technical note technical note
     od.text((text_x, 154), name, font=f_name, fill=TXT_WHITE, anchor="lm")
 
-    # ترکیب لایه اول با بوم
+    # technical note layer first with technical noteandtechnical note
     canvas.alpha_composite(ov)
     d = ImageDraw.Draw(canvas, "RGBA")
 
-    # ---------- زمین سه‌بعدی (پرسپکتیو از تکسچر برنامه) ----------
-    # دروازه‌ها به‌صورت سه خط تخت داخل تکسچر چمن رسم شده‌اند و با همین
-    # تبدیل پرسپکتیو روی زمین می‌نشینند (شبیه نمای زنده برنامه)
+    # ---------- pitch technical note‌aftertechnical note (technical noteand from technical note technical notenametechnical note) ----------
+    # inandfromtechnical note‌technical note to‌technical noteandtechnical note technical note line technical note inside technical note technical note technical note technical note‌technical note and with technical note
+    # technical note technical noteand technical noteandtechnical note pitch technical note‌technical note (technical note technical note live technical notenametechnical note)
     coeffs = _find_coeffs([PFL, PFR, PNR, PNL], [(0, 0), (TEX_W, 0), (TEX_W, TEX_H), (0, TEX_H)])
     pitched = texture.transform((W, H), Image.PERSPECTIVE, tuple(coeffs), resample=Image.Resampling.BICUBIC)
     canvas.alpha_composite(pitched)
 
-    # نوار روشن زیر لبه پایین سکو (سطح بریده چمن)
+    # technical noteandtechnical note technical noteandtechnical note technical note technical noteto below technical noteand (level technical note technical note)
     strip_w = int(PNR[0] - PNL[0])
     strip_h = 13
     strip = np.zeros((strip_h, strip_w, 4), dtype=np.uint8)
@@ -4376,13 +4376,13 @@ def render_broadcast_heatmap(density, header, mode_type="TEAM"):
     strip[:, :, 3] = (200 * (1 - st)).astype(np.uint8)
     canvas.alpha_composite(Image.fromarray(strip), (int(PNL[0]), int(PNL[1])))
 
-    # لبه ظریف دور سکو (دروازه‌ها تخت داخل تکسچر چمن رسم می‌شوند)
+    # technical noteto technical note technical noteandtechnical note technical noteand (inandfromtechnical note‌technical note technical note inside technical note technical note technical note technical note‌technical noteandtechnical note)
     ov2 = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     od2 = ImageDraw.Draw(ov2)
     od2.polygon([PFL, PFR, PNR, PNL], outline=(4, 30, 12, 90), width=2)
     canvas.alpha_composite(ov2)
 
-    # ---------- دایره بازیکن / نشان تیم ----------
+    # ---------- technical note player / technical note team ----------
     cx, cy = circle_c
     if kind == "player":
         _circle_photo(canvas, header.get("photo_path"), circle_c, circle_r,
@@ -4408,7 +4408,7 @@ def render_broadcast_heatmap(density, header, mode_type="TEAM"):
                         away_team_key)
         d.ellipse([cx - circle_r, cy - circle_r, cx + circle_r, cy + circle_r], outline=RING_COL, width=7)
 
-    # ---------- لوگوی باشگاه زیر نوار اسم ----------
+    # ---------- logotechnical note withtechnical note technical note technical noteandtechnical note technical note ----------
     if kind == "player":
         _paste_logo(canvas, header.get("logo_path"), (330, 205, 78, 72), header.get("team_key"))
     elif kind == "team":
@@ -4420,11 +4420,11 @@ def render_broadcast_heatmap(density, header, mode_type="TEAM"):
     return canvas
 
 def build_broadcast_gpu_assets(density, header, mode_type="TEAM"):
-    """[Broadcast GPU] تنها منبع داده‌ی موتور BroadcastRenderer — بدون هیچ الگوریتم جدید:
-         heat_rgba   = عیناً خروجی density_to_heat_rgba برنامه (همان هیت‌مپ)
-         pitch_plate = عیناً خروجی build_flat_pitch_texture بدون گرما (چمن+خطوط+دروازه تخت)
-         tex_range   = بازه تکسچر سکو برای نگاشت دقیق uv داخل شیدر (قرارداد مختصات)
-         fonts       = مسیر فونت‌های ویندوز برنامه"""
+    """[Broadcast GPU] text source data‌text textandtextandtext BroadcastRenderer — without text textandtext new:
+         heat_rgba   = text output density_to_heat_rgba textnametext (same heatmap)
+         pitch_plate = text output build_flat_pitch_texture without text (text+lineandtext+inandfromtext text)
+         tex_range   = withtext text textand for text text uv inside textin (text coordinates)
+         fonts       = path textandtext‌text andtextandtext textnametext"""
     feather_tex = calib_feather * (TEX_W / CANVAS_W_REF)
     heat_rgba = density_to_heat_rgba(density, TEX_W, TEX_H, feather_tex, mode_type, lut=BROADCAST_LUT)
     pitch_plate = build_flat_pitch_texture(None)
@@ -4435,49 +4435,49 @@ def build_broadcast_gpu_assets(density, header, mode_type="TEAM"):
 
 # === [3D-RENDER-END] ===
 # =============================================================
-# ۶.۸ — Second Broadcast Layer: کنترلر خودکار اورلی هیت‌مپ بازیکن
+# 6.8 — Second Broadcast Layer: technical note automatic technical noteandtechnical note heatmap player
 # =============================================================
-#  پنجره برودکاست در دقیقه مشخص مسابقه «خودش» ظاهر می‌شود — عین قوانین غیرقابل‌مذاکره:
-#    ① انتخاب تصادفی فقط از «بازیکنان واقعی شناسایی‌شده هر دو تیم» (بدون وزن)
-#    ② Preload کامل (آپلود GPU) چند ثانیه قبل از لحظه نمایش؛ Show فقط یک پیام
-#    ③ پنجره یک‌بار در boot ساخته می‌شود، مخفی می‌ماند و هرگز جابه‌جا نمی‌شود —
-#       تمام انیمیشن‌ها روی GPU. glfw.init فقط یک‌بار در کل پروسه (ریشه‌کن‌شدن
-#       باگ «Class already exists» و «glfw.init failed»).
-#  Trigger با «زمان بازی» است (نه time.time) —跨越 ساعت هم یک‌بار آتش می‌گیرد؛
-#  مدت نمایش با Wall Clock (مستقل از توقف/ریپلی).
+#  window technical noteandtechnical noteis in minute technical note match «technical noteandtechnical note» technical note technical note‌technical noteandtechnical note — technical note technical noteandtechnical note technical note‌technical note:
+#    ① technical note technical note only from «players real technical note‌technical note technical note technical noteand team» (without weight)
+#    ② Preload complete (technical noteandtechnical note GPU) technical note second before from moment displaytechnical note Show only technical note message
+#    ③ window technical note‌withtechnical note in boot technical note technical note‌technical noteandtechnical note technical note technical note‌technical note and never technical noteto‌technical note technical note‌technical noteandtechnical note —
+#       technical note technical note‌technical note technical noteandtechnical note GPU. glfw.init only technical note‌withtechnical note in total process (technical note‌technical note‌technical note
+#       withtechnical note «Class already exists» and «glfw.init failed»).
+#  Trigger with «time withtechnical note» is (technical note time.time) —跨越 technical note technical note technical note‌withtechnical note technical note technical note‌technical note
+#  technical note display with Wall Clock (independent from stop/technical note).
 
 AUTO_HEATMAP_ENABLED         = True
-AUTO_HEATMAP_MINUTE          = 75      # دقیقه تریگر (مجاز: 70 تا 80)
-AUTO_HEATMAP_DISPLAY_SEC     = 10.0    # مدت نمایش (پیشنهاد: 3 تا 60)
-AUTO_HEATMAP_SELECT_LEAD_SEC = 8.0     # فاصله انتخاب/Preload قبل از تریگر
-AUTO_HEATMAP_RETRY_MAX       = 6       # حداکثر تلاش (بند ۳۲)
-AUTO_HEATMAP_RETRY_DELAY     = 3.0     # فاصله تلاش مجدد (ثانیه)
-OVERLAY_WIDTH_FRAC           = 0.33    # عرض پنجره = کسر از عرض صفحه
-OVERLAY_HEIGHT_FRAC          = 0.32    # ارتفاع پنجره = کسر از ارتفاع صفحه
+AUTO_HEATMAP_MINUTE          = 75      # minute technical note (technical notefrom: 70 until 80)
+AUTO_HEATMAP_DISPLAY_SEC     = 10.0    # technical note display (technical note: 3 until 60)
+AUTO_HEATMAP_SELECT_LEAD_SEC = 8.0     # distance technical note/Preload before from technical note
+AUTO_HEATMAP_RETRY_MAX       = 6       # technical note technical note (technical note 32)
+AUTO_HEATMAP_RETRY_DELAY     = 3.0     # distance technical note technical note (second)
+OVERLAY_WIDTH_FRAC           = 0.33    # width window = technical note from width technical note
+OVERLAY_HEIGHT_FRAC          = 0.32    # height window = technical note from height technical note
 
 # ─────────────────────────────────────────────────────────────────────────────
-#  حالت آزمون «زمانِ تقلبی» (FAKE TIME TEST) — نسخه ۱۴٫۰
-#  اگر هیت‌مپ هرگز نمایش داده نمی‌شود: این گزینه را True کنید تا ساعتِ واقعی
-#  بازی نادیده گرفته شود و تریگر اورلی با ساعت تقلبی کار کند.
-#    ● AUTO_HEATMAP_FAKE_TIME_ENABLED   = False/True  (پیش‌فرض: False)
-#    ● AUTO_HEATMAP_FAKE_TIME_START_MIN = دقیقه شروع (عدد اعشاری مجاز؛ 74.5 = 74:30)
-#    ● AUTO_HEATMAP_FAKE_TIME_SPEED     = سرعت ساعت تقلبی: ثانیه‌بازی در هر
-#      ثانیه‌واقعی (1.0 = مثل ساعت پخش تلویزیونی؛ 0 = ثابت روی minute شروع)
-#  تفسیر نتیجه:
-#    ✔ پنجره ظاهر شد ⇒ کل مسیر نمایش سالم است؛ مشکل از خواندن ساعت بازی بود
-#      (هوک دقیقه/ثانیه روی دستگاه شما کار نمی‌کند — لاگ [AUTO_HEATMAP] را ببینید)
-#    ✘ پنجره ظاهر نشد ⇒ لاگ [AUTO_HEATMAP] + نوار «AUTO overlay» پایین پنجره
-#      برنامه علت دقیق را می‌گوید (موتور قطع؟ بازیکن واجد شرایط نیست؟ ...)
-#  توجه: در این حالت با هر ورود مجدد به مسابقه، اورلی یک‌بار دیگر هم نمایش
-#  داده می‌شود (reset مسابقه) — برای تکرار آزمون عالی است.
+#  technical note technical noteandtechnical note «timetechnical note technical note» (FAKE TIME TEST) — version 14technical note0
+#  if heatmap never display data technical note‌technical noteandtechnical note: technical note technical note technical note True technical note until technical note real
+#  withtechnical note technical note technical note technical noteandtechnical note and technical note technical noteandtechnical note with technical note technical note technical note technical note.
+#    ● AUTO_HEATMAP_FAKE_TIME_ENABLED   = False/True  (default: False)
+#    ● AUTO_HEATMAP_FAKE_TIME_START_MIN = minute start (number decimaltechnical note technical notefromtechnical note 74.5 = 74:30)
+#    ● AUTO_HEATMAP_FAKE_TIME_SPEED     = technical note technical note technical note: second‌withtechnical note in technical note
+#      second‌real (1.0 = technical note technical note technical note technical noteandtechnical noteandtechnical note 0 = technical note technical noteandtechnical note minute start)
+#  technical note result:
+#    ✔ window technical note technical note ⇒ total path display healthy istechnical note technical notetotal from read game clock technical noteandtechnical note
+#      (hook minute/second technical noteandtechnical note technical note technical note technical note technical note‌technical note — log [AUTO_HEATMAP] technical note technical note)
+#    ✘ window technical note technical note ⇒ log [AUTO_HEATMAP] + technical noteandtechnical note «AUTO overlay» below window
+#      technical notenametechnical note technical note technical note technical note technical note‌technical noteandtechnical note (technical noteandtechnical noteandtechnical note technical note player andtechnical note technical note is nottechnical note ...)
+#  technical noteandtechnical note: in technical note technical note with technical note andtechnical noteandtechnical note technical note to matchtechnical note technical noteandtechnical note technical note‌withtechnical note technical note technical note display
+#  data technical note‌technical noteandtechnical note (reset match) — for technical note technical noteandtechnical note technical note is.
 AUTO_HEATMAP_FAKE_TIME_ENABLED   = False
 AUTO_HEATMAP_FAKE_TIME_START_MIN = 75.0
 AUTO_HEATMAP_FAKE_TIME_SPEED     = 1.0
 
 
 class _FakeGameClock:
-    """ساعت تقلبی برای آزمون مسیر نمایش اورلی — فقط جایگزین feed کنترلر
-       AUTO_CTRL می‌شود (ساعت نمایشی GUI و منطق شناسایی دست‌نخورده می‌مانند)."""
+    """text text for textandtext path display textandtext — only fallback feed text
+       AUTO_CTRL text‌textandtext (text displaytext GUI and text text unchanged text‌text)."""
 
     def __init__(self):
         self.enabled = bool(AUTO_HEATMAP_FAKE_TIME_ENABLED)
@@ -4487,7 +4487,7 @@ class _FakeGameClock:
         self._t0 = time.monotonic()
 
     def game_sec(self):
-        """None = غیرفعال (feed واقعی مسابقه)؛ وگرنه ثانیه‌بازیِ تقلبی int"""
+        """None = disabled (feed real match)text andtext second‌withtext text int"""
         if not self.enabled:
             return None
         return int(self.start_sec + self.speed * (time.monotonic() - self._t0))
@@ -4505,14 +4505,14 @@ if FAKE_CLOCK.enabled:
     print(f"[AUTO_HEATMAP] *** FAKE TIME MODE ON — clock starts at {FAKE_CLOCK.label()} "
           f"speed={FAKE_CLOCK.speed} — REAL MATCH CLOCK IS IGNORED ***", flush=True)
 
-_AUTO_BR_MODULE = None       # ماژول BroadcastRenderer (یک‌بار import)
-_AUTO_ENGINE = None          # OverlayEngine مقیم
-_AUTO_ENGINE_FAIL_REASON = None   # علت شکست boot موتور (برای نوار وضعیت GUI)
+_AUTO_BR_MODULE = None       # technical noteandtechnical note BroadcastRenderer (technical note‌withtechnical note import)
+_AUTO_ENGINE = None          # OverlayEngine technical note
+_AUTO_ENGINE_FAIL_REASON = None   # technical note failure boot technical noteandtechnical noteandtechnical note (for technical noteandtechnical note andtechnical note GUI)
 
 
 def ensure_auto_overlay_engine():
-    """boot موتور اورلی — فقط یک‌بار، در شروع برنامه، non-blocking.
-       شکست → لاگ شفاف + اورلی خودکار غیرفعال برای «همین اجرا» (کلید R سالم می‌ماند)."""
+    """boot textandtextandtext textandtext — only text‌withtext in start textnametext non-blocking.
+       failure → log text + textandtext automatic disabled for «text run» (totaltext R healthy text‌text)."""
     global _AUTO_BR_MODULE, _AUTO_ENGINE, _AUTO_ENGINE_FAIL_REASON
     if _AUTO_ENGINE is not None:
         return _AUTO_ENGINE
@@ -4532,31 +4532,31 @@ def ensure_auto_overlay_engine():
 
 
 class AutoPlayerBroadcastController:
-    """ماشین حالت اورلی خودکار — فقط منطق و تایمینگ؛ رندر صفر.
+    """text text textandtext automatic — only text and untiltext render text.
 
        WAITING → PREPARING → READY → SHOWING → VISIBLE → EXITING → DONE
-       (خطا → FAILED REASON → تلاش مجدد هر ۳ ثانیه، حداکثر ۶ بار)
-       tick از ترد ردیاب ۳۰Hz با «زمان بازی» صدا زده می‌شود؛ کار سنگین هرگز
-       در همین ترد انجام نمی‌شود (Preload در ترد جدا — بند ۹/۱۰)."""
+       (Error → FAILED REASON → text text text 3 secondtext text 6 withtext)
+       tick from text textortext 30Hz with «time withtext» text text text‌textandtext text agetext never
+       in text text text text‌textandtext (Preload in text text — text 9/10)."""
 
     def __init__(self):
         self.state = "WAITING"
-        self.triggered = False          # تریگر این مسابقه آتش گرفته؟ (یک‌بار)
+        self.triggered = False          # technical note technical note match technical note technical note (technical note‌withtechnical note)
         self.selected = None
         self.attempt = 0
-        self._t_visible_wall = None     # شروع شمارش مدت نمایش (Wall Clock)
+        self._t_visible_wall = None     # start technical note technical note display (Wall Clock)
         self._t_triggered_wall = None
         self._next_retry_wall = 0.0
         self._prep_thread = None
         self._prep_error = None
         self._reshow_after_ready = False
         self._last_game_sec = 0
-        # — تشخیص‌پذیری (v14.0): هرگز بدون توضیح ساکت نمی‌مانیم —
-        self._eng_missing_logged = False   # «موتور نیست» فقط یک‌بار در هر مسابقه
-        self._armed_logged = False         # «ساعت رسید، تریگر مسلح شد» یک‌بار
-        self._fake_wait_log_wall = 0.0     # لاگ دوره‌ای انتظار در حالت زمان تقلبی
+        # — detection‌technical note (v14.0): never without technical noteandtechnical note technical note technical note‌technical note —
+        self._eng_missing_logged = False   # «technical noteandtechnical noteandtechnical note is not» only technical note‌withtechnical note in technical note match
+        self._armed_logged = False         # «technical note technical note technical note armed technical note» technical note‌withtechnical note
+        self._fake_wait_log_wall = 0.0     # log technical noteandtechnical note‌technical note technical note currentlytechnical note time technical note
 
-    # ---------------- کمکی ----------------
+    # ---------------- technical note ----------------
     def _log(self, game_sec, msg):
         try:
             m, s = int(game_sec) // 60, int(game_sec) % 60
@@ -4581,9 +4581,9 @@ class AutoPlayerBroadcastController:
         return eng
 
     def reset(self):
-        """Match-aware reset: مسابقه جدید/ری‌استارت → همه‌چیز از WAITING (بند ۳۶)"""
+        """Match-aware reset: match new/restart → text‌text from WAITING (text 36)"""
         if self.state == "WAITING" and not self.triggered and self.selected is None:
-            return                      # از قبل ریست — بدون لاگ تکراری
+            return                      # from before reset — without log technical note
         eng = self._engine()
         if eng is not None:
             try:
@@ -4602,10 +4602,10 @@ class AutoPlayerBroadcastController:
         self._armed_logged = False
         self._log(self._last_game_sec, "STATE=WAITING (match reset)")
 
-    # ---------------- انتخاب بازیکن (بند ۶/۷) ----------------
+    # ---------------- technical note player (technical note 6/7) ----------------
     def _eligible_pool(self):
-        """ادغام دو تیم — فقط هویت واقعی شناسایی‌شده؛ اعتبارسنجی ۴گانه Name/Photo/Logo/Heat
-           خروجی: (pool, stats) — stats علت خالی‌بودن استخر را شمارش می‌کند (v14.0)"""
+        """text textand team — only textandtext real text‌text textwithtextagetext 4text Name/Photo/Logo/Heat
+           output: (pool, stats) — stats text empty‌textandtext istext text text text‌text (v14.0)"""
         pool = []
         stats = {"checked": 0, "unnamed": 0, "no_photo": 0, "no_logo": 0,
                  "no_heat": 0, "other_side": 0}
@@ -4620,7 +4620,7 @@ class AutoPlayerBroadcastController:
             code = ent.get("code")
             if not name_fa or code is None:
                 stats["unnamed"] += 1
-                continue                                    # هویت تأییدنشده
+                continue                                    # technical noteandtechnical note confirmationtechnical note
             team = ent.get("team", 1) or 1
             # [SUITE v1.0.0] viewer-side filter (user setting):
             # home = only home players, away = only away players,
@@ -4638,15 +4638,15 @@ class AutoPlayerBroadcastController:
             logo = find_team_logo(team_key)
             if not photo or not os.path.isfile(photo):
                 stats["no_photo"] += 1
-                continue                                    # عکس بازیکن ✗
+                continue                                    # image player ✗
             if not logo or not os.path.isfile(logo):
                 stats["no_logo"] += 1
-                continue                                    # لوگوی باشگاه ✗
+                continue                                    # logotechnical note withtechnical note ✗
             try:
                 with heatmap_lock:
                     if float(np.sum(entity_heatmaps[idx])) < 30.0:
                         stats["no_heat"] += 1
-                        continue                            # هیت‌مپ خالی ✗
+                        continue                            # heatmap empty ✗
             except Exception:
                 stats["no_heat"] += 1
                 continue
@@ -4656,7 +4656,7 @@ class AutoPlayerBroadcastController:
 
     @staticmethod
     def _pool_stats_text(s):
-        """متن فشرده شمارش ردشدگان — در لاگ FAILED/انتظار می‌آید"""
+        """text text text text — in log FAILED/text text‌text"""
         try:
             return (f"checked={s['checked']} unnamed={s['unnamed']} "
                     f"no_photo={s['no_photo']} no_logo={s['no_logo']} no_heat={s['no_heat']} "
@@ -4665,7 +4665,7 @@ class AutoPlayerBroadcastController:
             return "stats=?"
 
     def _start_prepare(self, game_sec, cand):
-        """Preload در ترد جدا — هرگز روی ترد ۳۰Hz (بند ۹)"""
+        """Preload in text text — never textandtext text 30Hz (text 9)"""
         self.selected = cand
         self._prep_error = None
         self._log(game_sec,
@@ -4679,7 +4679,7 @@ class AutoPlayerBroadcastController:
         self._prep_thread.start()
 
     def _prepare_worker(self, cand):
-        """ساخت Asset (عیناً از توابع موجود — هیچ الگوریتم جدیدی) + آپلود GPU"""
+        """text Asset (text from textandtext textandtextandtext — text textandtext newtext) + textandtext GPU"""
         try:
             eng = self._engine()
             if eng is None:
@@ -4692,11 +4692,11 @@ class AutoPlayerBroadcastController:
             assets = build_broadcast_gpu_assets(density, header, "PLAYER")
             if assets.get("heat_rgba") is None:
                 raise RuntimeError("heat_rgba is empty")
-            eng.prepare_player_overlay(assets)      # فقط پیام — چند میلی‌ثانیه
+            eng.prepare_player_overlay(assets)      # only message — technical note technical note‌second
         except Exception as ex:
             self._prep_error = f"{type(ex).__name__}: {ex}"
 
-    # ---------------- تیک اصلی (از ترد ۳۰Hz — سبک) ----------------
+    # ---------------- technical note original (from technical note 30Hz — lightweight) ----------------
     def tick(self, game_sec):
         if not AUTO_HEATMAP_ENABLED:
             return
@@ -4707,37 +4707,37 @@ class AutoPlayerBroadcastController:
         if st == "WAITING":
             eng = self._engine()
             if eng is None:
-                # v14.0 — هرگز ساکت نیستیم: اگر موتور اورلی از boot نیامده،
-                # هیت‌مپ به‌هیچ‌وجه نمایش داده نمی‌شود؛ علت را یک‌بار می‌گوییم
+                # v14.0 — never technical note is nottechnical note: if technical noteandtechnical noteandtechnical note technical noteandtechnical note from boot technical noteortechnical note
+                # heatmap to‌technical note‌andtechnical note display data technical note‌technical noteandtechnical note technical note technical note technical note‌withtechnical note technical note‌technical noteandtechnical note
                 if not self._eng_missing_logged:
                     self._eng_missing_logged = True
                     self._log(game_sec,
                               "OVERLAY ENGINE NOT AVAILABLE — overlay can NEVER show this run "
                               f"(reason: {_AUTO_ENGINE_FAIL_REASON or 'see ENGINE INIT FAILED above'})")
                 return
-            # تریگر آتشیده و در حالت بازیابی (FAILED→READY→SHOWING) نیستیم → هیچ
+            # technical note technical note and currentlytechnical note recovery (FAILED→READY→SHOWING) is nottechnical note → technical note
             if self.triggered and not self._reshow_after_ready:
                 return
             now_w = time.monotonic()
             if now_w < self._next_retry_wall:
                 return
-            # v14.0 — «مسلح‌شدن»: اولین‌بار که ساعت به ۵ دقیقهٔ آخر قبل از تریگر
-            # رسید اعلام می‌کنیم که feed ساعت زنده است (اگر این لاگ نیامد، یعنی
-            # هوک دقیقه/ثانیهٔ بازی هیچ‌وقت به پنجرهٔ تریگر نرسیده)
+            # v14.0 — «armed‌technical note»: firsttechnical note‌withtechnical note technical note technical note to 5 minutetechnical note technical note before from technical note
+            # technical note technical note technical note‌technical note technical note feed technical note live is (if technical note log technical noteortechnical note technical note
+            # hook minute/secondtechnical note withtechnical note technical note‌andtechnical note to windowtechnical note technical note technical note)
             if (not self._armed_logged
                     and target_sec - 300.0 <= game_sec < target_sec):
                 self._armed_logged = True
                 self._log(game_sec,
                           f"CLOCK FEED OK — trigger armed for "
                           f"{int(HM_DISPLAY_MINUTE):02d}:00 (feed {int(game_sec)//60:02d}:{int(game_sec)%60:02d})")
-            # انتخاب فقط از دو تیم — بدون وزن (بند ۶)
+            # technical note only from technical noteand team — without weight (technical note 6)
             if game_sec >= target_sec - AUTO_HEATMAP_SELECT_LEAD_SEC:
                 pool, pool_stats = self._eligible_pool()
                 if not pool:
                     if FAKE_CLOCK.enabled:
-                        # حالت آزمون زمان تقلبی: در منو/قبل از شناسایی بازیکنان
-                        # «شکست» حساب نمی‌شود — فقط صبر؛ تا هویت/عکس/لوگو آماده شود
-                        # (attempt هم زیاد نمی‌شود — بند ۳۲ فقط برای مسابقه واقعی)
+                        # technical note technical noteandtechnical note time technical note: in menu/before from technical note players
+                        # «failure» technical note technical note‌technical noteandtechnical note — only technical note until technical noteandtechnical note/image/logo technical note technical noteandtechnical note
+                        # (attempt technical note technical noteortechnical note technical note‌technical noteandtechnical note — technical note 32 only for match real)
                         if now_w >= self._fake_wait_log_wall:
                             self._fake_wait_log_wall = now_w + 10.0
                             self._log(game_sec,
@@ -4753,7 +4753,7 @@ class AutoPlayerBroadcastController:
                     self._schedule_retry_or_giveup(game_sec)
                     return
                 self.attempt += 1
-                cand = random.choice(pool)          # تصادفی خالص — بعد از انتخاب freeze
+                cand = random.choice(pool)          # technical note technical note — after from technical note freeze
                 self._start_prepare(game_sec, cand)
 
         elif st == "PREPARING":
@@ -4782,7 +4782,7 @@ class AutoPlayerBroadcastController:
                 self._log(game_sec, f"FAILED REASON={eng.fail_reason() if eng else 'engine dead'}")
                 self._schedule_retry_or_giveup(game_sec)
                 return
-            # مسیر FAILED→READY→SHOWING — اگر تریگر در پنجره نمایش بود، دوباره Show
+            # path FAILED→READY→SHOWING — if technical note in window display technical noteandtechnical note again Show
             if self.triggered and self._reshow_after_ready:
                 self._reshow_after_ready = False
                 if (self._t_triggered_wall is not None
@@ -4795,11 +4795,11 @@ class AutoPlayerBroadcastController:
                     self.state = "DONE"
                     self._log(game_sec, "STATE=DONE")
                 return
-            # Transactional Trigger — پرش/گذر از ساعت هم دقیقاً یک‌بار (بند ۳۱)
+            # Transactional Trigger — technical note/technical note from technical note technical note exactly technical note‌withtechnical note (technical note 31)
             if game_sec >= target_sec and not self.triggered:
                 self.triggered = True
                 self._t_triggered_wall = time.monotonic()
-                eng.show_player_overlay()           # فقط یک پیام (زیر 0.1ms)
+                eng.show_player_overlay()           # only technical note message (technical note 0.1ms)
                 self.state = "SHOWING"
                 self._log(game_sec, "STATE=SHOWING (entry animation)")
 
@@ -4831,7 +4831,7 @@ class AutoPlayerBroadcastController:
                 self.state = "DONE"
                 self._log(game_sec, "STATE=DONE")
                 return
-            # مدت نمایش با Wall Clock — مستقل از توقف/ریپلی بازی (بند ۴)
+            # technical note display with Wall Clock — independent from stop/technical note withtechnical note (technical note 4)
             if (self._t_visible_wall is not None
                     and time.monotonic() - self._t_visible_wall >= AUTO_HEATMAP_DISPLAY_SEC):
                 eng.hide_player_overlay()
@@ -4852,10 +4852,10 @@ class AutoPlayerBroadcastController:
             if time.monotonic() >= self._next_retry_wall:
                 self.state = "WAITING"
 
-        # DONE / FAILED_FINAL → در این مسابقه دیگر نمایشی نیست (بند ۳۵)
+        # DONE / FAILED_FINAL → in technical note match technical note displaytechnical note is not (technical note 35)
 
     def _schedule_retry_or_giveup(self, game_sec, allow_reshow=False):
-        """۳ ثانیه بعد تلاش مجدد؛ بعد از ۶ بار → رها برای «همین مسابقه» (بند ۳۲)"""
+        """3 second after text text after from 6 withtext → text for «text match» (text 32)"""
         self.selected = None
         self._prep_error = None
         if self.attempt >= AUTO_HEATMAP_RETRY_MAX:
@@ -4864,7 +4864,7 @@ class AutoPlayerBroadcastController:
             return
         self.state = "RETRY"
         self._next_retry_wall = time.monotonic() + AUTO_HEATMAP_RETRY_DELAY
-        # اگر تریگر قبلاً آتش گرفته بود و در پنجره نمایش هستیم → بعد از READY دوباره Show
+        # if technical note beforetechnical note technical note technical note technical noteandtechnical note and in window display technical noteteam → after from READY again Show
         self._reshow_after_ready = bool(allow_reshow and self.triggered
                                         and self._t_triggered_wall is not None
                                         and (time.monotonic() - self._t_triggered_wall)
@@ -4875,8 +4875,8 @@ AUTO_CTRL = AutoPlayerBroadcastController()
 
 
 def auto_overlay_status_text():
-    """متن زنده وضعیت اورلی خودکار برای نوار پایین GUI (v14.0) —
-       کاربر بدون دیدن کنسول هم می‌فهمد چرا نمایش داده نمی‌شود"""
+    """text live andtext textandtext automatic for textandtext below GUI (v14.0) —
+       user without text textandtext text text‌text text display data text‌textandtext"""
     st = getattr(AUTO_CTRL, "state", "?")
     fake = " [FAKE TIME]" if FAKE_CLOCK.enabled else ""
     if _AUTO_ENGINE is None:
@@ -4911,7 +4911,7 @@ def auto_overlay_status_text():
 
 
 def auto_overlay_status_color(txt):
-    """رنگ نوار وضعیت بر اساس محتوا (قرمز=مشکل، سبز=در حال نمایش، کهربایی=آماده‌سازی، آبی=عادی)"""
+    """color textandtext andtext text text textandtext (text=texttotaltext text=currently displaytext textwithtext=text‌textfromtext text=text)"""
     t = str(txt)
     if ("NOT STARTED" in t or "engine: DEAD" in t
             or "FAILED" in t or "REASON" in t):
@@ -4922,7 +4922,7 @@ def auto_overlay_status_color(txt):
         return "#E0AF68"
     return "#7AA2F7"
 # -------------------------------------------------------------
-# ۷. پنجره کاربری و رابط گرافیکی (GUI)
+# 7. window usertechnical note and technical note technical note (GUI)
 # -------------------------------------------------------------
 class PESLaLigaApp:
     def __init__(self, root):
@@ -4941,7 +4941,7 @@ class PESLaLigaApp:
         top_bar = tk.Frame(root, bg="#1A1B28", padx=12, pady=4)
         top_bar.pack(fill=tk.X)
 
-        lbl_title = tk.Label(top_bar, text="هیت‌مپ ۳۰ هرتز لالیگا", font=("Segoe UI", 12, "bold"), fg="#FF9E3B", bg="#1A1B28")
+        lbl_title = tk.Label(top_bar, text="heatmap 30 text textleaguetext", font=("Segoe UI", 12, "bold"), fg="#FF9E3B", bg="#1A1B28")
         lbl_title.pack(side=tk.LEFT, padx=4)
 
         self.time_box = tk.Frame(top_bar, bg="#24283B", padx=8, pady=3, relief=tk.RIDGE, bd=1)
@@ -4950,42 +4950,42 @@ class PESLaLigaApp:
         self.lbl_match_time = tk.Label(self.time_box, text="00:00", font=("Consolas", 13, "bold"), fg="#7AA2F7", bg="#24283B")
         self.lbl_match_time.pack(side=tk.LEFT)
 
-        self.lbl_period = tk.Label(self.time_box, text="[نیمه اول]", font=("Segoe UI", 9, "bold"), fg="#9ECE6A", bg="#24283B")
+        self.lbl_period = tk.Label(self.time_box, text="[first half]", font=("Segoe UI", 9, "bold"), fg="#9ECE6A", bg="#24283B")
         self.lbl_period.pack(side=tk.LEFT, padx=5)
 
         self.lbl_hz_badge = tk.Label(self.time_box, text="30 Hz", font=("Consolas", 9, "bold"), fg="#2AC3DE", bg="#24283B")
         self.lbl_hz_badge.pack(side=tk.LEFT, padx=3)
 
-        self.lbl_clock_status = tk.Label(self.time_box, text="[متوقف]", font=("Segoe UI", 9), fg="#F7768E", bg="#24283B")
+        self.lbl_clock_status = tk.Label(self.time_box, text="[textstop]", font=("Segoe UI", 9), fg="#F7768E", bg="#24283B")
         self.lbl_clock_status.pack(side=tk.LEFT, padx=3)
 
-        btn_clear = tk.Button(top_bar, text="پاکسازی مپ", font=("Segoe UI", 9, "bold"), bg="#C62828", fg="#FFFFFF",
+        btn_clear = tk.Button(top_bar, text="textfromtext text", font=("Segoe UI", 9, "bold"), bg="#C62828", fg="#FFFFFF",
                               activebackground="#D32F2F", relief=tk.FLAT, padx=8, command=self.clear_all_heatmaps)
         btn_clear.pack(side=tk.RIGHT, padx=4)
 
         self.filter_combobox = ttk.Combobox(top_bar, state="readonly", width=32, font=("Segoe UI", 9))
         self.filter_combobox.pack(side=tk.RIGHT, padx=6)
-        self.filter_combobox.set("در انتظار شروع مسابقه (PLAYING)...")
+        self.filter_combobox.set("Waiting for match start (PLAYING)...")
         self.filter_combobox.bind("<<ComboboxSelected>>", self.on_combobox_select)
 
-        tk.Label(top_bar, text="فیلتر:", font=("Segoe UI", 9, "bold"), fg="#9AA5CE", bg="#1A1B28").pack(side=tk.RIGHT)
+        tk.Label(top_bar, text="text:", font=("Segoe UI", 9, "bold"), fg="#9AA5CE", bg="#1A1B28").pack(side=tk.RIGHT)
 
         top_bar2 = tk.Frame(root, bg="#1A1B28", padx=12, pady=4)
         top_bar2.pack(fill=tk.X)
 
-        btn_save = tk.Button(top_bar2, text="💾 ذخیره ZIP", font=("Segoe UI", 9, "bold"), bg="#2E7D32", fg="#FFFFFF",
+        btn_save = tk.Button(top_bar2, text="💾 save ZIP", font=("Segoe UI", 9, "bold"), bg="#2E7D32", fg="#FFFFFF",
                              activebackground="#388E3C", relief=tk.FLAT, padx=10, pady=2, command=self.save_to_zip)
         btn_save.pack(side=tk.LEFT, padx=4)
 
-        btn_load = tk.Button(top_bar2, text="📂 باز کردن ZIP", font=("Segoe UI", 9, "bold"), bg="#1565C0", fg="#FFFFFF",
+        btn_load = tk.Button(top_bar2, text="📂 withtext text ZIP", font=("Segoe UI", 9, "bold"), bg="#1565C0", fg="#FFFFFF",
                              activebackground="#1976D2", relief=tk.FLAT, padx=10, pady=2, command=self.load_from_zip)
         btn_load.pack(side=tk.LEFT, padx=4)
 
-        btn_3d = tk.Button(top_bar2, text=f"📺 برودکاست زنده ({RENDER_HOTKEY})", font=("Segoe UI", 9, "bold"), bg="#00838F", fg="#FFFFFF",
+        btn_3d = tk.Button(top_bar2, text=f"📺 textandtextis live ({RENDER_HOTKEY})", font=("Segoe UI", 9, "bold"), bg="#00838F", fg="#FFFFFF",
                            activebackground="#00ACC1", relief=tk.FLAT, padx=10, pady=2, command=self.render_3d_command)
         btn_3d.pack(side=tk.LEFT, padx=4)
 
-        tk.Label(top_bar2, text="پنل با Ctrl+Alt+5 باز و بسته می‌شود", font=("Segoe UI", 8),
+        tk.Label(top_bar2, text="text with Ctrl+Alt+5 withtext and text text‌textandtext", font=("Segoe UI", 8),
                  fg="#5C6785", bg="#1A1B28").pack(side=tk.RIGHT, padx=6)
 
         self.cw = 1012
@@ -5001,7 +5001,7 @@ class PESLaLigaApp:
         # were hard to read — six sliders squeezed into ONE row with tiny
         # 8px labels).  Now a 3x2 grid with 10px labels, numeric scale
         # values, and a one-click RESTORE DEFAULTS button.
-        tuner_frame = tk.LabelFrame(root, text=" ⚙️ تنظیمات کالیبراسیون و فیلترهای هیت‌مپ ", font=("Segoe UI", 10, "bold"), fg="#E0AF68", bg="#161622", padx=10, pady=4)
+        tuner_frame = tk.LabelFrame(root, text=" ⚙️ text textandtext and text heatmap ", font=("Segoe UI", 10, "bold"), fg="#E0AF68", bg="#161622", padx=10, pady=4)
         tuner_frame.pack(fill=tk.X, padx=35, pady=2)
 
         def _cal_cell(r, c, caption, from_, to, res, fg, attr, val):
@@ -5017,16 +5017,16 @@ class PESLaLigaApp:
             setattr(self, attr, scale)
             return lbl
 
-        self.lbl_gain_val = _cal_cell(0, 0, f"حساسیت: {calib_gain:.2f}", 0.2, 8.0, 0.1, "#C0CAF5", "scale_gain", calib_gain)
-        self.lbl_ceil_val = _cal_cell(0, 1, f"سقف گرما: {calib_ceiling:.1f}s", 0.1, 8.0, 0.1, "#C0CAF5", "scale_ceil", calib_ceiling)
-        self.lbl_gm_val   = _cal_cell(0, 2, f"گاما: {calib_gamma:.2f}", 0.2, 1.5, 0.05, "#C0CAF5", "scale_gm", calib_gamma)
-        self.lbl_b_val    = _cal_cell(1, 0, f"نرمی اولیه: {calib_blur_m:.1f}m", 0.5, 3.0, 0.1, "#C0CAF5", "scale_blur", calib_blur_m)
-        self.lbl_ft_val   = _cal_cell(1, 1, f"فیدر لبه‌ها: {calib_feather:.0f}px", 0.0, 25.0, 1.0, "#9ECE6A", "scale_feather", calib_feather)
-        self.lbl_cut_val  = _cal_cell(1, 2, f"فیلتر کمینه: {calib_cutoff:.2f}", 0.0, 0.35, 0.01, "#FF7A93", "scale_cutoff", calib_cutoff)
+        self.lbl_gain_val = _cal_cell(0, 0, f"text: {calib_gain:.2f}", 0.2, 8.0, 0.1, "#C0CAF5", "scale_gain", calib_gain)
+        self.lbl_ceil_val = _cal_cell(0, 1, f"limit text: {calib_ceiling:.1f}s", 0.1, 8.0, 0.1, "#C0CAF5", "scale_ceil", calib_ceiling)
+        self.lbl_gm_val   = _cal_cell(0, 2, f"text: {calib_gamma:.2f}", 0.2, 1.5, 0.05, "#C0CAF5", "scale_gm", calib_gamma)
+        self.lbl_b_val    = _cal_cell(1, 0, f"smoothing firsttext: {calib_blur_m:.1f}m", 0.5, 3.0, 0.1, "#C0CAF5", "scale_blur", calib_blur_m)
+        self.lbl_ft_val   = _cal_cell(1, 1, f"textin textto‌text: {calib_feather:.0f}px", 0.0, 25.0, 1.0, "#9ECE6A", "scale_feather", calib_feather)
+        self.lbl_cut_val  = _cal_cell(1, 2, f"text text: {calib_cutoff:.2f}", 0.0, 0.35, 0.01, "#FF7A93", "scale_cutoff", calib_cutoff)
         for cc in range(3):
             tuner_frame.columnconfigure(cc, weight=1)
 
-        btn_cal_reset = tk.Button(tuner_frame, text="↺ بازنشانی پیش‌فرض",
+        btn_cal_reset = tk.Button(tuner_frame, text="↺ withtext default",
                                   font=("Segoe UI", 9, "bold"), bg="#4A3B1F", fg="#FFD27A",
                                   activebackground="#5C4A26", relief=tk.FLAT, padx=10, pady=2,
                                   command=self.restore_calib_defaults)
@@ -5035,27 +5035,27 @@ class PESLaLigaApp:
         info_panel = tk.Frame(root, bg="#12131D")
         info_panel.pack(fill=tk.X, padx=35, pady=2)
 
-        self.lbl_current_player = tk.Label(info_panel, text="در حال نمایش: همه بازیکنان (۲۰ بازیکن فعال)", font=("Segoe UI", 9, "bold"), fg="#7DCFFF", bg="#12131D")
+        self.lbl_current_player = tk.Label(info_panel, text="currently display: text players (20 player active)", font=("Segoe UI", 9, "bold"), fg="#7DCFFF", bg="#12131D")
         self.lbl_current_player.pack(side=tk.LEFT)
 
-        self.lbl_samples = tk.Label(info_panel, text="سمپل‌های ۳۰ هرتز: 0", font=("Segoe UI", 9), fg="#A9B1D6", bg="#12131D")
+        self.lbl_samples = tk.Label(info_panel, text="text‌text 30 text: 0", font=("Segoe UI", 9), fg="#A9B1D6", bg="#12131D")
         self.lbl_samples.pack(side=tk.RIGHT)
 
-        # نشان لوگوی تیم‌های تشخیص‌داده‌شده (میزبان در برابر مهمان)
+        # technical note logotechnical note team‌technical note detection‌data‌technical note (Home in technical note Away)
         self._home_logo_photo = None
         self._away_logo_photo = None
         self._logo_badge_key = None
-        self.logo_away_lbl = tk.Label(info_panel, text="مهمان: --", font=("Segoe UI", 8, "bold"), fg="#F38BA8", bg="#12131D")
+        self.logo_away_lbl = tk.Label(info_panel, text="Away: --", font=("Segoe UI", 8, "bold"), fg="#F38BA8", bg="#12131D")
         self.logo_away_lbl.pack(side=tk.RIGHT, padx=4)
         tk.Label(info_panel, text="VS", font=("Segoe UI", 8, "bold"), fg="#6C7A9C", bg="#12131D").pack(side=tk.RIGHT)
-        self.logo_home_lbl = tk.Label(info_panel, text="میزبان: --", font=("Segoe UI", 8, "bold"), fg="#89B4FA", bg="#12131D")
+        self.logo_home_lbl = tk.Label(info_panel, text="Home: --", font=("Segoe UI", 8, "bold"), fg="#89B4FA", bg="#12131D")
         self.logo_home_lbl.pack(side=tk.RIGHT, padx=(14, 4))
 
-        self.lbl_status = tk.Label(root, text="وضعیت: در حال راه‌اندازی...", font=("Segoe UI", 9), fg="#9ECE6A", bg="#16161E", bd=1, relief=tk.SUNKEN, anchor=tk.W, padx=12, pady=2)
+        self.lbl_status = tk.Label(root, text="andtext: currently text‌textfromtext...", font=("Segoe UI", 9), fg="#9ECE6A", bg="#16161E", bd=1, relief=tk.SUNKEN, anchor=tk.W, padx=12, pady=2)
         self.lbl_status.pack(side=tk.BOTTOM, fill=tk.X)
 
-        # v14.0 — نوار وضعیت اورلی خودکار: وضعیت ماشین حالت + موتور + feed ساعت + تریگر
-        # (اگر هیت‌مپ نمایش داده نمی‌شود، علت بدون کنسول همین‌جا دیده می‌شود)
+        # v14.0 — technical noteandtechnical note andtechnical note technical noteandtechnical note automatic: andtechnical note technical note technical note + technical noteandtechnical noteandtechnical note + feed technical note + technical note
+        # (if heatmap display data technical note‌technical noteandtechnical note technical note without technical noteandtechnical note technical note‌technical note technical note technical note‌technical noteandtechnical note)
         self._last_auto_text = None
         self.lbl_auto = tk.Label(root, text="AUTO overlay: --", font=("Consolas", 9),
                                  fg="#7AA2F7", bg="#16161E", bd=1, relief=tk.SUNKEN,
@@ -5065,11 +5065,11 @@ class PESLaLigaApp:
         # [SUITE v1.0.0] the X button HIDES the panel — it never kills the
         # tracker; the real teardown stays in on_close()/shutdown_backend().
         self.root.protocol("WM_DELETE_WINDOW", self._hide_window)
-        # کلید میانبر رندر سه‌بعدی (R) — با حروف کوچک و بزرگ
+        # totaltechnical note technical noteortechnical note render technical note‌aftertechnical note (R) — with technical noteandtechnical note technical noteandtechnical note and technical note
         self.root.bind(f"<{RENDER_HOTKEY.lower()}>", self.render_3d_command)
         self.root.bind(f"<{RENDER_HOTKEY.upper()}>", self.render_3d_command)
         self.menu_items_map = {}
-        self.previous_valid_selection = "همه بازیکنان (۲۰ بازیکن فعال)"
+        self.previous_valid_selection = "text players (20 player active)"
 
         # [SUITE v1.0.0] worker + overlay engine boot (once, shared with
         # the headless main path)
@@ -5100,12 +5100,12 @@ class PESLaLigaApp:
         calib_feather = float(self.scale_feather.get())
         calib_cutoff = float(self.scale_cutoff.get())
 
-        self.lbl_gain_val.config(text=f"حساسیت: {calib_gain:.2f}")
-        self.lbl_ceil_val.config(text=f"سقف گرما: {calib_ceiling:.1f}s")
-        self.lbl_gm_val.config(text=f"گاما: {calib_gamma:.2f}")
-        self.lbl_b_val.config(text=f"نرمی اولیه: {calib_blur_m:.1f}m")
-        self.lbl_ft_val.config(text=f"فیدر لبه‌ها: {calib_feather:.0f}px")
-        self.lbl_cut_val.config(text=f"فیلتر کمینه: {calib_cutoff:.2f}")
+        self.lbl_gain_val.config(text=f"text: {calib_gain:.2f}")
+        self.lbl_ceil_val.config(text=f"limit text: {calib_ceiling:.1f}s")
+        self.lbl_gm_val.config(text=f"text: {calib_gamma:.2f}")
+        self.lbl_b_val.config(text=f"smoothing firsttext: {calib_blur_m:.1f}m")
+        self.lbl_ft_val.config(text=f"textin textto‌text: {calib_feather:.0f}px")
+        self.lbl_cut_val.config(text=f"text text: {calib_cutoff:.2f}")
 
     def restore_calib_defaults(self):
         """[SUITE v1.0.6] one-click restore of the six calibration sliders
@@ -5126,7 +5126,7 @@ class PESLaLigaApp:
 
     def save_to_zip(self):
         default_name = f"FL2026_Heatmap_{time.strftime('%Y%m%d_%H%M%S')}.zip"
-        filename = filedialog.asksaveasfilename(defaultextension=".zip", filetypes=[("فایل فشرده هیت‌مپ", "*.zip")], initialfile=default_name)
+        filename = filedialog.asksaveasfilename(defaultextension=".zip", filetypes=[("file text heatmap", "*.zip")], initialfile=default_name)
         if not filename: return
         try:
             with heatmap_lock: heatmaps_copy = np.copy(entity_heatmaps)
@@ -5151,17 +5151,17 @@ class PESLaLigaApp:
                 zf.writestr("heatmaps.npy", buf.getvalue())
                 zf.writestr("metadata.json", json.dumps(metadata, ensure_ascii=False, indent=2))
 
-            messagebox.showinfo("ذخیره موفق", f"فایل هیت‌مپ با موفقیت ذخیره شد:\n{os.path.basename(filename)}")
+            messagebox.showinfo("save successful", f"file heatmap with successfultext save text:\n{os.path.basename(filename)}")
         except Exception as ex:
-            messagebox.showerror("خطا در ذخیره", f"خطا در ایجاد فایل ZIP:\n{ex}")
+            messagebox.showerror("Error in save", f"Error in text file ZIP:\n{ex}")
 
     def load_from_zip(self):
-        filename = filedialog.askopenfilename(filetypes=[("فایل فشرده هیت‌مپ", "*.zip")])
+        filename = filedialog.askopenfilename(filetypes=[("file text heatmap", "*.zip")])
         if not filename: return
         try:
             with zipfile.ZipFile(filename, 'r') as zf:
                 if "heatmaps.npy" not in zf.namelist():
-                    messagebox.showerror("خطا", "فایل نامعتبر است.")
+                    messagebox.showerror("Error", "file invalid is.")
                     return
                 npy_bytes = zf.read("heatmaps.npy")
                 loaded_heatmaps = np.load(io.BytesIO(npy_bytes))
@@ -5193,33 +5193,33 @@ class PESLaLigaApp:
             if "period_title" in meta:
                 self.lbl_period.config(text=f"[{meta['period_title']}]", fg="#7AA2F7")
 
-            self.lbl_samples.config(text=f"سمپل‌های آرشیو: {total_samples_taken:,}")
-            self.lbl_status.config(text=f"فایل باز شد: {os.path.basename(filename)}")
-            messagebox.showinfo("بارگذاری موفق", "اطلاعات با موفقیت بازخوانی شد.")
+            self.lbl_samples.config(text=f"text‌text archive: {total_samples_taken:,}")
+            self.lbl_status.config(text=f"file withtext text: {os.path.basename(filename)}")
+            messagebox.showinfo("withtext successful", "information with successfultext reload text.")
         except Exception as ex:
-            messagebox.showerror("خطا در بارگذاری", f"خطا: {ex}")
+            messagebox.showerror("Error in withtext", f"Error: {ex}")
 
     def populate_combobox(self):
         current_selection = self.filter_combobox.get()
         items = []
         self.menu_items_map.clear()
 
-        items.append("─── نماهای تیمی ───")
-        self.menu_items_map["─── نماهای تیمی ───"] = None
+        items.append("─── text teamtext ───")
+        self.menu_items_map["─── text teamtext ───"] = None
 
-        items.append("همه بازیکنان (۲۰ بازیکن فعال)")
-        self.menu_items_map["همه بازیکنان (۲۰ بازیکن فعال)"] = (OUTFIELD_INDICES, "TEAM")
+        items.append("text players (20 player active)")
+        self.menu_items_map["text players (20 player active)"] = (OUTFIELD_INDICES, "TEAM")
 
-        home_label = f"کل تیم میزبان ({home_team_name} - ۱۰ بازیکن)"
+        home_label = f"total team Home ({home_team_name} - 10 player)"
         items.append(home_label)
         self.menu_items_map[home_label] = (list(range(1, 11)), "TEAM")
 
-        away_label = f"کل تیم مهمان ({away_team_name} - ۱۰ بازیکن)"
+        away_label = f"total team Away ({away_team_name} - 10 player)"
         items.append(away_label)
         self.menu_items_map[away_label] = (list(range(12, 22)), "TEAM")
 
-        items.append(f"─── بازیکنان {home_team_name} (میزبان) ───")
-        self.menu_items_map[f"─── بازیکنان {home_team_name} (میزبان) ───"] = None
+        items.append(f"─── players {home_team_name} (Home) ───")
+        self.menu_items_map[f"─── players {home_team_name} (Home) ───"] = None
 
         with entities_lock:
             for i in range(1, 11):
@@ -5230,8 +5230,8 @@ class PESLaLigaApp:
                     items.append(item_text)
                     self.menu_items_map[item_text] = ([i], "PLAYER")
 
-            items.append(f"─── بازیکنان {away_team_name} (مهمان) ───")
-            self.menu_items_map[f"─── بازیکنان {away_team_name} (مهمان) ───"] = None
+            items.append(f"─── players {away_team_name} (Away) ───")
+            self.menu_items_map[f"─── players {away_team_name} (Away) ───"] = None
 
             for i in range(12, 22):
                 if i < len(entities):
@@ -5245,7 +5245,7 @@ class PESLaLigaApp:
         if current_selection in self.menu_items_map and self.menu_items_map[current_selection] is not None:
             self.filter_combobox.set(current_selection)
         else:
-            self.filter_combobox.set("همه بازیکنان (۲۰ بازیکن فعال)")
+            self.filter_combobox.set("text players (20 player active)")
 
     def on_combobox_select(self, event):
         global active_filter_indices, current_filter_label, current_mode_type
@@ -5262,7 +5262,7 @@ class PESLaLigaApp:
         current_filter_label = selected
         current_mode_type = mode
         mode_text = "Player Mode" if mode == "PLAYER" else "Team Mode"
-        self.lbl_current_player.config(text=f"در حال نمایش: {selected} ({mode_text})")
+        self.lbl_current_player.config(text=f"currently display: {selected} ({mode_text})")
 
     def clear_all_heatmaps(self):
         global entity_heatmaps, total_samples_taken
@@ -5274,19 +5274,19 @@ class PESLaLigaApp:
         global entities_ready, match_reset_event
         global active_filter_indices, current_filter_label, current_mode_type
 
-        # بررسی سیگنال شروع بازی جدید و ریست کامل نمایشگرهای UI
+        # check technical note start withtechnical note new and reset complete displaytechnical note UI
         if match_reset_event:
             match_reset_event = False
             active_filter_indices = list(OUTFIELD_INDICES)
-            current_filter_label = "همه بازیکنان (۲۰ بازیکن فعال)"
+            current_filter_label = "text players (20 player active)"
             current_mode_type = "TEAM"
             self.previous_valid_selection = current_filter_label
-            self.lbl_current_player.config(text=f"در حال نمایش: {current_filter_label} (Team Mode)")
+            self.lbl_current_player.config(text=f"currently display: {current_filter_label} (Team Mode)")
 
-        self.lbl_status.config(text=f"وضعیت: {status_msg}")
-        self.lbl_samples.config(text=f"سمپل‌های ۳۰ هرتز: {total_samples_taken:,}")
+        self.lbl_status.config(text=f"andtext: {status_msg}")
+        self.lbl_samples.config(text=f"text‌text 30 text: {total_samples_taken:,}")
 
-        # v14.0 — نوار وضعیت اورلی خودکار (هر ۱۰۰ms فقط هنگام تغییر متن آپدیت)
+        # v14.0 — technical noteandtechnical note andtechnical note technical noteandtechnical note automatic (technical note 100ms only technical note change technical note technical note)
         try:
             auto_txt = auto_overlay_status_text()
             if auto_txt != self._last_auto_text:
@@ -5297,25 +5297,25 @@ class PESLaLigaApp:
         self.lbl_hz_badge.config(text=f"{actual_sampling_rate:.1f} Hz")
         self._refresh_team_badges()
 
-        if period_title == "نیمه اول" and display_minute > 45:
+        if period_title == "first half" and display_minute > 45:
             extra = display_minute - 45
             self.lbl_match_time.config(text=f"45:00 +{extra:02d}:{display_second:02d}")
-            self.lbl_period.config(text="[وقت اضافه ن۱]", fg="#E0AF68")
-        elif period_title == "نیمه دوم" and display_minute > 90:
+            self.lbl_period.config(text="[extra time text1]", fg="#E0AF68")
+        elif period_title == "second half" and display_minute > 90:
             extra = display_minute - 90
             self.lbl_match_time.config(text=f"90:00 +{extra:02d}:{display_second:02d}")
-            self.lbl_period.config(text="[وقت اضافه ن۲ - قرینه]", fg="#E0AF68")
+            self.lbl_period.config(text="[extra time text2 - text]", fg="#E0AF68")
         else:
             self.lbl_match_time.config(text=f"{display_minute:02d}:{display_second:02d}")
             if is_inverted_active:
-                self.lbl_period.config(text=f"[{period_title} - قرینه]", fg="#7AA2F7")
+                self.lbl_period.config(text=f"[{period_title} - text]", fg="#7AA2F7")
             else:
                 self.lbl_period.config(text=f"[{period_title}]", fg="#9ECE6A")
 
         if is_clock_active:
-            self.lbl_clock_status.config(text="[در جریان]", fg="#9ECE6A")
+            self.lbl_clock_status.config(text="[in textortext]", fg="#9ECE6A")
         else:
-            self.lbl_clock_status.config(text="[متوقف]", fg="#F7768E")
+            self.lbl_clock_status.config(text="[textstop]", fg="#F7768E")
 
         if entities_ready:
             entities_ready = False
@@ -5338,7 +5338,7 @@ class PESLaLigaApp:
             return None
 
     def _refresh_team_badges(self):
-        """نمایش لوگوی تیم‌های تشخیص‌داده‌شده در نوار اطلاعات"""
+        """display logotext team‌text detection‌data‌text in textandtext information"""
         key = (home_team_name, home_team_logo, away_team_name, away_team_logo)
         if key == self._logo_badge_key:
             return
@@ -5348,11 +5348,11 @@ class PESLaLigaApp:
         if self._home_logo_photo is not None:
             self.logo_home_lbl.config(image=self._home_logo_photo, text=f" {home_team_name} ", compound="left")
         else:
-            self.logo_home_lbl.config(image="", text=f"میزبان: {home_team_name}")
+            self.logo_home_lbl.config(image="", text=f"Home: {home_team_name}")
         if self._away_logo_photo is not None:
             self.logo_away_lbl.config(image=self._away_logo_photo, text=f"{away_team_name} ", compound="right")
         else:
-            self.logo_away_lbl.config(image="", text=f"مهمان: {away_team_name}")
+            self.logo_away_lbl.config(image="", text=f"Away: {away_team_name}")
 
     def render_heatmap_loop(self):
         if is_running:
@@ -5372,10 +5372,10 @@ class PESLaLigaApp:
             self.root.after(40, self.render_heatmap_loop)
 
     def resolve_render_header(self):
-        """تعیین هدر رندر: بازیکن انتخابی یا نمای تیمی —
-           [PT v2.3.0] حالت PT: نام/چهره (Asset.zip، 192x192)/شماره پیراهن/سن
-           از teams_players_PES2021.txt + Asset.zip؛ در غیر این صورت
-           اسم/عکس/لوگو از pes2017_teams.json (نسخه ۱۶٫۰)"""
+        """text textin render: player text or text teamtext —
+           [PT v2.3.0] text PT: name/face (Asset.ziptext 192x192)/number shirt/age
+           from teams_players_PES2021.txt + Asset.ziptext in text text textandtext
+           text/image/logo from pes2017_teams.json (version 16text0)"""
         with entities_lock:
             ents = list(entities)
 
@@ -5401,7 +5401,7 @@ class PESLaLigaApp:
 
             role = ent.get("role", "Field")
             if pt_id is not None:
-                # --- PT: نام/چهره/شماره/سن از دیتابیس PT + Asset.zip ---
+                # --- PT: name/face/number/age from technical noteuntiltechnical note PT + Asset.zip ---
                 info = PTx.player_by_slot(pt_id, code) if code is not None else None
                 if info is None and ent.get("confirmed_name"):
                     for c, nm in roster.items():
@@ -5440,7 +5440,7 @@ class PESLaLigaApp:
                     "logo_path": find_team_logo(team_key),
                 }
 
-            # --- مسیر قدیمی (بدون PT) ---
+            # --- path legacy (without PT) ---
             if code is not None:
                 name_en = roster.get(code, f"PLAYER {code}")
                 name_en = name_en if isinstance(name_en, str) else f"PLAYER {code}"
@@ -5479,11 +5479,11 @@ class PESLaLigaApp:
                 "logo_away": find_team_logo(away_team_key)}
 
     def render_3d_command(self, event=None):
-        """کلید R: پنجره برودکاست زنده GPU — انیمیشن ورود → حالت Live → خروج انیمیشنی.
-           موتور GPU فقط «نمایش» است؛ هیت‌مپ عیناً از توابع همین برنامه می‌آید.
-           در نبود کتابخانه‌های GPU، رندر ثابت قبلی جایگزین می‌شود."""
+        """totaltext R: window textandtextis live GPU — text andtextandtext → text Live → textandtext text.
+           textandtextandtext GPU only «display» istext heatmap text from textandtext text textnametext text‌text.
+           in textandtext textuntiltext‌text GPUtext render text beforetext fallback text‌textandtext."""
         try:
-            self.lbl_status.config(text="وضعیت: در حال اجرای Broadcast Engine (GPU)...")
+            self.lbl_status.config(text="andtext: currently run Broadcast Engine (GPU)...")
             self.root.update()
 
             density = compute_density_snapshot(active_filter_indices)
@@ -5499,24 +5499,24 @@ class PESLaLigaApp:
             except ImportError:
                 messagebox.showwarning(
                     "Broadcast Engine (GPU)",
-                    "کتابخانه‌های GPU پیدا نشدند. برای پنجره برودکاست زنده اجرا کنید:\n\n"
+                    "textuntiltext‌text GPU text text. for window textandtextis live run text:\n\n"
                     "pip install moderngl glfw\n\n"
-                    "فعلاً رندر ثابت ساخته می‌شود.")
+                    "text render text text text‌textandtext.")
             except Exception as ex:
                 print("[BroadcastRenderer] launch error:", ex, file=sys.stderr)
 
             if ev is not None:
                 t0 = time.time()
-                while time.time() - t0 < 4.0:          # انتظار کوتاه برای آماده‌شدن پنجره
+                while time.time() - t0 < 4.0:          # technical note technical noteanduntiltechnical note for technical note‌technical note window
                     if ev["ready"].is_set():
                         self.lbl_status.config(
-                            text="وضعیت: پنجره Broadcast فعال — R: پخش مجدد | S: ذخیره فریم | ESC: خروج انیمیشنی")
+                            text="andtext: window Broadcast active — R: text text | S: save frame | ESC: textandtext text")
                         return
                     if ev["failed"].is_set():
                         break
                     time.sleep(0.05)
 
-            # ---- fallback: رندر ثابت قبلی (بدون تغییر)
+            # ---- fallback: render technical note beforetechnical note (unchanged)
             img = render_broadcast_heatmap(density, header, current_mode_type)
 
             os.makedirs(RENDER_DIR, exist_ok=True)
@@ -5528,14 +5528,14 @@ class PESLaLigaApp:
             img.convert("RGB").save(path, "PNG")
 
             try:
-                os.startfile(path)  # نمایش خودکار تصویر در ویندوز
+                os.startfile(path)  # display automatic image in andtechnical noteandtechnical note
             except Exception:
                 pass
 
-            self.lbl_status.config(text=f"وضعیت: رندر ثابت ذخیره شد ← {fname}")
-            messagebox.showinfo("رندر سه‌بعدی", f"تصویر هیت‌مپ ذخیره شد:\n{path}")
+            self.lbl_status.config(text=f"andtext: render text save text ← {fname}")
+            messagebox.showinfo("render text‌aftertext", f"image heatmap save text:\n{path}")
         except Exception as ex:
-            messagebox.showerror("خطا در رندر", f"خطا در ساخت رندر:\n{ex}")
+            messagebox.showerror("Error in render", f"Error in text render:\n{ex}")
 
     # =================================================================
     # [SUITE v1.0.0] hidden-panel hotkey (Ctrl+Alt+5) + 91' summary UI
@@ -5755,7 +5755,7 @@ class PESLaLigaApp:
         info.pack(side=tk.LEFT, fill=tk.X, expand=True)
         tk.Label(info, text=name.upper()[:26], font=("Segoe UI", 10, "bold"),
                  fg="#F1F5F9", bg="#151A2C", anchor="w").pack(anchor="w")
-        # [PT v2.3.0] شماره پیراهن/سن از دیتابیس PT (وقتی موجود باشد)
+        # [PT v2.3.0] number shirt/age from technical noteuntiltechnical note PT (when technical noteandtechnical noteandtechnical note withtechnical note)
         if ent.get("shirt") is not None:
             sub = f"#{ent['shirt']}"
             if ent.get("age") is not None:
@@ -5855,7 +5855,7 @@ class PESLaLigaApp:
         global is_running
         is_running = False
         try:
-            self.lbl_status.config(text="در حال بازیابی کدهای بازی...")
+            self.lbl_status.config(text="currently recovery codetext withtext...")
             self.root.update()
         except Exception:
             pass
@@ -5967,7 +5967,7 @@ def main():
     except Exception:
         traceback.print_exc()
         try:
-            fatal_error(f"خطای بحرانی در اجرای برنامه:\n{traceback.format_exc()}")
+            fatal_error(f"Errortext text in run textnametext:\n{traceback.format_exc()}")
         except SystemExit:
             raise
         except Exception:

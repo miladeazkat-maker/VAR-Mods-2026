@@ -44,6 +44,8 @@ REQUIRED_PACKAGES = [
     ("keyboard", "Keyboard", "Hotkey/Input"),
     ("panda3d", "Panda3D", "3D Engine"),
     ("ursina", "Ursina", "Game Engine"),
+    ("moderngl", "ModernGL", "GPU Renderer"),
+    ("glfw", "GLFW", "Window & OpenGL"),
 ]
 
 
