@@ -1,34 +1,34 @@
 # -*- coding: utf-8 -*-
 # =============================================================================
-#  BroadcastRenderer.py — موتور گرافیک برودکاستی GPU  (فقط لایه‌ی نمایش/انیمیشن)
+#  BroadcastRenderer.py — technical noteandtechnical noteandtechnical note technical note technical noteandtechnical noteistechnical note GPU  (only layer‌technical note display/technical note)
 #  PES2017 HeatMap — Broadcast Graphics Engine — ModernGL / OpenGL 3.3 Core
 # =============================================================================
-#  قانون طلایی پروژه:
-#    این موتور «هیچ» هیت‌مپی تولید نمی‌کند. ورودی آن عیناً خروجی موتور موجود است:
+#  rule technical note technical noteandtechnical note:
+#    technical note technical noteandtechnical noteandtechnical note «technical note» heatmaptechnical note technical noteandtechnical note technical note‌technical note. input technical note technical note output technical noteandtechnical noteandtechnical note technical noteandtechnical noteandtechnical note is:
 #        heat_rgba      = density_to_heat_rgba(...)      ← EXACT SAME HEATMAP
-#        pitch_plate    = build_flat_pitch_texture(None) ← چمن+خطوط+دروازه تخت (دست‌نخورده)
-#    CPU فقط: داده، تایم‌لاین، ورودی، بارگذاری Asset (همه «یک‌بار» هنگام ساخت صحنه)
-#    GPU: تمام رندر — پرسپکتیو، Blur، Glow، شیشه، ذرات، سوییپ، ترکیب لایه‌ها
-#    لذا در حلقه‌ی فریم حتی یک خط Pillow اجرا نمی‌شود.
+#        pitch_plate    = build_flat_pitch_texture(None) ← technical note+lineandtechnical note+inandfromtechnical note technical note (unchanged)
+#    CPU only: datatechnical note untiltechnical note‌technical note inputtechnical note withtechnical note Asset (technical note «technical note‌withtechnical note» technical note technical note scene)
+#    GPU: technical note render — technical noteandtechnical note Blurtechnical note Glowtechnical note technical note technical note technical noteandtechnical note technical note layer‌technical note
+#    technical note in technical note‌technical note frame technical note technical note line Pillow run technical note‌technical noteandtechnical note.
 #
-#  ┌── قرارداد مختصات (COORDINATE CONTRACT) — تنها مرجع تبدیل مختصات در کل پروژه ──┐
-#  │ (1) PES world:  x∈[-55,55] طولی چپ→راست | z∈[-37,37] عرضی؛ z_min=-37 = لبه دور  │
-#  │ (2) انباشت (Provider — بدون تغییر):                                             │
-#  │        gx=(x+55)/110*(GRID_W-1) → ستون i    |  gy=(z+37)/74*(GRID_H-1) → سطر j  │
-#  │        پس سطر 0 گرید = z_min                                                    │
-#  │ (3) density_to_heat_rgba (Provider — بدون تغییر): PIL RGBA؛ سطرِ بالای تصویر     │
-#  │     = z_min و ستون چپ = x_min — عین همان چیزی که نمای دوبعدی زنده نشان می‌دهد    │
-#  │ (4) آپلود تکسچر Heat: عیناً بدون flip → در GL سطر اول حافظه = v=0 = z_min        │
-#  │ (5) شیدر زمین:  پلیت: u=(x-TEX_X_MIN)/(TEX_X_MAX-TEX_X_MIN)                    │
+#  ┌── technical note coordinates (COORDINATE CONTRACT) — technical note technical note technical note coordinates in total technical noteandtechnical note ──┐
+#  │ (1) PES world:  x∈[-55,55] lengthtechnical note technical note→technical noteis | z∈[-37,37] widthtechnical note z_min=-37 = technical noteto technical noteandtechnical note  │
+#  │ (2) technical notewithtechnical note (Provider — unchanged):                                             │
+#  │        gx=(x+55)/110*(GRID_W-1) → technical noteandtechnical note i    |  gy=(z+37)/74*(GRID_H-1) → technical note j  │
+#  │        technical note technical note 0 technical note = z_min                                                    │
+#  │ (3) density_to_heat_rgba (Provider — unchanged): PIL RGBAtechnical note technical note withtechnical note image     │
+#  │     = z_min and technical noteandtechnical note technical note = x_min — technical note same technical note technical note technical note technical noteandaftertechnical note live technical note technical note‌technical note    │
+#  │ (4) technical noteandtechnical note technical note Heat: technical note without flip → in GL technical note first memory = v=0 = z_min        │
+#  │ (5) technical notein pitch:  technical note: u=(x-TEX_X_MIN)/(TEX_X_MAX-TEX_X_MIN)                    │
 #  │                v=(z-TEX_Z_MIN)/(TEX_Z_MAX-TEX_Z_MIN)                            │
-#  │     Heat: u=(x+55)/110 ، v=(z+37)/74  → بازه موتور؛ عین نمای دوبعدی زنده        │
-#  │     (نگاشت خطی uv پلتفرم→موتور داخل شیدر — بدون هیچ flip)                       │
-#  │ (6) هاوموگرافی UV→صفحه: (0,0)→PFL دور-چپ | (1,0)→PFR دور-راست                   │
-#  │     (1,1)→PNR نزدیک-راست | (0,1)→PNL نزدیک-چپ                                    │
-#  │     ⇒ لبه‌ی دورِ صفحه = z_min = بالای تصویر — دقیقاً مثل نمای دوبعدی زنده          │
-#  │ (7) اسپرایت‌ها (عکس/لوگو/متن/اورلی): آپلود با «یک» flip مستند → v=1 = بالای تصویر؛│
-#  │     پیکسل (px,py) تصویر دقیقاً روی (px,py) صفحه می‌نشیند                          │
-#  │ (8) هیچ ماژول دیگری حق flip/scale/mirror مستقل ندارد — فقط همین قرارداد          │
+#  │     Heat: u=(x+55)/110 technical note v=(z+37)/74  → withtechnical note technical noteandtechnical noteandtechnical note technical note technical note technical noteandaftertechnical note live        │
+#  │     (technical note linetechnical note uv technical note→technical noteandtechnical noteandtechnical note inside technical notein — without technical note flip)                       │
+#  │ (6) technical noteandtechnical noteandtechnical note UV→technical note: (0,0)→PFL technical noteandtechnical note-technical note | (1,0)→PFR technical noteandtechnical note-technical noteis                   │
+#  │     (1,1)→PNR technical note-technical noteis | (0,1)→PNL technical note-technical note                                    │
+#  │     ⇒ technical noteto‌technical note technical noteandtechnical note technical note = z_min = withtechnical note image — exactly technical note technical note technical noteandaftertechnical note live          │
+#  │ (7) technical note‌technical note (image/logo/technical note/technical noteandtechnical note): technical noteandtechnical note with «technical note» flip technical note → v=1 = withtechnical note imagetechnical note│
+#  │     technical note (px,py) image exactly technical noteandtechnical note (px,py) technical note technical note‌technical note                          │
+#  │ (8) technical note technical noteandtechnical note technical note technical note flip/scale/mirror independent technical note — only technical note technical note          │
 #  └──────────────────────────────────────────────────────────────────────────────┘
 # =============================================================================
 
@@ -103,17 +103,17 @@ def _suite_harden_stdio():
 
 _suite_harden_stdio()
 
-# ---------------------------------------------------------------- ابعاد خروجی
-RENDER_W, RENDER_H = 1774, 887          # عین رندر ثابت قبلی (اندازه‌گیری از مرجع)
+# ---------------------------------------------------------------- technical note output
+RENDER_W, RENDER_H = 1774, 887          # technical note render technical note beforetechnical note (technical notefromtechnical note‌technical note from technical note)
 FPS = 60.0
 
-# --------------------------------------------------- هندسه سکوی چمن (مرجع)
-PFL = (255.0, 288.0)     # دور-چپ
-PFR = (1531.0, 288.0)    # دور-راست
-PNR = (1723.0, 783.0)    # نزدیک-راست
-PNL = (53.0, 783.0)      # نزدیک-چپ
+# --------------------------------------------------- technical note technical noteandtechnical note technical note (technical note)
+PFL = (255.0, 288.0)     # technical noteandtechnical note-technical note
+PFR = (1531.0, 288.0)    # technical noteandtechnical note-technical noteis
+PNR = (1723.0, 783.0)    # technical note-technical noteis
+PNL = (53.0, 783.0)      # technical note-technical note
 
-# --------------------------------------------------- رنگ‌ها (عین ثابت‌های Provider)
+# --------------------------------------------------- color‌technical note (technical note technical note‌technical note Provider)
 BG_BASE_TOP  = (2, 24, 62)
 BG_BASE_BOT  = (0, 12, 34)
 BG_GLOW_COL  = (16, 78, 158)
@@ -127,21 +127,21 @@ BAR_COL_R    = (10, 84, 196)
 RING_COL     = (150, 192, 235)
 TXT_WHITE    = (246, 250, 255)
 
-# --------------------------------------------------- چیدمان هدر (عین render_broadcast_heatmap)
+# --------------------------------------------------- technical note technical notein (technical note render_broadcast_heatmap)
 CIRCLE_C   = (202.0, 192.0)
 CIRCLE_R   = 127
 BAR_X0, BAR_Y0, BAR_Y1 = 312, 127, 182
 BAR_SLANT  = 22
 NAME_X, NAME_Y = 385, 154
-LOGO_BOX   = (330, 205, 78, 72)                 # بازیکن/تیم
-LOGO_BOX_ALL = ((330, 205, 72, 66), (418, 205, 72, 66))   # نمای همه
-# [PT v2.3.0] چیپ SHIRT/AGE — سمت راست لوگوی باشگاه (لوگو تا x=408)، هم‌تراز آن
+LOGO_BOX   = (330, 205, 78, 72)                 # player/team
+LOGO_BOX_ALL = ((330, 205, 72, 66), (418, 205, 72, 66))   # technical note technical note
+# [PT v2.3.0] technical note SHIRT/AGE — side technical noteis logotechnical note withtechnical note (logo until x=408)technical note aligned technical note
 META_X0, META_Y0, META_H = 442, 205, 72
 TITLE_PANEL = (373, 6, 1070, 100)               # x0,y0,w,h
 FRAME_RECT  = (22.0, 22.0, RENDER_W - 44.0, RENDER_H - 44.0)
 FRAME_R     = 42.0
 
-# فونت‌های جایگزین لینوکسی (روی ویندوز لیست Segoe از Provider استفاده می‌شود)
+# technical noteandtechnical note‌technical note fallback technical noteandtechnical note (technical noteandtechnical note andtechnical noteandtechnical note technical note Segoe from Provider istechnical note technical note‌technical noteandtechnical note)
 _LINUX_FONTS_BOLD = [
     "/usr/share/fonts/truetype/english/Carlito-Bold.ttf",
     "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
@@ -153,12 +153,12 @@ _LINUX_FONTS_REG = [
     "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
 ]
 
-# ---------------------------------------------------------------- easing ها
+# ---------------------------------------------------------------- easing technical note
 def clamp01(t):
     return 0.0 if t < 0.0 else (1.0 if t > 1.0 else t)
 
 def seg(f, a, b):
-    """پیشرفت 0..1 در بازه فریم [a,b]"""
+    """text 0..1 in withtext frame [a,b]"""
     if b <= a:
         return 1.0
     return clamp01((f - a) / (b - a))
@@ -172,13 +172,13 @@ def in_out_cubic(t):
     return 4 * t ** 3 if t < 0.5 else 1.0 - (-2 * t + 2) ** 3 / 2.0
 
 def out_back(t, k=1.35):
-    """پاپ ظریف برودکاستی (بدون بانس کارتونی)"""
+    """text text textandtextistext (without withtext cardandtext)"""
     t = clamp01(t)
     t -= 1.0
     return 1.0 + (k + 1.0) * t ** 3 + k * t ** 2
 
 def heat_staged(t):
-    """پیشروی پله‌ای ورود Heatmap: 0→10→35→70→100 درصد (بند ۱۳ دستور)"""
+    """textandtext text‌text andtextandtext Heatmap: 0→10→35→70→100 percent (text 13 instruction)"""
     t = clamp01(t)
     pts = ((0.00, 0.00), (0.14, 0.10), (0.42, 0.35), (0.72, 0.70), (1.00, 1.00))
     for i in range(len(pts) - 1):
@@ -190,11 +190,11 @@ def heat_staged(t):
             return v0 + (v1 - v0) * f
     return 1.0
 
-# ---------------------------------------------------------------- هاوموگرافی
+# ---------------------------------------------------------------- technical noteandtechnical noteandtechnical note
 def solve_homography(src, dst):
-    """هاوموگرافی 3x3 که src→dst را نگاشت می‌کند (هر دو 4 نقطه).
-       عین همان تبدیلی است که Provider با _find_coeffs برای PIL انجام می‌دهد؛
-       اینجا معکوسِ رو به جلو برای شیدر ساخته می‌شود (بدون تغییر شکل هندسی)."""
+    """textandtextandtext 3x3 text src→dst text text text‌text (text textand 4 text).
+       text same text is text Provider with _find_coeffs for PIL text text‌text
+       text textandtext textand to textand for textin text text‌textandtext (unchanged texttotal text)."""
     A = []
     B = []
     for (x, y), (X, Y) in zip(src, dst):
@@ -209,21 +209,21 @@ def solve_homography(src, dst):
     return H
 
 def stage_scale_matrix(s, cx, cy):
-    """ماتریس مقیاس حول مرکز (برای ورود Stage از 0.94→1.00)"""
+    """text textortext textandtext text (for andtextandtext Stage from 0.94→1.00)"""
     T1 = np.array([[1, 0, -cx], [0, 1, -cy], [0, 0, 1]], dtype=np.float64)
     S  = np.array([[s, 0, 0], [0, s, 0], [0, 0, 1]], dtype=np.float64)
     T2 = np.array([[1, 0, cx], [0, 1, cy], [0, 0, 1]], dtype=np.float64)
     return T2 @ S @ T1
 
 # ================================================================
-#  شیدرها — GLSL 330 Core
+#  technical notevalleytechnical note — GLSL 330 Core
 # ================================================================
 _VS_QUAD = """
 #version 330
 in vec2 in_pos;          /* 0..1 */
-in vec2 in_uv;           /* v=1 بالای تصویر (اسپرایت‌ها — قرارداد بند ۷) */
+in vec2 in_uv;           /* v=1 withtext image (text‌text — text text 7) */
 uniform vec2 uRes;
-uniform vec4 uRect;      /* x,y,w,h پیکسل */
+uniform vec4 uRect;      /* x,y,w,h text */
 uniform vec2 uPivot;
 uniform float uRot;
 out vec2 v_uv;
@@ -241,7 +241,7 @@ void main(){
 }
 """
 
-# --- اسپرایت عمومی (عکس/لوگو/متن/اورلی): زنجیره بلور A/B + آلفا + سوییپ روی متن
+# --- technical note technical noteandtechnical note (image/logo/technical note/technical noteandtechnical note): chain technical noteandtechnical note A/B + technical note + technical noteandtechnical note technical noteandtechnical note technical note
 _FS_SPRITE = """
 #version 330
 in vec2 v_uv;
@@ -269,12 +269,12 @@ void main(){
 }
 """
 
-# --- زمین: پلیت (چمن+خطوط+دروازه) + Heat دقیق + Glow + ورود Heat (بند ۱۳)
+# --- pitch: technical note (technical note+lineandtechnical note+inandfromtechnical note) + Heat technical note + Glow + andtechnical noteandtechnical note Heat (technical note 13)
 _VS_PITCH = """
 #version 330
-in vec2 in_uv;           /* u=x_frac  v=z_frac — قرارداد بند ۵/۶ */
+in vec2 in_uv;           /* u=x_frac  v=z_frac — text text 5/6 */
 uniform vec2 uRes;
-uniform mat3 uH;         /* uv → پیکسل صفحه */
+uniform mat3 uH;         /* uv → text text */
 out vec2 v_uv;
 void main(){
     v_uv = in_uv;
@@ -283,7 +283,7 @@ void main(){
     float sx = p.x / w, sy = p.y / w;
     float ndc_x = sx / uRes.x * 2.0 - 1.0;
     float ndc_y = 1.0 - sy / uRes.y * 2.0;
-    gl_Position = vec4(ndc_x * w, ndc_y * w, 0.0, w);   /* پرسپکتیو-کوریکت */
+    gl_Position = vec4(ndc_x * w, ndc_y * w, 0.0, w);   /* textand-textandtext */
 }
 """
 
@@ -291,37 +291,37 @@ _FS_PITCH = """
 #version 330
 in vec2 v_uv;
 out vec4 f_color;
-uniform sampler2D uPlateA;   /* تکسچر چمن دقیق (بدون تغییر) */
-uniform sampler2D uPlateB;   /* سطح بلور زنجیره */
-uniform sampler2D uHeatA;    /* Heat عیناً همان خروجی برنامه (premult) */
+uniform sampler2D uPlateA;   /* text text text (unchanged) */
+uniform sampler2D uPlateB;   /* level textandtext chain */
+uniform sampler2D uHeatA;    /* Heat text same output textnametext (premult) */
 uniform sampler2D uHeatB;
-uniform sampler2D uGlow;     /* Heat بلورشده برای Glow */
+uniform sampler2D uGlow;     /* Heat textandtext for Glow */
 uniform float uPlateMix;
 uniform float uHeatMix;
-uniform float uHeatScale;    /* 1.03 → 1.00 هنگام ورود */
-uniform vec2 uHeatU;         /* نگاشت uv پلتفرم → uv موتور برای Heat (بند ۵ قرارداد) */
+uniform float uHeatScale;    /* 1.03 → 1.00 text andtextandtext */
+uniform vec2 uHeatU;         /* text uv text → uv textandtextandtext for Heat (text 5 text) */
 uniform vec2 uHeatV;
 uniform float uHasHeat;
-uniform float uHeatA_amt;    /* شفافیت نهایی Heat */
-uniform float uGlowAmt;      /* درخشش ثابت (بدون ضربان) */
-uniform float uAlpha;        /* ورود Stage */
+uniform float uHeatA_amt;    /* text text Heat */
+uniform float uGlowAmt;      /* intext text (without textwithtext) */
+uniform float uAlpha;        /* andtextandtext Stage */
 void main(){
     vec4 plate = mix(texture(uPlateA, v_uv), texture(uPlateB, v_uv), clamp(uPlateMix, 0.0, 1.0));
     vec3 col = plate.rgb;
     float a = plate.a;
     if (uHasHeat > 0.5){
-        /* uv تکسچر Heat = مختصات موتور PES — دقیقاً مثل نمای دوبعدی زنده.
-           (پلیت بازه سکو ±56.1/±35.9 دارد ولی Heat روی بازه موتور ±55/±37 است؛
-            نگاشت خطی زیر همان جای‌گذاری نمای زنده را بازتولید می‌کند) */
-        vec2 puv = (v_uv - 0.5) / max(uHeatScale, 0.05) + 0.5;   /* مقیاس ظریف 1.03→1.00 */
+        /* uv text Heat = coordinates textandtextandtext PES — exactly text text textandaftertext live.
+           (text withtext textand ±56.1/±35.9 text andtext Heat textandtext withtext textandtextandtext ±55/±37 istext
+            text linetext text same text‌text text live text withtextandtext text‌text) */
+        vec2 puv = (v_uv - 0.5) / max(uHeatScale, 0.05) + 0.5;   /* textortext text 1.03→1.00 */
         vec2 cuv = vec2(uHeatU.x * puv.x + uHeatU.y,
                         uHeatV.x * puv.y + uHeatV.y);
         vec4 h = mix(texture(uHeatA, cuv), texture(uHeatB, cuv), clamp(uHeatMix, 0.0, 1.0));
         float ha = h.a * uHeatA_amt;
-        /* Heat روی پلیت — مثل نمای زنده (source-over) */
+        /* Heat textandtext text — text text live (source-over) */
         col = h.rgb * uHeatA_amt + col * (1.0 - ha);
         a   = max(a, ha * plate.a + ha * (1.0 - plate.a));
-        /* Glow ثابت — فقط نور اضافه، محتوای Heat دست‌نخورده (بند ۱۵) */
+        /* Glow text — only textandtext text textandtext Heat unchanged (text 15) */
         vec3 g = texture(uGlow, cuv).rgb;
         col += g * uGlowAmt;
     }
@@ -329,7 +329,7 @@ void main(){
 }
 """
 
-# --- نوار اسم: گرادیان + پخ برش + رشد عرض + نور لبه + خط زیر (بند ۱۱)
+# --- technical noteandtechnical note technical note: technical noteortechnical note + technical note technical note + technical note width + technical noteandtechnical note technical noteto + line technical note (technical note 11)
 _FS_BAR = """
 #version 330
 in vec2 v_uv;
@@ -337,15 +337,15 @@ in vec2 v_px;
 out vec4 f_color;
 uniform vec2 uRes;
 uniform vec4 uRect;        /* x0,y0,w_full,h(=63) */
-uniform float uBarW;       /* عرض فعلی نوار */
+uniform float uBarW;       /* width text textandtext */
 uniform float uSlant;
 uniform float uAlpha;
-uniform float uLightX;     /* موقعیت نور لبه (local px) */
+uniform float uLightX;     /* position textandtext textto (local px) */
 uniform float uLightAmt;
 uniform vec3 uColL;
 uniform vec3 uColR;
 void main(){
-    float lx = v_uv.x * uRect.z;                /* v_uv همیشه مصرف می‌شود (ضد حذف کامپایلر) */
+    float lx = v_uv.x * uRect.z;                /* v_uv always text text‌textandtext (text text text) */
     float ly = (1.0 - v_uv.y) * uRect.w;
     float barH = 55.0;
     vec3 rgb = vec3(0.0);
@@ -356,7 +356,7 @@ void main(){
         if (m > 0.002){
             float t = clamp(lx / max(uBarW, 1.0), 0.0, 1.0);
             vec3 c = mix(uColL, uColR, t);
-            float shade = 1.0 - 0.18 * smoothstep(0.0, barH, ly);   /* عمق عمودی ظریف */
+            float shade = 1.0 - 0.18 * smoothstep(0.0, barH, ly);   /* text textandtext text */
             c *= shade;
             rgb += c * m;
             a = m;
@@ -367,7 +367,7 @@ void main(){
             rgb += vec3(0.65, 0.82, 1.0) * band * uLightAmt * step(lx, edge) * a;
         }
     } else {
-        /* خط زیر نوار — عین رندر ثابت: y 187..190 آلفا 60+150*g */
+        /* line text textandtext — text render text: y 187..190 text 60+150*g */
         float u = clamp((ly - 60.0) / 3.0, 0.0, 1.0);
         float band = 1.0 - smoothstep(0.0, 1.0, u);
         float g = exp(-pow((lx - 160.0) / 420.0, 2.0));
@@ -379,34 +379,34 @@ void main(){
 }
 """
 
-# --- پنل عنوان ذوزنقه‌ای (عین هندسه رندر ثابت)
+# --- technical note technical noteandtechnical note technical noteweighttechnical note‌technical note (technical note technical note render technical note)
 _FS_TITLE_PANEL = """
 #version 330
 in vec2 v_uv;
 in vec2 v_px;
 out vec4 f_color;
-uniform vec4 uRect;        /* (373,6,1070,100) با مقیاس Stage */
+uniform vec4 uRect;        /* (373,6,1070,100) with textortext Stage */
 uniform float uAlpha;
-uniform float uGlobalX0;   /* 373 — برای گاوسی مرکز-روشن */
+uniform float uGlobalX0;   /* 373 — for textandtext text-textandtext */
 void main(){
     float w = uRect.z, h = uRect.w;
     float px = v_uv.x * w;
-    float t  = v_uv.y;                 /* 0 بالا */
+    float t  = v_uv.y;                 /* 0 withtext */
     float py = t * h;
     float slant = 35.0;
-    float xl = slant * (1.0 - t);          /* مرز چپ */
-    float xr = (w - 35.0) + slant * t;     /* مرز راست */
+    float xl = slant * (1.0 - t);          /* boundary text */
+    float xr = (w - 35.0) + slant * t;     /* boundary textis */
     float m = step(xl, px) * step(px, xr);
     if (m < 0.5){ discard; }
     vec3 c = mix(vec3(15.0,52.0,100.0), vec3(6.0,34.0,78.0), t) / 255.0;
-    /* برش‌های مورب ظریف داخل پنل */
+    /* text‌text textandtext text inside text */
     float c1l = 127.0 + 60.0 * t, c1r = 267.0 + 60.0 * t;
     if (px > c1l && px < c1r) c += vec3(0.027);
     float c2l = 759.0 + 48.0 * t, c2r = 879.0 + 48.0 * t;
     if (px > c2l && px < c2r) c *= (1.0 - 0.063);
     vec3 rgb = c;
     float a = 1.0;
-    /* خط لبه بالا/پایین با مرکز-روشن گاوسی — عین رندر ثابت */
+    /* line textto withtext/below with text-textandtext textandtext — text render text */
     float gx = uGlobalX0 + px;
     if (py < 3.0){
         float f1 = exp(-pow((gx + 2.0 - 887.0) / 470.0, 2.0));
@@ -422,7 +422,7 @@ void main(){
 }
 """
 
-# --- پس‌زمینه: گرادیان + هاله مرکز-بالا با حرکت بسیار آهسته (Live TV feel)
+# --- technical note‌pitchtechnical note: technical noteortechnical note + technical note technical note-withtechnical note with technical note technical noteortechnical note technical note (Live TV feel)
 _FS_BG = """
 #version 330
 in vec2 v_uv;
@@ -432,7 +432,7 @@ uniform vec2 uRes;
 uniform float uT;
 uniform float uAlpha;
 void main(){
-    float t = 1.0 - v_uv.y;                    /* گرادیان از uv (بالای کواد = روشن‌تر) */
+    float t = 1.0 - v_uv.y;                    /* textortext from uv (withtext textandtext = textandtext‌text) */
     vec3 base = mix(vec3(2.0,24.0,62.0), vec3(0.0,12.0,34.0), t) / 255.0;
     vec2 cc = vec2(uRes.x * 0.5 + sin(uT * 0.045) * 26.0,
                    uRes.y * 0.24 + cos(uT * 0.038) * 16.0);
@@ -444,7 +444,7 @@ void main(){
 }
 """
 
-# --- شیشه: SDF مستطیل گرد — پرکردن داخلی | خط لبه + هاله + سوییپ‌ها
+# --- technical note: SDF technical note technical note — technical note internal | line technical noteto + technical note + technical noteandtechnical note‌technical note
 _FS_GLASS = """
 #version 330
 in vec2 v_uv;
@@ -452,11 +452,11 @@ in vec2 v_px;
 out vec4 f_color;
 uniform vec4 uFrame;      /* x,y,w,h */
 uniform float uRadius;
-uniform float uMode;      /* 0=پرکردن  1=لبه+هاله+سوییپ */
+uniform float uMode;      /* 0=text  1=textto+text+textandtext */
 uniform float uAlpha;
-uniform float uTopSweep;  /* 0..1 موقعیت نور لبه بالا */
+uniform float uTopSweep;  /* 0..1 position textandtext textto withtext */
 uniform float uTopAmt;
-uniform float uSpecPos;   /* موقعیت پیکسلی سوییپ مورب */
+uniform float uSpecPos;   /* position text textandtext textandtext */
 uniform float uSpecAmt;
 float sdRoundBox(vec2 p, vec2 b, float r){
     vec2 q = abs(p) - b + r;
@@ -468,7 +468,7 @@ void main(){
     vec3 rgb = vec3(0.0);
     float a = 0.0;
     if (uMode < 0.5){
-        /* پرکردن شیشه‌ای: سرمه‌ای نیمه‌شفاف با گرادیان عمودی ظریف */
+        /* text text‌text: text‌text text‌text with textortext textandtext text */
         if (d < 0.0){
             float t = clamp(1.0 - v_uv.y, 0.0, 1.0);
             vec3 c = mix(vec3(10.0, 36.0, 82.0), vec3(4.0, 20.0, 52.0), t);
@@ -476,18 +476,18 @@ void main(){
             rgb = c / 255.0 * 2.2;
         }
     } else {
-        /* خط لبه روشن — عین قاب رندر ثابت (عرض ~5px) */
+        /* line textto textandtext — text text render text (width ~5px) */
         float line = 1.0 - smoothstep(2.0, 3.2, abs(d));
         float halo = exp(-abs(d) / 9.0) * (1.0 - line);
         rgb += vec3(134.0,174.0,222.0)/255.0 * line;
         a   = max(a, line * 0.95);
         rgb += vec3(120.0,168.0,230.0)/255.0 * halo * 0.85;
         a   = max(a, halo * 0.55);
-        /* خط داخلی مویی */
+        /* line internal textandtext */
         float hair = 1.0 - smoothstep(0.6, 1.4, abs(d - 14.0));
         rgb += vec3(60.0,105.0,170.0)/255.0 * hair * 0.6;
         a   = max(a, hair * 0.35);
-        /* نور باریک روی لبه بالا هنگام ورود + تکرار خیلی آهسته */
+        /* textandtext withtext textandtext textto withtext text andtextandtext + text text text */
         if (uTopAmt > 0.004){
             float tt = (v_px.x - uFrame.x) / uFrame.z;
             float band = exp(-pow((tt - uTopSweep) * uFrame.z / 75.0, 2.0));
@@ -496,7 +496,7 @@ void main(){
             rgb += vec3(0.80, 0.90, 1.0) * band * topEdge * uTopAmt;
             a = max(a, band * topEdge * uTopAmt * 0.8);
         }
-        /* سوییپ مشخصِ مورب — بسیار نرم، دوره‌ای (بند ۷ و ۱۶) */
+        /* textandtext text textandtext — textortext smoothtext textandtext‌text (text 7 and 16) */
         if (uSpecAmt > 0.004){
             float s = v_px.x + v_px.y * 0.35;
             float band2 = exp(-pow((s - uSpecPos) / 240.0, 2.0));
@@ -508,7 +508,7 @@ void main(){
 }
 """
 
-# --- ذرات محیطی: ۱۰۰ ذره، کاملاً روی GPU (بند ۶ و ۱۶)
+# --- technical note technical note: 100 technical note completetechnical note technical noteandtechnical note GPU (technical note 6 and 16)
 _VS_PART = """
 #version 330
 in vec3 in_a;    /* x0, y0, speed */
@@ -539,7 +539,7 @@ void main(){
 }
 """
 
-# --- کپی/اسکیل + بلور جداشدنی (برای ساخت زنجیره‌های Blur روی GPU در init)
+# --- technical note/technical note + technical noteandtechnical note technical note (for technical note chain‌technical note Blur technical noteandtechnical note GPU in init)
 _FS_COPY = """
 #version 330
 in vec2 v_uv;
@@ -553,7 +553,7 @@ _FS_BLUR = """
 in vec2 v_uv;
 out vec4 f_color;
 uniform sampler2D uTex;
-uniform vec2 uDir;       /* بردار تاپ در واحد تکسچر */
+uniform vec2 uDir;       /* text untiltext in andtext text */
 void main(){
     float w0 = 0.227027, w1 = 0.194594, w2 = 0.121621, w3 = 0.054054, w4 = 0.016216;
     vec4 c = texture(uTex, v_uv) * w0;
@@ -569,7 +569,7 @@ void main(){
 }
 """
 
-# --- بلیت نهایی به پنجره
+# --- technical note technical note to window
 _FS_BLIT = """
 #version 330
 in vec2 v_uv;
@@ -579,7 +579,7 @@ void main(){ f_color = vec4(texture(uTex, v_uv).rgb, 1.0); }
 """
 
 # ================================================================
-#  بخش ۱ — ساخت Asset با Pillow (فقط یک‌بار هنگام ساخت صحنه — هرگز در حلقه فریم)
+#  section 1 — technical note Asset with Pillow (only technical note‌withtechnical note technical note technical note scene — never in technical note frame)
 # ================================================================
 def _pick_font(candidates, size):
     for path in list(candidates) + _LINUX_FONTS_BOLD:
@@ -601,8 +601,8 @@ def _tracked_width(draw, text, font, tracking):
     return sum(ws) + tracking * (len(text) - 1)
 
 def make_title_sprite(text, candidates):
-    """عنوان HEATMAP — همان منطق fit_font_tracked (سقف 88px / عرض 620 / track 0.16)
-       سایه همگام داخل تکسچر پخته می‌شود."""
+    """textandtext HEATMAP — same text fit_font_tracked (limit 88px / width 620 / track 0.16)
+       text synchronized inside text text text‌textandtext."""
     tmp = ImageDraw.Draw(Image.new("RGBA", (8, 8)))
     size, font, track = 88, None, 2
     while size > 12:
@@ -623,7 +623,7 @@ def make_title_sprite(text, candidates):
     d = ImageDraw.Draw(img)
     cy = H / 2 - pad + 2
     x = pad
-    for ch, w in zip(text, ws):     # سایه (2,3) — عین رندر ثابت
+    for ch, w in zip(text, ws):     # technical note (2,3) — technical note render technical note
         d.text((x + 2, cy + 3), ch, font=font, fill=(0, 10, 30, 150), anchor="lm")
         x += w + track
     x = pad
@@ -633,7 +633,7 @@ def make_title_sprite(text, candidates):
     return img
 
 def make_name_sprite(text, candidates):
-    """اسم بازیکن — fit سقف 48px / عرض 900 (عین رندر ثابت). عرض متن برمی‌گردد."""
+    """text player — fit limit 48px / width 900 (text render text). width text text‌text."""
     tmp = ImageDraw.Draw(Image.new("RGBA", (8, 8)))
     size, font = 48, None
     while size > 12:
@@ -657,10 +657,10 @@ def make_name_sprite(text, candidates):
     return img, tw
 
 def make_meta_sprite(header, candidates):
-    """[PT v2.3.0] چیپ «شماره پیراهن + سن» کارت بازیکن — داده از
-    teams_players_PES2021.txt (Slot پوینتر → شماره/سن). خروجی: (تصویر، عرض)
-    یا (None, 0) وقتی داده‌ای نیست یا نمای بازیکن نیست.
-    شیشه‌ای ملایم هم‌سبک پنل کارت؛ متن 30px سفید با برچسب خاکستری."""
+    """[PT v2.3.0] text «number shirt + age» card player — data from
+    teams_players_PES2021.txt (Slot pointer → number/age). output: (imagetext width)
+    or (None, 0) when data‌text is not or text player is not.
+    text‌text text text‌lightweight text cardtext text 30px text with text text."""
     if header.get("kind", "all") != "player":
         return None, 0
     shirt = header.get("shirt")
@@ -705,7 +705,7 @@ def make_meta_sprite(header, candidates):
     return img, W
 
 def make_logo_image(logo_path, box, fallback_key=None):
-    """عین منطق _paste_logo — برش bbox + مقیاس؛ خروجی اسپرایت مستقل"""
+    """text text _paste_logo — text bbox + textortext output text independent"""
     x0, y0, max_w, max_h = box
     out = Image.new("RGBA", (int(max_w), int(max_h)), (0, 0, 0, 0))
     if logo_path and os.path.isfile(logo_path):
@@ -721,7 +721,7 @@ def make_logo_image(logo_path, box, fallback_key=None):
             return out
         except Exception:
             pass
-    # سپر جایگزین — عین رنگ‌های _paste_logo
+    # technical note fallback — technical note color‌technical note _paste_logo
     dd = ImageDraw.Draw(out)
     cx, cy = max_w / 2.0, max_h / 2.0
     w, h = max_w * 0.88, max_h * 0.96
@@ -743,7 +743,7 @@ def make_logo_image(logo_path, box, fallback_key=None):
     return out
 
 def make_portrait_sprite(header, candidates):
-    """دایره بازیکن/تیم — عین _circle_photo (هاله + محتوا + حلقه) به‌صورت اسپرایت مستقل"""
+    """text player/team — text _circle_photo (text + textandtext + text) to‌textandtext text independent"""
     kind = header.get("kind", "all")
     r = CIRCLE_R
     pad = 34
@@ -797,7 +797,7 @@ def make_portrait_sprite(header, candidates):
     return img
 
 def make_trim_overlay():
-    """نوار زیر لبه سکو + دورخط ذوزنقه — عین خطوط 1724-1737 رندر ثابت (یک‌بار پخت)"""
+    """textandtext text textto textand + textandtextline textweighttext — text lineandtext 1724-1737 render text (text‌withtext text)"""
     W, H = RENDER_W, RENDER_H
     img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     strip_w = int(PNR[0] - PNL[0])
@@ -812,7 +812,7 @@ def make_trim_overlay():
     return img
 
 def make_ui_overlay():
-    """روبان‌های گوشه + پنل کارت بازیکن — عین رندر ثابت (یک‌بار پخت)"""
+    """textandwithtext‌text textandtext + text card player — text render text (text‌withtext text)"""
     W, H = RENDER_W, RENDER_H
     img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
@@ -823,19 +823,19 @@ def make_ui_overlay():
     return img
 
 # ================================================================
-#  بخش ۲ — آپلود تکسچر (قرارداد flip اینجاست — بندهای ۴ و ۷)
+#  section 2 — technical noteandtechnical note technical note (technical note flip technical noteis — technical note 4 and 7)
 # ================================================================
 def upload_sprite(ctx, img):
-    """اسپرایت‌های PIL: یک flip مستند → v=1 = بالای تصویر (قرارداد بند ۷)"""
+    """text‌text PIL: text flip text → v=1 = withtext image (text text 7)"""
     arr = np.asarray(img.convert("RGBA"), dtype=np.uint8)
-    arr = np.flipud(arr)                       # تنها flip مسیر اسپرایت — مستند
+    arr = np.flipud(arr)                       # technical note flip path technical note — technical note
     tex = ctx.texture((arr.shape[1], arr.shape[0]), 4, arr.tobytes())
     tex.filter = (0x2601, 0x2601)              # GL_LINEAR
     tex.repeat_x = tex.repeat_y = False
     return tex
 
 def upload_heat(ctx, img):
-    """تکسچر Heat: عیناً بدون flip → v=0 = سطر اول تصویر = z_min (قرارداد بند ۴)"""
+    """text Heat: text without flip → v=0 = text first image = z_min (text text 4)"""
     arr = np.asarray(img.convert("RGBA"), dtype=np.uint8)
     tex = ctx.texture((arr.shape[1], arr.shape[0]), 4, arr.tobytes())
     tex.filter = (0x2601, 0x2601)
@@ -843,21 +843,21 @@ def upload_heat(ctx, img):
     return tex
 
 def premultiply(img):
-    """RGBA استریت → premultiplied (برای زنجیره Heat و ترکیب صحیح)"""
+    """RGBA istext → premultiplied (for chain Heat and text correct)"""
     arr = np.asarray(img.convert("RGBA"), dtype=np.float32) / 255.0
     arr[..., :3] *= arr[..., 3:4]
     return Image.fromarray((arr * 255.0 + 0.5).astype(np.uint8), mode="RGBA")
 
 # ================================================================
-#  بخش ۳ — موتور GPU
+#  section 3 — technical noteandtechnical noteandtechnical note GPU
 # ================================================================
 class _BlurChain:
-    """زنجیره بلور پیش‌ساخته روی GPU — در init ساخته می‌شود؛ در فریم فقط mix می‌شود.
-       levels[0] = تکسچر اصلیِ دقیق، بقیه سطوح بلورشده در مقیاس نصفه.
-       upload_fn: مسیر اسپرایت (flip بند ۷) یا مسیر world (بدون flip بند ۴)"""
+    """chain textandtext text‌text textandtext GPU — in init text text‌textandtext in frame only mix text‌textandtext.
+       levels[0] = text originaltext text text textandtext textandtext in textortext text.
+       upload_fn: path text (flip text 7) or path world (without flip text 4)"""
     def __init__(self, ctx, prog_copy, prog_blur, quad, img, sigmas, upload_fn=upload_sprite):
         self.ctx = ctx
-        self.levels = [upload_fn(ctx, img)]              # سطح ۰ = عین ورودی
+        self.levels = [upload_fn(ctx, img)]              # level 0 = technical note input
         for sc, sig in sigmas:
             w = max(4, int(img.width * sc))
             h = max(4, int(img.height * sc))
@@ -881,7 +881,7 @@ class _BlurChain:
             tmp.repeat_x = tmp.repeat_y = False
             fbo_a = ctx.framebuffer(small)
             fbo_b = ctx.framebuffer(tmp)
-            for axis in (0, 1):                           # دو پاس H و V
+            for axis in (0, 1):                           # technical noteand pass H and V
                 fbo = fbo_a if axis == 0 else fbo_b
                 dst = small if axis == 0 else tmp
                 srct = tmp if axis == 0 else small
@@ -904,7 +904,7 @@ class _BlurChain:
             tmp.release()
 
     def mix_textures(self, blur01):
-        """(texA, texB, mix) برای مقدار بلور 0..1"""
+        """(texA, texB, mix) for value textandtext 0..1"""
         n = len(self.levels)
         L = clamp01(blur01) * (n - 1)
         i = min(int(L), n - 2)
@@ -916,11 +916,11 @@ def _blend_src_over(ctx):
     ctx.blend_func = moderngl.ONE, moderngl.ONE_MINUS_SRC_ALPHA   # premultiplied
 
 def _blend_add(ctx):
-    ctx.blend_func = moderngl.ONE, moderngl.ONE                    # افزودنی (ذرات/گلو)
+    ctx.blend_func = moderngl.ONE, moderngl.ONE                    # technical noteandtechnical note (technical note/technical noteand)
 
 
 class Engine:
-    """صحنه برودکاست — تمام رندر روی GPU؛ CPU فقط تایم‌لاین و uniform"""
+    """scene textandtextis — text render textandtext GPUtext CPU only untiltext‌text and uniform"""
 
     def __init__(self, ctx, assets, W=RENDER_W, H=RENDER_H, clear_alpha=1.0):
         import moderngl as _mg
@@ -928,13 +928,13 @@ class Engine:
         moderngl = _mg
         self.ctx = ctx
         self.W, self.H = W, H
-        # clear_alpha=0.0 → مخصوص Overlay (پنجره شفاف): خارج از قاب گرد شفاف می‌ماند
+        # clear_alpha=0.0 → technical noteandtechnical note Overlay (window technical note): technical note from technical note technical note technical note technical note‌technical note
         self._clear_a = float(clear_alpha)
         header = assets["header"]
         fonts_title = assets.get("fonts", {}).get("title", [])
         fonts_bold = assets.get("fonts", {}).get("bold", [])
 
-        # ---------- برنامه‌ها
+        # ---------- technical notenametechnical note‌technical note
         p = ctx.program
         self.p_quad   = p(vertex_shader=_VS_QUAD, fragment_shader=_FS_SPRITE)
         self.p_copy   = p(vertex_shader=_VS_QUAD, fragment_shader=_FS_COPY)
@@ -947,7 +947,7 @@ class Engine:
         self.p_part   = p(vertex_shader=_VS_PART, fragment_shader=_FS_PART)
         self.p_blit   = p(vertex_shader=_VS_QUAD, fragment_shader=_FS_BLIT)
 
-        # ---------- کواد واحد (TL,TR,BL,BR — strip) با uv اسپرایت (v=1 بالا)
+        # ---------- technical noteandtechnical note andtechnical note (TL,TR,BL,BR — strip) with uv technical note (v=1 withtechnical note)
         q = np.array([0, 0, 0, 1,   1, 0, 1, 1,   0, 1, 0, 0,   1, 1, 1, 0], dtype='f4')
         self.vb_quad = ctx.buffer(q.tobytes())
         def vao_for(prog):
@@ -961,29 +961,29 @@ class Engine:
         self.v_glass = vao_for(self.p_glass)
         self.v_blit = vao_for(self.p_blit)
 
-        # ---------- کواد زمین: فقط uv = (x_frac, z_frac) — پوزیشن از هاوموگرافی (بند ۶)
+        # ---------- technical noteandtechnical note pitch: only uv = (x_frac, z_frac) — technical noteandtechnical note from technical noteandtechnical noteandtechnical note (technical note 6)
         qp = np.array([0, 0,   1, 0,   0, 1,   1, 1], dtype='f4')
         self.vb_pitch = ctx.buffer(qp.tobytes())
         self.v_pitch = ctx.vertex_array(self.p_pitch, [(self.vb_pitch, '2f', 'in_uv')])
 
-        # ---------- هاوموگرافی پایه (عین منطق _find_coeffs Provider — بند ۶)
+        # ---------- technical noteandtechnical noteandtechnical note technical note (technical note technical note _find_coeffs Provider — technical note 6)
         self.H0 = solve_homography(
             [(0, 0), (1, 0), (1, 1), (0, 1)], [PFL, PFR, PNR, PNL])
 
-        # ---------- نگاشت uv پلتفرم → uv موتور برای Heat (قرارداد بند ۵)
-        #   پلیت چمن بازه سکو (±56.1/±35.9) دارد ولی Heat روی بازه موتور (±55/±37)
-        #   ساخته می‌شود؛ این نگاشت خطی جای‌گذاری را عین نمای دوبعدی زنده می‌کند.
+        # ---------- technical note uv technical note → uv technical noteandtechnical noteandtechnical note for Heat (technical note technical note 5)
+        #   technical note technical note withtechnical note technical noteand (±56.1/±35.9) technical note andtechnical note Heat technical noteandtechnical note withtechnical note technical noteandtechnical noteandtechnical note (±55/±37)
+        #   technical note technical note‌technical noteandtechnical note technical note technical note linetechnical note technical note‌technical note technical note technical note technical note technical noteandaftertechnical note live technical note‌technical note.
         tx0, tx1, tz0, tz1 = assets.get("tex_range", (-56.1, 56.1, -35.9, 35.9))
         self.heat_u = ((tx1 - tx0) / 110.0, (tx0 + 55.0) / 110.0)
         self.heat_v = ((tz1 - tz0) / 74.0, (tz0 + 37.0) / 74.0)
 
-        # ---------- FBO خروجی
+        # ---------- FBO output
         self.tex_out = ctx.texture((W, H), 4)
         self.tex_out.filter = (0x2601, 0x2601)
         self.fbo = ctx.framebuffer(self.tex_out)
 
-        # ---------- تکسچر زمین و Heat (عین Provider — بدون تغییر)
-        #   مسیر world: آپلود بدون flip (قرارداد بند ۴/۵)
+        # ---------- technical note pitch and Heat (technical note Provider — unchanged)
+        #   path world: technical noteandtechnical note without flip (technical note technical note 4/5)
         plate_img = assets["pitch_plate"]
         self.chain_plate = _BlurChain(ctx, self.p_copy, self.p_blur, self.v_copy,
                                       plate_img, [(0.5, 1.6), (0.5, 4.5)], upload_fn=upload_heat)
@@ -998,7 +998,7 @@ class Engine:
                                          upload_fn=upload_heat)
             self.glow_tex = self.chain_heat.levels[-1]
 
-        # ---------- اسپرایت‌های هدر (یک‌بار پخت با Pillow)
+        # ---------- technical note‌technical note technical notein (technical note‌withtechnical note technical note with Pillow)
         self.spr_title = upload_sprite(ctx, make_title_sprite("HEATMAP", fonts_title))
         name_img, name_w = make_name_sprite(header.get("name") or header.get("text") or "PLAYER",
                                             fonts_bold)
@@ -1021,12 +1021,12 @@ class Engine:
         self.spr_trim = upload_sprite(ctx, make_trim_overlay())
         self.spr_ui = upload_sprite(ctx, make_ui_overlay())
 
-        # [PT v2.3.0] چیپ SHIRT/AGE کارت بازیکن (فقط وقتی دادهٔ PT هست)
+        # [PT v2.3.0] technical note SHIRT/AGE card player (only when datatechnical note PT technical note)
         _meta_img, _meta_w = make_meta_sprite(header, fonts_bold)
         self.meta_w = float(_meta_w)
         self.spr_meta = upload_sprite(ctx, _meta_img) if _meta_img is not None else None
 
-        # زنجیره بلور اسپرایت‌ها (در init روی GPU)
+        # chain technical noteandtechnical note technical note‌technical note (in init technical noteandtechnical note GPU)
         self.ch_title = _BlurChain(ctx, self.p_copy, self.p_blur, self.v_copy,
                                    make_title_sprite("HEATMAP", fonts_title), [(1.0, 2.5), (1.0, 7.0)])
         self.ch_name = _BlurChain(ctx, self.p_copy, self.p_blur, self.v_copy,
@@ -1045,11 +1045,11 @@ class Engine:
         self.ch_logo = _BlurChain(ctx, self.p_copy, self.p_blur, self.v_copy,
                                   _logo_img, [(1.0, 2.5), (1.0, 6.5)])
 
-        # ---------- عرض هدف نوار اسم (عین فرمول رندر ثابت)
+        # ---------- width target technical noteandtechnical note technical note (technical note technical noteandtechnical note render technical note)
         max_bar_w = 1000 if kind in ("player", "team") else 1150
         self.bar_w = max(150.0, min(float(max_bar_w), (NAME_X - BAR_X0) + name_w + 55.0))
 
-        # ---------- ذرات (۱۰۰ ذره — بند ۶ دستور)
+        # ---------- technical note (100 technical note — technical note 6 instruction)
         rng = np.random.default_rng(11)
         N = 100
         pa = np.stack([rng.uniform(0, W, N).astype('f4'),
@@ -1061,12 +1061,12 @@ class Engine:
         self.vb_part = ctx.buffer(np.concatenate([pa, pb], axis=1).tobytes())
         self.v_part = ctx.vertex_array(self.p_part, [(self.vb_part, '3f 2f', 'in_a', 'in_b')])
 
-        # ---------- فاز جاری (برای سوییپ‌های زنده)
+        # ---------- technical notefrom current (for technical noteandtechnical note‌technical note live)
         self._t_last = 0.0
 
-    # ------------------------------------------------------------ کمکی‌ها
+    # ------------------------------------------------------------ technical note‌technical note
     def _scaled_rect(self, rect, s, dy=0.0):
-        """مقیاس حول مرکز + جابه‌جایی عمودی — برای ورود Stage/عنوان"""
+        """textortext textandtext text + textto‌text textandtext — for andtextandtext Stage/textandtext"""
         x, y, w, h = rect
         cx, cy = self.W / 2.0, self.H / 2.0
         nx = cx + (x - cx) * s
@@ -1095,25 +1095,25 @@ class Engine:
         ta, tb, mx = chain.mix_textures(blur01)
         self._quad(self.p_quad, self.v_quad, rect, ta, tb, mx, alpha, pivot, rot, sweep)
 
-    # ------------------------------------------------------------ تایم‌لاین
+    # ------------------------------------------------------------ untiltechnical note‌technical note
     def _entrance_params(self, f):
-        """کلیدفریم‌های ورود (فریم @60fps) — بند ۵ دستور:
-           0→15 قاب | 15→30 عنوان | 25→50 بازیکن | 40→65 اسم | 50→70 لوگو | 60→110 هیت‌مپ"""
+        """totaltextframe‌text andtextandtext (frame @60fps) — text 5 instruction:
+           0→15 text | 15→30 textandtext | 25→50 player | 40→65 text | 50→70 logo | 60→110 heatmap"""
         p = {}
         p["bg_a"]        = out_cubic(seg(f, 0, 10))
         p["stage_s"]     = 0.94 + 0.06 * out_cubic(seg(f, 0, 25))
         p["stage_a"]     = out_cubic(seg(f, 2, 25))
         p["plate_blur"]  = 1.0 - out_cubic(seg(f, 4, 26))
-        # نور لبه بالا — در ورود پررنگ، بعد هر ~8 ثانیه خیلی ظریف
+        # technical noteandtechnical note technical noteto withtechnical note — in andtechnical noteandtechnical note technical notecolortechnical note after technical note ~8 second technical note technical note
         if f < 26:
             p["top_sweep"] = seg(f, 3, 24); p["top_amt"] = 0.85 * seg(f, 3, 6) * (1.0 - 0.4 * seg(f, 20, 26))
         else:
             c = ((f - 26) % 480) / 480.0
             p["top_sweep"] = c; p["top_amt"] = 0.16
-        # سوییپ مورب شیشه — از فریم ۴۰ به بعد، هر ~۱۳ ثانیه
+        # technical noteandtechnical note technical noteandtechnical note technical note — from frame 40 to aftertechnical note technical note ~13 second
         p["spec_pos"] = ((f - 40) * 3.0) % (self.W + 700) - 350 if f > 40 else -1e5
         p["spec_amt"] = 0.07 if f > 40 else 0.0
-        # عنوان
+        # technical noteandtechnical note
         p["title_a"]    = out_cubic(seg(f, 15, 32))
         p["title_s"]    = 0.92 + 0.08 * out_cubic(seg(f, 15, 32))
         p["title_dy"]   = -10.0 * (1.0 - out_cubic(seg(f, 15, 32)))
@@ -1123,7 +1123,7 @@ class Engine:
         else:
             c = ((f - 52) % 540) / 540.0
             p["title_sweep"] = (c * 1.4 - 0.2, 0.18, 0.13 * math.sin(math.pi * clamp01(c)))
-        # ورود عناصر
+        # andtechnical noteandtechnical note technical note
         p["ui_a"] = p["stage_a"]
         q = out_quint(seg(f, 25, 50))
         p["photo_a"] = q; p["photo_dy"] = 30.0 * (1.0 - q); p["photo_s"] = 1.08 - 0.08 * q
@@ -1139,7 +1139,7 @@ class Engine:
         p["logo_s"]   = 0.70 + 0.30 * out_back(seg(f, 50, 70))
         p["logo_rot"] = -3.0 * (1.0 - out_cubic(seg(f, 50, 70)))
         p["logo_blur"] = 1.0 - out_cubic(seg(f, 50, 72))
-        # هیت‌مپ — آخر از همه (بند ۱۳)
+        # heatmap — technical note from technical note (technical note 13)
         p["heat_a"]    = heat_staged(seg(f, 60, 110))
         p["heat_glow"] = out_cubic(seg(f, 64, 112))
         p["heat_scale"] = 1.03 - 0.03 * out_cubic(seg(f, 60, 112))
@@ -1148,8 +1148,8 @@ class Engine:
         return p
 
     def _exit_params(self, k):
-        """خروج — تقریباً آینه ورود ولی با ترتیب/ایزینگ متفاوت (بند ۱۷):
-           Heat اول → لوگو → اسم → بازیکن → عنوان → قاب → پس‌زمینه"""
+        """textandtext — textwithtext text andtextandtext andtext with order/text textandtext (text 17):
+           Heat first → logo → text → player → textandtext → text → text‌pitchtext"""
         p = {}
         p["bg_a"]        = 1.0 - in_cubic(seg(k, 48, 60))
         p["stage_s"]     = 1.0 - 0.045 * in_cubic(seg(k, 40, 58))
@@ -1185,7 +1185,7 @@ class Engine:
         p["part_a"] = 0.32 * (1.0 - in_cubic(seg(k, 26, 42)))
         return p
 
-    # ------------------------------------------------------------ رسم صحنه
+    # ------------------------------------------------------------ technical note scene
     def _draw(self, p, t_sec):
         ctx = self.ctx
         self.fbo.use()
@@ -1195,7 +1195,7 @@ class Engine:
         _blend_src_over(ctx)
         W, H = self.W, self.H
 
-        # 1) پس‌زمینه زنده
+        # 1) technical note‌pitchtechnical note live
         g = self.p_bg
         g['uRes'].value = (float(W), float(H))
         g['uT'].value = float(t_sec)
@@ -1205,7 +1205,7 @@ class Engine:
         g['uRot'].value = 0.0
         self.v_bg.render(moderngl.TRIANGLE_STRIP)
 
-        # 2) شیشه — پرکردن داخلی
+        # 2) technical note — technical note internal
         fr = self._scaled_rect(FRAME_RECT, p["stage_s"])
         gl = self.p_glass
         gl['uRes'].value = (float(W), float(H))
@@ -1220,12 +1220,12 @@ class Engine:
         gl['uSpecPos'].value = 0.0;  gl['uSpecAmt'].value = 0.0
         self.v_glass.render(moderngl.TRIANGLE_STRIP)
 
-        # 3) زمین + Heat (پرسپکتیو GPU — هاوموگرافی با مقیاس Stage)
+        # 3) pitch + Heat (technical noteand GPU — technical noteandtechnical noteandtechnical note with technical noteortechnical note Stage)
         S = stage_scale_matrix(p["stage_s"], W / 2.0, H / 2.0)
         Hs = S @ self.H0
         pp = self.p_pitch
         pp['uRes'].value = (float(W), float(H))
-        pp['uH'].write(Hs.T.astype('f4').tobytes())   # mat3 ستون-اصلی
+        pp['uH'].write(Hs.T.astype('f4').tobytes())   # mat3 technical noteandtechnical note-original
         pa_, pb_, pm_ = self.chain_plate.mix_textures(p["plate_blur"])
         pp['uPlateA'].value = 0; pp['uPlateB'].value = 1
         pa_.use(0); pb_.use(1)
@@ -1246,12 +1246,12 @@ class Engine:
             pp['uGlow'].value = 4
         self.v_pitch.render(moderngl.TRIANGLE_STRIP)
 
-        # 4) تریم سکو (نوار + دورخط)
+        # 4) technical note technical noteand (technical noteandtechnical note + technical noteandtechnical noteline)
         self._sprite(_StaticChain(self.spr_trim),
                      self._scaled_rect((0.0, 0.0, float(W), float(H)), p["stage_s"]),
                      0.0, p["stage_a"])
 
-        # 5) شیشه — خط لبه + نور بالا + سوییپ مورب
+        # 5) technical note — line technical noteto + technical noteandtechnical note withtechnical note + technical noteandtechnical note technical noteandtechnical note
         gl['uMode'].value = 1.0
         gl['uTopSweep'].value = float(p["top_sweep"])
         gl['uTopAmt'].value = float(p["top_amt"])
@@ -1259,7 +1259,7 @@ class Engine:
         gl['uSpecAmt'].value = float(p["spec_amt"])
         self.v_glass.render(moderngl.TRIANGLE_STRIP)
 
-        # 6) پنل عنوان
+        # 6) technical note technical noteandtechnical note
         tp = TITLE_PANEL
         tcx, tcy = tp[0] + tp[2] / 2.0, tp[1] + tp[3] / 2.0
         trect = (tcx - tp[2] * p["title_s"] / 2.0, tcy - tp[3] * p["title_s"] / 2.0 + p["title_dy"],
@@ -1273,12 +1273,12 @@ class Engine:
         pt['uGlobalX0'].value = float(trect[0])
         self.v_tpanel.render(moderngl.TRIANGLE_STRIP)
 
-        # 7) اورلی استاتیک (روبان‌ها + پنل کارت)
+        # 7) technical noteandtechnical note istechnical note (technical noteandwithtechnical note‌technical note + technical note card)
         self._sprite(_StaticChain(self.spr_ui),
                      self._scaled_rect((0.0, 0.0, float(W), float(H)), p["stage_s"]),
                      0.0, p["ui_a"])
 
-        # 8) نوار اسم (رشد عرض + نور لبه)
+        # 8) technical noteandtechnical note technical note (technical note width + technical noteandtechnical note technical noteto)
         pb = self.p_bar
         bar_rect = self._scaled_rect((BAR_X0, BAR_Y0, self.bar_w + 120.0, 63.0), p["stage_s"])
         pb['uRes'].value = (float(W), float(H))
@@ -1294,14 +1294,14 @@ class Engine:
         pb['uColR'].value = tuple(c / 255.0 for c in BAR_COL_R)
         self.v_bar.render(moderngl.TRIANGLE_STRIP)
 
-        # 9) اسم — از پشت بازیکن بیرون می‌آید (زیر دایره بازیکن رسم می‌شود — بند ۱۰)
+        # 9) technical note — from technical note player outside technical note‌technical note (technical note technical note player technical note technical note‌technical noteandtechnical note — technical note 10)
         nimg_h = self.ch_name.levels[0].height
         nrect = ((NAME_X - 12.0 + p["name_dx"]) * p["stage_s"] + (W / 2.0) * (1 - p["stage_s"]),
                  (NAME_Y - (nimg_h / 2.0 - 12.0)) * p["stage_s"] + (H / 2.0) * (1 - p["stage_s"]),
                  self.ch_name.levels[0].width * p["stage_s"], nimg_h * p["stage_s"])
         self._sprite(self.ch_name, nrect, p["name_blur"], p["name_a"])
 
-        # 10) دایره بازیکن/تیم — روی اسم تا ماسک واقعی عمل کند
+        # 10) technical note player/team — technical noteandtechnical note technical note until technical note real technical note technical note
         pr = CIRCLE_R + 34
         prect0 = (CIRCLE_C[0] - pr, CIRCLE_C[1] - pr, 2 * pr, 2 * pr)
         pcs = (prect0[0] + prect0[2] / 2.0, prect0[1] + prect0[3] / 2.0)
@@ -1310,7 +1310,7 @@ class Engine:
         prect = self._stage_around(prect, p["stage_s"])
         self._sprite(self.ch_portrait, prect, p["photo_blur"], p["photo_a"])
 
-        # 11) لوگوی باشگاه (پاپ ظریف — بند ۱۲)
+        # 11) logotechnical note withtechnical note (technical note technical note — technical note 12)
         lrect = self._stage_around((LOGO_BOX[0], LOGO_BOX[1], LOGO_BOX[2] + 8, LOGO_BOX[3] + 8),
                                    p["stage_s"])
         lpiv = (lrect[0] + lrect[2] / 2.0, lrect[1] + lrect[3] / 2.0)
@@ -1321,14 +1321,14 @@ class Engine:
             lrect2 = (lrect2[0] - 4.0 * ls, lrect2[1] - 4.0 * ls, lrect2[2], lrect2[3])
         self._sprite(self.ch_logo, lrect2, p["logo_blur"], p["logo_a"], pivot=lpiv, rot=math.radians(p["logo_rot"]))
 
-        # 11.5) [PT v2.3.0] چیپ SHIRT/AGE — سمت راست لوگو، زیر نوار اسم؛
-        #       ورود/خروج هم‌فاز لوگو (همان آلفا و اسکیل stage)
+        # 11.5) [PT v2.3.0] technical note SHIRT/AGE — side technical noteis logotechnical note technical note technical noteandtechnical note technical note
+        #       andtechnical noteandtechnical note/technical noteandtechnical note technical note‌technical notefrom logo (same technical note and technical note stage)
         if self.spr_meta is not None:
             mrect = self._stage_around((META_X0, META_Y0, self.meta_w, META_H),
                                        p["stage_s"])
             self._sprite(_StaticChain(self.spr_meta), mrect, 0.0, p["logo_a"])
 
-        # 12) عنوان HEATMAP (بند ۸) + سوییپ ظریف نهایی
+        # 12) technical noteandtechnical note HEATMAP (technical note 8) + technical noteandtechnical note technical note technical note
         tim = self.ch_title.levels[0]
         t_text_y = tim.height / 2.0 - 10.0 + 2.0
         t_cx, t_cy = W / 2.0, 62.0
@@ -1337,7 +1337,7 @@ class Engine:
         self._sprite(self.ch_title, trect2, p["title_blur"], p["title_a"],
                      sweep=p["title_sweep"])
 
-        # 13) ذرات محیطی (افزودنی — GPU instanced points)
+        # 13) technical note technical note (technical noteandtechnical note — GPU instanced points)
         if p["part_a"] > 0.003:
             _blend_add(ctx)
             gp = self.p_part
@@ -1348,13 +1348,13 @@ class Engine:
             _blend_src_over(ctx)
 
     def _stage_around(self, rect, s):
-        """مقیاس یک rect حول مرکز بوم (هم‌تراز با Stage)"""
+        """textortext text rect textandtext text textandtext (aligned with Stage)"""
         cx, cy = self.W / 2.0, self.H / 2.0
         x, y, w, h = rect
         nx, ny = cx + (x - cx) * s, cy + (y - cy) * s
         return (nx, ny, w * s, h * s)
 
-    # ------------------------------------------------------------ خروجی فریم
+    # ------------------------------------------------------------ output frame
     def render_entrance(self, f):
         self._draw(self._entrance_params(f), f / FPS)
 
@@ -1364,7 +1364,7 @@ class Engine:
     def read_frame_rgb(self):
         data = self.fbo.read(components=4)
         arr = np.frombuffer(data, dtype=np.uint8).reshape(self.H, self.W, 4)
-        arr = np.flipud(arr)                          # GL سطر ۰ پایین — برای PNG یک flip مستند
+        arr = np.flipud(arr)                          # GL technical note 0 below — for PNG technical note flip technical note
         return Image.fromarray(arr[:, :, :3], mode="RGB")
 
     def render_png(self, f):
@@ -1373,7 +1373,7 @@ class Engine:
 
 
 class _StaticChain:
-    """آداپتور اسپرایت استاتیک برای _sprite (بدون زنجیره بلور)"""
+    """textandtext text istext for _sprite (without chain textandtext)"""
     def __init__(self, tex):
         self.tex = tex
     def mix_textures(self, blur01):
@@ -1381,20 +1381,20 @@ class _StaticChain:
 
 
 # ================================================================
-#  بخش ۴ — کانتکست، پنجره زنده، API عمومی
+#  section 4 — technical note window livetechnical note API technical noteandtechnical note
 # ================================================================
 def create_context_offscreen():
-    """کانتکست آفلاین (تست/اسکرین‌شات) — نیازی به پنجره ندارد"""
+    """text text (test/text‌text) — textortext to window text"""
     import moderngl
     return moderngl.create_context(standalone=True)
 
 
 def create_context_windowed(w, h, title):
-    """پنجره GLFW برای پخش زنده روی سیستم کاربر"""
+    """window GLFW for text live textandtext system user"""
     import glfw
     import moderngl
     if sys.platform.startswith("linux"):
-        # برخی توزیع‌های لینوکس: پیش‌بارگذاری GL با RTLD_GLOBAL قبل از ساخت کانتکست
+        # technical note technical noteandtechnical note‌technical note technical noteandtechnical note: technical note‌withtechnical note GL with RTLD_GLOBAL before from technical note technical note
         for _lib in ("libGL.so.1", "libEGL.so.1"):
             try:
                 ctypes.CDLL(_lib, mode=ctypes.RTLD_GLOBAL)
@@ -1415,9 +1415,9 @@ def create_context_windowed(w, h, title):
 
 
 class _WindowSession:
-    """نشست زنده: ورود → حالت Live → خروج انیمیشنی → بستن
-       bundle=(win, ctx, glfw) → میزبانی توسط OverlayEngine (بدون init/terminate جدید —
-       قانون طلایی GLFW: در کل پروسه فقط یک init در boot موتور اورلی انجام می‌شود)."""
+    """text live: andtextandtext → text Live → textandtext text → text
+       bundle=(win, ctx, glfw) → Hometext textandtext OverlayEngine (without init/terminate new —
+       rule text GLFW: in total process only text init in boot textandtextandtext textandtext text text‌textandtext)."""
 
     def __init__(self, assets, events, scale=0.78, bundle=None):
         self.assets = assets
@@ -1432,7 +1432,7 @@ class _WindowSession:
             self.win, self.ctx, self.glfw = bundle
             self.owns_glfw = False
         self.engine = Engine(self.ctx, assets)
-        # بلیت تمام‌صفحه (شیدر ساده — فقط uTex و یونیفرم‌های VS)
+        # technical note technical note‌technical note (technical notein technical note — only uTex and technical noteandtechnical note‌technical note VS)
         q = np.array([0, 0, 0, 1, 1, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1, 0], dtype='f4')
         self.vb = self.ctx.buffer(q.tobytes())
         self.p_blit2 = self.ctx.program(vertex_shader=_VS_QUAD, fragment_shader=_FS_BLIT)
@@ -1486,7 +1486,7 @@ class _WindowSession:
 
             f = (now - t0) * FPS
             if phase == "entrance":
-                self.engine.render_entrance(f)          # بعد از ۱۳۰ به Live می‌رسد
+                self.engine.render_entrance(f)          # after from 130 to Live technical note‌technical note
             else:
                 k = (now - t_exit0) * FPS
                 if k >= 62:
@@ -1496,7 +1496,7 @@ class _WindowSession:
             glfw.swap_buffers(self.win)
             glfw.poll_events()
         glfw.destroy_window(self.win)
-        if self.owns_glfw:          # فقط اگر همین نشست مالک کتابخانه بود (مسیر قدیمی)
+        if self.owns_glfw:          # only if technical note technical note technical note technical noteuntiltechnical note technical noteandtechnical note (path legacy)
             glfw.terminate()
 
 
@@ -1509,17 +1509,17 @@ def _save_render(img, tag):
     return path
 
 
-# ------------------------------------------------------------ API عمومی
+# ------------------------------------------------------------ API technical noteandtechnical note
 _lock = threading.Lock()
 _thread_box = {"th": None, "events": None}
 
 def launch(assets, interactive=True, scale=0.78):
-    """فراخوانی از دکمه رندر برنامه اصلی.
-       خروجی: دیکشنری رویدادها {ready, failed, replay, close} یا None.
-       ready بعد از ساخته‌شدن موفق پنجره/موتور ست می‌شود؛ failed در هر خطای GPU/پنجره.
-       اگر پنجره قبلاً باز باشد → Replay در همان پنجره.
-       اگر OverlayEngine مقیم زنده باشد → پنجره تعاملی روی ترد همان موتور میزبانی
-       می‌شود (بدون glfw.init/terminate جدید — ریشه‌ی باگ Class already exists)."""
+    """textandtext from button render textnametext original.
+       output: text textandtextdatatext {ready, failed, replay, close} or None.
+       ready after from text‌text successful window/textandtextandtext text text‌textandtext failed in text Errortext GPU/window.
+       if window beforetext withtext withtext → Replay in same window.
+       if OverlayEngine text live withtext → window text textandtext text same textandtextandtext Hometext
+       text‌textandtext (without glfw.init/terminate new — text‌text withtext Class already exists)."""
     _eng = globals().get("_OVERLAY_ENGINE")
     if interactive and _eng is not None and _eng.is_alive():
         try:
@@ -1539,7 +1539,7 @@ def launch(assets, interactive=True, scale=0.78):
                 sess = _WindowSession(assets, events, scale)
                 events["ready"].set()
                 sess.run()
-            except Exception as ex:      # هر خطای GPU/پنجره → برنامه اصلی fallback می‌کند
+            except Exception as ex:      # technical note Errortechnical note GPU/window → technical notenametechnical note original fallback technical note‌technical note
                 events["failed"].set()
                 print("[BroadcastRenderer] window failed:", ex, file=sys.stderr)
 
@@ -1557,7 +1557,7 @@ def request_close():
 
 
 def capture_frames(assets, entrance_frames, exit_frames=None):
-    """اسکرین‌شات قطعی فریم‌ها (بدون پنجره) — برای بررسی کنار مرجع (بند ۲۱)"""
+    """text‌text deterministic frame‌text (without window) — for check text text (text 21)"""
     ctx = create_context_offscreen()
     eng = Engine(ctx, assets)
     out = {}
@@ -1572,21 +1572,21 @@ def capture_frames(assets, entrance_frames, exit_frames=None):
 
 
 # ================================================================
-#  بخش ۵ — Second Broadcast Layer: OverlayEngine مقیم
+#  section 5 — Second Broadcast Layer: OverlayEngine technical note
 # ================================================================
-#  پنجره‌ی برودکاست خودکار روی تصویر بازی — عین معماری اثبات‌شده:
-#    • glfw.init فقط «یک‌بار» در boot همین موتور در کل پروسه صدا زده می‌شود.
-#      هیچ مسیری در میانه‌ی بازی init/terminate نمی‌زند → باگ
-#      «Win32: Failed to register helper window class» ریشه‌کن می‌شود.
-#    • پنجره از ابتدا مخفی ساخته می‌شود (شفاف + Topmost + Click-through +
-#      NOACTIVATE) و فقط هنگام نمایش واقعی show/hide می‌شود؛ موقعیتش هرگز
-#      عوض نمی‌شود — انیمیشن فقط با uniform روی GPU حرکت می‌کند.
-#    • Prepare = آپلود تکسچر/ساخت صحنه چند ثانیه «قبل» از لحظه نمایش؛
-#      Show = فقط یک queue.put (زیر 0.1ms) → سپس تایم‌لاین ورود روی GPU.
+#  window‌technical note technical noteandtechnical noteis automatic technical noteandtechnical note image withtechnical note — technical note architecture technical notewithtechnical note‌technical note:
+#    • glfw.init only «technical note‌withtechnical note» in boot technical note technical noteandtechnical noteandtechnical note in total process technical note technical note technical note‌technical noteandtechnical note.
+#      technical note pathtechnical note in technical noteortechnical note‌technical note withtechnical note init/terminate technical note‌technical note → withtechnical note
+#      «Win32: Failed to register helper window class» technical note‌technical note technical note‌technical noteandtechnical note.
+#    • window from technical note technical note technical note technical note‌technical noteandtechnical note (technical note + Topmost + Click-through +
+#      NOACTIVATE) and only technical note display real show/hide technical note‌technical noteandtechnical note positiontechnical note never
+#      technical noteandtechnical note technical note‌technical noteandtechnical note — technical note only with uniform technical noteandtechnical note GPU technical note technical note‌technical note.
+#    • Prepare = technical noteandtechnical note technical note/technical note scene technical note second «before» from moment displaytechnical note
+#      Show = only technical note queue.put (technical note 0.1ms) → technical note untiltechnical note‌technical note andtechnical noteandtechnical note technical noteandtechnical note GPU.
 #
 #  State:  HIDDEN → PREPARING → READY → SHOWING → VISIBLE → EXITING → HIDDEN
-#          (خطای رندر → FAILED → با prepare دوباره → READY → SHOWING)
-# BUSY = پنجره تعاملی کلید R روی همین ترد در حال اجراست.
+#          (Errortechnical note render → FAILED → with prepare again → READY → SHOWING)
+# BUSY = window technical note totaltechnical note R technical noteandtechnical note technical note technical note currently runtechnical note.
 
 import queue as _queue
 
@@ -1596,8 +1596,8 @@ in vec2 v_uv;
 in vec2 v_px;
 out vec4 f_color;
 uniform sampler2D uTex;
-uniform vec4 uRect;       /* هندسه کواد — کل بوم fit-شده روی صفحه */
-uniform vec4 uMaskRect;   /* قاب گرد در مختصات صفحه — بیرونش شفاف می‌شود */
+uniform vec4 uRect;       /* text textandtext — total textandtext fit-text textandtext text */
+uniform vec4 uMaskRect;   /* text text in coordinates text — outsidetext text text‌textandtext */
 uniform float uRadius;
 float sdRoundBox(vec2 p, vec2 b, float r){
     vec2 q = abs(p) - b + r;
@@ -1607,14 +1607,14 @@ void main(){
     vec4 c = texture(uTex, v_uv);
     vec2 ctr = uMaskRect.xy + uMaskRect.zw * 0.5;
     float d = sdRoundBox(v_px - ctr, uMaskRect.zw * 0.5, uRadius);
-    float cov = 1.0 - clamp(d, 0.0, 1.0);          /* AA یک‌پیکسلی لبه */
-    f_color = vec4(c.rgb * cov, c.a * cov);        /* خروجی premultiplied */
+    float cov = 1.0 - clamp(d, 0.0, 1.0);          /* AA text‌text textto */
+    f_color = vec4(c.rgb * cov, c.a * cov);        /* output premultiplied */
 }
 """
 
 
 def _release_gpu_members(obj, skip=("ctx",)):
-    """آزادسازی منظم اشیاء GPU یک شیء (برای تعویض صحنه بدون نشت)"""
+    """freetextfromtext text textortext GPU text text (for textandtext scene without text)"""
     if obj is None:
         return
     for _name, _val in list(vars(obj).items()):
@@ -1637,15 +1637,15 @@ def _release_gpu_members(obj, skip=("ctx",)):
 
 
 class OverlayEngine:
-    """موتور اورلی مقیم — ترد رندر مالک انحصاری GLFW/Context در کل پروسه.
+    """textandtextandtext textandtext text — text render text text GLFW/Context in total process.
 
-       API (همه فقط پیام — غیرمسدود و امن از هر ترد):
-         prepare_player_overlay(assets)  → آپلود صحنه (قبل از لحظه نمایش)
-         show_player_overlay()           → تایم‌لاین ورود روی GPU
-         hide_player_overlay()           → تایم‌لاین خروج لایه‌به‌لایه
-         hide_now()                      → شفاف/مخفی فوری
-         open_manual(assets, scale)      → پنجره تعاملی R روی همین ترد
-         shutdown()                      → فقط هنگام بستن برنامه
+       API (text only message — textandtext and text from text text):
+         prepare_player_overlay(assets)  → textandtext scene (before from moment display)
+         show_player_overlay()           → untiltext‌text andtextandtext textandtext GPU
+         hide_player_overlay()           → untiltext‌text textandtext layer‌to‌layer
+         hide_now()                      → text/text immediate
+         open_manual(assets, scale)      → window text R textandtext text text
+         shutdown()                      → only text text textnametext
     """
 
     ST_HIDDEN = "HIDDEN"
@@ -1663,7 +1663,7 @@ class OverlayEngine:
 
     @classmethod
     def start(cls, width_frac=0.33, height_frac=0.32):
-        """فقط یک‌بار در شروع برنامه — non-blocking (ترد جدا + handshake داخلی)."""
+        """only text‌withtext in start textnametext — non-blocking (text text + handshake internal)."""
         with cls._inst_lock:
             if cls._instance is not None:
                 return cls._instance
@@ -1678,19 +1678,19 @@ class OverlayEngine:
         self._q = _queue.Queue()
         self._lock = threading.Lock()
         self._state = self.ST_DEAD
-        self._fail = None              # خطای boot (دائمی)
-        self._last_error = None        # خطای رندر/prepare (با prepare بعدی پاک می‌شود)
+        self._fail = None              # Errortechnical note boot (technical note)
+        self._last_error = None        # Errortechnical note render/prepare (with prepare aftertechnical note technical note technical note‌technical noteandtechnical note)
         self._ready_ev = threading.Event()
         self._init_info = {}
         self._gen = 0
         self._stop = False
-        # فقط در ترد رندر لمس می‌شوند:
+        # only in technical note render technical note technical note‌technical noteandtechnical note:
         self._glfw = None
         self._mg = None
         self._ctx = None
         self._win = None
         self._geo = None               # (ow, oh, ox, oy)
-        self._eng = None               # Engine صحنه فعلی
+        self._eng = None               # Engine scene technical note
         self._phase = None             # None | "in" | "live" | "out"
         self._t0 = 0.0
         self._p_mask = self._vb_mask = self._vao_mask = None
@@ -1698,7 +1698,7 @@ class OverlayEngine:
                                         name="auto-overlay-engine", daemon=True)
         self._thread.start()
 
-    # ---------------- API امن از هر ترد ----------------
+    # ---------------- API technical note from technical note technical note ----------------
     def is_alive(self):
         return bool(self._thread.is_alive() and self._ready_ev.is_set()
                     and self._fail is None and not self._stop)
@@ -1739,7 +1739,7 @@ class OverlayEngine:
         return ev
 
     def shutdown(self, timeout=2.0):
-        """فقط هنگام بستن برنامه — تنها نقطه‌ی terminate در کل پروسه."""
+        """only text text textnametext — text text‌text terminate in total process."""
         self._stop = True
         self._put(("stop",))
         try:
@@ -1747,7 +1747,7 @@ class OverlayEngine:
         except Exception:
             pass
 
-    # ---------------- داخلی ----------------
+    # ---------------- internal ----------------
     def _put(self, cmd):
         try:
             self._q.put_nowait(cmd)
@@ -1769,8 +1769,8 @@ class OverlayEngine:
             pass
 
     def _apply_win32_styles(self, hwnd):
-        """یک‌بار در boot — Topmost + Click-through + NOACTIVATE (عین الگوی اثبات‌شده).
-           در طول انیمیشن «هیچ» فراخوانی ویندوزی انجام نمی‌شود."""
+        """text‌withtext in boot — Topmost + Click-through + NOACTIVATE (text textandtext textwithtext‌text).
+           in length text «text» textandtext andtextandtext text text‌textandtext."""
         if sys.platform != "win32" or not hwnd:
             return "n/a (non-Windows)"
         try:
@@ -1793,14 +1793,14 @@ class OverlayEngine:
                 user32.SetLayeredWindowAttributes(hwnd, 0, 255, 0x2)  # LWA_ALPHA
             except Exception:
                 pass
-            user32.SetWindowPos(hwnd, -1, 0, 0, 0, 0, 0x0001 | 0x0002 | 0x0010)  # TOPMOST یک‌بار
+            user32.SetWindowPos(hwnd, -1, 0, 0, 0, 0, 0x0001 | 0x0002 | 0x0010)  # TOPMOST technical note‌withtechnical note
             return (f"0x{old:08X} → 0x{new:08X} "
                     "LAYERED|TRANSPARENT|NOACTIVATE|TOOLWINDOW | TOPMOST (once at boot)")
         except Exception as ex:
             return f"failed: {type(ex).__name__}: {ex}"
 
     def _compute_geometry(self):
-        """اندازه/موقعیت پنجره — یک‌بار در boot: کسر واقعی از رزولوشن، پایین-چپ Working Area."""
+        """textfromtext/position window — text‌withtext in boot: text real from textandtextandtext below-text Working Area."""
         g = self._glfw
         wx, wy, ww, wh = 0, 0, 0, 0
         mon = None
@@ -1825,16 +1825,16 @@ class OverlayEngine:
             wx, wy, ww, wh = 0, 0, 1920, 1080
         ow = max(320, int(round(ww * self._wf)))
         oh = max(200, int(round(wh * self._hf)))
-        mx = max(8, int(round(ww * 0.015)))          # حاشیه چپ
-        my = max(8, int(round(wh * 0.02)))           # حاشیه پایین (~2%)
+        mx = max(8, int(round(ww * 0.015)))          # technical note technical note
+        my = max(8, int(round(wh * 0.02)))           # technical note below (~2%)
         ox = wx + mx
         oy = wy + wh - oh - my
         return (ow, oh, ox, oy), (wx, wy, ww, wh)
 
-    # ---------------- ترد رندر ----------------
+    # ---------------- technical note render ----------------
     def _run(self):
         if sys.platform.startswith("linux"):
-            # برخی توزیع‌های لینوکس: پیش‌بارگذاری GL با RTLD_GLOBAL قبل از ساخت کانتکست
+            # technical note technical noteandtechnical note‌technical note technical noteandtechnical note: technical note‌withtechnical note GL with RTLD_GLOBAL before from technical note technical note
             for _lib in ("libGL.so.1", "libEGL.so.1"):
                 try:
                     ctypes.CDLL(_lib, mode=ctypes.RTLD_GLOBAL)
@@ -1845,12 +1845,12 @@ class OverlayEngine:
             import moderngl as _mg
         except Exception as ex:
             self._fail = (f"package import failed: {type(ex).__name__}: {ex} "
-                          "— اجرا کنید: pip install moderngl glfw")
+                          "— run text: pip install moderngl glfw")
             self._ready_ev.set()
             print(f"[AUTO_HEATMAP] ENGINE INIT FAILED — {self._fail}", flush=True)
             return
         try:
-            if not _glfw.init():                      # تنها init کل پروسه
+            if not _glfw.init():                      # technical note init total process
                 self._fail = "glfw.init() failed"
                 self._ready_ev.set()
                 print("[AUTO_HEATMAP] ENGINE INIT FAILED — glfw.init() failed", flush=True)
@@ -1860,10 +1860,10 @@ class OverlayEngine:
             (ow, oh, ox, oy), wa = self._compute_geometry()
             self._geo = (ow, oh, ox, oy)
             g = _glfw
-            g.window_hint(g.VISIBLE, False)           # مخفی — فقط هنگام نمایش واقعی show
+            g.window_hint(g.VISIBLE, False)           # technical note — only technical note display real show
             g.window_hint(g.DECORATED, False)
             g.window_hint(g.RESIZABLE, False)
-            g.window_hint(g.FOCUS_ON_SHOW, False)     # هیچ‌وقت فوکوس نمی‌گیرد
+            g.window_hint(g.FOCUS_ON_SHOW, False)     # technical note‌andtechnical note technical noteandtechnical noteandtechnical note technical note‌technical note
             g.window_hint(g.FLOATING, True)
             g.window_hint(g.TRANSPARENT_FRAMEBUFFER, True)
             g.window_hint(g.DOUBLEBUFFER, True)
@@ -1873,15 +1873,15 @@ class OverlayEngine:
                 g.window_hint(g.SAMPLES, 0)
                 win = g.create_window(ow, oh, "pes-heatmap-auto-overlay", None, None)
             if not win:
-                self._fail = "glfw.create_window failed — پنجره شفاف ساخته نشد (DWM/driver?)"
+                self._fail = "glfw.create_window failed — window text text text (DWM/driver?)"
                 self._ready_ev.set()
                 g.terminate()
                 print(f"[AUTO_HEATMAP] ENGINE INIT FAILED — {self._fail}", flush=True)
                 return
             self._win = win
-            g.set_window_pos(win, ox, oy)             # تنها بار — پنجره هرگز جابه‌جا نمی‌شود
+            g.set_window_pos(win, ox, oy)             # technical note withtechnical note — window never technical noteto‌technical note technical note‌technical noteandtechnical note
             g.make_context_current(win)
-            g.swap_interval(1)                        # 60FPS VSync — بدون Busy Loop
+            g.swap_interval(1)                        # 60FPS VSync — without Busy Loop
             ctx = _mg.create_context()
             self._ctx = ctx
             try:
@@ -1890,7 +1890,7 @@ class OverlayEngine:
                 pass
             ctx.enable(_mg.BLEND)
             ctx.blend_func = (_mg.ONE, _mg.ONE_MINUS_SRC_ALPHA)   # premultiplied
-            # فریم کاملاً شفاف زیر پنجره — بدون هیچ فلشی
+            # frame completetechnical note technical note technical note window — without technical note technical note
             ctx.clear(0.0, 0.0, 0.0, 0.0)
             g.swap_buffers(win)
             try:
@@ -1933,12 +1933,12 @@ class OverlayEngine:
             self._ready_ev.set()
             print(f"[AUTO_HEATMAP] ENGINE INIT FAILED — {self._fail}", flush=True)
             return
-        # ---------------- حلقه اصلی ----------------
+        # ---------------- technical note original ----------------
         while not self._stop:
             try:
                 self._loop_once()
             except Exception as ex:
-                # خطای رندر → FAILED؛ ترد زنده می‌ماند (مسیر retry بند ۳۲)
+                # Errortechnical note render → FAILEDtechnical note technical note live technical note‌technical note (path retry technical note 32)
                 with self._lock:
                     self._last_error = f"render: {type(ex).__name__}: {ex}"
                 self._phase = None
@@ -1951,7 +1951,7 @@ class OverlayEngine:
                     pass
                 print(f"[AUTO_HEATMAP] ENGINE FAILED — {self._last_error}",
                       flush=True)
-        # ---------------- خروج برنامه (تنها terminate) ----------------
+        # ---------------- technical noteandtechnical note technical notenametechnical note (technical note terminate) ----------------
         try:
             _release_gpu_members(self._eng)
             self._eng = None
@@ -1970,7 +1970,7 @@ class OverlayEngine:
     def _loop_once(self):
         g = self._glfw
         if self._phase is None:
-            # --- IDLE — انتظار پیام؛ بدون CPU Busy Loop
+            # --- IDLE — technical note messagetechnical note without CPU Busy Loop
             try:
                 cmd = self._q.get(timeout=0.25)
             except Exception:
@@ -1979,7 +1979,7 @@ class OverlayEngine:
             if cmd is not None:
                 self._handle(cmd)
             return
-        # --- فاز فعال (ورود/لایو/خروج) — هر فریم: رویدادها + پیام‌ها + رندر
+        # --- technical notefrom active (andtechnical noteandtechnical note/technical noteand/technical noteandtechnical note) — technical note frame: technical noteandtechnical notedatatechnical note + message‌technical note + render
         g.poll_events()
         if not self._drain() or self._stop:
             return
@@ -2010,7 +2010,7 @@ class OverlayEngine:
                 self._finish_hide()
 
     def _drain(self):
-        """پردازش همه پیام‌های صفی till اولین deferral — False یعنی پیام مؤخر شد"""
+        """textfromtext text message‌text text till firsttext deferral — False text message text text"""
         while True:
             try:
                 cmd = self._q.get_nowait()
@@ -2022,7 +2022,7 @@ class OverlayEngine:
                 return False
 
     def _handle(self, cmd):
-        """True = توقف drain (پیام مؤخر شد یا stop) | None/False = ادامه"""
+        """True = stop drain (message text text or stop) | None/False = resume"""
         kind = cmd[0]
         if kind == "stop":
             self._stop = True
@@ -2030,7 +2030,7 @@ class OverlayEngine:
         if kind == "prepare":
             if self._phase is not None:
                 self._q.put(cmd)
-                return True                      # مؤخر — تا پایان نمایش فعلی
+                return True                      # technical note — until end display technical note
             _tag, assets, gen = cmd
             self._set_state(self.ST_PREPARING)
             try:
@@ -2053,7 +2053,7 @@ class OverlayEngine:
         if kind == "show":
             if self._phase is not None or self._eng is None:
                 return False
-            # اولین فریم کاملاً آماده زیر پنجره → show → بدون فلش
+            # firsttechnical note frame completetechnical note technical note technical note window → show → without technical note
             self._t0 = time.perf_counter()
             try:
                 self._eng.render_entrance(0.0)
@@ -2074,7 +2074,7 @@ class OverlayEngine:
         if kind == "manual":
             if self._phase is not None:
                 self._q.put(cmd)
-                return True                      # مؤخر — اورلی فعلی تمام شود
+                return True                      # technical note — technical noteandtechnical note technical note technical note technical noteandtechnical note
             self._run_manual(cmd[1], cmd[2], cmd[3])
             return False
         return False
@@ -2102,8 +2102,8 @@ class OverlayEngine:
         self._glfw.swap_buffers(self._win)
 
     def _render_live(self, f):
-        """حالت لایو + میکرو-انیمیشن‌های GPU (بند دستور): پارالاکس بازیکن ±1.5px،
-           تنفس نوار اسم ±1px، ضربان Glow 0.92→1.00→0.94 — داده هیت‌مپ ثابت است."""
+        """text textand + textand-text‌text GPU (text instruction): text player ±1.5pxtext
+           text textandtext text ±1pxtext textwithtext Glow 0.92→1.00→0.94 — data heatmap text is."""
         eng = self._eng
         p = eng._entrance_params(f)
         t = f / FPS
@@ -2113,7 +2113,7 @@ class OverlayEngine:
         eng._draw(p, t)
 
     def _overlay_blit(self):
-        """بلیت نهایی به صفحه: fit حفظ نسبت + ماسک SDF گوشه‌گرد (بیرون قاب = شفاف کامل)"""
+        """text text to text: fit text ratio + text SDF textandtext‌text (outside text = text complete)"""
         eng = self._eng
         if eng is None:
             return
@@ -2129,9 +2129,9 @@ class OverlayEngine:
         _blend_src_over(ctx)
         pm = self._p_mask
         fr = FRAME_RECT
-        pad = 3.0 * s                          # نگه‌داشتن نیم‌پیکسل خط لبه
+        pad = 3.0 * s                          # technical note‌technical note technical note‌technical note line technical noteto
         pm['uRes'].value = (float(ww), float(wh))
-        pm['uRect'].value = (fx, fy, fw, fh)   # کواد = کل بوم (uv صحیح)
+        pm['uRect'].value = (fx, fy, fw, fh)   # technical noteandtechnical note = total technical noteandtechnical note (uv correct)
         pm['uMaskRect'].value = (fx + fr[0] * s - pad, fy + fr[1] * s - pad,
                                  fr[2] * s + 2.0 * pad, fr[3] * s + 2.0 * pad)
         pm['uRadius'].value = (FRAME_R + 3.0) * s
@@ -2141,7 +2141,7 @@ class OverlayEngine:
         g.swap_buffers(win)
 
     def _run_manual(self, assets, scale, events):
-        """پنجره تعاملی کلید R — روی «همین ترد» میزبانی می‌شود؛ بدون init/terminate جدید."""
+        """window text totaltext R — textandtext «text text» Hometext text‌textandtext without init/terminate new."""
         g = self._glfw
         w, h = int(RENDER_W * scale), int(RENDER_H * scale)
         sess = None
@@ -2176,7 +2176,7 @@ class OverlayEngine:
             except Exception:
                 pass
             try:
-                g.make_context_current(self._win)   # برگرد به کانتکست اورلی
+                g.make_context_current(self._win)   # technical note to technical note technical noteandtechnical note
             except Exception:
                 pass
             if self._phase is None:
