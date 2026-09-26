@@ -1,26 +1,25 @@
 # -*- mode: python ; coding: utf-8 -*-
 from pathlib import Path
 
-ROOT = Path(SPECPATH).resolve().parent
+SPEC_DIR = Path(__file__).resolve().parent
+ROOT = SPEC_DIR.parent
 
 a = Analysis(
     [str(ROOT / "MyMods.py")],
     pathex=[str(ROOT)],
-    datas=[],
     binaries=[],
+    datas=[],
     hiddenimports=[
-        "PyQt6.QtCore",
-        "PyQt6.QtGui",
-        "PyQt6.QtWidgets",
         "PyQt6.QtMultimedia",
+        "PyQt6.QtMultimediaWidgets",
     ],
-    excludes=[
-        "PyQt5",
-        "PyQt6.QtWebEngineWidgets",
-        "PyQt6.QtWebEngineCore",
-    ],
+    hookspath=[],
+    hooksconfig={},
+    runtime_hooks=[],
+    excludes=["PyQt5"],
     noarchive=False,
 )
+
 pyz = PYZ(a.pure)
 
 exe = EXE(
@@ -35,4 +34,6 @@ exe = EXE(
     strip=False,
     upx=True,
     console=False,
+    disable_windowed_traceback=False,
+    argv_emulation=False,
 )
