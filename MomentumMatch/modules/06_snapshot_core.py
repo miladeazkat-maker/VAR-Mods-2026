@@ -1,5 +1,5 @@
 def _snap_stage_write(msg: str) -> None:
-    """نوشتن یک خط در لاگ مراحل اسنپ‌شات — هرگز exception بالا نمی‌آورد."""
+    """write text line in log text textagetext‌text — never exception withtext text‌textandtext."""
     if not SNAP_STAGE_LOG_ENABLED:
         return
     try:
@@ -23,33 +23,33 @@ def _snap_stage_write(msg: str) -> None:
     except Exception:
         pass
 
-# فرمول سایز/محل نمایش — مرجع: real.png (پخش واقعی ≈ ۳۳٪ عرض / ۳۲٪ ارتفاع)
-TV_SNAP_OVERLAY_MAX_W_FRAC = 0.33    # هرگز بیش از یک‌سوم عرض صفحه
-TV_SNAP_OVERLAY_H_FRAC = 0.32        # ارتفاع هدف ≈ یک‌سوم ارتفاع صفحه
+# technical noteandtechnical note technical note/technical note display — technical note: real.png (technical note real ≈ 33technical note width / 32technical note height)
+TV_SNAP_OVERLAY_MAX_W_FRAC = 0.33    # never technical note from third width technical note
+TV_SNAP_OVERLAY_H_FRAC = 0.32        # height technical note ≈ third height technical note
 TV_SNAP_OVERLAY_MARGIN_L_FRAC = 0.03
 TV_SNAP_OVERLAY_MARGIN_B_FRAC = 0.02
 
-# --- نسخهٔ ۱۰٫۱۳ — انیمیشن ورود/خروج پنجرهٔ اسنپ‌شات (کاربر: نمودار نباید
-# یک‌دفعه ظاهر شود؛ از زیر صفحه طی ۱ ثانیه با ease وارد/خارج می‌شود —
-# سرعت در وسط حرکت زیاد و در ابتدا/انتها نرم و آرام) ---
-TV_SNAP_ANIM_MS = 1000          # مدت هر فاز ورود/خروج (میلی‌ثانیه)
-# نسخهٔ ۱۰٫۱۸ — گام انیمیشن ۱۶→۲۵ms (حدود ۴۰fps — شرط کاربر: نرخ پایین‌تر،
-# مدت انیمیشن با perf_counter روی «زمان واقعی» کنترل می‌شود و ۱۰۰۰ms می‌ماند)
-TV_SNAP_ANIM_STEP_MS = 25       # گام فریم‌های انیمیشن (~۴۰fps)
-# --- نسخهٔ ۱۰٫۱۵ — پیش‌بارگذاری (شرط کاربر: «یکی دو ثانیه قبل از ورود،
-# لودش کن و خارج از کادر نگه دار تا موقع ورود مجبور به لود نشه») ---
-# این‌قدر قبل از لحظهٔ نمایش، رندر + ساخت پنجره انجام می‌شود؛ پنجره کاملاً
-# زیرِ صفحه می‌ماند و در لحظهٔ نمایش فقط انیمیشن ورود اجرا می‌شود.
+# --- versiontechnical note 10technical note13 — technical note andtechnical noteandtechnical note/technical noteandtechnical note windowtechnical note technical noteagetechnical note‌technical note (user: chart technical notemust
+# technical note‌technical note technical note technical noteandtechnical note from technical note technical note technical note 1 second with ease andtechnical note/technical note technical note‌technical noteandtechnical note —
+# technical note in andtechnical note technical note technical noteortechnical note and in technical note/technical note smooth and technical note) ---
+TV_SNAP_ANIM_MS = 1000          # technical note technical note technical notefrom andtechnical noteandtechnical note/technical noteandtechnical note (technical note‌second)
+# versiontechnical note 10technical note18 — technical note technical note 16→25ms (technical noteandtechnical note 40fps — technical note user: technical note below‌technical note
+# technical note technical note with perf_counter technical noteandtechnical note «time real» technical note technical note‌technical noteandtechnical note and 1000ms technical note‌technical note)
+TV_SNAP_ANIM_STEP_MS = 25       # technical note frame‌technical note technical note (~40fps)
+# --- versiontechnical note 10technical note15 — technical note‌withtechnical note (technical note user: «technical note technical noteand second before from andtechnical noteandtechnical note
+# technical noteandtechnical note technical note and technical note from technical notein technical note technical note until technical noteandtechnical note andtechnical noteandtechnical note technical noteandtechnical note to technical noteandtechnical note technical note») ---
+# technical note‌technical notein before from momenttechnical note displaytechnical note render + technical note window technical note technical note‌technical noteandtechnical note window completetechnical note
+# technical note technical note technical note‌technical note and in momenttechnical note display only technical note andtechnical noteandtechnical note technical note technical note‌technical noteandtechnical note.
 TV_SNAP_PRELOAD_LEAD_SEC = 2.0
 
-# --- نسخهٔ ۱۰٫۲۱ — فلگ‌های تست از Environment Variable هم ست می‌شوند
-# (بدون تغییر کد — برای اجرای سریع تست‌های A/B/C روی همان بازی):
+# --- versiontechnical note 10technical note21 — technical note‌technical note test from Environment Variable technical note technical note technical note‌technical noteandtechnical note
+# (unchanged code — for technical note fast test‌technical note A/B/C technical noteandtechnical note same withtechnical note):
 #   TV_SNAP_SHOW_DEBUG / TV_SNAP_DEBUG_NO_ANIM /
 #   TV_SNAP_DEBUG_ANIM_NO_MOVE / TV_SNAP_DEBUG_ANIM_SINGLE_MOVE /
-#   TV_SNAP_SWP_WIN_DEBUG   →  مقدار 1/true/yes/on = فعال
+#   TV_SNAP_SWP_WIN_DEBUG   →  value 1/true/yes/on = active
 def _snap_env_flag(name: str, default: bool) -> bool:
-    """نسخهٔ ۱۰٫۲۱ — خواندن فلگ دیباگ از Environment Variable (اختیاری).
-    اگر متغیر ست نشده باشد، پیش‌فرض کد برمی‌گردد (رفتار عادی دست‌نخورده)."""
+    """versiontext 10text21 — read text textwithtext from Environment Variable (optional).
+    if text text text withtext default code text‌text (textuntiltext text unchanged)."""
     try:
         v = os.environ.get(name)
         if v is None:
@@ -59,91 +59,91 @@ def _snap_env_flag(name: str, default: bool) -> bool:
         return default
 
 
-# --- نسخهٔ ۱۰٫۱۸ — دیباگ لحظهٔ نمایش اسنپ‌شات (بندهای ۱/۲/۱۰/۱۱/۱۲ کاربر) ---
-# TV_SNAP_SHOW_DEBUG: لاگ کامل مسیر نمایش (فقط اسنپ‌شات — هیچ لاگ دیگری
-# اضافه نمی‌شود). در نسخهٔ Release کافی است False شود.
-# --- نسخهٔ ۱۰٫۲۴ — حذف کامل لاگ‌های کنسول (درخواست کاربر) ---
-# پیش‌فرض «سکوت مطلق»: هیچ بلوک [OVERLAY_STATE] / [SNAPSHOT_STATE] /
-# [SNAPSHOT PRELOAD] / [SNAPSHOT ANIM ...] چاپ نمی‌شود. برای عیب‌یابی
-# موقت (فقط در صورت نیاز) همان مسیر قبلی با متغیر محیطی در دسترس است:
-#   set TV_SNAP_SHOW_DEBUG=1   →  لاگ‌های کامل برگردند
+# --- versiontechnical note 10technical note18 — technical notewithtechnical note momenttechnical note display technical noteagetechnical note‌technical note (technical note 1/2/10/11/12 user) ---
+# TV_SNAP_SHOW_DEBUG: log complete path display (only technical noteagetechnical note‌technical note — technical note log technical note
+# technical note technical note‌technical noteandtechnical note). in versiontechnical note Release technical note is False technical noteandtechnical note.
+# --- versiontechnical note 10technical note24 — technical note complete log‌technical note technical noteandtechnical note (request user) ---
+# default «silence technical note»: technical note technical noteandtechnical note [OVERLAY_STATE] / [SNAPSHOT_STATE] /
+# [SNAPSHOT PRELOAD] / [SNAPSHOT ANIM ...] print technical note‌technical noteandtechnical note. for technical note‌ortechnical note
+# technical noteandtechnical note (only in technical noteandtechnical note technical noteortechnical note) same path beforetechnical note with technical note technical note in technical note is:
+#   set TV_SNAP_SHOW_DEBUG=1   →  log‌technical note complete technical note
 TV_SNAP_SHOW_DEBUG = _snap_env_flag("TV_SNAP_SHOW_DEBUG", False)
-# تست ۱ (بند ۱۰): نمایش «بدون انیمیشن» — Render→آماده‌سازی→Show→ثابت.
-# اگر با این حالت هم بازی هنگام Show افت داشت، مشکل از Animation نیست و
-# باید روی Toplevel/Layered/UpdateLayeredWindow/DWM تمرکز شود.
-# نسخهٔ ۱۰٫۲۱ — همان «TEST 1 — ENTRY ANIMATION OFF» کاربر است: Preload →
-# READY → Show → پنجره مستقیم در مکان نهایی؛ هیچ SetWindowPos متحرکی در
-# ثانیهٔ اول انجام نمی‌شود. (اگر هم SINGLE_MOVE فعال باشد، این اولویت دارد.)
+# test 1 (technical note 10): display «without technical note» — Render→technical note‌technical notefromtechnical note→Show→technical note.
+# if with technical note technical note technical note withtechnical note technical note Show decrease technical note technical notetotal from Animation is not and
+# must technical noteandtechnical note Toplevel/Layered/UpdateLayeredWindow/DWM technical note technical noteandtechnical note.
+# versiontechnical note 10technical note21 — same «TEST 1 — ENTRY ANIMATION OFF» user is: Preload →
+# READY → Show → window direct in technical note technical note technical note SetWindowPos technical note in
+# secondtechnical note first technical note technical note‌technical noteandtechnical note. (if technical note SINGLE_MOVE active withtechnical note technical note firstandtechnical note technical note.)
 TV_SNAP_DEBUG_NO_ANIM = _snap_env_flag("TV_SNAP_DEBUG_NO_ANIM", False)
-# تست ۲ (بند ۱۱): نمایش همان پنجره با بیت‌مپ آزمایشی کوچک 256×256 به‌جای
-# PNG واقعی (مقایسهٔ 256×256 با 2034×978 = تشخیص هزینهٔ Surface/Composition)
+# test 2 (technical note 11): display same window with technical note‌technical note technical note technical noteandtechnical note 256×256 to‌technical note
+# PNG real (technical note 256×256 with 2034×978 = detection technical note Surface/Composition)
 TV_SNAP_DEBUG_SMALL_BITMAP = False
 TV_SNAP_DEBUG_BITMAP_SIZE = 256
 
-# --- نسخهٔ ۱۰٫۲۰ — تست ب (بند ۱۰ پیام جدید کاربر): انیمیشن «بدون حرکت» ---
-# ترد انیمیشن و زمان‌بندی ۴۰fps «فعال» است ولی هیچ SetWindowPos انجام
-# نمی‌شود؛ پنجره ثابت زیر صفحه می‌ماند (بالا هم نمی‌آید — طبیعی است).
-# تفسیر:
-#   NORMAL          → Stutter   |  NO-MOVE (این فلگ) → بدون Stutter
-#     ⇒ عامل تقریباً قطعی: خودِ حرکت HWND / Window Manager / DWM.
-#   هر دو حالت Stutter ⇒ انیمیشن از لیست مظنون‌ها خارج می‌شود؛ تمرکز روی
-#     Show / DWM composition / GPU (بند ۱۶ حالت ۳).
-# (تست الف = TV_SNAP_DEBUG_NO_ANIM در بالای همین بلوک — نمایش کاملاً ثابت.)
+# --- versiontechnical note 10technical note20 — test technical note (technical note 10 message new user): technical note «without technical note» ---
+# technical note technical note and time‌technical note 40fps «active» is andtechnical note technical note SetWindowPos technical note
+# technical note‌technical noteandtechnical note window technical note technical note technical note technical note‌technical note (withtechnical note technical note technical note‌technical note — technical note is).
+# technical note:
+#   NORMAL          → Stutter   |  NO-MOVE (technical note technical note) → without Stutter
+#     ⇒ technical note technical notewithtechnical note deterministic: technical noteandtechnical note technical note HWND / Window Manager / DWM.
+#   technical note technical noteand technical note Stutter ⇒ technical note from technical note technical noteandtechnical note‌technical note technical note technical note‌technical noteandtechnical note technical note technical noteandtechnical note
+#     Show / DWM composition / GPU (technical note 16 technical note 3).
+# (test technical note = TV_SNAP_DEBUG_NO_ANIM in withtechnical note technical note technical noteandtechnical note — display completetechnical note technical note.)
 TV_SNAP_DEBUG_ANIM_NO_MOVE = _snap_env_flag("TV_SNAP_DEBUG_ANIM_NO_MOVE", False)
 
-# --- نسخهٔ ۱۰٫۲۱ — تست ۳ کاربر: فقط «یک» SetWindowPos در لحظهٔ ورود ---
-# Overlay از قبل Preload شده → Show → فقط «یک» SetWindowPos اندازه‌گیری‌شده
-# به مکان نهایی؛ بعدش هیچ حرکتی در ثانیهٔ اول (بدون انیمیشن، بدون ترد).
-# اگر همین یک فراخوانی 100-200ms طول بکشد → هزینهٔ خودِ فراخوانی/
-# DWM/composition است، نه زمان‌بندی انیمیشن. (اولویت: NO_ANIM > SINGLE_MOVE)
+# --- versiontechnical note 10technical note21 — test 3 user: only «technical note» SetWindowPos in momenttechnical note andtechnical noteandtechnical note ---
+# Overlay from before Preload technical note → Show → only «technical note» SetWindowPos technical notefromtechnical note‌technical note‌technical note
+# to technical note technical note aftertechnical note technical note technical note in secondtechnical note first (without technical note without technical note).
+# if technical note technical note technical noteandtechnical note 100-200ms length technical note → technical note technical noteandtechnical note technical noteandtechnical note/
+# DWM/composition istechnical note technical note time‌technical note technical note. (firstandtechnical note: NO_ANIM > SINGLE_MOVE)
 TV_SNAP_DEBUG_ANIM_SINGLE_MOVE = _snap_env_flag(
     "TV_SNAP_DEBUG_ANIM_SINGLE_MOVE", False)
 
-# --- نسخهٔ ۱۰٫۲۱ — تست ۵ کاربر: تلمتری کامل ویندوزی «هر» SetWindowPos ---
-# old/new x,y + y واقعی بعد از حرکت + HWND + native TID + priority + flags
-# + return + GetLastError + قبل/بعد (Foreground/Visible/TOPMOST/LAYERED/
-# TRANSPARENT/NOACTIVATE). اگر مدت از آستانه بیشتر شود → نمونهٔ پشتهٔ
-# UI-Thread از ترد انیمیشن ثبت می‌شود (تشخیص «UI هنگام بلوک چه می‌کرد؟»).
+# --- versiontechnical note 10technical note21 — test 5 user: technical note complete andtechnical noteandtechnical note «technical note» SetWindowPos ---
+# old/new x,y + y real after from technical note + HWND + native TID + priority + flags
+# + return + GetLastError + before/after (Foreground/Visible/TOPMOST/LAYERED/
+# TRANSPARENT/NOACTIVATE). if technical note from threshold technical note technical noteandtechnical note → sampletechnical note technical note
+# UI-Thread from technical note technical note register technical note‌technical noteandtechnical note (detection «UI technical note technical noteandtechnical note technical note technical note‌technical note»).
 TV_SNAP_SWP_WIN_DEBUG = _snap_env_flag("TV_SNAP_SWP_WIN_DEBUG", True)
 TV_SNAP_UI_STACK_ON_SLOW_MS = 30.0
 
-# --- نسخهٔ ۱۰٫۱۹ — Preload واقعی پنجره (لاگ کاربر: NO PREBUILT WINDOW در
-# لحظهٔ Show) ---
-# اگر پنجرهٔ پیش‌ساخته آماده نبود، ساخت دوباره تا «نزدیک لحظهٔ Show» ادامه
-# می‌یابد (self-heal) — ولی هرگز در لحظهٔ Show شروع نمی‌شود.
-TV_SNAP_PRELOAD_RETRY_MIN_GAP_SEC = 0.5   # حداقل فاصلهٔ دو تلاش self-heal
-TV_SNAP_PRELOAD_MIN_REMAIN_SEC = 0.4      # کمتر از این تا Show → تلاش جدید نمی‌شود (دیگر نمی‌رسد)
+# --- versiontechnical note 10technical note19 — Preload real window (log user: NO PREBUILT WINDOW in
+# momenttechnical note Show) ---
+# if windowtechnical note technical note‌technical note technical note technical noteandtechnical note technical note again until «technical note momenttechnical note Show» resume
+# technical note‌ortechnical note (self-heal) — andtechnical note never in momenttechnical note Show start technical note‌technical noteandtechnical note.
+TV_SNAP_PRELOAD_RETRY_MIN_GAP_SEC = 0.5   # technical note distancetechnical note technical noteand technical note self-heal
+TV_SNAP_PRELOAD_MIN_REMAIN_SEC = 0.4      # technical note from technical note until Show → technical note new technical note‌technical noteandtechnical note (technical note technical note‌technical note)
 
-# --- نسخهٔ ۱۰٫۲۲ — Snapshot Window Lifecycle Manager (گزارش فنی کاربر) ---
-# هدف: «پنجره باید قبل از نیاز به نمایش ساخته شده باشد» — نه در لحظهٔ Show.
-# ۱) پنجرهٔ آستانه‌ای پهن Preload (اولویت ۱): برای میان‌بازی‌ها (h1/h2/et)
-#    هر تیک Worker بعد از «هدف − این ثانیه» اگر پنجرهٔ پیش‌ساخته READY
-#    نبود، همان‌جا dispatch می‌شود (if match_time >= preload_start)؛
-#    دیگر پنجرهٔ ۲ ثانیه‌ای تک‌شانس نیست. امن بودن محتوا: تصویرِ
-#    میان‌بازی همان PNG کپچرشدهٔ «دقیقهٔ هدف − ۱» است (کش ثابت) → ساخت
-#    زودترِ پنجره، محتوای نمایش را ذره‌ای تغییر نمی‌دهد.
-#    (نمایش «پایان» عمداً همین پنجرهٔ قبلی را دارد: رندرش در لحظهٔ توقف
-#    انجام می‌شود و رندر زودتر = نمودارِ کم‌داده‌تر = تغییر محتوا.)
+# --- versiontechnical note 10technical note22 — Snapshot Window Lifecycle Manager (technical note technical note user) ---
+# technical note: «window must before from technical noteortechnical note to display technical note technical note withtechnical note» — technical note in momenttechnical note Show.
+# 1) windowtechnical note threshold‌technical note technical note Preload (firstandtechnical note 1): for technical noteortechnical note‌withtechnical note‌technical note (h1/h2/et)
+#    technical note technical note Worker after from «technical note − technical note second» if windowtechnical note technical note‌technical note READY
+#    technical noteandtechnical note same‌technical note dispatch technical note‌technical noteandtechnical note (if match_time >= preload_start)technical note
+#    technical note windowtechnical note 2 second‌technical note technical note‌technical note is not. technical note technical noteandtechnical note technical noteandtechnical note: technical noteandtechnical note
+#    technical noteortechnical note‌withtechnical note same PNG technical note «minutetechnical note technical note − 1» is (technical note technical note) → technical note
+#    technical noteandtechnical note windowtechnical note technical noteandtechnical note display technical note technical note‌technical note change technical note‌technical note.
+#    (display «end» technical note technical note windowtechnical note beforetechnical note technical note technical note: rendertechnical note in momenttechnical note stop
+#    technical note technical note‌technical noteandtechnical note and render technical noteandtechnical note = charttechnical note technical note‌data‌technical note = change technical noteandtechnical note.)
 TV_SNAP_PRELOAD_WIDE_LEAD_SEC = 10.0
 
-# --- نسخهٔ ۱۰٫۲۳ — معماری جدید GPU Overlay (گزارش فنی کاربر) ---
-# «پنجره هیچ‌وقت حرکت نمی‌کند؛ تمام انیمیشن داخل GPU (Shader) است.»
-#   TV_SNAP_GPU_OVERLAY      → خاموشی = مسیر قبلی (Tk Layered) در شروع
-#   TV_SNAP_GPU_VSYNC        → حلقهٔ رندر همگام با نمایشگر (بدون CPU Busy Loop)
-#   TV_SNAP_GPU_CLICKTHROUGH → پنجرهٔ Overlay ورودی موس را رد می‌کند
-#   TV_SNAP_GPU_ANIM_DEBUG   → بلوک [OVERLAY ANIM DEBUG] بعد از هر انیمیشن
-# همه از Environment Variable هم ست می‌شوند (بدون تغییر کد).
+# --- versiontechnical note 10technical note23 — architecture new GPU Overlay (technical note technical note user) ---
+# «window technical note‌andtechnical note technical note technical note‌technical note technical note technical note inside GPU (Shader) is.»
+#   TV_SNAP_GPU_OVERLAY      → technical noteandtechnical note = path beforetechnical note (Tk Layered) in start
+#   TV_SNAP_GPU_VSYNC        → technical note render synchronized with displaytechnical note (without CPU Busy Loop)
+#   TV_SNAP_GPU_CLICKTHROUGH → windowtechnical note Overlay input technical noteandtechnical note technical note technical note technical note‌technical note
+#   TV_SNAP_GPU_ANIM_DEBUG   → technical noteandtechnical note [OVERLAY ANIM DEBUG] after from technical note technical note
+# technical note from Environment Variable technical note technical note technical note‌technical noteandtechnical note (unchanged code).
 TV_SNAP_GPU_OVERLAY = _snap_env_flag("TV_SNAP_GPU_OVERLAY", True)
 TV_SNAP_GPU_VSYNC = _snap_env_flag("TV_SNAP_GPU_VSYNC", True)
 TV_SNAP_GPU_CLICKTHROUGH = _snap_env_flag("TV_SNAP_GPU_CLICKTHROUGH", True)
-TV_SNAP_GPU_ANIM_DEBUG = _snap_env_flag("TV_SNAP_GPU_ANIM_DEBUG", False)   # نسخهٔ ۱۰٫۲۴ — پیش‌فرض خاموش (حذف لاگ کنسول)
-TV_SNAP_GPU_INIT_WAIT_SEC = 4.0        # حداکثر انتظار برای Context GPU در شروع
+TV_SNAP_GPU_ANIM_DEBUG = _snap_env_flag("TV_SNAP_GPU_ANIM_DEBUG", False)   # versiontechnical note 10technical note24 — default technical noteandtechnical note (technical note log technical noteandtechnical note)
+TV_SNAP_GPU_INIT_WAIT_SEC = 4.0        # technical note technical note for Context GPU in start
 
 
 class SnapshotState(Enum):
-    """نسخهٔ ۱۰٫۲۲ — ماشین حالت چرخهٔ عمر پنجرهٔ Snapshot (مشخصات کاربر):
-    EMPTY → PREPARING → READY → SHOWING → VISIBLE → (پنهان‌سازی) EMPTY.
-    با بلوک‌های [SNAPSHOT_STATE] هر گذر لاگ می‌شود تا دیگر «کور» نباشیم."""
+    """versiontext 10text22 — text text cycletext text windowtext Snapshot (specification user):
+    EMPTY → PREPARING → READY → SHOWING → VISIBLE → (hidden‌textfromtext) EMPTY.
+    with textandtext‌text [SNAPSHOT_STATE] text text log text‌textandtext until text «textandtext» textwithtext."""
     EMPTY = 0
     PREPARING = 1
     READY = 2
@@ -152,7 +152,7 @@ class SnapshotState(Enum):
 
 
 def _snap_thread_tag() -> str:
-    """برچسب تردِ جاری برای لاگ نمایش اسنپ‌شات (Main/UI یا Worker یا Anim)."""
+    """text text current for log display textagetext‌text (Main/UI or Worker or Anim)."""
     try:
         name = threading.current_thread().name
     except Exception:
@@ -167,8 +167,8 @@ def _snap_thread_tag() -> str:
 
 
 def _snap_native_tid() -> int:
-    """نسخهٔ ۱۰٫۲۰ — شناسهٔ native ترد جاری (Win32 GetCurrentThreadId) برای
-    همبستگی لاگ با Process Explorer / ETW (بند ۸ کاربر). غیر ویندوز → 0."""
+    """versiontext 10text20 — text native text current (Win32 GetCurrentThreadId) for
+    text log with Process Explorer / ETW (text 8 user). text andtextandtext → 0."""
     if os.name == "nt":
         try:
             import ctypes as _ct
@@ -179,7 +179,7 @@ def _snap_native_tid() -> int:
 
 
 def _snap_tid_text() -> str:
-    """نسخهٔ ۱۰٫۲۰ — «Thread ID: <python> (native <win32>)» برای لاگ (بند ۸)."""
+    """versiontext 10text20 — «Thread ID: <python> (native <win32>)» for log (text 8)."""
     try:
         py_id = threading.get_ident()
     except Exception:
@@ -190,11 +190,11 @@ def _snap_tid_text() -> str:
 
 
 class SnapShowTrace:
-    """نسخهٔ ۱۰٫۱۸ — زمان‌سنج perf_counter مسیر نمایش اسنپ‌شات (بند ۱ کاربر):
-    هر مرحله با «زمان شروع/پایان/مدت (ms)، ترد، HWND، ابعاد» ثبت و بلافاصله
-    در Console چاپ می‌شود. زمان‌ها نسبت به لحظهٔ ساخت تریس (T+ms) هستند و
-    مقدار خام perf_counter هم برای همبستگی چاپ می‌شود.
-    فقط برای مسیر Snapshot Show — هیچ سیستم دیگری از آن استفاده نمی‌کند."""
+    """versiontext 10text18 — time‌agetext perf_counter path display textagetext‌text (text 1 user):
+    text text with «time start/end/text (ms)text text HWNDtext text» register and textdistance
+    in Console print text‌textandtext. time‌text ratio to momenttext text text (T+ms) text and
+    value text perf_counter text for text print text‌textandtext.
+    only for path Snapshot Show — text text text from text istext text‌text."""
 
     def __init__(self, title: str, enabled: bool = True):
         self.enabled = bool(enabled)
@@ -208,14 +208,14 @@ class SnapShowTrace:
         print("=" * 60, flush=True)
         self.step("Trace start")
 
-    # --- مرحلهٔ لحظه‌ای (بدون اندازه‌گیری مدت) ---
+    # --- technical note moment‌technical note (without technical notefromtechnical note‌technical note technical note) ---
     def step(self, label: str, hwnd=None, size=None, note: str = "") -> float:
         now = time.perf_counter()
         rel = (now - self.t0) * 1000.0
         self._emit(label, rel, None, hwnd, size, note)
         return now
 
-    # --- جفت شروع/پایان برای مراحل دارای مدت ---
+    # --- technical note start/end for technical note technical note technical note ---
     def begin(self) -> float:
         return time.perf_counter()
 
@@ -259,16 +259,16 @@ class SnapShowTrace:
         except Exception:
             pass
 
-# تاریخ/ساعت شروع بازی — نوار شفافِ بالای پنل tex (ارتفاع ≈ ۴۲px)
+# untiltechnical note/technical note start withtechnical note — technical noteandtechnical note technical note withtechnical note technical note tex (height ≈ 42px)
 TV_TIMESTAMP_Y = 21.0
-TV_TIMESTAMP_FONT_PT = 17            # در dpi=100 ≈ ۲۴px — داخل نوار جا می‌شود
+TV_TIMESTAMP_FONT_PT = 17            # in dpi=100 ≈ 24px — inside technical noteandtechnical note technical note technical note‌technical noteandtechnical note
 TV_TIMESTAMP_BG_ALPHA = 0.62
 
 
 def snap_ease_in_out(p: float) -> float:
-    """منحنی ease-in-out مکعبی (نسخهٔ ۱۰٫۱۳): خروجی ۰→۱ با حرکتِ نرم و
-    آرام در ابتدا و انتها و تند در میانه — دقیقاً شرط کاربر برای ورود/خروج
-    نمودار اسنپ‌شات."""
+    """text ease-in-out text (versiontext 10text13): output 0→1 with text smooth and
+    text in text and text and text in textortext — exactly text user for andtextandtext/textandtext
+    chart textagetext‌text."""
     p = min(1.0, max(0.0, float(p)))
     if p < 0.5:
         return 4.0 * p * p * p
@@ -277,7 +277,7 @@ def snap_ease_in_out(p: float) -> float:
 
 
 def snap_clamp_minute(key: str, value) -> int:
-    """محدودسازی دقیقه به بازهٔ مجاز همان بخش (۳۸..۴۴ / ۸۰..۸۹ / ۱۱۰..۱۱۹)."""
+    """textandtextfromtext minute to withtext textfrom same section (38..44 / 80..89 / 110..119)."""
     lo, hi = TV_SNAP_RANGES.get(key, (0, 130))
     try:
         v = int(round(float(value)))
@@ -287,7 +287,7 @@ def snap_clamp_minute(key: str, value) -> int:
 
 
 def snap_clamp_seconds(value, default: float = 20.0) -> int:
-    """مدت نمایش: ۵ تا ۳۰۰ ثانیهٔ واقعی."""
+    """text display: 5 until 300 secondtext real."""
     try:
         v = int(round(float(value)))
     except (TypeError, ValueError):
@@ -296,8 +296,8 @@ def snap_clamp_seconds(value, default: float = 20.0) -> int:
 
 
 def snap_load_settings(script_dir: str) -> Dict[str, Any]:
-    """خواندن تنظیمات ذخیره‌شده (فایل کنار اسکریپت) + ادغام با پیش‌فرض‌ها
-    و محدودسازی مقادیر — فایل خراب/ناقص = پیش‌فرض‌ها."""
+    """read text save‌text (file text text) + text with default‌text
+    and textandtextfromtext text — file broken/text = default‌text."""
     s = dict(TV_SNAP_DEFAULTS)
     try:
         path = os.path.join(script_dir, TV_SNAP_SETTINGS_FILENAME)
@@ -322,7 +322,7 @@ def snap_load_settings(script_dir: str) -> Dict[str, Any]:
 
 
 def snap_save_settings(script_dir: str, settings: Dict[str, Any]) -> bool:
-    """ذخیرهٔ تنظیمات (JSON کنار اسکریپت — تا دفعات بعد نیاز به تکرار نباشد)."""
+    """savetext text (JSON text text — until text after textortext to text textwithtext)."""
     try:
         path = os.path.join(script_dir, TV_SNAP_SETTINGS_FILENAME)
         payload = {}
@@ -337,11 +337,11 @@ def snap_save_settings(script_dir: str, settings: Dict[str, Any]) -> bool:
 
 def snap_overlay_geometry(img_w: int, img_h: int, screen_w: int, screen_h: int
                           ) -> Tuple[int, int, int, int]:
-    """فرمول سایز/محل نمایش (تا 8K — نسبت ابعاد هرگز به هم نمی‌ریزد):
-         w = min(0.33×sw ، 0.32×sh×نسبت)   h = w÷نسبت
-         x = 0.03×sw ، y = sh − h − 0.02×sh   (گوشهٔ پایین-چپ)
-       مرجع اندازه: real.png (پخش واقعی ≈ ۳۳٪ عرض / ۳۲٪ ارتفاع).
-       خروجی: (x, y, w, h) به پیکسل."""
+    """textandtext text/text display (until 8K — ratio text never to text text‌text):
+         w = min(0.33×sw text 0.32×sh×ratio)   h = w÷ratio
+         x = 0.03×sw text y = sh − h − 0.02×sh   (textandtext below-text)
+       text textfromtext: real.png (text real ≈ 33text width / 32text height).
+       output: (x, y, w, h) to text."""
     try:
         iw, ih = max(1, int(img_w)), max(1, int(img_h))
         sw, sh = max(1, int(screen_w)), max(1, int(screen_h))
@@ -357,12 +357,12 @@ def snap_overlay_geometry(img_w: int, img_h: int, screen_w: int, screen_h: int
 
 
 def snap_prepare_display(img, screen_w: int, screen_h: int):
-    """نسخهٔ ۱۰٫۱۶ — آماده‌سازی سنگینِ پیکسلی «خارج از UI-Thread» (رفع لگ
-    ورود — شرط کاربر: سپردن به ترد جدا):
-      ۱) resize به هندسهٔ نهایی (LANCZOS)
-      ۲) پیش‌ضرب آلفا → آرایهٔ BGRA آمادهٔ UpdateLayeredWindow
-    خروجی: (disp, arr, (x, y_final, w, h)) — در خطا (None, None, None).
-    تابع خالص است (بدون Tk) و از ترد Worker فراخوانی می‌شود."""
+    """versiontext 10text16 — text‌textfromtext agetext text «text from UI-Thread» (text text
+    andtextandtext — text user: text to text text):
+      1) resize to text text (LANCZOS)
+      2) text‌text text → text BGRA text UpdateLayeredWindow
+    output: (disp, arr, (x, y_final, w, h)) — in Error (None, None, None).
+    untiltext text is (without Tk) and from text Worker textandtext text‌textandtext."""
     if img is None:
         return None, None, None
     try:
@@ -377,23 +377,23 @@ def snap_prepare_display(img, screen_w: int, screen_h: int):
 
 
 # =====================================================================
-# ۲۵٫۵ — GPU OVERLAY RENDERER (نسخهٔ ۱۰٫۲۳ — معماری Game Overlay واقعی)
+# 25technical note5 — GPU OVERLAY RENDERER (versiontechnical note 10technical note23 — architecture Game Overlay real)
 # ---------------------------------------------------------------------
-# گزارش فنی کاربر: «پنجرهٔ Overlay باید فقط یک‌بار ساخته شود، هیچ‌وقت
-# حرکت نکند و تمام انیمیشن داخل GPU انجام شود.»
+# technical note technical note user: «windowtechnical note Overlay must only technical note‌withtechnical note technical note technical noteandtechnical note technical note‌andtechnical note
+# technical note technical note and technical note technical note inside GPU technical note technical noteandtechnical note.»
 #
-#   Python Logic ──► GPU Texture (PNG آمادهٔ Worker — همان LANCZOS)
-#        ──► Fragment Shader (حرکت + ease-in-out + premultiply آلفا)
-#        ──► OpenGL Swapchain روی پنجرهٔ «ثابت» شفاف (GLFW)
-#        ──► DWM ──► DirectX بازی
+#   Python Logic ──► GPU Texture (PNG technical note Worker — same LANCZOS)
+#        ──► Fragment Shader (technical note + ease-in-out + premultiply technical note)
+#        ──► OpenGL Swapchain technical noteandtechnical note windowtechnical note «technical note» technical note (GLFW)
+#        ──► DWM ──► DirectX withtechnical note
 #
-#   * پنجره هیچ‌وقت حرکت/resize/show-hide نمی‌شود؛ «مخفی» یعنی محتوای
-#     کاملاً شفاف (آلفای صفر) — DWM دیگر هیچ‌وقت درگیر حرکت HWND نیست.
-#   * Show/Hide فقط queue.put است (زیر ~۰٫۱ms) — هیچ فراخوانی ویندوزی.
-#   * انیمیشن: CPU فقط progress=(now-start)/dur می‌فرستد؛ interpolation
-#     و منحنی ease داخل Shader است. در طول انیمیشن «صفر» SetWindowPos.
-#   * ترد رندر با vsync همگام است؛ بدون انیمیشن روی صف پیام منتظر
-#     می‌ماند (هیچ CPU Busy Loop). اولویت ترد دستکاری نمی‌شود
+#   * window technical note‌andtechnical note technical note/resize/show-hide technical note‌technical noteandtechnical note «technical note» technical note technical noteandtechnical note
+#     completetechnical note technical note (technical note technical note) — DWM technical note technical note‌andtechnical note intechnical note technical note HWND is not.
+#   * Show/Hide only queue.put is (technical note ~0technical note1ms) — technical note technical noteandtechnical note andtechnical noteandtechnical note.
+#   * technical note: CPU only progress=(now-start)/dur technical note‌technical note interpolation
+#     and technical note ease inside Shader is. in length technical note «technical note» SetWindowPos.
+#   * technical note render with vsync synchronized istechnical note without technical note technical noteandtechnical note technical note message technical note
+#     technical note‌technical note (technical note CPU Busy Loop). firstandtechnical note technical note technical note technical note‌technical noteandtechnical note
 #     (Game > Overlay). State: HIDDEN→READY→ANIMATING→VISIBLE.
 # =====================================================================
 import queue as _queue
@@ -505,8 +505,8 @@ def _build_crest_banner_image(path_home, path_away):
 
 _OVERLAY_VERT_SRC = """
 #version 330 core
-layout(location = 0) in vec2 a_px;          // مختصات پیکسلی سطح (مبدأ بالا-چپ)
-uniform vec2 u_surf;                        // اندازهٔ سطح (پیکسل)
+layout(location = 0) in vec2 a_px;          // coordinates text level (text withtext-text)
+uniform vec2 u_surf;                        // textfromtext level (text)
 out vec2 v_px;
 void main() {
     v_px = a_px;
@@ -520,13 +520,13 @@ _OVERLAY_FRAG_SRC = """
 #version 330 core
 in vec2 v_px;
 uniform sampler2D u_tex;
-uniform vec2  u_tex_size;                   // اندازهٔ تصویر (پیکسل)
-uniform vec2  u_img;                        // مکان «نهایی» گوشهٔ بالا-چپ تصویر روی سطح
-uniform float u_travel;                     // فاصلهٔ عمودی حرکت (پیکسل)
-uniform float u_progress;                   // 0..1 — CPU فقط زمان می‌فرستد
-uniform float u_dir;                        // +1 ورود (بالا) | -1 خروج (پایین)
+uniform vec2  u_tex_size;                   // textfromtext textandtext (text)
+uniform vec2  u_img;                        // text «text» textandtext withtext-text textandtext textandtext level
+uniform float u_travel;                     // distancetext textandtext text (text)
+uniform float u_progress;                   // 0..1 — CPU only time text‌text
+uniform float u_dir;                        // +1 andtextandtext (withtext) | -1 textandtext (below)
 out vec4 frag;
-float ease_in_out(float p) {                // عیناً snap_ease_in_out (۱۰٫۱۳)
+float ease_in_out(float p) {                // text snap_ease_in_out (10text13)
     p = clamp(p, 0.0, 1.0);
     if (p < 0.5) return 4.0 * p * p * p;
     float q = 2.0 * p - 2.0;
@@ -534,24 +534,24 @@ float ease_in_out(float p) {                // عیناً snap_ease_in_out (۱۰
 }
 void main() {
     float e = ease_in_out(u_progress);
-    float t = (u_dir > 0.0) ? (1.0 - e) : e;   // ۱ = کاملاً زیر صفحه | ۰ = مکان نهایی
+    float t = (u_dir > 0.0) ? (1.0 - e) : e;   // 1 = completetext text text | 0 = text text
     vec2 origin = u_img + vec2(0.0, t * u_travel);
     vec2 p = v_px - origin;
     if (p.x < 0.0 || p.y < 0.0 || p.x >= u_tex_size.x || p.y >= u_tex_size.y) {
-        frag = vec4(0.0);                   // بیرون تصویر = کاملاً شفاف
+        frag = vec4(0.0);                   // outside textandtext = completetext text
         return;
     }
-    vec4 c = texture(u_tex, (p + vec2(0.5)) / u_tex_size);  // مرکز تکستل — بدون تاری
-    frag = vec4(c.rgb * c.a, c.a);          // premultiplied alpha برای DWM
+    vec4 c = texture(u_tex, (p + vec2(0.5)) / u_tex_size);  // text text — without untiltext
+    frag = vec4(c.rgb * c.a, c.a);          // premultiplied alpha for DWM
 }
 """
 
 
 def _gpu_surface_geo(sw: int, sh: int) -> Tuple[int, int, int, int]:
-    """سطح «ثابت» Overlay — کل مسیر دیدنیِ حرکت را برای «هر» اندازهٔ
-    Snapshot پوشش می‌دهد. بخشِ زیرِ لبهٔ صفحه به‌طور طبیعی بیرون مانیتور
-    است — دقیقاً مثل وقتی که پنجرهٔ واقعی زیر صفحه حرکت می‌کرد؛ پس ظاهر
-    ورود/خروج پیکسل‌به‌پیکسل همانند مسیر قبلی است (پنجره حرکت نمی‌کند)."""
+    """level «text» Overlay — total path text text text for «text» textfromtext
+    Snapshot textandtext text‌text. sectiontext text texttotext text to‌textandtext text outside textandtext
+    is — exactly text when text windowtext real text text text text‌text text text
+    andtextandtext/textandtext text‌to‌text sametext path beforetext is (window text text‌text)."""
     sw = max(1, int(sw))
     sh = max(1, int(sh))
     x = max(0, int(round(TV_SNAP_OVERLAY_MARGIN_L_FRAC * sw)) - 4)
@@ -564,7 +564,7 @@ def _gpu_surface_geo(sw: int, sh: int) -> Tuple[int, int, int, int]:
 
 def _gpu_image_placement(sw: int, sh: int, x: int, y_final: int,
                          surf_x: int, surf_top: int) -> Dict[str, int]:
-    """محل تصویر «داخل سطح ثابت» + فاصلهٔ حرکت (محاسبهٔ خالص — سنگین نیست)."""
+    """text textandtext «inside level text» + distancetext text (texttotext text — agetext is not)."""
     return {"dx": int(x) - int(surf_x), "dy": int(y_final) - int(surf_top),
             "travel": max(1, int(sh) + 4 - int(y_final))}
 
