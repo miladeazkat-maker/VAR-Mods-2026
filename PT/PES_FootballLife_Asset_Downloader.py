@@ -27,7 +27,11 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 APP_PATH = Path(__file__).resolve()
-APP_DIR = APP_PATH.parent
+APP_DIR = (
+    Path(sys.executable).resolve().parent
+    if getattr(sys, "frozen", False)
+    else APP_PATH.parent
+)
 CACHE_DIR = APP_DIR / ".asset_downloader_cache"
 CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
