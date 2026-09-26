@@ -1,5 +1,6 @@
 # -*- mode: python ; coding: utf-8 -*-
 from pathlib import Path
+from PyInstaller.utils.hooks import collect_dynamic_libs, collect_data_files
 
 ROOT = Path.cwd().resolve()
 
@@ -14,6 +15,18 @@ for folder in ("RefereeView", "GLT", "HeatMap", "MomentumMatch", "SAOTMod"):
         relative = item.relative_to(source_root)
         destination = str(Path(folder) / relative)
         backend_datas.append((str(item), destination))
+
+native_binaries = []
+native_datas = []
+for _pkg in ("glfw", "moderngl", "panda3d"):
+    try:
+        native_binaries.extend(collect_dynamic_libs(_pkg))
+    except Exception:
+        pass
+    try:
+        native_datas.extend(collect_data_files(_pkg))
+    except Exception:
+        pass
 
 hiddenimports = [
     "PyQt6.QtWebEngineWidgets",
@@ -54,8 +67,8 @@ hiddenimports = [
 a = Analysis(
     [str(ROOT / "ModBridge.py")],
     pathex=[str(ROOT)],
-    binaries=[],
-    datas=backend_datas,
+    datas=backend_datas + native_datas,
+    binaries=native_binaries,
     hiddenimports=hiddenimports,
     hookspath=[],
     hooksconfig={},
