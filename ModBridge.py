@@ -2714,6 +2714,28 @@ def _shutdown(bridge):
 Bridge.shutdown = _shutdown
 
 if __name__ == "__main__":
+    if "--package-smoke" in sys.argv:
+        _required = [
+            ("GLT", "GLTMod.py"),
+            ("HeatMap", "HeatMapMod.py"),
+            ("HeatMap", "BroadcastRenderer.py"),
+            ("SAOTMod", "SAOTMod.py"),
+            ("RefereeView", "RefereeView.py"),
+            ("MomentumMatch", "MomentumMod.py"),
+        ]
+        for _folder, _name in _required:
+            _p = os.path.join(BUNDLE_DIR, _folder, _name)
+            if not os.path.exists(_p):
+                raise FileNotFoundError(f"Embedded backend missing: {_p}")
+        import numpy as _np
+        import matplotlib as _mpl
+        import pymem as _pm
+        import moderngl as _mg
+        import glfw as _glfw
+        import panda3d.core as _p3d
+        import ursina as _ursina
+        print("Standalone ModBridge package smoke test passed")
+        sys.exit(0)
     if "--embedded-backend" in sys.argv:
         try:
             _idx = sys.argv.index("--embedded-backend")
