@@ -30,6 +30,18 @@ $dirs = @("GLT","HeatMap","MomentumMatch","SAOTMod","RefereeView","PT","Backgrou
 foreach($dir in $dirs) {
   Copy-Item (Join-Path $Root $dir) (Join-Path $Stage $dir) -Recurse -Force
 }
+$readmeAssets = @(
+  "banner.png",
+  "saot_preview.png",
+  "glt_preview.png",
+  "heatmap_preview.png",
+  "refereeview_preview.png",
+  "momentum_preview.png"
+)
+New-Item -ItemType Directory -Force -Path (Join-Path $Stage "assets") | Out-Null
+foreach($asset in $readmeAssets) {
+  Copy-Item (Join-Path $Root "assets\$asset") (Join-Path $Stage "assets\$asset") -Force
+}
 
 Write-Host "== Prepare portable Python runtime =="
 $pyVersion = "3.13.13"
@@ -73,6 +85,10 @@ $env:PYTHONPATH = "$Runtime\Lib\site-packages"
 & $RuntimePython -c "import PyQt6, numpy, PIL, matplotlib, pymem, moderngl, glfw, panda3d, ursina, customtkinter, psutil, pywinstyles; print('Runtime imports OK')"
 & $RuntimePython -m py_compile "$Stage\MyMods.py" "$Stage\ModBridge.py" "$Stage\PT\PES_FootballLife_Asset_Downloader.py"
 $env:PYTHONPATH = $null
+
+# py_compile creates bytecode caches only for validation; do not ship them.
+Get-ChildItem $Stage -Recurse -Directory -Filter "__pycache__" | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+Get-ChildItem $Stage -Recurse -File -Include "*.pyc","*.pyo" | Remove-Item -Force -ErrorAction SilentlyContinue
 
 Write-Host "== Build Inno Setup installer =="
 $Iscc = (Get-Command iscc.exe -ErrorAction SilentlyContinue).Source
