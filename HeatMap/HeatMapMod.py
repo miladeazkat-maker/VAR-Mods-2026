@@ -102,7 +102,10 @@ except ImportError:
     fatal_error("for text heatmap install numpy and pillow text is:\npip install numpy pillow")
 
 # folder run technical note (technical note path folder‌technical note players and Football_Database and renders)
-SCRIPT_DIR = os.path.dirname(os.path.abspath(sys.argv[0])) if (sys.argv and sys.argv[0]) else os.getcwd()
+SCRIPT_DIR = os.environ.get(
+    "VAR_MODS_BACKEND_DIR",
+    os.path.dirname(os.path.abspath(sys.argv[0])) if (sys.argv and sys.argv[0]) else os.getcwd()
+)
 
 # ---------------------------------------------------------------------
 # [SUITE v2.1.4] CRASH-PROOF STDOUT/STDERR — must run before ANY print.
