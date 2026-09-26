@@ -3,7 +3,7 @@ def _snap_stage_write(msg: str) -> None:
     if not SNAP_STAGE_LOG_ENABLED:
         return
     try:
-        path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+        path = os.path.join(_MOMENTUM_DATA_DIR,
                             SNAP_STAGE_LOG_FILENAME)
         try:
             if (os.path.exists(path)
