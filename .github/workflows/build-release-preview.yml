@@ -16,6 +16,7 @@ on:
       - "Background/**"
       - "requirements.txt"
       - "packaging/**"
+      - ".github/workflows/build-release-preview.yml"
   workflow_dispatch:
 
 permissions:
