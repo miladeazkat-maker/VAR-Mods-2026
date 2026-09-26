@@ -1,5 +1,5 @@
 def _scene_rgba8(a) -> Optional["np.ndarray"]:
-    """آرایهٔ تصویر (float 0..1 یا uint8، RGB/RGBA) → RGBA uint8 پیوسته."""
+    """text textandtext (float 0..1 or uint8text RGB/RGBA) → RGBA uint8 textandtext."""
     a = np.asarray(a)
     if a.ndim == 2:
         a = np.dstack([a] * 3 + [np.ones_like(a)])
@@ -16,7 +16,7 @@ def _scene_rgba8(a) -> Optional["np.ndarray"]:
 
 
 def _scene_hex_rgb01(color) -> Tuple[float, float, float]:
-    """رنگ hex/نام → (r, g, b) در 0..1 (همان تفسیر matplotlib)."""
+    """color hex/text → (r, g, b) in 0..1 (same text matplotlib)."""
     try:
         from matplotlib import colors as _mc
         r, g, b = _mc.to_rgb(color)
@@ -26,7 +26,7 @@ def _scene_hex_rgb01(color) -> Tuple[float, float, float]:
 
 
 def _scene_quad_verts(rect) -> "np.ndarray":
-    """چهارگوش برای آیتم تکستچر (۲ مثلث؛ a_d=0). rect=(x0,y0,x1,y1) پنل."""
+    """textandtext for text text (2 text a_d=0). rect=(x0,y0,x1,y1) text."""
     x0, y0, x1, y1 = (float(v) for v in rect)
     return np.array([[x0, y0, 0.0], [x0, y1, 0.0], [x1, y0, 0.0],
                      [x1, y0, 0.0], [x0, y1, 0.0], [x1, y1, 0.0]],
@@ -35,18 +35,18 @@ def _scene_quad_verts(rect) -> "np.ndarray":
 
 def _scene_fill_tri_verts(xs, ys, zero_y: float, pad: float,
                           sign: int) -> "np.ndarray":
-    """نسخهٔ ۱۰٫۲۴ — fill بین منحنی و خط صفر به‌صورت مثلث‌های GPU (بند
-    «Fill Area» گزارش کاربر): هر ستون = ۲ مثلث؛ a_d هر رأس = فاصلهٔ
-    علامت‌دار تا «مرز واقعی منحنی» (بیرون مثبت / داخل منفی) تا Fragment
-    Shader لبهٔ fill را با smoothstep نرم کند (بدون تغییر شکل داده).
-    xs/ys: خروجی _tv_split_sign_segments (عبور از صفر درون‌یابی‌شده)."""
+    """versiontext 10text24 — fill text text and line text to‌textandtext text‌text GPU (text
+    «Fill Area» text user): text textandtext = 2 text a_d text text = distancetext
+    text‌text until «boundary real text» (outside textregister / inside text) until Fragment
+    Shader texttotext fill text with smoothstep smooth text (unchanged texttotal data).
+    xs/ys: output _tv_split_sign_segments (textandtext from text inandtext‌ortext‌text)."""
     xs = np.asarray(xs, dtype=float)
     ys = np.asarray(ys, dtype=float)
     n = len(xs)
     if n < 2:
         return np.zeros((0, 3), dtype=np.float32)
     depths = np.abs(ys - float(zero_y))
-    out = -1.0 if sign > 0 else 1.0        # جهت «بیرون» (دور از خط صفر)
+    out = -1.0 if sign > 0 else 1.0        # technical note «outside» (technical noteandtechnical note from line technical note)
     top_y = ys + out * pad
     m = n - 1
     v = np.empty((m, 6, 3), dtype=np.float32)
@@ -63,8 +63,8 @@ def _scene_fill_tri_verts(xs, ys, zero_y: float, pad: float,
 
 def _scene_vband_verts(x: float, y0: float, y1: float, half_w: float,
                        pad: float) -> "np.ndarray":
-    """باند عمودی مات (خط گل/خط عمودی) — دو نیمهٔ مستقل تا فاصلهٔ علامت‌دار
-    داخل هر نیمه خطی بماند (مرز = فاصلهٔ half_w از مرکز)."""
+    """withtext textandtext text (line text/line textandtext) — textand text independent until distancetext text‌text
+    inside text text linetext text (boundary = distancetext half_w from text)."""
     xl, xr = float(x) - (half_w + pad), float(x) + (half_w + pad)
     cx = float(x)
     left = np.array([[xl, y0, pad], [cx, y0, -half_w], [xl, y1, pad],
@@ -78,7 +78,7 @@ def _scene_vband_verts(x: float, y0: float, y1: float, half_w: float,
 
 def _scene_hband_verts(y: float, x0: float, x1: float, half_w: float,
                        pad: float) -> "np.ndarray":
-    """باند افقی مات (خط صفر) — دو نیمهٔ بالا/پایین مثل _scene_vband_verts."""
+    """withtext text text (line text) — textand text withtext/below text _scene_vband_verts."""
     yt, yb = float(y) - (half_w + pad), float(y) + (half_w + pad)
     cy = float(y)
     top = np.array([[x0, yt, pad], [x0, cy, -half_w], [x1, yt, pad],
@@ -92,7 +92,7 @@ def _scene_hband_verts(y: float, x0: float, x1: float, half_w: float,
 
 def _scene_disc_verts(cx: float, cy: float, r: float, pad: float,
                       segments: int = 24) -> "np.ndarray":
-    """دیسک (فقط fallback نبودن آیکون توپ) — بادبزن مثلثی با مرز AA."""
+    """text (only fallback textandtext icon ball) — withtext text with boundary AA."""
     cx, cy, r = float(cx), float(cy), float(r)
     ang = np.linspace(0.0, 2.0 * math.pi, max(8, int(segments)) + 1)
     rx, ry = cx + (r + pad) * np.cos(ang), cy + (r + pad) * np.sin(ang)
@@ -105,9 +105,9 @@ def _scene_disc_verts(cx: float, cy: float, r: float, pad: float,
 
 
 def _gpu_fill_feather_px() -> float:
-    """نسخهٔ ۱۰٫۲۶ — نرمی لبهٔ fill در مسیر GPU (پیکسل سطح)؛ هم‌ارزِ استروک
-    feather مسیر matplotlib تا اورلی زنده و اسنپ‌شات «یک ظاهر» داشته باشند.
-    env: TV_GPU_FILL_FEATHER (۰ = لبهٔ تیز قبلی)."""
+    """versiontext 10text26 — smoothing texttotext fill in path GPU (text level)text text‌text istextandtext
+    feather path matplotlib until textandtext live and textagetext‌text «text text» text withtext.
+    env: TV_GPU_FILL_FEATHER (0 = texttotext text beforetext)."""
     try:
         v = float(os.environ.get("TV_GPU_FILL_FEATHER",
                                  TV_GPU_FILL_FEATHER_PX) or 0.0)
@@ -121,13 +121,13 @@ def build_gpu_graph_scene(momentum, cfg, bg_kind: str,
                           home_flag_arr=None, away_flag_arr=None,
                           timestamp_text=None,
                           screen=None) -> Optional[Dict[str, Any]]:
-    """نسخهٔ ۱۰٫۲۴ — ساخت «صحنهٔ برداری» نمودار TV در ترد Worker (خالص —
-    بدون Tk/GL/matplotlib-draw). خروجی برای GPUOverlayRenderer.upload_scene:
-      items: فهرست مرتبِ رسم (عین zorder قبلی) از دو نوع:
-        {"kind": "tex",  rgba, size, rect, clip}   — عناصر تصویری نرم
-        {"kind": "edge", verts(x,y,d), color4, clip, mode} — عناصر برداری AA
-      view: (dx, dy, k) | place: {dx,dy,travel} | clip: مستطیل برش پنل
-    شکل منحنی از _tv_curve_core می‌آید — «مو‌به‌مو» همان مسیر matplotlib."""
+    """versiontext 10text24 — text «scenetext text» chart TV in text Worker (text —
+    without Tk/GL/matplotlib-draw). output for GPUOverlayRenderer.upload_scene:
+      items: list text text (text zorder beforetext) from textand textandtext:
+        {"kind": "tex",  rgba, size, rect, clip}   — text textandtext smooth
+        {"kind": "edge", verts(x,y,d), color4, clip, mode} — text text AA
+      view: (dx, dy, k) | place: {dx,dy,travel} | clip: text text text
+    texttotal text from _tv_curve_core text‌text — «textand‌to‌textand» same path matplotlib."""
     try:
         bg = tv_load_background(bg_kind)
         core = _tv_curve_core(momentum, cfg, bg, bg_kind)
@@ -145,11 +145,11 @@ def build_gpu_graph_scene(momentum, cfg, bg_kind: str,
         place = _gpu_image_placement(int(sw), int(sh), x_final, y_final,
                                      surf[0], surf[1])
         k = float(w_d) / max(1.0, W)
-        pad = 1.25 / max(1e-4, k)           # حاشیهٔ AA ≈ ۱٫۲۵px سطح
+        pad = 1.25 / max(1e-4, k)           # technical note AA ≈ 1technical note25px level
         items: List[Dict[str, Any]] = []
         n_verts = 0
 
-        # --- ۰) پس‌زمینهٔ پنل (zorder 0 — بدون برش مثل imshow قبلی) ---
+        # --- 0) technical note‌pitchtechnical note technical note (zorder 0 — without technical note technical note imshow beforetechnical note) ---
         bg8 = _scene_rgba8(core["arr"])
         items.append({"kind": "tex", "rgba": bg8,
                       "size": (int(bg8.shape[1]), int(bg8.shape[0])),
@@ -157,7 +157,7 @@ def build_gpu_graph_scene(momentum, cfg, bg_kind: str,
                       "verts": _scene_quad_verts((0.0, 0.0, W, H))})
 
         if core["pos_segs"] is not None:
-            # --- ۱) درخشش نئون (zorder 2 — ریاضی مشترک با مسیر matplotlib) ---
+            # --- 1) intechnical note technical noteandtechnical note (zorder 2 — technical noteortechnical note shared with path matplotlib) ---
             for rgba_f, _c in _tv_glow_layers(
                     core["pos_segs"], core["neg_segs"], core["W"], core["H"],
                     home_color, away_color, rect_h, zero_y,
@@ -168,7 +168,7 @@ def build_gpu_graph_scene(momentum, cfg, bg_kind: str,
                               "rect": (0.0, 0.0, W, H), "clip": True,
                               "verts": _scene_quad_verts((0.0, 0.0, W, H))})
 
-            # --- ۲) fill دو تیم (zorder 3 — لبهٔ AA واقعی؛ بند Fill Area) ---
+            # --- 2) fill technical noteand team (zorder 3 — technical notetotechnical note AA realtechnical note technical note Fill Area) ---
             for segs, color, alpha in (
                     (core["pos_segs"], home_color, TV_FILL_ALPHA_HOME),
                     (core["neg_segs"], away_color, TV_FILL_ALPHA_AWAY)):
@@ -190,9 +190,9 @@ def build_gpu_graph_scene(momentum, cfg, bg_kind: str,
                               "clip": True, "mode": "tris"})
                 n_verts += int(len(verts))
 
-        # --- ۳) درخشش مارکرهای گل (zorder 5 — قبل از خط صفر مثل قبل) ---
+        # --- 3) intechnical note technical note technical note (zorder 5 — before from line technical note technical note before) ---
         markers = core["markers"]
-        rc_markers = core.get("rc_markers") or []   # نسخهٔ ۱۰٫۲۷ — کارت قرمز
+        rc_markers = core.get("rc_markers") or []   # versiontechnical note 10technical note27 — red card
         bands = core["bands"]
         ball_d = TV_BALL_FRAC * rect_h
         ball_r = ball_d / 2.0
@@ -231,7 +231,7 @@ def build_gpu_graph_scene(momentum, cfg, bg_kind: str,
                               "rect": rect, "clip": True,
                               "verts": _scene_quad_verts(rect)})
 
-        # --- ۴) خط صفر + خطوط عمودی (zorder 6 — مات با لبهٔ AA) ---
+        # --- 4) line technical note + lineandtechnical note technical noteandtechnical note (zorder 6 — technical note with technical notetotechnical note AA) ---
         zlw = max(2.0, TV_ZERO_LINE_LW_FRAC * rect_h)
         items.append({"kind": "edge",
                       "verts": _scene_hband_verts(zero_y, l, r, zlw / 2.0,
@@ -248,7 +248,7 @@ def build_gpu_graph_scene(momentum, cfg, bg_kind: str,
                           "clip": True, "mode": "tris"})
             n_verts += 12
 
-        # --- ۵) خط گل (پوستهٔ تیره zorder 8 + هستهٔ سفید zorder 9) ---
+        # --- 5) line technical note (shelltechnical note technical note zorder 8 + technical note technical note zorder 9) ---
         for (gi, gx, y0g, y1g, byc) in mk_geo:
             items.append({"kind": "edge",
                           "verts": _scene_vband_verts(gx, y0g, y1g,
@@ -261,7 +261,7 @@ def build_gpu_graph_scene(momentum, cfg, bg_kind: str,
                           "color4": (1.0, 1.0, 1.0, 1.0),
                           "clip": True, "mode": "tris"})
             n_verts += 24
-            # --- ۶) آیکون توپ (zorder 11) ---
+            # --- 6) icon ball (zorder 11) ---
             _hd = ball_d / 2.0
             brect = (gx - _hd, byc - _hd, gx + _hd, byc + _hd)
             if ball8 is not None:
@@ -278,7 +278,7 @@ def build_gpu_graph_scene(momentum, cfg, bg_kind: str,
                               "clip": True, "mode": "fan"})
                 n_verts += len(_scene_disc_verts(gx, byc, ball_r * 0.55, pad))
 
-        # --- ۶٫۵) نسخهٔ ۱۰٫۲۷ — مارکر کارت قرمز (عین گل؛ آیکون کارت به‌جای توپ) ---
+        # --- 6technical note5) versiontechnical note 10technical note27 — technical note red card (technical note technical note icon card to‌technical note ball) ---
         rc_w = TV_RC_W_FRAC * rect_h
         rc_h = TV_RC_H_FRAC * rect_h
         rc8 = _scene_rgba8(build_red_card_icon())
@@ -317,7 +317,7 @@ def build_gpu_graph_scene(momentum, cfg, bg_kind: str,
                           "color4": (1.0, 1.0, 1.0, 1.0),
                           "clip": True, "mode": "tris"})
             n_verts += 24
-            # آیکون کارت (zorder 11 — هم‌تراز توپ)
+            # icon card (zorder 11 — aligned ball)
             _hw, _hh = rc_w / 2.0, rc_h / 2.0
             crect = (gx - _hw, cyc - _hh, gx + _hw, cyc + _hh)
             if rc8 is not None:
@@ -333,7 +333,7 @@ def build_gpu_graph_scene(momentum, cfg, bg_kind: str,
                               "clip": True, "mode": "tris"})
                 n_verts += 6
 
-        # --- ۷) لوگو/پرچم (zorder 12 — بدون برش مثل قبل) ---
+        # --- 7) logo/technical note (zorder 12 — without technical note technical note before) ---
         for side, farr, cy_frac in (("home", home_flag_arr,
                                      TV_FLAG_HOME_CY_FRAC),
                                     ("away", away_flag_arr,
@@ -357,7 +357,7 @@ def build_gpu_graph_scene(momentum, cfg, bg_kind: str,
             except Exception:
                 continue
 
-        # --- ۸) مُهر تاریخ/ساعت (zorder 20 — بیت‌مپ ثابت یک‌بارمصرف) ---
+        # --- 8) technical note untiltechnical note/technical note (zorder 20 — technical note‌technical note technical note technical note‌withtechnical note) ---
         if timestamp_text:
             bmp = _tv_timestamp_bitmap(timestamp_text)
             if bmp is not None:
@@ -382,24 +382,24 @@ def build_gpu_graph_scene(momentum, cfg, bg_kind: str,
 
 
 # =====================================================================
-# ۲۵٫۷ — آرشیو کامل رخدادهای بازی (نسخهٔ ۱۰٫۲۴ — درخواست کاربر)
+# 25technical note7 — archive complete technical notedatatechnical note withtechnical note (versiontechnical note 10technical note24 — request user)
 # ---------------------------------------------------------------------
-# «قابلیت گرفتن خروجی کامل از رخدادهای بازی به‌صورت یک فایل (یا ZIP) +
-#  خواندن همان فایل توسط کد و تبدیل آن به نمودار.»
+# «technical note technical note output complete from technical notedatatechnical note withtechnical note to‌technical noteandtechnical note technical note file (or ZIP) +
+#  read same file technical noteandtechnical note code and technical note technical note to chart.»
 #
-#   خروجی (خودکار در پایان هر بازی + دکمهٔ دستی):
+#   output (automatic in end technical note withtechnical note + buttontechnical note technical note):
 #     Momentum_Archives/match_YYYY-MM-DD_HH-MM.zip
-#       ├─ match_data.json      ← کل تاریخچهٔ Momentum + مارکرهای گل +
-#       │                          تیم‌ها/رنگ‌ها/تنظیمات/مقیاس/زمان‌ها
-#       ├─ flag_home.png        ← لوگوی میزبان (برای بازسازی دقیق)
-#       ├─ flag_away.png        ← لوگوی مهمان
-#       ├─ snapshot_final.png   ← آخرین رندر نمودار (اگر در دسترس باشد)
-#       └─ readme.txt           ← راهنما + دستور رندر دوباره
+#       ├─ match_data.json      ← total untiltechnical note Momentum + technical note technical note +
+#       │                          team‌technical note/color‌technical note/technical note/technical noteortechnical note/time‌technical note
+#       ├─ flag_home.png        ← logotechnical note Home (for withtechnical notefromtechnical note technical note)
+#       ├─ flag_away.png        ← logotechnical note Away
+#       ├─ snapshot_final.png   ← latest render chart (if in technical note withtechnical note)
+#       └─ readme.txt           ← technical note + instruction render again
 #
-#   ورودی/بازپخش:
-#     render_archive_chart(path)  →  خواندن ZIP → موتور شبه → رندر PNG
+#   input/withtechnical note:
+#     render_archive_chart(path)  →  read ZIP → technical noteandtechnical noteandtechnical note technical noteto → render PNG
 #     CLI:  python finalmomentum.py --render-archive <file.zip>
-#     UI:   دکمهٔ «رندر دوبارهٔ نمودار از آرشیو» در تنظیمات اسنپ‌شات
+#     UI:   buttontechnical note «render againtechnical note chart from archive» in technical note technical noteagetechnical note‌technical note
 # =====================================================================
 
 MOMENTUM_ARCHIVE_DIRNAME = "Momentum_Archives"
@@ -408,7 +408,7 @@ MOMENTUM_ARCHIVE_VERSION = 1
 
 
 def _archive_json_safe(v):
-    """تبدیل مقدار به JSON-safe: NaN/Inf → None (خواندن دوباره → NaN)."""
+    """text value to JSON-safe: NaN/Inf → None (read again → NaN)."""
     try:
         if isinstance(v, float):
             return v if (v == v and -1e308 < v < 1e308) else None
@@ -435,12 +435,12 @@ def collect_match_events(momentum, snap_engine=None,
                          settings: Optional[Dict[str, Any]] = None,
                          tuning: Optional[Dict[str, float]] = None,
                          display_cfg=None) -> Dict[str, Any]:
-    """اسنپ‌شات اتمیکِ «همهٔ رخدادهای بازی» به‌صورت dict سازگار با JSON.
-    هیچ داده‌ای خلاصه/فیلتر نمی‌شود — تاریخچهٔ کامل نمونه‌به‌نمونه."""
+    """textagetext‌text text «text textdatatext withtext» to‌textandtext dict textfromtext with JSON.
+    text data‌text text/text text‌textandtext — untiltext complete sample‌to‌sample."""
     with momentum._lock:
         hist = [dict(h) for h in momentum.history]
         markers = [dict(m) for m in momentum.hook_goal_markers]
-        # نسخهٔ ۱۰٫۲۷ — مارکرهای کارت قرمز (getattr: سازگاری با موتورهای شبه)
+        # versiontechnical note 10technical note27 — technical note red card (getattr: technical notefromtechnical note with technical noteandtechnical noteandtechnical note technical noteto)
         rc_markers = [dict(m) for m in
                       (getattr(momentum, "red_card_markers", None) or [])]
     start_wall = None
@@ -491,7 +491,7 @@ def collect_match_events(momentum, snap_engine=None,
 def write_match_archive_zip(out_path: str, match_data: Dict[str, Any],
                             extra_files: Optional[Dict[str, bytes]] = None,
                             readme_text: str = "") -> Optional[str]:
-    """نوشتن ZIP آرشیو (match_data.json + فایل‌های جانبی). خروجی: مسیر یا None."""
+    """write ZIP archive (match_data.json + file‌text text). output: path or None."""
     try:
         import zipfile
         d = os.path.dirname(os.path.abspath(out_path))
@@ -530,9 +530,9 @@ def export_match_archive(momentum, snap_engine=None,
                          flag_images: Optional[Dict[str, Any]] = None,
                          snapshot_img=None,
                          out_dir: Optional[str] = None) -> Optional[str]:
-    """خروجی کامل رخدادهای بازی → ZIP در Momentum_Archives (یا out_dir).
-    flag_images: {"home": arr, "away": arr} — آرایهٔ float/uint8 PNG-مانند.
-    snapshot_img: PIL.Image آخرین رندر (اختیاری). خروجی: مسیر ZIP یا None."""
+    """output complete textdatatext withtext → ZIP in Momentum_Archives (or out_dir).
+    flag_images: {"home": arr, "away": arr} — text float/uint8 PNG-text.
+    snapshot_img: PIL.Image latest render (optional). output: path ZIP or None."""
     try:
         data = collect_match_events(
             momentum, snap_engine=snap_engine, seen_max_t=seen_max_t,
@@ -572,17 +572,17 @@ def export_match_archive(momentum, snap_engine=None,
         na = ta.get("label") or "Away"
         base = f"match_{stamp}_{nh}_vs_{na}".replace(" ", "_")
         readme = (
-            "FL_2026 — Live Match Momentum — آرشیو کامل رخدادهای بازی\n"
+            "FL_2026 — Live Match Momentum — archive complete textdatatext withtext\n"
             "=========================================================\n\n"
-            "match_data.json   : کل تاریخچهٔ Momentum (نمونه‌به‌نمونه) + گل‌ها\n"
-            "                    + تیم‌ها/رنگ‌ها/تنظیمات — منبع حقیقت.\n"
-            "flag_home/away.png: لوگوی تیم‌ها (برای بازسازی دقیق نمودار).\n"
-            "snapshot_final.png: آخرین رندر نمودار در لحظهٔ آرشیو (اختیاری).\n\n"
-            "رندر دوبارهٔ نمودار از همین فایل:\n"
-            "  python finalmomentum.py --render-archive <این فایل>.zip\n"
-            "یا از داخل برنامه: ⚙ تنظیمات اسنپ‌شات ← «رندر دوبارهٔ نمودار از\n"
-            "آرشیو». فایل JSON استاندارد است؛ ابزارهای تحلیل دیگر هم می‌توانند\n"
-            "مستقیم بخوانندش (nan = شکاف نیمه/توقف).\n")
+            "match_data.json   : total untiltext Momentum (sample‌to‌sample) + text‌text\n"
+            "                    + team‌text/color‌text/text — source text.\n"
+            "flag_home/away.png: logotext team‌text (for withtextfromtext text chart).\n"
+            "snapshot_final.png: latest render chart in momenttext archive (optional).\n\n"
+            "render againtext chart from text file:\n"
+            "  python finalmomentum.py --render-archive <text file>.zip\n"
+            "or from inside text: ⚙ text textagetext‌text ← «render againtext chart from\n"
+            "archive». file JSON istext istext tooltext text text text text‌textandtext\n"
+            "direct textandtext (nan = gap text/stop).\n")
         out_dir = out_dir or os.path.join(
             os.path.dirname(os.path.abspath(
                 __file__ if "__file__" in globals() else os.getcwd())),
@@ -595,7 +595,7 @@ def export_match_archive(momentum, snap_engine=None,
 
 
 def io_bytes_image(arr_uint8) -> Optional[bytes]:
-    """آرایهٔ uint8 (H,W,3|4) → بایت‌های PNG (برای جاسازی در ZIP)."""
+    """text uint8 (H,W,3|4) → byte‌text PNG (for textfromtext in ZIP)."""
     try:
         if Image is None or arr_uint8 is None:
             return None
@@ -610,7 +610,7 @@ def io_bytes_image(arr_uint8) -> Optional[bytes]:
 
 
 class _ArchiveCurveCfg:
-    """cfg حداقلی برای رندر دوباره از آرشیو (فقط دو فیلد مؤثر در شکل)."""
+    """cfg text for render again from archive (only textand text text in texttotal)."""
 
     def __init__(self, data: Dict[str, Any]):
         eng = (data or {}).get("engine", {}) or {}
@@ -620,8 +620,8 @@ class _ArchiveCurveCfg:
 
 
 class _ArchiveEngine:
-    """موتور شبه برای render_tv_snapshot از دادهٔ آرشیو — همان سه عضوی که
-    مسیر رسم می‌خواند: history / hook_goal_markers / _lock."""
+    """textandtextandtext textto for render_tv_snapshot from datatext archive — same text textandtext text
+    path text text‌textandtext: history / hook_goal_markers / _lock."""
 
     def __init__(self, data: Dict[str, Any]):
         import threading as _th
@@ -632,19 +632,19 @@ class _ArchiveEngine:
                 row = dict(h)
                 for kk in ("game_time", "disp_time", "home", "away", "net"):
                     if kk in row and row[kk] is None:
-                        row[kk] = float("nan")     # None → NaN (شکاف واقعی)
+                        row[kk] = float("nan")     # None → NaN (gap real)
                 hist.append(row)
             except Exception:
                 continue
         self.history = hist
         self.hook_goal_markers = list(data.get("goal_markers") or [])
-        # نسخهٔ ۱۰٫۲۷ — مارکرهای کارت قرمز (آرشیوهای قدیمی: خالی)
+        # versiontechnical note 10technical note27 — technical note red card (archivetechnical note legacy: empty)
         self.red_card_markers = list(data.get("red_card_markers") or [])
 
 
 def load_match_archive(archive_path: str) -> Optional[Dict[str, Any]]:
-    """خواندن آرشیو (ZIP یا JSON خام) → {"data": match_data, "flags": {...}}.
-    پرچم‌ها از PNGهای داخل ZIP به آرایهٔ RGBA uint8 تبدیل می‌شوند."""
+    """read archive (ZIP or JSON text) → {"data": match_data, "flags": {...}}.
+    text‌text from PNGtext inside ZIP to text RGBA uint8 text text‌textandtext."""
     try:
         import zipfile
         data = None
@@ -673,7 +673,7 @@ def load_match_archive(archive_path: str) -> Optional[Dict[str, Any]]:
         if not isinstance(data, dict):
             return None
         if str(data.get("format", "")) != MOMENTUM_ARCHIVE_FORMAT:
-            # فایل بدون مُهر فرمت — اگر history داشت بپذیر (سازگاری رو به جلو)
+            # file without technical note technical note — if history technical note technical note (technical notefromtechnical note technical noteand to technical noteand)
             if "history" not in data:
                 return None
         return {"data": data, "flags": flags}
@@ -683,9 +683,9 @@ def load_match_archive(archive_path: str) -> Optional[Dict[str, Any]]:
 
 def render_archive_chart(archive_path: str,
                          out_path: Optional[str] = None) -> Optional[str]:
-    """«کد بتواند فایل موردنظر را بخواند و به نمودار تبدیل کند» (کاربر):
-    آرشیو ZIP/JSON → موتور شبه → رندر کامل همان خط تولید نمودار TV → PNG.
-    خروجی: مسیر PNG ساخته‌شده یا None."""
+    """«code textandtext file textandtext text textandtext and to chart text text» (user):
+    archive ZIP/JSON → textandtextandtext textto → render complete same line textandtext chart TV → PNG.
+    output: path PNG built or None."""
     try:
         loaded = load_match_archive(archive_path)
         if loaded is None:
@@ -722,14 +722,14 @@ def render_archive_chart(archive_path: str,
 
 
 class TVSnapshotEngine:
-    """ماشین حالتِ اسنپ‌شات (خالص — بدون بازی/UI، کاملاً قابل تست):
-      * میان‌بازی: کپچر در «دقیقهٔ هدف − ۱» و نمایش در «دقیقهٔ هدف»؛
-        اگر ساعت از دقیقهٔ هدف رد شود و هنوز کپچری نبود → کپچر+نمایش فوری؛
-      * پایان بازی: توقف پیوسته ≥۱۲s در >۹۰′ و >۱۲۰′ (سطح‌های مستقل)؛
-        اگر بعد از اولین نمایش بازی از سر گرفته شود (جشن گل در ۹۰+)،
-        یک‌بار مجدداً مسلح می‌شود تا سوت واقعی پایان هم نمایش بگیرد
-        (حداکثر ۲ نمایش در هر سطح + خنک‌کنندهٔ ۴۵ ثانیه)؛
-      * ثبت ساعتِ «شروع بازی» برای مُهر تاریخ/زمان."""
+    """text text textagetext‌text (text — without withtext/UItext completetext testable):
+      * textortext‌withtext: text in «minutetext text − 1» and display in «minutetext text»text
+        if text from minutetext text text textandtext and still text textandtext → text+display immediatetext
+      * match end: stop textandtext ≥12s in >90′ and >120′ (level‌text independent)text
+        if after from firsttext display withtext from text text textandtext (text text in 90+)text
+        text‌withtext text armed text‌textandtext until textandtext real end text display text
+        (text 2 display in text level + text‌text 45 second)text
+      * register text «start withtext» for text untiltext/time."""
 
     def __init__(self, settings: Optional[Dict[str, Any]] = None):
         self.s: Dict[str, Any] = dict(TV_SNAP_DEFAULTS
@@ -737,15 +737,15 @@ class TVSnapshotEngine:
         self.match_start_wall: Optional[float] = None
         self._reset_state()
 
-    # --- وضعیت داخلی ---
+    # --- andtechnical note internal ---
     @staticmethod
     def _new_mid_state() -> Dict[str, Any]:
-        """v10.28 (پورت v1.3 از 2017) — چرخهٔ عمر تراکنشی هر کلید میان‌بازی:
-        show_state: None → "requested" (action صادر شد، در انتظار تأیید)
-                          → "visible" (تأیید شد — consumed)
-                          → "failed" (شکست/مهلت گذشت — منتظر تلاش مجدد)
-                          → "abandoned" (سقف تلاش‌ها — رها شد)
-        مصرف نهایی (shown=True) فقط با confirm_shown انجام می‌شود."""
+        """v10.28 (textandtext v1.3 from 2017) — cycletext text text text totaltext textortext‌withtext:
+        show_state: None → "requested" (action textin text in text confirmation)
+                          → "visible" (confirmation text — consumed)
+                          → "failed" (text/text text — text text text)
+                          → "abandoned" (text text‌text — text text)
+        text text (shown=True) only with confirm_shown text text‌textandtext."""
         return {"cap": False, "shown": False, "pre": False,
                 "show_state": None, "show_req_wall": None,
                 "retries": 0, "retry_after_wall": None,
@@ -753,28 +753,28 @@ class TVSnapshotEngine:
 
     @staticmethod
     def _new_end_state() -> Dict[str, Any]:
-        # v10.28 — pend: ساعت wall صدور show_end که هنوز تأیید نشده؛
-        # fails: تعداد شکست‌های پردازش‌شدهٔ این سطح (سقف TV_SNAP_END_FAIL_MAX)
+        # v10.28 — pend: technical note wall technical noteandtechnical note show_end technical note still confirmation technical note
+        # fails: count technical note‌technical note technical notefromtechnical note‌technical note technical note level (technical note TV_SNAP_END_FAIL_MAX)
         return {"stop_since": None, "shows": 0,
                 "rearm_used": False, "last_show_wall": None,
-                "pre": False,          # نسخهٔ ۱۰٫۱۵ — پیش‌بارگذاری انجام شد
+                "pre": False,          # versiontechnical note 10technical note15 — technical note‌withtechnical note technical note technical note
                 "pend": None, "fails": 0}
 
     def _reset_state(self):
-        # نسخهٔ ۱۰٫۱۵ — "pre" = پیش‌بارگذاری (رندر + پنجرهٔ زیرِ صفحه) انجام شد
+        # versiontechnical note 10technical note15 — "pre" = technical note‌withtechnical note (render + windowtechnical note technical note technical note) technical note technical note
         self.mid = {k: self._new_mid_state() for k in TV_SNAP_KEYS}
         self.end = {"end90": self._new_end_state(),
                     "end120": self._new_end_state()}
 
     def reset_match(self, now_wall: Optional[float] = None):
-        """شروع دست جدید — همهٔ وضعیت‌ها صفر (تایمر به ۰۰:۰۰ ریست شده)."""
+        """start text new — text andtext‌text text (untiltext to 00:00 reset text)."""
         self._reset_state()
         self.match_start_wall = None
 
     def reset_preload_flags(self):
-        """نسخهٔ ۱۰٫۱۶ — با تغییر پیچ‌های نمایش (نرمی لبه/نئون)، پیش‌بارگذاری‌های
-        «مصرف‌شده ولی هنوز نمایش‌داده‌نشده» دوباره مسلح می‌شوند تا رندر با
-        تنظیمات جدید از نو ساخته شود (نمایش‌های انجام‌شده دست‌نخورده)."""
+        """versiontext 10text16 — with change text‌text display (smoothing textto/textandtext)text text‌withtext‌text
+        «text‌text andtext still display‌data‌text» again armed text‌textandtext until render with
+        text new from textand text textandtext (display‌text text‌text unchanged)."""
         for st in self.mid.values():
             if not st["shown"]:
                 st["pre"] = False
@@ -786,13 +786,13 @@ class TVSnapshotEngine:
         return snap_clamp_minute(key, self.s.get(f"{key}_minute"))
 
     # =============================================================
-    # v10.28 — API تراکنشی نمایش (پورت v1.3 از نسخهٔ 2017؛ خالص — فقط از
-    # ترد Worker صدا زده شود؛ رویدادهای confirm/fail از سمت UI از طریق
-    # صف رویداد App به همین‌جا می‌رسند — بخش _snap_drain_show_events)
+    # v10.28 — API technical note display (technical noteandtechnical note v1.3 from versiontechnical note 2017technical note technical note — only from
+    # technical note Worker technical note technical note technical noteandtechnical note technical noteandtechnical notedatatechnical note confirm/fail from side UI from technical note
+    # technical note technical noteandtechnical note App to technical note‌technical note technical note‌technical noteagetechnical note — section _snap_drain_show_events)
     # =============================================================
     def confirm_shown(self, key: str) -> bool:
-        """تأیید رسیدن Snapshot به SHOWING (پذیرش renderer.show) — فقط در همین
-        حالت مصرف نهایی انجام می‌شود؛ خروجی False یعنی تأیید بی‌ربط/دیرهنگام."""
+        """confirmation text Snapshot to SHOWING (text renderer.show) — only in text
+        text text text text text‌textandtext output False text confirmation text‌text/text."""
         st = self.mid.get(key)
         if not st or st.get("show_state") != "requested":
             return False
@@ -803,8 +803,8 @@ class TVSnapshotEngine:
 
     def fail_show(self, key: str, now_wall: Optional[float] = None,
                   reason: str = "") -> bool:
-        """شکست dispatch/UI برای این کلید → مسلح‌سازی مجدد برای تلاش بعدی
-        (پس از TV_SNAP_SHOW_RETRY_BACKOFF_SEC) — نمایش هنوز مصرف نشده."""
+        """text dispatch/UI for text totaltext → armed‌textfromtext text for text aftertext
+        (text from TV_SNAP_SHOW_RETRY_BACKOFF_SEC) — display still text text."""
         st = self.mid.get(key)
         if not st or st.get("show_state") != "requested":
             return False
@@ -816,7 +816,7 @@ class TVSnapshotEngine:
         return True
 
     def show_attempt(self, key: str) -> int:
-        """شمارهٔ تلاش جاری (۱ = اولین show؛ n>1 = تلاش مجدد)."""
+        """numbertext text current (1 = firsttext showtext n>1 = text text)."""
         st = self.mid.get(key)
         if not st:
             return 0
@@ -824,8 +824,8 @@ class TVSnapshotEngine:
                                              in ("requested", "failed") else 0)
 
     def confirm_show_end(self) -> bool:
-        """تأیید نمایش پایان (کلید App «end») — pend هر دو سطح پاک می‌شود
-        (در هر لحظه حداکثر یک show_end در پرواز است)."""
+        """confirmation display end (totaltext App «end») — pend text textand level text text‌textandtext
+        (in text moment text text show_end in textandfrom is)."""
         hit = False
         for lvl in ("end90", "end120"):
             st = self.end.get(lvl)
@@ -836,9 +836,9 @@ class TVSnapshotEngine:
 
     def fail_show_end(self, lvl: str, now_wall: Optional[float] = None,
                       reason: str = "") -> bool:
-        """شکست نمایش پایان → «shows» پس گرفته می‌شود و ماشین حالت توقف
-        (تأیید ۱۲ ثانیه‌ای + Cooldown) دوباره مسلح می‌شود تا نمایش پایانی
-        بدون ری‌استارت بازی دوباره صادر شود."""
+        """text display end → «shows» text text text‌textandtext and text text stop
+        (confirmation 12 second‌text + Cooldown) again armed text‌textandtext until display endtext
+        without restart withtext again textin textandtext."""
         st = self.end.get(lvl)
         if not st or st.get("pend") is None:
             return False
@@ -852,10 +852,10 @@ class TVSnapshotEngine:
         return True
 
     def tick(self, total_t, m_state, half_number, now_wall) -> List[Tuple[str, str]]:
-        """یک تیکWorker — خروجی: فهرست اقدام‌ها:
-             ("capture", key)  → رندر PNG موقت (دقیقهٔ هدف − ۱)
-             ("show", key)     → نمایش روی صفحه (دقیقهٔ هدف)
-             ("show_end", lvl) → نمایش پایان بازی (end90/end120)"""
+        """text textWorker — output: list text‌text:
+             ("capture", key)  → render PNG textandtext (minutetext text − 1)
+             ("show", key)     → display textandtext text (minutetext text)
+             ("show_end", lvl) → display match end (end90/end120)"""
         acts: List[Tuple[str, str]] = []
         if total_t is None:
             return acts
@@ -865,15 +865,15 @@ class TVSnapshotEngine:
             return acts
         now = float(now_wall) if now_wall is not None else time.time()
         if self.match_start_wall is None:
-            self.match_start_wall = now          # ثبت ساعت «شروع» بازی
+            self.match_start_wall = now          # register technical note «start» withtechnical note
         try:
             half = int(half_number) if half_number is not None else 1
         except (TypeError, ValueError):
             half = 1
 
-        # ---------- میان‌بازی (نیمهٔ اول / دوم / وقت اضافه) ----------
-        # نسخهٔ ۱۰٫۱۵ — «et» در هر دو نیمهٔ وقت اضافه (half ۳/۴) معتبر است؛
-        # «۲» برای سازگاری با حالتی که فاز ET به هر دلیل مسلح نشده باشد.
+        # ---------- technical noteortechnical note‌withtechnical note (technical note first / second / extra time) ----------
+        # versiontechnical note 10technical note15 — «et» in technical note technical noteand technical note extra time (half 3/4) valid istechnical note
+        # «2» for technical notefromtechnical note with technical note technical note technical notefrom ET to technical note technical note armed technical note withtechnical note.
         for key, need_half in (("h1", (1,)), ("h2", (2,)), ("et", (2, 3, 4))):
             if not self.s.get(f"{key}_enabled"):
                 continue
@@ -882,11 +882,11 @@ class TVSnapshotEngine:
             st = self.mid[key]
             if st["shown"]:
                 continue
-            # --- v10.28 — مدیریت چرخهٔ تراکنشی (قبل از هر چیز) ---
+            # --- v10.28 — technical note cycletechnical note technical note (before from technical note technical note) ---
             _ss = st.get("show_state")
             if _ss == "requested":
-                # مهلت تأیید گذشت؟ (dispatch گم‌شده/UI قفل — ریشهٔ باگ
-                # «۴۳/۸۵ در 2026 نمایش داده نشد و دیگر تلاش نشد»)
+                # technical note confirmation technical note (dispatch technical note‌technical note/UI technical note — technical note withtechnical note
+                # «43/85 in 2026 display data technical note and technical note technical note technical note»)
                 if (st.get("show_req_wall") is not None
                         and now - st["show_req_wall"]
                         > TV_SNAP_SHOW_CONFIRM_TIMEOUT_SEC):
@@ -897,7 +897,7 @@ class TVSnapshotEngine:
             if _ss == "failed":
                 if now >= (st.get("retry_after_wall") or 0.0):
                     if int(st.get("retries", 0)) >= TV_SNAP_SHOW_MAX_RETRIES:
-                        # سقف تلاش‌ها — رها می‌شود (shown=True تا چرخه نایستد)
+                        # technical note technical note‌technical note — technical note technical note‌technical noteandtechnical note (shown=True until cycle technical note)
                         st["show_state"] = "abandoned"
                         st["shown"] = True
                         acts.append(("show_abandoned", key))
@@ -905,12 +905,12 @@ class TVSnapshotEngine:
                         st["retries"] = int(st.get("retries", 0)) + 1
                         st["show_state"] = "requested"
                         st["show_req_wall"] = now
-                        acts.append(("show", key))     # تلاش مجدد
-                # هنوز داخل Backoff → هیچ action جدیدی نه
+                        acts.append(("show", key))     # technical note technical note
+                # still inside Backoff → technical note action newtechnical note technical note
             tgt_min = self.target_minute(key)
-            # نسخهٔ ۱۰٫۱۵ — پیش‌بارگذاری: در پنجرهٔ ۲ ثانیهٔ «قبل از» لحظهٔ
-            # نمایش، رندر + ساخت پنجرهٔ زیرِ صفحه (ورود بدون لگ — کاربر:
-            # «خارج از کادر نگه دار تا موقع ورود مجبور به لود نشه»)
+            # versiontechnical note 10technical note15 — technical note‌withtechnical note: in windowtechnical note 2 secondtechnical note «before from» momenttechnical note
+            # displaytechnical note render + technical note windowtechnical note technical note technical note (andtechnical noteandtechnical note without technical note — user:
+            # «technical note from technical notein technical note technical note until technical noteandtechnical note andtechnical noteandtechnical note technical noteandtechnical note to technical noteandtechnical note technical note»)
             if (not st["pre"]) and \
                     (tgt_min * 60.0 - TV_SNAP_PRELOAD_LEAD_SEC) <= t < tgt_min * 60.0:
                 st["pre"] = True
@@ -919,25 +919,25 @@ class TVSnapshotEngine:
                 st["cap"] = True
                 acts.append(("capture", key))
             if t >= tgt_min * 60.0 and st.get("show_state") is None:
-                if not st["cap"]:            # ساعت از هدف رد شده بود → فوری
+                if not st["cap"]:            # technical note from technical note technical note technical note technical noteandtechnical note → immediate
                     st["cap"] = True
                     acts.append(("capture", key))
-                # v10.28 — فقط «درخواست» ثبت می‌شود؛ مصرف نهایی با تأیید
+                # v10.28 — only «request» register technical note‌technical noteandtechnical note technical note technical note with confirmation
                 st["show_state"] = "requested"
                 st["show_req_wall"] = now
                 acts.append(("show", key))
 
-        # ---------- پایان بازی (>۹۰′ و >۱۲۰′) ----------
-        # سطح ۱۲۰ اول ارزیابی می‌شود؛ اگر نمایش ۱۲۰+ افتاد، سطح ۹۰+ برای
-        # «همین توقف» بی‌معنی است و کامل مصرف می‌شود (جلوگیری از نمایش دوبل)
+        # ---------- match end (>90′ and >120′) ----------
+        # level 120 first technical noteortechnical note technical note‌technical noteandtechnical note if display 120+ decreasetechnical note level 90+ for
+        # «technical note stop» technical note‌technical note is and complete technical note technical note‌technical noteandtechnical note (technical noteandtechnical note from display technical noteandtechnical note)
         if self.s.get("end_enabled"):
             for lvl, min_t in (("end120", 120 * 60.0), ("end90", 90 * 60.0)):
                 st = self.end[lvl]
-                # --- v10.28 — مهلت تأیید show_end قبلی (dispatch گم‌شده) ---
+                # --- v10.28 — technical note confirmation show_end beforetechnical note (dispatch technical note‌technical note) ---
                 if st.get("pend") is not None:
                     if now - st["pend"] > TV_SNAP_SHOW_CONFIRM_TIMEOUT_SEC \
                             and int(st.get("fails", 0)) < TV_SNAP_END_FAIL_MAX:
-                        # پس گرفتن shows + مسلح‌سازی دوبارهٔ ماشین توقف
+                        # technical note technical note shows + armed‌technical notefromtechnical note againtechnical note technical note stop
                         st["pend"] = None
                         st["shows"] = max(0, int(st.get("shows", 0)) - 1)
                         st["stop_since"] = None
@@ -950,17 +950,17 @@ class TVSnapshotEngine:
                     continue
                 if str(m_state) == "PLAYING":
                     st["stop_since"] = None
-                    st["pre"] = False        # نسخهٔ ۱۰٫۱۵ — پیش‌بارگذاری باطل
-                    # جشن گل در ۹۰+ نمایش را مصرف کرده و بازی ادامه یافت →
-                    # برای توقف واقعیِ پایان مجدداً مسلح می‌شود (فقط یک‌بار)
+                    st["pre"] = False        # versiontechnical note 10technical note15 — technical note‌withtechnical note withtechnical note
+                    # technical note technical note in 90+ display technical note technical note technical note and withtechnical note resume technical notedecrease →
+                    # for stop realtechnical note end technical note armed technical note‌technical noteandtechnical note (only technical note‌withtechnical note)
                     if st["shows"] == 1 and not st["rearm_used"]:
                         st["shows"] = 0
                         st["rearm_used"] = True
                     continue
                 if st["stop_since"] is None:
                     st["stop_since"] = now
-                # نسخهٔ ۱۰٫۱۵ — پیش‌بارگذاریِ پایان: در پنجرهٔ ~۲ ثانیهٔ
-                # «قبل از» تأیید توقفِ پایان (سپر رندر در لحظهٔ نمایش)
+                # versiontechnical note 10technical note15 — technical note‌withtechnical note end: in windowtechnical note ~2 secondtechnical note
+                # «before from» confirmation stoptechnical note end (technical note render in momenttechnical note display)
                 _elapsed = now - st["stop_since"]
                 if (not st["pre"]) and \
                         (TV_SNAP_END_STOP_CONFIRM_SEC
@@ -976,29 +976,29 @@ class TVSnapshotEngine:
                 st["shows"] += 1
                 st["stop_since"] = None
                 st["last_show_wall"] = now
-                st["pend"] = now            # v10.28 — در انتظار تأیید
+                st["pend"] = now            # v10.28 — in technical note confirmation
                 acts.append(("show_end", lvl))
                 if lvl == "end120":
-                    # نمایش پایانِ ۱۲۰+ کافی است — سطح ۹۰+ «کامل» مصرف
-                    # می‌شود (پورت v1.2.2 از 2017 — جلوگیری از نمایش دوبلِ
-                    # سوت پایانی وقت‌اضافه)
+                    # display endtechnical note 120+ technical note is — level 90+ «complete» technical note
+                    # technical note‌technical noteandtechnical note (technical noteandtechnical note v1.2.2 from 2017 — technical noteandtechnical note from display technical noteandtechnical note
+                    # technical noteandtechnical note endtechnical note andtechnical note‌technical note)
                     st90 = self.end["end90"]
                     st90["shows"] = 2
                     st90["last_show_wall"] = now
                     st90["stop_since"] = None
                     if st90.get("pend") is not None:
-                        # v10.28 — show90 در پرواز نبود که دوبل شود؛ pend او
-                        # هم پاک می‌شود (تأیید دیرهنگام دیگر اثری ندارد)
+                        # v10.28 — show90 in technical noteandfrom technical noteandtechnical note technical note technical noteandtechnical note technical noteandtechnical note pend technical noteand
+                        # technical note technical note technical note‌technical noteandtechnical note (confirmation technical note technical note impacttechnical note technical note)
                         st90["pend"] = None
         return acts
 
 
-# --- نسخهٔ ۱۰٫۲۲ — Figure/Canvas «ماندگار» رندر Snapshot (اولویت ۴ کاربر):
-# به‌جای ساخت Figure/axes/آرتیست از صفر در هر رندر (~۵۸۰ms)، همان Figure
-# دائمی reuse می‌شود؛ draw_tv_momentum خودش ax.clear() می‌کند → خروجی
-# پیکسل‌به‌پیکسل مثل قبل است و فقط هزینهٔ ساخت آبجکت‌ها حذف می‌شود.
-# قفل: رندر از ترد Worker (capture/preload/end) و ترد snap-retune (ریل‌تایم
-# پیچ‌ها) فراخوانی می‌شود — هم‌پوشانی نادر با نوبت‌بندی Lock حل می‌شود.
+# --- versiontechnical note 10technical note22 — Figure/Canvas «technical note» render Snapshot (firstandtechnical note 4 user):
+# to‌technical note technical note Figure/axes/technical note from technical note in technical note render (~580ms)technical note same Figure
+# technical note reuse technical note‌technical noteandtechnical note draw_tv_momentum technical noteandtechnical note ax.clear() technical note‌technical note → output
+# technical note‌to‌technical note technical note before is and only technical note technical note technical note‌technical note technical note technical note‌technical noteandtechnical note.
+# technical note: render from technical note Worker (capture/preload/end) and technical note snap-retune (technical note‌untiltechnical note
+# technical note‌technical note) technical noteandtechnical note technical note‌technical noteandtechnical note — technical note‌technical noteandtechnical note technical notein with technical noteandtechnical note‌technical note Lock technical note technical note‌technical noteandtechnical note.
 _SNAP_RENDER_CACHE: Dict[str, Any] = {"fig": None, "canvas": None,
                                       "key": None, "lock": threading.Lock()}
 
@@ -1009,27 +1009,27 @@ def render_tv_snapshot(momentum, cfg, disp_value, bg_kind: str,
                        timestamp_text: Optional[str] = None,
                        out_path: Optional[str] = None,
                        transparent: bool = True):
-    """رندر آفلاین نمودار TV روی بوم Agg مستقل (بدون دست‌زدن به تب):
-    خروجی PIL.Image (RGBA). با transparent=True پس‌زمینهٔ شفاف می‌ماند —
-    کانال آلفای تصویر اصلی حفظ می‌شود تا هنگام نمایش روی بازی، تصویر
-    بازی از زیرش دیده شود. ابعاد خروجی دقیقاً برابر تصویر پس‌زمینه است
+    """render text chart TV textandtext textandtext Agg independent (without text‌text to text):
+    output PIL.Image (RGBA). with transparent=True text‌pitchtext text text‌text —
+    text text textandtext original text text‌textandtext until text display textandtext withtext textandtext
+    withtext from text text textandtext. text output exactly text textandtext text‌pitchtext is
     (half/full: 1608×978 — extra: 2034×978).
-    نسخهٔ ۱۰٫۲۲ — Figure/Canvas ماندگار: Figure فقط یک‌بار برای هر
-    (W,H,dpi) ساخته می‌شود و در رندرهای بعدی reuse می‌شود (ax.clear()
-    داخل draw_tv_momentum محتوای قبلی را کامل پاک می‌کند → خروجی
-    بدون تغییر؛ این عملیات هرگز در مسیر Show نیست — فقط Worker)."""
+    versiontext 10text22 — Figure/Canvas text: Figure only text‌withtext for text
+    (W,H,dpi) text text‌textandtext and in rendertext aftertext reuse text‌textandtext (ax.clear()
+    inside draw_tv_momentum textandtext beforetext text complete text text‌text → output
+    unchangedtext text textortext never in path Show is not — only Worker)."""
     from matplotlib.backends.backend_agg import FigureCanvasAgg
     bg = tv_load_background(bg_kind)
     if bg is None:
         return None
     W, H = int(bg["W"]), int(bg["H"])
     dpi = 100.0
-    # نسخهٔ ۱۰٫۲۵ — ابرنمونه‌گیری رندر اسنپ‌شات: بوم SS برابر بزرگ‌تر رسم
-    # می‌شود و آخر کار با میانگین Box به اندازهٔ طراحی فرود می‌آید. همهٔ
-    # اندازه‌ها (خط‌ها/متن/توپ/لوگو) بر حسب «پیکسل طراحی» تعریف شده‌اند و
-    # با dpi مقیاس می‌شوند ⇒ بعد از فرود، دقیقاً همان اندازهٔ قبل.
-    # رندر در ترد Worker و ~۱ دقیقه قبل از نمایش انجام می‌شود ⇒ هزینهٔ
-    # محاسباتی هرگز در مسیر Show نیست.
+    # versiontechnical note 10technical note25 — technical notesample‌technical note render technical noteagetechnical note‌technical note: technical noteandtechnical note SS technical note technical note‌technical note technical note
+    # technical note‌technical noteandtechnical note and technical note technical note with technical noteortechnical note Box to technical notefromtechnical note technical note technical noteandtechnical note technical note‌technical note. technical note
+    # technical notefromtechnical note‌technical note (line‌technical note/technical note/ball/logo) technical note technical note «technical note technical note» technical note technical note‌technical note and
+    # with dpi technical noteortechnical note technical note‌technical noteandtechnical note ⇒ after from technical noteandtechnical note exactly same technical notefromtechnical note before.
+    # render in technical note Worker and ~1 minute before from display technical note technical note‌technical noteandtechnical note ⇒ technical note
+    # technical notewithtechnical note never in path Show is not.
     ss = max(1, int(TV_SNAPSHOT_SS))
     with _SNAP_RENDER_CACHE["lock"]:
         fkey = (W, H, round(dpi, 3), ss)
@@ -1051,7 +1051,7 @@ def render_tv_snapshot(momentum, cfg, disp_value, bg_kind: str,
                          timestamp_text=timestamp_text)
         canvas.draw()
         buf = np.asarray(canvas.buffer_rgba()).copy()
-    # نسخهٔ ۱۰٫۲۵ — فرود ابرنمونه‌ها: میانگین Box (AA واقعی، بدون رینگ لبه)
+    # versiontechnical note 10technical note25 — technical noteandtechnical note technical notesample‌technical note: technical noteortechnical note Box (AA realtechnical note without technical note technical noteto)
     if ss > 1 and buf.shape[0] >= H and buf.shape[1] >= W:
         try:
             from PIL import Image as _ImgSS
@@ -1060,16 +1060,16 @@ def render_tv_snapshot(momentum, cfg, disp_value, bg_kind: str,
             buf = np.asarray(_im_ss).copy()
         except Exception:
             pass
-    # نرمال‌سازی ابعاد: محاسبهٔ float اندازهٔ بوم را ۱px کوچک‌تر می‌کند
-    # (16.08×100 → 1607) — با پد شفاف دقیقاً به ابعاد تصویر پس‌زمینه می‌رسیم
+    # smoothtechnical note‌technical notefromtechnical note technical note: technical notetotechnical note float technical notefromtechnical note technical noteandtechnical note technical note 1px technical noteandtechnical note‌technical note technical note‌technical note
+    # (16.08×100 → 1607) — with technical note technical note exactly to technical note technical noteandtechnical note technical note‌pitchtechnical note technical note‌technical note
     if buf.shape[0] != H or buf.shape[1] != W:
         fixed = np.zeros((H, W, 4), dtype=np.uint8)
         hh = min(H, buf.shape[0])
         ww = min(W, buf.shape[1])
         fixed[:hh, :ww] = buf[:hh, :ww]
         buf = fixed
-    # نسخهٔ ۱۰٫۱۸ — پارامتر mode حذف شد (DeprecationWarning Pillow 13):
-    # fromarray از شکل آرایه (H,W,4) خودش RGBA را تشخیص می‌دهد
+    # versiontechnical note 10technical note18 — technical note mode technical note technical note (DeprecationWarning Pillow 13):
+    # fromarray from technical notetotal technical note (H,W,4) technical noteandtechnical note RGBA technical note detection technical note‌technical note
     img = Image.fromarray(buf) if Image is not None else None
     if img is not None and out_path:
         try:
@@ -1083,7 +1083,7 @@ def render_tv_snapshot(momentum, cfg, disp_value, bg_kind: str,
 
 
 def _premultiply_rgba(img):
-    """آماده‌سازی آرایهٔ BGRA با آلفای پیش‌ضرب‌شده برای UpdateLayeredWindow."""
+    """text‌textfromtext text BGRA with text text‌text‌text for UpdateLayeredWindow."""
     arr = np.array(img.convert("RGBA"), dtype=np.uint8)
     a = arr[:, :, 3:4].astype(np.uint32)
     rgb = (arr[:, :, :3].astype(np.uint32) * a + 127) // 255
@@ -1097,15 +1097,15 @@ def _premultiply_rgba(img):
 
 def win32_show_layered(win, pil_img, x: int, y: int, w: int, h: int,
                        arr=None, trace=None) -> bool:
-    """نمایش پنجرهٔ Tk با آلفای پیکسلی واقعی روی ویندوز (UpdateLayeredWindow):
-    پنجره topmost، کلیک‌گذر (WS_EX_TRANSPARENT) و بدون گرفتن فوکوس
-    (WS_EX_NOACTIVATE) — مناسب افتادن روی تصویر بازی.
-    نسخهٔ ۱۰٫۱۶ — arr آرایهٔ BGRA پیش‌ضرب‌شدهٔ آماده (از ترد Worker) است؛
-    در این حالت هیچ پردازش پیکسلی در UI-Thread انجام نمی‌شود.
-    نسخهٔ ۱۰٫۱۸ — trace (SnapShowTrace): زیرمرحله‌های حساس (Premultiply،
-    CreateDIBSection، Upload به UpdateLayeredWindow) جداگانه زمان‌گیری
-    می‌شوند تا مظنون اصلی لگ (ULW/DWM) دقیقاً مشخص شود (بند ۶ کاربر).
-    در نبود ویندوز/خطا → False (فراخوان fallback ساده می‌کند)."""
+    """display windowtext Tk with text text real textandtext andtextandtext (UpdateLayeredWindow):
+    window topmosttext totaltext‌text (WS_EX_TRANSPARENT) and without text textandtextandtext
+    (WS_EX_NOACTIVATE) — text decreasetext textandtext textandtext withtext.
+    versiontext 10text16 — arr text BGRA text‌text‌text text (from text Worker) istext
+    in text text text textfromtext text in UI-Thread text text‌textandtext.
+    versiontext 10text18 — trace (SnapShowTrace): text‌text text (Premultiplytext
+    CreateDIBSectiontext Upload to UpdateLayeredWindow) text time‌text
+    text‌textandtext until textandtext original text (ULW/DWM) exactly text textandtext (text 6 user).
+    in textandtext andtextandtext/Error → False (textandtext fallback text text‌text)."""
     if os.name != "nt" or Image is None:
         return False
     try:
@@ -1225,14 +1225,14 @@ def win32_show_layered(win, pil_img, x: int, y: int, w: int, h: int,
 
 
 def win32_move_window(win, x: int, y: int) -> bool:
-    """جابه‌جایی پنجرهٔ لایه‌ای «بدون» بازپخش بیت‌مپ (SetWindowPos) — نسخهٔ
-    ۱۰٫۱۳: حرکت روان انیمیشن ورود/خروج با هزینهٔ کم در هر فریم.
-    نسخهٔ ۱۰٫۱۸ (بند ۷ کاربر): در هر فریم فقط Position عوض می‌شود —
-    HWND_TOPMOST و SWP_SHOWWINDOW حذف شدند (Topmost یک‌بار در لحظهٔ ساخت
-    تنظیم می‌شود و Show هم یک‌بار انجام شده است؛ تغییر Z-order/Show-state
-    در هر فریم، بار سنگین Window Management و DWM می‌سازد).
-    در نبود ویندوز/خطا → False (فراخوان fallback با geometry تضمین می‌شود).
-    نسخهٔ ۱۰٫۲۰ (بند ۶ کاربر): مدت + پرچم‌های واقعی در تلمتری _SWP_LAST."""
+    """textto‌text windowtext layer‌text «without» withtext text‌text (SetWindowPos) — versiontext
+    10text13: text textandtext text andtextandtext/textandtext with text text in text frame.
+    versiontext 10text18 (text 7 user): in text frame only Position textandtext text‌textandtext —
+    HWND_TOPMOST and SWP_SHOWWINDOW text text (Topmost text‌withtext in momenttext text
+    text text‌textandtext and Show text text‌withtext text text istext change Z-order/Show-state
+    in text frametext withtext agetext Window Management and DWM text‌textfromtext).
+    in textandtext andtextandtext/Error → False (textandtext fallback with geometry text text‌textandtext).
+    versiontext 10text20 (text 6 user): text + text‌text real in text _SWP_LAST."""
     if os.name != "nt":
         return False
     try:
@@ -1249,10 +1249,10 @@ def win32_move_window(win, x: int, y: int) -> bool:
         SWP_NOZORDER = 0x0004
         SWP_NOACTIVATE = 0x0010
         _fl = SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE
-        _t0 = time.perf_counter()              # نسخهٔ ۱۰٫۲۰ — بند ۶
+        _t0 = time.perf_counter()              # versiontechnical note 10technical note20 — technical note 6
         _ok = bool(user32.SetWindowPos(hwnd, 0, int(x), int(y),
                                        0, 0, _fl))
-        try:                                   # تلمتری — بدون لاگ اسپم
+        try:                                   # technical note — without log technical note
             _SWP_LAST.update(hwnd=int(hwnd), x=int(x), y=int(y),
                              flags=_fl, src="move_window",
                              dur_ms=(time.perf_counter() - _t0) * 1000.0,
@@ -1265,8 +1265,8 @@ def win32_move_window(win, x: int, y: int) -> bool:
 
 
 def win32_hwnd_of(win):
-    """نسخهٔ ۱۰٫۱۶ — hwnd خام پنجرهٔ Tk (یک‌بار در UI-Thread حل می‌شود تا
-    ترد انیمیشن بدون هیچ فراخوانی Tk کار کند)."""
+    """versiontext 10text16 — hwnd text windowtext Tk (text‌withtext in UI-Thread text text‌textandtext until
+    text text without text textandtext Tk text text)."""
     if os.name != "nt" or win is None:
         return None
     try:
@@ -1281,17 +1281,17 @@ def win32_hwnd_of(win):
         return None
 
 
-# نسخهٔ ۱۰٫۲۰ — تلمتری آخرین فراخوانی SetWindowPos حرکتی (بند ۶ کاربر):
-# win32_move_hwnd / win32_move_window مدت (perf_counter) + پرچم‌های واقعی +
-# نتیجه را این‌جا می‌نویسند؛ ترد انیمیشن بعد از هر فریم آن را می‌خواند و در
-# بلوک [SNAPSHOT ANIMATION DEBUG] ثبت می‌کند. بدون لاگ مستقیم (بدون اسپم)؛
-# تغییر امضای توابع هم لازم نشد.
+# versiontechnical note 10technical note20 — technical note latest technical noteandtechnical note SetWindowPos technical note (technical note 6 user):
+# win32_move_hwnd / win32_move_window technical note (perf_counter) + technical note‌technical note real +
+# technical note technical note technical note‌technical note technical note‌technical noteandtechnical noteagetechnical note technical note technical note after from technical note frame technical note technical note technical note‌technical noteandtechnical note and in
+# technical noteandtechnical note [SNAPSHOT ANIMATION DEBUG] register technical note‌technical note. without log direct (without technical note)technical note
+# change technical note technical noteandtechnical note technical note technical notefromtechnical note technical note.
 _SWP_LAST = {"hwnd": None, "x": 0, "y": 0, "flags": 0, "dur_ms": 0.0,
              "ok": False, "src": "-"}
 
 
 def _swp_flags_text(flags: int) -> str:
-    """نسخهٔ ۱۰٫۲۰ — رشتهٔ خوانا برای پرچم‌های SetWindowPos (بند ۷ کاربر)."""
+    """versiontext 10text20 — stringtext textandtext for text‌text SetWindowPos (text 7 user)."""
     names = ((0x0001, "NOSIZE"), (0x0002, "NOMOVE"), (0x0004, "NOZORDER"),
              (0x0008, "NOREDRAW"), (0x0010, "NOACTIVATE"),
              (0x0020, "DRAWFRAME"), (0x0040, "FRAMECHANGED"),
@@ -1302,9 +1302,9 @@ def _swp_flags_text(flags: int) -> str:
         else f"0x{int(flags):04X}"
 
 
-# --- نسخهٔ ۱۰٫۲۱ — تست ۵ کاربر: تلمتری کامل ویندوزی هر SetWindowPos ---
-# user32 با use_last_error=True تا GetLastError پس از فراخوانی دقیق باشد
-# (ctypes آن را ذخیره می‌کند و ctypes.get_last_error() برمی‌گرداند).
+# --- versiontechnical note 10technical note21 — test 5 user: technical note complete andtechnical noteandtechnical note technical note SetWindowPos ---
+# user32 with use_last_error=True until GetLastError technical note from technical noteandtechnical note technical note withtechnical note
+# (ctypes technical note technical note save technical note‌technical note and ctypes.get_last_error() technical note‌technical note).
 _U32_LE = None
 if os.name == "nt":
     try:
@@ -1312,8 +1312,8 @@ if os.name == "nt":
     except Exception:
         _U32_LE = None
 
-# آخرین رکورد تلمتری _win32_swp_debug (ترد انیمیشن بعد از هر حرکت آن را
-# کپی می‌کند و در بلوک [SNAPSHOT ANIMATION DEBUG] چاپ می‌شود).
+# latest technical noteandtechnical note technical note _win32_swp_debug (technical note technical note after from technical note technical note technical note technical note
+# technical note technical note‌technical note and in technical noteandtechnical note [SNAPSHOT ANIMATION DEBUG] print technical note‌technical noteandtechnical note).
 _SWP_LAST_EXTRA = {}
 
 _EX_BITS = ((0x00000008, "TOPMOST"), (0x00080000, "LAYERED"),
@@ -1321,7 +1321,7 @@ _EX_BITS = ((0x00000008, "TOPMOST"), (0x00080000, "LAYERED"),
 
 
 def _snap_exstyle_text(ex) -> str:
-    """نسخهٔ ۱۰٫۲۱ — متن خوانای بیت‌های ex-style (تست ۵ کاربر)."""
+    """versiontext 10text21 — text textandtext text‌text ex-style (test 5 user)."""
     try:
         if ex is None:
             return "?"
@@ -1332,10 +1332,10 @@ def _snap_exstyle_text(ex) -> str:
 
 
 def _snap_ui_stack_sample(max_frames: int = 10) -> str:
-    """نسخهٔ ۱۰٫۲۱ — نمونهٔ پشتهٔ Python ترد Main/UI از ترد دیگر
-    (sys._current_frames) — وقتی SetWindowPos ترد انیمیشن بلوک می‌شود،
-    این نمونه نشان می‌دهد UI-Thread دقیقاً چه کدی اجرا می‌کرده
-    (پاسخ سؤال D کاربر: چرا ورود 150ms و خروج 1ms؟)."""
+    """versiontext 10text21 — sampletext text Python text Main/UI from text text
+    (sys._current_frames) — when SetWindowPos text text textandtext text‌textandtext
+    text sample text text‌text UI-Thread exactly text codetext text text‌text
+    (passtext text D user: text andtextandtext 150ms and textandtext 1mstext)."""
     try:
         mt = threading.main_thread()
         fr = sys._current_frames().get(mt.ident)
@@ -1352,17 +1352,17 @@ def _snap_ui_stack_sample(max_frames: int = 10) -> str:
 
 
 def _win32_swp_debug(hwnd, x: int, y: int, src: str = "move_hwnd"):
-    """نسخهٔ ۱۰٫۲۱ — تست ۵ کاربر: «همان» SetWindowPos حرکتی (flags ثابت
-    0x0015 = NOSIZE|NOZORDER|NOACTIVATE) را با تلمتری کامل ویندوزی اجرا
-    می‌کند و رکورد را در _SWP_LAST_EXTRA می‌گذارد و برمی‌گرداند:
-      * old x/y (GetWindowRect قبل) / مکان درخواستی / y واقعی بعد از حرکت
+    """versiontext 10text21 — test 5 user: «same» SetWindowPos text (flags text
+    0x0015 = NOSIZE|NOZORDER|NOACTIVATE) text with text complete andtextandtext text
+    text‌text and textandtext text in _SWP_LAST_EXTRA text‌text and text‌text:
+      * old x/y (GetWindowRect before) / text requesttext / y real after from text
       * HWND + native Thread ID + Thread priority
       * flags + return value + GetLastError
-      * قبل و بعد: GetForegroundWindow / IsWindowVisible / بیت‌های
+      * before and after: GetForegroundWindow / IsWindowVisible / text‌text
         WS_EX_TOPMOST | WS_EX_LAYERED | WS_EX_TRANSPARENT | WS_EX_NOACTIVATE
-      * اگر مدت > TV_SNAP_UI_STACK_ON_SLOW_MS → نمونهٔ پشتهٔ UI-Thread
-    فقط وقتی TV_SNAP_SWP_WIN_DEBUG فعال است؛ در نبود ویندوز/خطا → None
-    (فراخوان به مسیر سادهٔ قبلی برمی‌گردد — رفتار عادی دست‌نخورده)."""
+      * if text > TV_SNAP_UI_STACK_ON_SLOW_MS → sampletext text UI-Thread
+    only when TV_SNAP_SWP_WIN_DEBUG active istext in textandtext andtextandtext/Error → None
+    (textandtext to path text beforetext text‌text — textuntiltext text unchanged)."""
     if os.name != "nt" or not hwnd or not TV_SNAP_SWP_WIN_DEBUG:
         return None
     try:
@@ -1372,8 +1372,8 @@ def _win32_swp_debug(hwnd, x: int, y: int, src: str = "move_hwnd"):
         hwnd = int(hwnd)
         GWL_EXSTYLE = -20
         ex_mask = 0x00000008 | 0x00080000 | 0x00000020 | 0x08000000
-        # --- وضعیت «قبل» (خطا → None/صفر — هیچ‌کدام مسیر حرکت را عوض
-        # نمی‌کنند؛ SetWindowPos خودش همیشه اجرا می‌شود) ---
+        # --- andtechnical note «before» (Error → None/technical note — technical note‌codetechnical note path technical note technical note technical noteandtechnical note
+        # technical note‌technical note SetWindowPos technical noteandtechnical note always technical note technical note‌technical noteandtechnical note) ---
         old = None
         fg0 = vis0 = ex0 = None
         try:
@@ -1390,7 +1390,7 @@ def _win32_swp_debug(hwnd, x: int, y: int, src: str = "move_hwnd"):
         except Exception:
             prio = None
         flags = 0x0001 | 0x0004 | 0x0010
-        # --- خودِ فراخوانی (اگر خودش خطا دهد → None تا مسیر ساده ادامه دهد) ---
+        # --- technical noteandtechnical note technical noteandtechnical note (if technical noteandtechnical note Error technical note → None until path technical note resume technical note) ---
         try:
             t0 = time.perf_counter()
             ok = bool(u.SetWindowPos(hwnd, 0, int(x), int(y), 0, 0, flags))
@@ -1398,7 +1398,7 @@ def _win32_swp_debug(hwnd, x: int, y: int, src: str = "move_hwnd"):
             dur = (time.perf_counter() - t0) * 1000.0
         except Exception:
             return None
-        # --- وضعیت «بعد» ---
+        # --- andtechnical note «after» ---
         new = None
         fg1 = vis1 = ex1 = None
         try:
@@ -1431,7 +1431,7 @@ def _win32_swp_debug(hwnd, x: int, y: int, src: str = "move_hwnd"):
 
 
 def _anim_slow_swp_text(recs, thr_ms: float = 5.0) -> str:
-    """نسخهٔ ۱۰٫۲۱ — فهرست فریم‌های کند SetWindowPos (خلاصهٔ تست ۵)."""
+    """versiontext 10text21 — list frame‌text text SetWindowPos (text test 5)."""
     try:
         items = [(int(r.get("no", 0)), float(r.get("swp_ms", 0.0)))
                  for r in recs if not r.get("skipped")]
@@ -1442,11 +1442,11 @@ def _anim_slow_swp_text(recs, thr_ms: float = 5.0) -> str:
 
 
 def _anim_flags_policy_text(recs) -> str:
-    """نسخهٔ ۱۰٫۲۱ — تست ۴ کاربر: راستی‌آزمایی خودکار پرچم‌ها — همهٔ فریم‌های
-    انیمیشن باید دقیقاً 0x0015 (NOSIZE|NOZORDER|NOACTIVATE) باشند؛ هیچ
-    HWND_TOPMOST / SWP_SHOWWINDOW / تغییر Z-order / UpdateLayeredWindow /
-    opacity / resize / بازسازی پنجره در حلقه مجاز نیست (Topmost/Show فقط
-    یک‌بار در ساخت پنجره انجام شده‌اند)."""
+    """versiontext 10text21 — test 4 user: textistext‌text automatic text‌text — text frame‌text
+    text must exactly 0x0015 (NOSIZE|NOZORDER|NOACTIVATE) withtext text
+    HWND_TOPMOST / SWP_SHOWWINDOW / change Z-order / UpdateLayeredWindow /
+    opacity / resize / withtextfromtext window in text textfrom is not (Topmost/Show only
+    text‌withtext in text window text text‌text)."""
     try:
         if os.name != "nt":
             return "n/a (non-Windows)"
@@ -1464,24 +1464,24 @@ def _anim_flags_policy_text(recs) -> str:
 
 
 def win32_move_hwnd(hwnd, x: int, y: int) -> bool:
-    """نسخهٔ ۱۰٫۱۶ — جابه‌جایی با hwnd خام و «بدون هیچ فراخوانی Tk»:
-    ترد انیمیشن اختصاصی با این تابع، فریم‌ها را مستقل از صف UI اعمال
-    می‌کند (رفع لگ ورود اسنپ‌شات — شرط کاربر: سپردن به ترد جدا).
-    نسخهٔ ۱۰٫۱۸ (بند ۷ کاربر): فقط حرکت — SWP_NOZORDER | SWP_NOACTIVATE؛
-    بدون HWND_TOPMOST و بدون SWP_SHOWWINDOW (Topmost/Show یک‌بار در
-    ساخت پنجره انجام شده‌اند؛ «Topmost وضعیت پنجره است، نه عملِ هر فریم»).
-    نسخهٔ ۱۰٫۲۰ (بند ۶ کاربر): t0/t1 با perf_counter — مدت + پرچم‌های
-    واقعی + نتیجه در تلمتری _SWP_LAST ثبت می‌شود (بند ۷: باید همیشه
-    0x0015 = NOSIZE|NOZORDER|NOACTIVATE باشد).
-    نسخهٔ ۱۰٫۲۱ (تست ۵ کاربر): وقتی TV_SNAP_SWP_WIN_DEBUG فعال است، همین
-    فراخوانی از مسیر _win32_swp_debug می‌رود (همان SetWindowPos با همان
-    0x0015 + old/new x,y + وضعیت قبل/بعد + GetLastError + نمونهٔ پشتهٔ
-    UI در کندی)؛ رکورد در _SWP_LAST_EXTRA می‌ماند تا ترد انیمیشن آن را
-    در بلوک [SNAPSHOT ANIMATION DEBUG] چاپ کند. خودِ فراخوانی و پرچم‌ها
-    هیچ تغییری نکرده‌اند."""
+    """versiontext 10text16 — textto‌text with hwnd text and «without text textandtext Tk»:
+    text text text with text untiltext frame‌text text independent from text UI text
+    text‌text (text text andtextandtext textagetext‌text — text user: text to text text).
+    versiontext 10text18 (text 7 user): only text — SWP_NOZORDER | SWP_NOACTIVATEtext
+    without HWND_TOPMOST and without SWP_SHOWWINDOW (Topmost/Show text‌withtext in
+    text window text text‌text «Topmost andtext window istext text text text frame»).
+    versiontext 10text20 (text 6 user): t0/t1 with perf_counter — text + text‌text
+    real + text in text _SWP_LAST register text‌textandtext (text 7: must always
+    0x0015 = NOSIZE|NOZORDER|NOACTIVATE withtext).
+    versiontext 10text21 (test 5 user): when TV_SNAP_SWP_WIN_DEBUG active istext text
+    textandtext from path _win32_swp_debug text‌textandtext (same SetWindowPos with same
+    0x0015 + old/new x,y + andtext before/after + GetLastError + sampletext text
+    UI in text)text textandtext in _SWP_LAST_EXTRA text‌text until text text text text
+    in textandtext [SNAPSHOT ANIMATION DEBUG] print text. textandtext textandtext and text‌text
+    text changetext text‌text."""
     if os.name != "nt" or not hwnd:
         return False
-    # --- نسخهٔ ۱۰٫۲۱ — تست ۵: مسیر تلمتری کامل (همان حرکت، دادهٔ بیشتر) ---
+    # --- versiontechnical note 10technical note21 — test 5: path technical note complete (same technical note datatechnical note technical note) ---
     _rec = _win32_swp_debug(hwnd, x, y, "move_hwnd")
     if _rec is not None:
         try:
@@ -1500,10 +1500,10 @@ def win32_move_hwnd(hwnd, x: int, y: int) -> bool:
         SWP_NOZORDER = 0x0004
         SWP_NOACTIVATE = 0x0010
         _fl = SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE
-        _t0 = time.perf_counter()              # بند ۶: قبل از SetWindowPos
+        _t0 = time.perf_counter()              # technical note 6: before from SetWindowPos
         _ok = bool(user32.SetWindowPos(int(hwnd), 0, int(x),
                                        int(y), 0, 0, _fl))
-        try:                                   # بند ۶: بعد از SetWindowPos
+        try:                                   # technical note 6: after from SetWindowPos
             _SWP_LAST.update(hwnd=int(hwnd), x=int(x), y=int(y),
                              flags=_fl, src="move_hwnd",
                              dur_ms=(time.perf_counter() - _t0) * 1000.0,
@@ -1516,9 +1516,9 @@ def win32_move_hwnd(hwnd, x: int, y: int) -> bool:
 
 
 def win32_window_y(hwnd) -> Optional[int]:
-    """نسخهٔ ۱۰٫۱۷ — y واقعی (بالای مستطیل) پنجره از خود ویندوز
-    (GetWindowRect) — برای «واچ‌داگ ورود»: تشخیص اینکه پنجره هنوز زیرِ
-    صفحه گیر کرده است یا نه. در نبود ویندوز/خطا → None."""
+    """versiontext 10text17 — y real (withtext text) window from textandtext andtextandtext
+    (GetWindowRect) — for «andtext‌text andtextandtext»: detection text window still text
+    text text text is or text. in textandtext andtextandtext/Error → None."""
     if os.name != "nt" or not hwnd:
         return None
     try:
@@ -1534,89 +1534,89 @@ def win32_window_y(hwnd) -> Optional[int]:
 
 
 # =====================================================================
-# ۲۶. رابط کاربری نهایی (Main Application — Tkinter + Matplotlib)
+# 26. technical note usertechnical note technical note (Main Application — Tkinter + Matplotlib)
 # ---------------------------------------------------------------------
-# Tabها: 📈 Live Match Momentum | 📋 Event Timeline | 📊 Possession Sequences
+# Tabtechnical note: 📈 Live Match Momentum | 📋 Event Timeline | 📊 Possession Sequences
 #        🎯 Event / Threat Details | 🧪 Momentum Debug
-# Header: اتصال، وضعیت بازی، Match Time (زنده)، Possession، Home/Away
+# Header: technical note andtechnical note withtechnical note Match Time (live)technical note Possessiontechnical note Home/Away
 # =====================================================================
 # =====================================================================
-# ۲۶ — ردیاب مستقل هویت تیم‌ها: لوگو/پرچم میزبان و مهمان (نسخه ۱۰٫۵)
+# 26 — technical noteortechnical note independent technical noteandtechnical note team‌technical note: logo/technical note Home and Away (version 10technical note5)
 # ---------------------------------------------------------------------
-# منطق عیناً از ابزار مستقل «Team Tracker» کاربر منتقل شده است:
-#   * اتصال ۱۰۰٪ مستقل از GameEngine اصلی و دکمهٔ «اتصال به پروسه بازی»؛
-#     هندل read-only خودش را باز می‌کند و هیچ نوشتن/هوکی روی پروسهٔ بازی
-#     انجام نمی‌دهد (فقط ReadProcessMemory).
-#   * از لحظهٔ اجرای برنامه هر ۱ ثانیه تلاش به اتصال می‌کند؛ بعد از اتصال
-#     موفق دیگر هیچ تلاش اتصالی انجام نمی‌شود (نسخهٔ ۱۰٫۶: از همان لحظه
-#     خواندن اسلات‌ها «ریل‌تایم» می‌شود — هر ۵۰ms مثل حلقهٔ realtime_loop
-#     ابزار اصلی؛ اگر پروسه بسته شود، دوباره به حالت «تلاش هر ۱ ثانیه»
-#     برمی‌گردد. اسکن سنگین پروسه فقط وقتی انجام می‌شود که یا وصل نیستیم
-#     یا خواندن حافظه شکست خورده — نه در هر تیکِ متصل).
-#   * [PT v2.3.1] تشخیص تیم فقط وقتی اجرا می‌شود که بایت وضعیت منو
-#     (base+0x36F9AE0) = ۹ باشد (قبلاً ۱۰۰ بود) — در «هر دو» مسیرِ PT و
-#     قدیمی؛ بقیهٔ وضعیت‌ها یعنی قفل روی آخرین انتخاب معتبر — مثل ابزار اصلی.
-#   * نسخهٔ ۱۰٫۶ — رنگ نمودار: دو بایت استاتیک ۱ بیتی شمارهٔ رنگ هر تیم
-#     (مطلق: 0x1436F5198 میزبان / 0x1436F51A0 مهمان = base+آفست) در هر تیکِ
-#     متصل خوانده می‌شود و TeamColorResolver رنگ fill نمودار را از
-#     leagues_data.json (کنار اسکریپت) برمی‌دارد — بخش ۲۶-ب.
+# technical note technical note from tool independent «Team Tracker» user technical note technical note is:
+#   * technical note 100technical note independent from GameEngine original and buttontechnical note «technical note to technical noteandtechnical note withtechnical note»technical note
+#     technical note read-only technical noteandtechnical note technical note withtechnical note technical note‌technical note and technical note write/hooktechnical note technical noteandtechnical note technical noteandtechnical note withtechnical note
+#     technical note technical note‌technical note (only ReadProcessMemory).
+#   * from momenttechnical note technical note technical note technical note 1 second technical note to technical note technical note‌technical note after from technical note
+#     successful technical note technical note technical note technical note technical note technical note‌technical noteandtechnical note (versiontechnical note 10technical note6: from same moment
+#     read technical note‌technical note «technical note‌untiltechnical note» technical note‌technical noteandtechnical note — technical note 50ms technical note technical note realtime_loop
+#     tool originaltechnical note if technical noteandtechnical note technical note technical noteandtechnical note again to technical note «technical note technical note 1 second»
+#     technical note‌technical note. technical note agetechnical note technical noteandtechnical note only when technical note technical note‌technical noteandtechnical note technical note or andtechnical note is nottechnical note
+#     or read memory technical note technical noteandtechnical note — technical note in technical note technical note technical note).
+#   * [PT v2.3.1] detection team only when technical note technical note‌technical noteandtechnical note technical note byte andtechnical note menu
+#     (base+0x36F9AE0) = 9 withtechnical note (beforetechnical note 100 technical noteandtechnical note) — in «technical note technical noteand» pathtechnical note PT and
+#     legacytechnical note technical note andtechnical note‌technical note technical note technical note technical noteandtechnical note latest technical note valid — technical note tool original.
+#   * versiontechnical note 10technical note6 — color chart: technical noteand byte istechnical note 1 technical note numbertechnical note color technical note team
+#     (technical note: 0x1436F5198 Home / 0x1436F51A0 Away = base+technical note) in technical note technical note
+#     technical note technical noteandtechnical note technical note‌technical noteandtechnical note and TeamColorResolver color fill chart technical note from
+#     leagues_data.json (technical note technical note) technical note‌technical note — section 26-technical note.
 # =====================================================================
-TEAM_TRACKER_INTERVAL_MS = 1000        # تلاش اتصال (تا وصل‌شدن): هر ۱ ثانیه
-TEAM_LIVE_INTERVAL_MS = 50             # بعد از اتصال: خواندن ریل‌تایم اسلات‌ها (مثل ابزار اصلی)
+TEAM_TRACKER_INTERVAL_MS = 1000        # technical note technical note (until andtechnical note‌technical note): technical note 1 second
+TEAM_LIVE_INTERVAL_MS = 50             # after from technical note: read technical note‌untiltechnical note technical note‌technical note (technical note tool original)
 TEAM_PROCESS_ACCESS = 0x0010 | 0x0400  # PROCESS_VM_READ | PROCESS_QUERY_INFORMATION
-TEAM_MENU_STATE_OFFSET = 0x036F9AE0    # بایت وضعیت منو (خواندن مستقیم base+آفست — عین بقیهٔ آفست‌های استاتیک)
-# [PT v2.3.1] شرط اجرای تشخیص تیم: فقط وقتی بایت منو = ۹ باشد (قبلاً ۱۰۰ بود).
-# خواندنِ این بایت با همان _read_u8 انجام می‌شود که بقیهٔ مقادیر پوینتری را می‌خوانند.
+TEAM_MENU_STATE_OFFSET = 0x036F9AE0    # byte andtechnical note menu (read direct base+technical note — technical note technical note technical note‌technical note istechnical note)
+# [PT v2.3.1] technical note technical note detection team: only when byte menu = 9 withtechnical note (beforetechnical note 100 technical noteandtechnical note).
+# readtechnical note technical note byte with same _read_u8 technical note technical note‌technical noteandtechnical note technical note technical note technical note pointertechnical note technical note technical note‌technical noteandtechnical note.
 TEAM_MENU_DETECT_VALUE = 9
-TEAM_DB_DIRNAME = "Football_Database"  # پوشهٔ تصاویر کنار اسکریپت
-TEAM_SLOT_COUNT = 37                   # تعداد اسلات‌های هر تیم (مثل ابزار اصلی)
-TEAM_SLOT_STRIDE = 112                 # فاصلهٔ اسلات‌ها (بایت)
-TEAM_LOGO_SLOT_PX = (96, 96)           # اندازهٔ اسلات لوگو در UI (پیکسل)
-TEAM_LOGO_SLOT_TEXT_W = 10             # عرض حالت متنی اسلات (کاراکتر)
-TEAM_LOGO_SLOT_TEXT_H = 3              # ارتفاع حالت متنی اسلات (خط)
+TEAM_DB_DIRNAME = "Football_Database"  # foldertechnical note technical noteandtechnical note technical note technical note
+TEAM_SLOT_COUNT = 37                   # count technical note‌technical note technical note team (technical note tool original)
+TEAM_SLOT_STRIDE = 112                 # distancetechnical note technical note‌technical note (byte)
+TEAM_LOGO_SLOT_PX = (96, 96)           # technical notefromtechnical note technical note logo in UI (technical note)
+TEAM_LOGO_SLOT_TEXT_W = 10             # width technical note technical note technical note (technical note)
+TEAM_LOGO_SLOT_TEXT_H = 3              # height technical note technical note technical note (line)
 TEAM_TRACKER_PROC_NAMES = ("FL_2026.exe", "PES2021.exe")
-# --- نسخهٔ ۱۰٫۶ — شمارهٔ رنگ نمودار (دو بایت استاتیک ۱ بیتی) ---
-# آدرس مطلق داده‌شده توسط کاربر:  1436F5198 / 1436F51A0
-# = پایهٔ ماژول 0x140000000 + آفست  ⇒ base + 0x36F5198 / base + 0x36F51A0
-TEAM_COLOR_IDX_OFFSET_HOME = 0x036F5198   # شمارهٔ رنگ میزبان (uint8)
-TEAM_COLOR_IDX_OFFSET_AWAY = 0x036F51A0   # شمارهٔ رنگ مهمان (uint8)
+# --- versiontechnical note 10technical note6 — numbertechnical note color chart (technical noteand byte istechnical note 1 technical note) ---
+# address technical note data‌technical note technical noteandtechnical note user:  1436F5198 / 1436F51A0
+# = technical note technical noteandtechnical note 0x140000000 + technical note  ⇒ base + 0x36F5198 / base + 0x36F51A0
+TEAM_COLOR_IDX_OFFSET_HOME = 0x036F5198   # numbertechnical note color Home (uint8)
+TEAM_COLOR_IDX_OFFSET_AWAY = 0x036F51A0   # numbertechnical note color Away (uint8)
 TEAM_COLOR_JSON_FILENAME = "leagues_data.json"
 
 # --- [PT v2.3.0] NEW POINTER SPECS (user spec — Cheat Engine hex notation) ---
-# شناسهٔ تیم میزبان/مهمان (روش جدید — جایگزین زنجیره‌های league/slots):
-#   پایه = "FL_2026.exe"+0x03705E20 → deref → +0x98 → deref → +0x228
-#   [پایانی] (۴ بایت) = Team ID میزبان ؛ [پایانی+4] (۴ بایت) = Team ID مهمان
-# نام/رنگ تیم از PT/teams_players_PES2021.txt ؛ لوگو/پرچم از PT/Asset.zip
-# (Teams/{id}.png) — همان منبع دادهٔ Heat Map (پوشهٔ PT کنار MyMods.py).
+# technical note team Home/Away (technical noteandtechnical note new — fallback chain‌technical note league/slots):
+#   technical note = "FL_2026.exe"+0x03705E20 → deref → +0x98 → deref → +0x228
+#   [endtechnical note] (4 byte) = Team ID Home technical note [endtechnical note+4] (4 byte) = Team ID Away
+# technical note/color team from PT/teams_players_PES2021.txt technical note logo/technical note from PT/Asset.zip
+# (Teams/{id}.png) — same source datatechnical note Heat Map (foldertechnical note PT technical note MyMods.py).
 TEAM_ID_PTR_OFFSET = 0x03705E20
 TEAM_ID_CHAIN      = (0x98, 0x228)
-# بازیکن جاری (رزرو برای مصرف آینده): "FL_2026.exe"+0x036F4270 → deref →
-# +0x74 ⇒ ۱ بایت = Slot بازیکن در لیست تیمش
+# player current (technical noteand for technical note technical note): "FL_2026.exe"+0x036F4270 → deref →
+# +0x74 ⇒ 1 byte = Slot player in technical note teamtechnical note
 PLAYER_SLOT_PTR_OFFSET = 0x036F4270
 PLAYER_SLOT_CHAIN      = (0x74,)
-# نسخهٔ ۱۰٫۹ — فایل جیسون داخل پوشهٔ Football_Database کنار اسکریپت است؛
-# اگر آنجا نبود، مسیر قدیمی (کنار اسکریپت) هم بررسی می‌شود (سازگاری).
-TEAM_COLOR_DOT_PX = 13                 # قطر دایرهٔ رنگ کنار نام تیم (پیکسل)
-TEAM_COLOR_DOT_H = 17                  # ارتفاع ناحیهٔ دایره‌ها (پیکسل)
+# versiontechnical note 10technical note9 — file technical noteandtechnical note inside foldertechnical note Football_Database technical note technical note istechnical note
+# if technical note technical noteandtechnical note path legacy (technical note technical note) technical note check technical note‌technical noteandtechnical note (technical notefromtechnical note).
+TEAM_COLOR_DOT_PX = 13                 # technical note technical note color technical note team name (technical note)
+TEAM_COLOR_DOT_H = 17                  # height technical note technical note‌technical note (technical note)
 
 
 def team_json_candidates() -> List[str]:
-    """مسیرهای کاندید leagues_data.json به ترتیب اولویت (نسخهٔ ۱۰٫۹):
-    ۱) Football_Database/leagues_data.json (کنار اسکریپت — مسیر جدید)
-    ۲) leagues_data.json کنار اسکریپت (مسیر قدیمی — سازگاری)"""
+    """pathtext text leagues_data.json to order firstandtext (versiontext 10text9):
+    1) Football_Database/leagues_data.json (text text — path new)
+    2) leagues_data.json text text (path legacy — textfromtext)"""
     base = os.path.dirname(os.path.abspath(__file__))
     return [os.path.join(base, TEAM_DB_DIRNAME, TEAM_COLOR_JSON_FILENAME),
             os.path.join(base, TEAM_COLOR_JSON_FILENAME)]
 
-# --- نسخهٔ ۱۰٫۷ — اتصال خودکار به پروسهٔ بازی (بدون نیاز به کلیک کاربر) ---
-AUTO_CONNECT_INTERVAL_MS = 1000        # هر ۱ ثانیه تا دیدن پروسهٔ بازی تلاش کن
-AUTO_CONNECT_FIRST_DELAY_MS = 800      # اولین تلاش کمی بعد از ساخت UI
-# مرگ پروسه: N تیک پیوستهٔ Worker (~۱۵ms) بدون پاسخ خواندن ⇒ اتصال قطع است
+# --- versiontechnical note 10technical note7 — technical note automatic to technical noteandtechnical note withtechnical note (without technical noteortechnical note to totaltechnical note user) ---
+AUTO_CONNECT_INTERVAL_MS = 1000        # technical note 1 second until technical note technical noteandtechnical note withtechnical note technical note technical note
+AUTO_CONNECT_FIRST_DELAY_MS = 800      # firsttechnical note technical note technical note after from technical note UI
+# technical note technical noteandtechnical note: N technical note technical noteandtechnical note Worker (~15ms) without passtechnical note read ⇒ technical note technical note is
 ENGINE_DEAD_STREAK_LIMIT = 200
 
-# --- نسخهٔ ۱۰٫۷ — تشخیص «شروع دست جدید» از تایمر (صفر → بالا رفتن) ---
-TRB_ZERO_T = 1.0        # تایمر ≤ ۱ ثانیه ⇒ «صفر شده» (دقیقه‌شمار صفر)
-TRB_RISE_T = 2.0        # عبور به بالای ۲ ثانیه ⇒ «شروع به بالا رفتن کرد»
-TRB_COOLDOWN_SEC = 20.0 # فاصلهٔ حداقلی دو نوسازی متوالی (ضد ریست دوبله با Watchdog)
+# --- versiontechnical note 10technical note7 — detection «start technical note new» from untiltechnical note (technical note → rise) ---
+TRB_ZERO_T = 1.0        # untiltechnical note ≤ 1 second ⇒ «technical note technical note» (minute‌technical note technical note)
+TRB_RISE_T = 2.0        # technical noteandtechnical note to withtechnical note 2 second ⇒ «start to rise technical note»
+TRB_COOLDOWN_SEC = 20.0 # distancetechnical note technical note technical noteand technical noteandtechnical notefromtechnical note technical noteandtechnical note (technical note reset technical noteandtechnical note with Watchdog)
 
 
