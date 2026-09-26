@@ -63,7 +63,6 @@ Each mod has its own backend implementation and assets.
     VAR-Mods-2026/
     ├── MyMods.py
     ├── ModBridge.py
-    ├── Python_Library_Downloader.py
     ├── MomentumMatch/
     │   ├── MomentumMod.py
     │   ├── modules/
@@ -288,12 +287,13 @@ The runtime dependencies are maintained in `requirements.txt`. The current suite
 
 The repository includes:
 
-- Python_Library_Downloader.py
-- Python Library Downloader.exe
 
 The downloader is intended to install the Python runtime dependencies used by the suite. Its package list is kept in sync with requirements.txt.
 
 ### 💻 Manual Installation
+
+For development, the repository still contains the Python source files. The source tree is not the same as the standalone release package.
+
 
 Install Python and the dependencies listed in requirements.txt.
 
