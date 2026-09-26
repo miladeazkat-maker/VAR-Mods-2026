@@ -90,7 +90,8 @@ def node_type_counts(tree: ast.AST) -> dict[str, int]:
         key = type(node).__name__
         counts[key] = counts.get(key, 0) + 1
     return counts
-\ndef collect_symbols(tree: ast.AST) -> set[str]:
+
+def collect_symbols(tree: ast.AST) -> set[str]:
     result: set[str] = set()
 
     def add_target(target: ast.AST) -> None:
