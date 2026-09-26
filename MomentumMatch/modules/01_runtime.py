@@ -47,6 +47,17 @@ import traceback
 import ctypes
 from ctypes import wintypes
 from collections import deque
+
+# Physical install directories used by embedded execution inside ModBridge.exe.
+# When running from the PyInstaller bundle, __file__ points into _MEIPASS;
+# the environment variable keeps runtime data/log/config paths on disk.
+_MOMENTUM_DATA_DIR = os.path.abspath(
+    os.environ.get("VAR_MODS_BACKEND_DIR")
+    or os.path.dirname(os.path.abspath(__file__))
+)
+_MOMENTUM_INSTALL_DIR = os.path.abspath(
+    os.path.join(_MOMENTUM_DATA_DIR, os.pardir)
+)
 from enum import Enum
 from dataclasses import dataclass, field
 from typing import List, Dict, Tuple, Optional, Any
@@ -651,7 +662,7 @@ def _load_embedded_ptdata():
 try:
     _PT_SCRIPT_DIR = os.environ.get(
     "VAR_MODS_BACKEND_DIR",
-    os.path.dirname(os.path.abspath(__file__))
+    _MOMENTUM_DATA_DIR
 )
 except Exception:
     _PT_SCRIPT_DIR = os.getcwd()
@@ -778,7 +789,7 @@ def clog(*args, **kw):
 # 1. technical note automatic technical note technical note technical note (Run as Administrator)
 # =====================================================================
 def enforce_admin_and_cwd():
-    current_dir = os.path.dirname(os.path.abspath(__file__))
+    current_dir = _MOMENTUM_DATA_DIR
     try:
         os.chdir(current_dir)
     except Exception:
