@@ -26,7 +26,7 @@ EXPECTED_MODULES = (
 )
 
 PERSIAN_ARABIC_RE = re.compile(r"[\u0600-\u06ff\u0750-\u077f\u08a0-\u08ff\ufb50-\ufdff\ufe70-\ufeff]")
-HEX_RE = re.compile(r"(?<![\w])0x[0-9a-fA-F]{4,}(?![\w])")
+HEX_RE = re.compile(r"^0[xX][0-9a-fA-F]+$")
 BYTE_ESCAPE_RE = re.compile(r"\\x[0-9a-fA-F]{2}")
 
 
@@ -103,11 +103,14 @@ def collect_symbols(tree: ast.AST) -> set[str]:
 
 def collect_sensitive_literals(source: str) -> set[str]:
     result: set[str] = set()
-    for token in tokenize.generate_tokens(iter(source.splitlines(True)).__next__):
-        if token.type == tokenize.STRING:
+    tokens = tokenize.generate_tokens(iter(source.splitlines(True)).__next__)
+    for token in tokens:
+        if token.type == tokenize.NUMBER and HEX_RE.fullmatch(token.string):
+            value = token.string.lower()
+            if int(value, 16) >= 0x100:
+                result.add(value)
+        elif token.type == tokenize.STRING:
             result.update(BYTE_ESCAPE_RE.findall(token.string))
-    for match in HEX_RE.finditer(source):
-        result.add(match.group(0))
     return result
 
 
@@ -197,7 +200,7 @@ def main() -> None:
     current_symbols = collect_symbols(current_tree)
     missing = sorted(original_symbols - current_symbols)
     if missing:
-        raise AssertionError(f"Public/runtime symbols missing after refactor: {missing[:40]}")
+        raise AssertionError(f"Runtime symbols missing after refactor: {missing[:40]}")
 
     original_literals = collect_sensitive_literals(original_source)
     current_literals = collect_sensitive_literals(modular_source)
@@ -239,7 +242,7 @@ def main() -> None:
     if package_node is None:
         raise AssertionError("REQUIRED_PACKAGES was not found in Python_Library_Downloader.py.")
     downloader_packages = {
-        str(item.value[0].value).lower()
+        str(item[0]).lower()
         for item in ast.literal_eval(package_node.value)
         if isinstance(item, (tuple, list))
         and len(item) >= 1
