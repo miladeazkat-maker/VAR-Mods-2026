@@ -1,19 +1,19 @@
 # -*- mode: python ; coding: utf-8 -*-
 from pathlib import Path
-from PyInstaller.building.datastruct import Tree
 
 ROOT = Path.cwd().resolve()
 
 backend_datas = []
-for folder, prefix in (
-    ("RefereeView", "RefereeView"),
-    ("GLT", "GLT"),
-    ("HeatMap", "HeatMap"),
-    ("MomentumMatch", "MomentumMatch"),
-    ("SAOTMod", "SAOTMod"),
-):
-    tree = Tree(str(ROOT / folder), prefix=prefix, excludes=["__pycache__"])
-    backend_datas.extend(tree)
+for folder in ("RefereeView", "GLT", "HeatMap", "MomentumMatch", "SAOTMod"):
+    source_root = ROOT / folder
+    for item in source_root.rglob("*"):
+        if not item.is_file():
+            continue
+        if "__pycache__" in item.parts:
+            continue
+        relative = item.relative_to(source_root)
+        destination = str(Path(folder) / relative)
+        backend_datas.append((str(item), destination))
 
 hiddenimports = [
     "PyQt6.QtWebEngineWidgets",
