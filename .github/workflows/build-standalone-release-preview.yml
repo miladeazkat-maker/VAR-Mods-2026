@@ -15,6 +15,9 @@ on:
       - "PT/**"
       - "Background/**"
       - "packaging/build-standalone.ps1"
+      - "packaging/MyMods.spec"
+      - "packaging/ModBridge.spec"
+      - "packaging/AssetDownloader.spec"
       - "packaging/VAR-Mods-2026-standalone.iss"
       - ".github/workflows/build-standalone-release-preview.yml"
   workflow_dispatch:
