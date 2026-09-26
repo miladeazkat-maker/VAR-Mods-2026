@@ -9079,6 +9079,14 @@ class VideoBackgroundWidget(QWidget):
 # Main Application Entry Point
 # -------------------------------------------------------------
 if __name__ == "__main__":
+    if "--package-smoke" in sys.argv:
+        if not IS_PYQT6:
+            raise RuntimeError("PyQt6 is unavailable in the packaged MyMods executable")
+        if not callable(QApplication):
+            raise RuntimeError("QApplication is unavailable in the packaged MyMods executable")
+        print("Standalone MyMods package smoke test passed")
+        sys.exit(0)
+
     app = QApplication(sys.argv)
 
     ltr = Qt.LayoutDirection.LeftToRight if IS_PYQT6 else Qt.LeftToRight
