@@ -18,7 +18,7 @@ class PassThreatEngine:
                 opp_gk = d
                 break
 
-        # مدافعان روبروی گیرنده (بین گیرنده و خط دروازه)
+        # technical note technical noteandtechnical noteandtechnical note technical note (technical note technical note and line inandfromtechnical note)
         outfield_defs_ahead = 0
         for d in defenders:
             if opp_gk and d["seat"] == opp_gk["seat"]:
@@ -31,7 +31,7 @@ class PassThreatEngine:
         rec_def_dists = sorted([GeometryEngine.dist_2d((rx, rz), (d["x"], d["z"])) for d in defenders]) if defenders else [25.0]
         near_def_dist = rec_def_dists[0]
 
-        # شرط دروازه خالی (Open Goal) -> تهدید ۱۰۰
+        # technical note inandfromtechnical note empty (Open Goal) -> technical note 100
         is_open_goal = False
         if dist_to_goal <= 16.5 and abs(rz) <= 12.0:
             if outfield_defs_ahead == 0:
@@ -47,7 +47,7 @@ class PassThreatEngine:
         if is_open_goal:
             return 100
 
-        # موقعیت تک به تک مستقیم
+        # position technical note to technical note direct
         if outfield_defs_ahead == 0 and dist_to_goal <= 22.0 and abs(rz) <= 14.0:
             base_1v1 = 90.0 + (22.0 - dist_to_goal) * 0.4
             if near_def_dist >= 3.0: base_1v1 += 5.0
@@ -67,19 +67,19 @@ class PassThreatEngine:
         if near_def_dist < 1.2: space_bonus -= 8.0
 
         tactical_bonus = 0.0
-        if pass_type == "کات‌بک": tactical_bonus = 18.0
-        elif pass_type in ("پاس در عمق بین مدافعان", "پاس پشت مدافعان"): tactical_bonus = 15.0
-        elif pass_type in ("سانتر زمینی", "سانتر هوایی", "پاس عمقی"): tactical_bonus = 12.0
+        if pass_type == "text‌text": tactical_bonus = 18.0
+        elif pass_type in ("pass in text text text", "pass text text"): tactical_bonus = 15.0
+        elif pass_type in ("cross pitchtext", "cross textandtext", "pass text"): tactical_bonus = 12.0
 
         raw_threat = proximity_score + angle_score + def_ahead_penalty + space_bonus + tactical_bonus
         if dist_to_goal > 60.0: raw_threat = min(raw_threat, 18.0)
 
         return int(max(2.0, min(99.0, raw_threat)))
 
-# محدود کردن Threat به بازه 2 تا 99 در تابع بالا حفظ شده است.
+# technical noteandtechnical note technical note Threat to withtechnical note 2 until 99 in untiltechnical note withtechnical note technical note technical note is.
 
 # =====================================================================
-# ۱۴. طبقه‌بندی هوشمند پاس (PassClassifierEngine — کالیبره، دست‌نخورده)
+# 14. technical note‌technical note smart pass (PassClassifierEngine — calibratedtechnical note unchanged)
 # =====================================================================
 class PassClassifierEngine:
     @staticmethod
@@ -110,11 +110,11 @@ class PassClassifierEngine:
         pressure_relief = features["pressure_relief"]
 
         # -------------------------------------------------------------
-        # ۱. سانتر (Cross):
-        # شرط قطعی: فقط در زمین حریف (start_x_att > 0)
-        # مختصات مبدا: |Z| > 20.1 و |X| > 29.0
-        # جهت ارسال: به سمت دروازه حریف و رو به عمق/محوطه
-        # بدون بررسی سرعت! تفکیک زمینی و هوایی بر اساس ارتفاع
+        # 1. cross (Cross):
+        # technical note deterministic: only in pitch technical note (start_x_att > 0)
+        # coordinates technical note: |Z| > 20.1 and |X| > 29.0
+        # technical note technical note: to side inandfromtechnical note technical note and technical noteand to technical note/technical noteandtechnical note
+        # without check technical note! technical note pitchtechnical note and technical noteandtechnical note technical note technical note height
         # -------------------------------------------------------------
         is_cross_origin = (
             start_x_att > 0 and
@@ -126,125 +126,125 @@ class PassClassifierEngine:
 
         if is_cross_geo:
             if max_h >= PitchConfig.HEIGHT_AERIAL_MIN:
-                scores["سانتر هوایی"] = 96.0
+                scores["cross textandtext"] = 96.0
             elif max_h <= PitchConfig.HEIGHT_GROUND_MAX:
-                scores["سانتر زمینی"] = 96.0
+                scores["cross pitchtext"] = 96.0
             else:
-                scores["سانتر هوایی"] = 90.0
+                scores["cross textandtext"] = 90.0
 
         # -------------------------------------------------------------
-        # ۲. کات‌بک (Cut-back):
-        # شرط قطعی: فقط در زمین حریف (start_x_att > 0)
-        # مختصات مبدا: |X| > 35.0
-        # ارتفاع: کمتر از 1.8 متر
-        # طولی: X توپ به صفر نزدیک شود (حرکت رو به عقب نسبت به دروازه حریف)
-        # بدون بررسی سرعت!
+        # 2. technical note‌technical note (Cut-back):
+        # technical note deterministic: only in pitch technical note (start_x_att > 0)
+        # coordinates technical note: |X| > 35.0
+        # height: technical note from 1.8 technical note
+        # lengthtechnical note: X ball to technical note technical note technical noteandtechnical note (technical note technical noteand to technical note ratio to inandfromtechnical note technical note)
+        # without check technical note!
         # -------------------------------------------------------------
         is_cutback_origin = (start_x_att > 0 and abs(s_x) > PitchConfig.CUTBACK_ORIGIN_X_THRESHOLD)
         is_x_towards_zero = (abs(e_x) < abs(s_x)) and (fwd <= 0.5)
         is_cutback_height = (max_h < PitchConfig.CUTBACK_MAX_HEIGHT)
 
         if is_cutback_origin and is_x_towards_zero and is_cutback_height:
-            scores["کات‌بک"] = 98.0
+            scores["text‌text"] = 98.0
 
         # -------------------------------------------------------------
-        # ۳. پاس خروج از فشار (Pressure Exit):
-        # فقط در زمین خودی (start_x_att < 0) و نه در زمین حریف
+        # 3. pass technical noteandtechnical note from pressure (Pressure Exit):
+        # only in pitch technical noteandtechnical note (start_x_att < 0) and technical note in pitch technical note
         # -------------------------------------------------------------
         is_in_own_half = (start_x_att < 0.0)
         if is_in_own_half and features["passer_under_pressure"] and pressure_relief >= 2.5:
-            scores["پاس خروج از فشار"] = 82.0 + pressure_relief * 3.0
+            scores["pass textandtext from pressure"] = 82.0 + pressure_relief * 3.0
 
         # -------------------------------------------------------------
-        # ۴. پاس پشت مدافعان (Over-the-Top):
-        # ارتفاع بالا (شبیه چیپ)، فرود پشت سر مدافعان
+        # 4. pass technical note technical note (Over-the-Top):
+        # height withtechnical note (technical note technical note)technical note technical noteandtechnical note technical note technical note technical note
         # -------------------------------------------------------------
         is_behind_defense = behind_def_line or (end_x_att > features["def_line_x_att"])
         if max_h >= 1.55 and is_behind_defense and fwd >= 6.0:
-            scores["پاس پشت مدافعان"] = 88.0 + max_h * 4.0
+            scores["pass text text"] = 88.0 + max_h * 4.0
 
         # -------------------------------------------------------------
-        # ۵. پاس در عمق بین مدافعان
+        # 5. pass in technical note technical note technical note
         # -------------------------------------------------------------
         if fwd >= 7.0 and is_split_corridor and (behind_def_line or receiver_fwd_run >= 3.0):
-            scores["پاس در عمق بین مدافعان"] = 87.0 + fwd * 1.2
+            scores["pass in text text text"] = 87.0 + fwd * 1.2
 
         # -------------------------------------------------------------
-        # ۶. پاس شکاف‌دهنده
+        # 6. pass gap‌technical note
         # -------------------------------------------------------------
-        if fwd >= 4.5 and is_split_corridor and "پاس در عمق بین مدافعان" not in scores:
-            scores["پاس شکاف‌دهنده"] = 78.0 + fwd * 1.0
+        if fwd >= 4.5 and is_split_corridor and "pass in text text text" not in scores:
+            scores["pass gap‌text"] = 78.0 + fwd * 1.0
 
         # -------------------------------------------------------------
-        # ۷. پاس عمقی (Through Ball):
-        # مقصد توپ جلوتر از بازیکن باشد و مستقیم به پای بازیکن ارسال نشود
+        # 7. pass technical note (Through Ball):
+        # technical note ball technical noteandtechnical note from player withtechnical note and direct to technical note player technical note technical noteandtechnical note
         # -------------------------------------------------------------
         ball_lead_dist = (e_x - features["receiver_start_x"]) * att_dir
         is_lead_pass = (ball_lead_dist >= 3.5 and receiver_target_err >= 3.0)
         if fwd >= 8.0 and is_lead_pass and (running_to_space or receiver_fwd_run >= 2.5):
-            scores["پاس عمقی"] = 79.0 + fwd * 1.1
+            scores["pass text"] = 79.0 + fwd * 1.1
 
         # -------------------------------------------------------------
-        # ۸. تعویض جناح (Switch of Play)
+        # 8. technical noteandtechnical note technical note (Switch of Play)
         # -------------------------------------------------------------
         crosses_center_z = (s_z * e_z < 0) and (abs(s_z) >= 12.0 or abs(e_z) >= 12.0)
         if lat >= 26.0 and dist >= 26.0 and crosses_center_z:
-            scores["تعویض جناح"] = 84.0 + lat * 0.5
+            scores["textandtext text"] = 84.0 + lat * 0.5
 
         # -------------------------------------------------------------
-        # ۹. پاس بین خطوط
+        # 9. pass technical note lineandtechnical note
         # -------------------------------------------------------------
         if 4.0 <= fwd <= 20.0 and features["receiver_between_lines"] and not behind_def_line:
-            scores["پاس بین خطوط"] = 74.0 + fwd * 0.8
+            scores["pass text lineandtext"] = 74.0 + fwd * 0.8
 
-        # ۱۰. چیپ
+        # 10. technical note
         if max_h >= 1.50 and dist <= 20.0 and (max_h / max(1.0, dist)) >= 0.09:
-            scores["چیپ"] = 70.0 + max_h * 5.0
+            scores["text"] = 70.0 + max_h * 5.0
 
-        # ۱۱. پاس به فضا
+        # 11. pass to technical note
         if receiver_target_err >= 4.0 and running_to_space:
-            scores["پاس به فضا"] = 69.0 + receiver_target_err * 2.0
+            scores["pass to text"] = 69.0 + receiver_target_err * 2.0
 
-        # ۱۲. انواع عمومی
-        if dist >= 30.0: scores["پاس بلند"] = 62.0 + dist * 0.5
-        if max_h >= PitchConfig.HEIGHT_AERIAL_MIN and dist >= 14.0: scores["پاس هوایی"] = 60.0 + max_h * 4.0
-        if fwd <= -3.0: scores["پاس رو به عقب"] = 55.0 + abs(fwd) * 2.0
-        if lat >= 10.0 and abs(fwd) <= 5.0: scores["پاس عرضی"] = 52.0 + lat * 1.5
-        if fwd >= 4.5 and lat >= 7.0 and 25.0 <= angle <= 68.0: scores["پاس مورب"] = 50.0 + fwd
-        if fwd >= 4.0: scores["پاس رو به جلو"] = 48.0 + fwd * 1.5
-        if dist <= 14.0 and max_h <= PitchConfig.HEIGHT_GROUND_MAX + 0.3: scores["پاس کوتاه"] = 56.0 + (14.0 - dist) * 1.5
+        # 12. technical noteandtechnical note technical noteandtechnical note
+        if dist >= 30.0: scores["pass text"] = 62.0 + dist * 0.5
+        if max_h >= PitchConfig.HEIGHT_AERIAL_MIN and dist >= 14.0: scores["pass textandtext"] = 60.0 + max_h * 4.0
+        if fwd <= -3.0: scores["pass textand to text"] = 55.0 + abs(fwd) * 2.0
+        if lat >= 10.0 and abs(fwd) <= 5.0: scores["pass widthtext"] = 52.0 + lat * 1.5
+        if fwd >= 4.5 and lat >= 7.0 and 25.0 <= angle <= 68.0: scores["pass textandtext"] = 50.0 + fwd
+        if fwd >= 4.0: scores["pass textand to textand"] = 48.0 + fwd * 1.5
+        if dist <= 14.0 and max_h <= PitchConfig.HEIGHT_GROUND_MAX + 0.3: scores["pass textanduntiltext"] = 56.0 + (14.0 - dist) * 1.5
 
-        # ماتریس تقدم
+        # technical note technical note
         priority = [
-            "کات‌بک",
-            "سانتر هوایی",
-            "سانتر زمینی",
-            "پاس پشت مدافعان",
-            "پاس در عمق بین مدافعان",
-            "تعویض جناح",
-            "پاس شکاف‌دهنده",
-            "پاس عمقی",
-            "پاس خروج از فشار",
-            "پاس بین خطوط",
-            "چیپ",
-            "پاس به فضا",
-            "پاس بلند",
-            "پاس هوایی",
-            "پاس مورب",
-            "پاس رو به عقب",
-            "پاس عرضی",
-            "پاس رو به جلو",
-            "پاس کوتاه"
+            "text‌text",
+            "cross textandtext",
+            "cross pitchtext",
+            "pass text text",
+            "pass in text text text",
+            "textandtext text",
+            "pass gap‌text",
+            "pass text",
+            "pass textandtext from pressure",
+            "pass text lineandtext",
+            "text",
+            "pass to text",
+            "pass text",
+            "pass textandtext",
+            "pass textandtext",
+            "pass textand to text",
+            "pass widthtext",
+            "pass textand to textand",
+            "pass textanduntiltext"
         ]
 
         valid_candidates = {k: v for k, v in scores.items() if v > 0.0}
         if not valid_candidates:
-            if dist >= 28.0: final_type = "پاس بلند"
-            elif fwd <= -3.0: final_type = "پاس رو به عقب"
-            elif lat >= 10.0: final_type = "پاس عرضی"
-            elif fwd >= 4.0: final_type = "پاس رو به جلو"
-            elif lat >= 6.0: final_type = "پاس مورب"
-            else: final_type = "پاس کوتاه"
+            if dist >= 28.0: final_type = "pass text"
+            elif fwd <= -3.0: final_type = "pass textand to text"
+            elif lat >= 10.0: final_type = "pass widthtext"
+            elif fwd >= 4.0: final_type = "pass textand to textand"
+            elif lat >= 6.0: final_type = "pass textandtext"
+            else: final_type = "pass textanduntiltext"
             confidence = 0.60
         else:
             sorted_candidates = sorted(valid_candidates.items(), key=lambda x: x[1], reverse=True)
@@ -261,27 +261,27 @@ class PassClassifierEngine:
             confidence = min(0.98, max(0.55, 0.60 + (top_score - second_score) * 0.015))
 
         tags = []
-        if max_h >= PitchConfig.HEIGHT_AERIAL_MIN: tags.append("هوایی")
-        if fwd >= 6.0: tags.append("رو به جلو")
-        if is_behind_defense: tags.append("پشت دفاع")
-        if running_to_space: tags.append("به فضا")
+        if max_h >= PitchConfig.HEIGHT_AERIAL_MIN: tags.append("textandtext")
+        if fwd >= 6.0: tags.append("textand to textand")
+        if is_behind_defense: tags.append("text text")
+        if running_to_space: tags.append("to text")
 
         return final_type, confidence, tags
 
 # =====================================================================
-# ۱۵. Pass Engine (موتور تولید رویداد پاس — استخراج‌شده از نسخه کالیبره)
+# 15. Pass Engine (technical noteandtechnical noteandtechnical note technical noteandtechnical note technical noteandtechnical note pass — istechnical note‌technical note from version calibrated)
 # ---------------------------------------------------------------------
-# شروع/پایان پاس از Frame Buffer، تشخیص Pass Type، موفق/ناموفق،
-# و محاسبه threat_score توسط PassThreatEngine. خروجی: PassEventData کامل.
-# Counter فقط Trigger شروع است؛ هیچ‌جا نوع پاس حدس زده نمی‌شود.
+# start/end pass from Frame Buffertechnical note detection Pass Typetechnical note successful/failedtechnical note
+# and technical noteto threat_score technical noteandtechnical note PassThreatEngine. output: PassEventData complete.
+# Counter only Trigger start istechnical note technical note‌technical note technical noteandtechnical note pass technical note technical note technical note‌technical noteandtechnical note.
 # =====================================================================
 class PassEngine:
     def __init__(self):
         self.state = "IDLE"  # IDLE | IN_FLIGHT
         self.cur_pass_team = "Home"
         self.cur_pass_start_ball: Optional[Tuple[float, float, float]] = None
-        self.cur_pass_start_time = 0.0      # wall (زیرثانیه — برای فیزیک پرواز/polling)
-        self.cur_pass_match_time = 0.0      # زمان بازی
+        self.cur_pass_start_time = 0.0      # wall (technical notesecond — for technical note technical noteandfrom/polling)
+        self.cur_pass_match_time = 0.0      # time withtechnical note
         self.cur_pass_max_h = 0.0
         self.cur_passer: Optional[Dict] = None
         self.cur_receiver_start: Optional[Dict] = None
@@ -294,14 +294,14 @@ class PassEngine:
         self.cur_pass_max_h = 0.0
 
     def abort(self):
-        """در توقف بازی، پرواز جاری بدون تولید رخداد رها می‌شود"""
+        """in stop withtext textandfrom current without textandtext text text text‌textandtext"""
         self.state = "IDLE"
 
     def on_counter_increment(self, ball: Tuple[float, float, float], wall_now: float,
                              match_time: float, team: str, players: List[Dict]):
-        """Counter فقط Trigger شروع فرآیند تشخیص است"""
+        """Counter only Trigger start text detection is"""
         if self.state == "IN_FLIGHT":
-            return  # پاس جاری هنوز در جریان است
+            return  # pass current still in technical noteortechnical note is
         self.state = "IN_FLIGHT"
         self.cur_pass_start_ball = (ball[0], ball[1], ball[2])
         self.cur_pass_start_time = wall_now
@@ -318,7 +318,7 @@ class PassEngine:
     def generate_event(self, ball: Tuple[float, float, float], match_time: float,
                        players: List[Dict], team1_attack_dir: int,
                        possession_provider=None) -> Optional[PassEventData]:
-        """به‌روزرسانی پرواز پاس از Frame Buffer و تولید PassEventData در پایان"""
+        """to‌textandtext textandfrom pass from Frame Buffer and textandtext PassEventData in end"""
         if self.state != "IN_FLIGHT":
             return None
 
@@ -412,7 +412,7 @@ class PassEngine:
 
         p_type, conf, tags = PassClassifierEngine.classify(features)
 
-        # Threat Score فعلی — منبع امتیاز Pass برای Momentum (بدون تغییر مفهومی)
+        # Threat Score technical note — source score Pass for Momentum (unchanged technical noteandtechnical note)
         threat = PassThreatEngine.calculate_pass_threat(
             receiver_pos=(r_end_x, r_end_z),
             defenders=defenders,
@@ -424,7 +424,7 @@ class PassEngine:
         is_success = (new_poss == passing_team) if new_poss else is_received
 
         event_data = PassEventData(
-            event_id=0,  # در لحظه ثبت توسط EventDetectionEngine تخصیص می‌یابد
+            event_id=0,  # in moment register technical noteandtechnical note EventDetectionEngine technical note technical note‌ortechnical note
             match_time=self.cur_pass_match_time,
             team=passing_team,
             passer_seat=self.cur_passer["seat"] if self.cur_passer else None,
@@ -448,10 +448,10 @@ class PassEngine:
         return event_data
 
 # =====================================================================
-# ۱۶. موتور تهدید شوت (ShotThreatEngine — کالیبره، دست‌نخورده)
+# 16. technical noteandtechnical noteandtechnical note technical note shot (ShotThreatEngine — calibratedtechnical note unchanged)
 # ---------------------------------------------------------------------
-# تفکیک کامل: موقعیت خام (Pre-Shot Opportunity Value) در برابر
-# تحقق نهایی (Final Threat = Event / Momentum Impact)
+# technical note complete: position technical note (Pre-Shot Opportunity Value) in technical note
+# technical note technical note (Final Threat = Event / Momentum Impact)
 # =====================================================================
 class ShotThreatEngine:
     @staticmethod
@@ -467,26 +467,26 @@ class ShotThreatEngine:
         is_inside_box: bool,
         is_1v1: bool
     ) -> int:
-        """محاسبه ارزش ذاتی موقعیت شوت قبل از ضربه (Pre-shot Opportunity Value)"""
+        """textto text text position shot before from textto (Pre-shot Opportunity Value)"""
         norm_dist = max(0.0, min(1.0, dist_to_goal / 48.0))
-        # اثر غیرخطی فاصله تا دروازه
+        # impact technical notelinetechnical note distance until inandfromtechnical note
         proximity_score = ((1.0 - norm_dist) ** 2.0) * 52.0
 
-        # اثر زاویه دهانه دروازه
+        # impact technical noteandtechnical note technical note inandfromtechnical note
         angle_deg = math.degrees(goal_angle_rad)
         angle_score = min(24.0, (angle_deg / 34.0) * 24.0)
 
-        # جریمه مدافعان بر اساس انسداد مخروط شلیک
+        # technical note technical note technical note technical note technical note technical noteandtechnical note technical note
         def_penalty = -(obstruction_ratio * 26.0)
         if corridor_defs == 0: def_penalty += 8.0
 
-        # فشار نزدیک‌ترین مدافع
+        # pressure nearest technical note
         if nearest_def_dist < 1.0: space_bonus = -12.0
         elif nearest_def_dist < 2.0: space_bonus = -5.0
         elif nearest_def_dist >= 4.0: space_bonus = +8.0
         else: space_bonus = +2.0
 
-        # فاکتور دروازه‌بان (زاویه و فاصله از خط)
+        # technical noteandtechnical note inandfromtechnical note‌withtechnical note (technical noteandtechnical note and distance from line)
         gk_bonus = 0.0
         is_open_goal = False
         if opp_gk:
@@ -495,9 +495,9 @@ class ShotThreatEngine:
             gk_lat_offset = abs(gk_z)
 
             if gk_off_line > 4.5 or gk_lat_offset > 3.8:
-                gk_bonus += 12.0 # دروازه‌بان از چارچوب خارج است
+                gk_bonus += 12.0 # inandfromtechnical note‌withtechnical note from technical noteandtechnical note technical note is
 
-            # بررسی حالت دروازه خالی (Open Goal)
+            # check technical note inandfromtechnical note empty (Open Goal)
             if dist_to_goal <= 16.5 and corridor_defs == 0:
                 if gk_off_line > 5.0 or gk_lat_offset > 4.2 or (abs(sx_from_gk := abs(opp_gk["x"] - target_goal_x)) < dist_to_goal - 2.0):
                     is_open_goal = True
@@ -526,15 +526,15 @@ class ShotThreatEngine:
         speed_kmh: Optional[float],
         block_dist: float
     ) -> int:
-        """محاسبه تهدید نهایی پس از مشخص شدن فرجام شوت"""
-        # گل = ۱۰۰ قطعی
-        if "گل" in outcome:
+        """textto text text text from text text text shot"""
+        # technical note = 100 deterministic
+        if "text" in outcome:
             return 100
 
-        # برخورد به تیرک
-        if "تیرک" in outcome:
+        # technical noteandtechnical note to post
+        if "post" in outcome:
             speed_factor = min(4.0, (speed_kmh / 30.0)) if speed_kmh else 2.0
-            if "بازگشت به زمین" in outcome:
+            if "withtext to pitch" in outcome:
                 return int(min(98, 93.0 + speed_factor))
             else:
                 return int(min(94, 88.0 + speed_factor))
@@ -543,23 +543,23 @@ class ShotThreatEngine:
         if speed_kmh and speed_kmh >= 75.0:
             speed_mod = min(8.0, (speed_kmh - 75.0) * 0.15)
 
-        # مهار یا بلوک
-        if "مهار توسط دروازه‌بان" in outcome:
+        # technical note or technical noteandtechnical note
+        if "text textandtext inandfromtext‌withtext" in outcome:
             if is_on_target:
-                # مهار در فاصله نزدیک به خط ارزش فوق‌العاده‌ای دارد
+                # technical note in distance technical note to line technical note technical noteandtechnical note‌technical note‌technical note technical note
                 close_boost = max(10.0, (22.0 - block_dist) * 1.0)
                 return int(max(65, min(94, pre_shot_threat * 0.75 + close_boost + speed_mod)))
             return int(max(30, min(65, pre_shot_threat * 0.6)))
 
-        if "بلوک توسط مدافع" in outcome:
+        if "textandtext textandtext text" in outcome:
             if is_on_target:
-                if block_dist <= 3.0: return 95 # نجات از روی خط
+                if block_dist <= 3.0: return 95 # technical note from technical noteandtechnical note line
                 return int(max(55, min(88, pre_shot_threat * 0.70 + speed_mod)))
             return int(max(25, min(60, pre_shot_threat * 0.5)))
 
-        # خارج از چارچوب
-        if "خارج از چارچوب" in outcome:
-            if woodwork_dist <= 0.8: # مماس با تیرک
+        # technical note from technical noteandtechnical note
+        if "text from textandtext" in outcome:
+            if woodwork_dist <= 0.8: # technical note with post
                 return int(max(40, min(75, pre_shot_threat * 0.85)))
             elif woodwork_dist <= 2.2:
                 return int(max(20, min(50, pre_shot_threat * 0.50)))
@@ -569,7 +569,7 @@ class ShotThreatEngine:
         return pre_shot_threat
 
 # =====================================================================
-# ۱۷. طبقه‌بندی هوشمند شوت (ShotClassifierEngine — کالیبره، دست‌نخورده)
+# 17. technical note‌technical note smart shot (ShotClassifierEngine — calibratedtechnical note unchanged)
 # =====================================================================
 class ShotClassifierEngine:
     @staticmethod
@@ -592,74 +592,74 @@ class ShotClassifierEngine:
         ball_descending = features["ball_descending"]
         control_time = features["shooter_control_time"]
 
-        # ۱. پنالتی: شرایط سخت‌گیرانه آرایش زمین
+        # 1. penalty: technical note technical note‌technical note technical note pitch
         if is_pen_spot and in_box and stationary_time >= ShotConfig.STATIONARY_DURATION_MIN and other_players_clear:
-            scores["پنالتی"] = 96.0
+            scores["penalty"] = 96.0
 
-        # ۲. شوت روی ریباند
+        # 2. shot technical noteandtechnical note technical notewithtechnical note
         if is_rebound:
-            scores["شوت روی ریباند"] = 92.0
+            scores["shot textandtext textwithtext"] = 92.0
 
-        # ۳. ضربه آزاد مستقیم
+        # 3. technical noteto free direct
         if stationary_time >= ShotConfig.STATIONARY_DURATION_MIN and not is_pen_spot and dist >= 16.0:
-            scores["ضربه آزاد"] = 85.0 + min(10.0, stationary_time * 2.0)
+            scores["textto free"] = 85.0 + min(10.0, stationary_time * 2.0)
 
-        # ۴. ضربه سر: احتمالاتی بر پایه شواهد فیزیکی
+        # 4. technical noteto technical note: technical note technical note technical note technical noteandtechnical note physical
         if init_h >= ShotConfig.HEADER_HEIGHT_MIN and prior_aerial:
             header_evidence = (init_h - ShotConfig.HEADER_HEIGHT_MIN) / 0.6
-            scores["ضربه سر"] = 75.0 + min(18.0, header_evidence * 18.0)
-            if ball_descending: scores["ضربه سر"] += 6.0
+            scores["textto text"] = 75.0 + min(18.0, header_evidence * 18.0)
+            if ball_descending: scores["textto text"] += 6.0
 
-        # ۵. والی
+        # 5. andtechnical note
         if (ShotConfig.VOLLEY_HEIGHT_MIN <= init_h < ShotConfig.VOLLEY_HEIGHT_MAX) and prior_aerial and control_time <= 0.40:
-            scores["والی"] = 80.0 + (init_h * 5.0)
+            scores["andtext"] = 80.0 + (init_h * 5.0)
 
-        # ۶. شوت‌های کات‌دار
+        # 6. shot‌technical note technical note‌technical note
         if curve_ratio >= ShotConfig.CURVE_RATIO_THRESHOLD:
-            target_name = "شوت کات‌دار درون محوطه" if in_box else "شوت کات‌دار بیرون محوطه"
+            target_name = "shot text‌text inandtext textandtext" if in_box else "shot text‌text outside textandtext"
             scores[target_name] = 84.0 + min(14.0, curve_ratio * 120.0)
 
-        # ۷. شوت چیپ
+        # 7. shot technical note
         if 1.30 <= max_h <= 3.80 and (max_h / max(4.0, dist)) >= 0.08 and dist <= 22.0 and not prior_aerial:
-            scores["شوت چیپ"] = 83.0
+            scores["shot text"] = 83.0
 
-        # ۸. تک‌به‌تک
+        # 8. technical note‌to‌technical note
         if is_1v1:
-            scores["شوت تک‌به‌تک"] = 86.0
+            scores["shot text‌to‌text"] = 86.0
 
-        # ۹. شوت از زاویه بسته
+        # 9. shot from technical noteandtechnical note technical note
         if angle_deg <= PitchConfig.TIGHT_ANGLE_DEG and abs(s_z) >= PitchConfig.WIDE_ZONE_Z:
-            scores["شوت از زاویه بسته"] = 80.0
+            scores["shot from textandtext text"] = 80.0
 
-        # ۱۰. شوت نزدیک
+        # 10. shot technical note
         if dist <= PitchConfig.CLOSE_SHOT_DIST_MAX:
-            scores["شوت نزدیک"] = 78.0 + (PitchConfig.CLOSE_SHOT_DIST_MAX - dist) * 1.5
+            scores["shot text"] = 78.0 + (PitchConfig.CLOSE_SHOT_DIST_MAX - dist) * 1.5
 
-        # ۱۱. شوت از راه دور
+        # 11. shot from technical note technical noteandtechnical note
         if dist >= PitchConfig.LONG_SHOT_DIST_MIN and not in_box:
-            scores["شوت از راه دور"] = 76.0 + min(15.0, (dist - 21.0) * 0.8)
+            scores["shot from text textandtext"] = 76.0 + min(15.0, (dist - 21.0) * 0.8)
 
-        # ۱۲. عمومی
-        if abs(s_z) <= PitchConfig.CENTER_ZONE_Z and angle_deg >= 20.0: scores["شوت از مرکز"] = 70.0
-        if abs(s_z) >= PitchConfig.WIDE_ZONE_Z: scores["شوت از جناح"] = 69.0
-        if in_box: scores["شوت داخل محوطه"] = 68.0
+        # 12. technical noteandtechnical note
+        if abs(s_z) <= PitchConfig.CENTER_ZONE_Z and angle_deg >= 20.0: scores["shot from text"] = 70.0
+        if abs(s_z) >= PitchConfig.WIDE_ZONE_Z: scores["shot from text"] = 69.0
+        if in_box: scores["shot inside textandtext"] = 68.0
 
-        # انتخاب بهترین کاندیدا
+        # technical note totechnical note technical note
         priority_order = [
-            "پنالتی", "شوت روی ریباند", "ضربه آزاد", "شوت کات‌دار درون محوطه",
-            "شوت کات‌دار بیرون محوطه", "شوت چیپ", "والی", "ضربه سر",
-            "شوت تک‌به‌تک", "شوت از زاویه بسته", "شوت نزدیک", "شوت از راه دور",
-            "شوت از مرکز", "شوت از جناح", "شوت داخل محوطه"
+            "penalty", "shot textandtext textwithtext", "textto free", "shot text‌text inandtext textandtext",
+            "shot text‌text outside textandtext", "shot text", "andtext", "textto text",
+            "shot text‌to‌text", "shot from textandtext text", "shot text", "shot from text textandtext",
+            "shot from text", "shot from text", "shot inside textandtext"
         ]
 
         valid_cands = {k: v for k, v in scores.items() if v > 0.0}
         if not valid_cands:
-            final_type = "شوت داخل محوطه" if in_box else "شوت از راه دور"
+            final_type = "shot inside textandtext" if in_box else "shot from text textandtext"
             confidence = 0.55
         else:
             sorted_cands = sorted(valid_cands.items(), key=lambda x: x[1], reverse=True)
             top_type, top_score = sorted_cands[0]
-            # Tie-break هوشمند با اولویت تاکتیکی
+            # Tie-break smart with firstandtechnical note untiltechnical note
             for p_type in priority_order:
                 if p_type in valid_cands and valid_cands[p_type] >= (top_score - 4.5):
                     top_type = p_type
@@ -670,64 +670,64 @@ class ShotClassifierEngine:
             margin = top_score - second_score
             confidence = min(0.95, max(0.55, 0.65 + margin * 0.02))
 
-            # محدودیت اعتماد به دلیل عدم دسترسی به اسکلت بازیکن
-            if final_type in ("ضربه سر", "والی"):
+            # technical noteandtechnical note confidence to technical note technical note technical note to technical notetotaltechnical note player
+            if final_type in ("textto text", "andtext"):
                 confidence = min(0.85, confidence)
 
-        tags = ["داخل محوطه" if in_box else "بیرون محوطه"]
-        if is_1v1: tags.append("تک‌به‌تک")
-        if curve_ratio >= ShotConfig.CURVE_RATIO_THRESHOLD: tags.append("کات‌دار")
-        if dist <= PitchConfig.CLOSE_SHOT_DIST_MAX: tags.append("برد نزدیک")
-        if dist >= PitchConfig.LONG_SHOT_DIST_MIN: tags.append("راه دور")
-        if init_h >= ShotConfig.HEADER_HEIGHT_MIN: tags.append("هوایی")
+        tags = ["inside textandtext" if in_box else "outside textandtext"]
+        if is_1v1: tags.append("text‌to‌text")
+        if curve_ratio >= ShotConfig.CURVE_RATIO_THRESHOLD: tags.append("text‌text")
+        if dist <= PitchConfig.CLOSE_SHOT_DIST_MAX: tags.append("text text")
+        if dist >= PitchConfig.LONG_SHOT_DIST_MIN: tags.append("text textandtext")
+        if init_h >= ShotConfig.HEADER_HEIGHT_MIN: tags.append("textandtext")
 
         return final_type, confidence, tags, valid_cands
 
 # =====================================================================
-# ۱۸. Shot Engine (موتور تولید رویداد شوت — استخراج‌شده از نسخه کالیبره)
+# 18. Shot Engine (technical noteandtechnical noteandtechnical note technical noteandtechnical note technical noteandtechnical note shot — istechnical note‌technical note from version calibrated)
 # ---------------------------------------------------------------------
-# تشخیص لحظه ضربه (جهش بردار سرعت)، ره‌گیری state-based و غیرمسدودکننده
-# پرواز تا خط دروازه، ارزیابی صفحه گل، تیرک، مهار/بلوک و خروجی
-# ShotEventData کامل با pre_shot_threat و final_threat.
-# ره‌گیری به‌صورت State Machine اجرا می‌شود تا Worker اصلی بلاک نشود و
-# هم‌زمان Possession / Pass / Zone / Pressure / Time / Momentum از دست نرود.
+# detection moment technical noteto (jump technical note technical note)technical note technical note‌technical note state-based and technical noteandtechnical note
+# technical noteandfrom until line inandfromtechnical note technical noteortechnical note technical note technical note posttechnical note technical note/technical noteandtechnical note and output
+# ShotEventData complete with pre_shot_threat and final_threat.
+# technical note‌technical note to‌technical noteandtechnical note State Machine technical note technical note‌technical noteandtechnical note until Worker original technical note technical noteandtechnical note and
+# technical note‌time Possession / Pass / Zone / Pressure / Time / Momentum from technical note technical noteandtechnical note.
 # =====================================================================
 class ShotEngine:
     """
-    نسخهٔ ۱۰٫۱۴ — موتور شوت با «صف کاندیدهای شوت»:
-      * ۱ افزایش Shot Counter = ۱ کاندید شوت — همیشه صف می‌شود؛ هیچ تریگری
-        بی‌دلیل Drop نمی‌شود (حتی اگر موتور در حال TRACKING/PENDING باشد)؛
-      * پردازش کاندیدها به ترتیب، مستقل از حلقهٔ اصلی (غیربلاک‌کننده)؛
-      * ریکاوری لحظهٔ ضربه/شوت‌زننده بر پایهٔ Frame Buffer و زمان بازی
-        (نه تایم‌اوت کوتاه دیواری)؛
-      * Dedup فقط با شناسهٔ کاندید (counter + نسل) — دو شوت واقعیِ
-        پشت‌سرهم هرگز Duplicate حساب نمی‌شوند؛
-      * آمار کامل زنجیره (stats) — قابل مشاهده در دیباگ و پایان مسابقه.
+    versiontext 10text14 — textandtextandtext shot with «text text shot»:
+      * 1 increment Shot Counter = 1 text shot — always text text‌textandtext text text
+        text‌text Drop text‌textandtext (text if textandtextandtext currently TRACKING/PENDING withtext)text
+      * textfromtext text to ordertext independent from text original (text‌text)text
+      * textandtext momenttext textto/shot‌text text text Frame Buffer and time withtext
+        (text untiltext‌textandtext textanduntiltext textandtext)text
+      * Dedup only with text text (counter + text) — textand shot realtext
+        text‌text never Duplicate text text‌textandtext
+      * text complete chain (stats) — text text in textwithtext and match end.
     """
     def __init__(self):
         self.last_shot_counter: Optional[int] = None
         self.previous_shot_ctx: Optional[PreviousShotContext] = None
         self.state = "IDLE"  # IDLE | TRACKING
         self._trk: Optional[Dict[str, Any]] = None
-        # --- نسخهٔ ۱۰٫۱۴: صف کاندیدهای شوت (جایگزین Pending تکی) ---
+        # --- versiontechnical note 10technical note14: technical note technical note shot (fallback Pending technical note) ---
         self._queue: deque = deque()
-        self._active: Optional[Dict[str, Any]] = None  # کاندیدِ سرِ صف در حال تلاش
-        self._gen: int = 0                             # نسل شمارنده (ریست شمارنده ⇒ نسل جدید)
+        self._active: Optional[Dict[str, Any]] = None  # technical note technical note technical note currently technical note
+        self._gen: int = 0                             # technical note counter (reset counter ⇒ technical note new)
         self._finalized_ids: set = set()
         self._finalized_order: deque = deque(maxlen=64)
-        self._auto_seq: int = 0                        # شناسهٔ خودکار برای مسیر سازگاری
-        # --- آمار زنجیرهٔ شوت (مشخصات ۱۰٫۱۴) ---
+        self._auto_seq: int = 0                        # technical note automatic for path technical notefromtechnical note
+        # --- technical note chaintechnical note shot (specification 10technical note14) ---
         self.stats: Dict[str, int] = {
             "counter_increments": 0, "triggers": 0, "contact_found": 0,
             "shooter_found": 0, "tracking_started": 0, "tracking_finalized": 0,
             "events_registered": 0, "threats_created": 0, "ui_added": 0,
             "pending": 0, "pending_dropped": 0, "duplicates": 0,
         }
-        # --- کانال دیباگ زنجیره شوت ---
-        self.debug_sink = None   # callable(dict) — توسط MomentumApp تنظیم می‌شود
+        # --- technical note technical notewithtechnical note chain shot ---
+        self.debug_sink = None   # callable(dict) — technical noteandtechnical note MomentumApp technical note technical note‌technical noteandtechnical note
 
     def _dbg(self, stage: str, **kw):
-        """ثبت مراحل زنجیره شوت برای Tab دیباگ (در صورت اتصال sink)"""
+        """register text chain shot for Tab textwithtext (in textandtext text sink)"""
         if self.debug_sink:
             try:
                 self.debug_sink(stage, **kw)
@@ -735,7 +735,7 @@ class ShotEngine:
                 pass
 
     def _stat(self, key: str):
-        """افزایش ایمن شمارندهٔ آماری زنجیرهٔ شوت"""
+        """increment text countertext text chaintext shot"""
         try:
             self.stats[key] = self.stats.get(key, 0) + 1
         except Exception:
@@ -747,7 +747,7 @@ class ShotEngine:
         self.previous_shot_ctx = None
         self._queue.clear()
         self._active = None
-        self._gen += 1                     # شناسه‌های مسابقهٔ جدید هرگز قدیمی‌ها را تکرار نمی‌کنند
+        self._gen += 1                     # technical note‌technical note technical note new never legacy‌technical note technical note technical note technical note‌technical note
         self._finalized_ids.clear()
         self._finalized_order.clear()
         for _k in self.stats:
@@ -757,20 +757,20 @@ class ShotEngine:
         self.last_shot_counter = cnt
 
     # -------------------------------------------------------------
-    # صف کاندیدهای شوت (۱۰٫۱۴) — Push همیشه، Drop فقط با دلیلِ لاگ‌شده
+    # technical note technical note shot (10technical note14) — Push alwaystechnical note Drop only with technical note log‌technical note
     # -------------------------------------------------------------
     def push_trigger(self, counter_value: Optional[int], team: Optional[str],
                      alternates: List[Optional[str]], match_time: Optional[float],
                      wall_now: float, frame_seq: int = 0,
                      team1_attack_dir: int = 1) -> Optional[str]:
         """
-        ۱ افزایش Shot Counter = ۱ کاندید شوت در صف.
-          * counter_value → شناسهٔ یکتای کاندید: «نسل:مقدار شمارنده»؛
-          * team → تیمِ تعیین‌شده از Context مالکیت (با fallback کاربر)؛
-          * alternates → کاندیدهای جایگزین تیم (Context قبلی در جهشِ همزمان
-            مالکیت، poss خام و ...) — در رزولوشن به ترتیب امتحان می‌شوند؛
-          * Dedup فقط با شناسهٔ کاندید — نه زمان، نه هندسه.
-        خروجی: شناسهٔ کاندید (یا None در صورت Duplicate بودن).
+        1 increment Shot Counter = 1 text shot in text.
+          * counter_value → text textuntiltext text: «text:value counter»text
+          * team → teamtext text‌text from Context possession (with fallback user)text
+          * alternates → text fallback team (Context beforetext in jumptext simultaneous
+            possessiontext poss text and ...) — in textandtextandtext to order text text‌textandtext
+          * Dedup only with text text — text timetext text text.
+        output: text text (or None in textandtext Duplicate textandtext).
         """
         self._stat("triggers")
         if counter_value is None:
@@ -784,7 +784,7 @@ class ShotEngine:
             self._stat("duplicates")
             self._dbg("DUP_SUPPRESSED", engine_state=self.state, team=team,
                       candidate_id=candidate_id, counter=counter_value,
-                      note="همان رویداد شمارنده قبلاً صف/ثابت شده است")
+                      note="same textandtext counter beforetext text/text text is")
             return None
         cand = {
             "candidate_id": candidate_id, "counter": counter_value,
@@ -800,14 +800,14 @@ class ShotEngine:
         self._dbg("TRIGGER_QUEUED", engine_state=self.state, team=team,
                   candidate_id=candidate_id, counter=counter_value,
                   queue_len=len(self._queue),
-                  note="۱ افزایش شمارنده = ۱ کاندید شوت (در صف پردازش)")
+                  note="1 increment counter = 1 text shot (in text textfromtext)")
         return candidate_id
 
     def on_counter_reset(self, reason: str = "counter_reset") -> int:
         """
-        بازنشانی Shot Counter (نیمه دوم/ری‌استارت): کاندیدهای صف‌شدهٔ قبلی
-        کهنه‌اند (تعلق به نسلِ قبل) — فقط با دلیلِ لاگ‌شده حذف می‌شوند و
-        نسل += ۱ تا شناسه‌های آینده برخورد نکنند.
+        withtext Shot Counter (second half/restart): text text‌text beforetext
+        text‌text (text to text before) — only with text log‌text text text‌textandtext and
+        text += 1 until text‌text text textandtext text.
         """
         dropped = 0
         while self._queue:
@@ -815,21 +815,21 @@ class ShotEngine:
             self._stat("pending_dropped")
             self._dbg("PENDING_DROPPED", engine_state=self.state, team=q.get("team"),
                       candidate_id=q.get("candidate_id"), reason=reason,
-                      note="بازنشانی شمارنده — کاندیدِ نسلِ قبلی حذف شد")
+                      note="withtext counter — text text beforetext text text")
             dropped += 1
         if self._active is not None and self.state != "TRACKING":
             self._stat("pending_dropped")
             self._dbg("PENDING_DROPPED", engine_state=self.state,
                       team=self._active.get("team"),
                       candidate_id=self._active.get("candidate_id"), reason=reason,
-                      note="بازنشانی شمارنده — کاندیدِ در حال تلاش حذف شد")
+                      note="withtext counter — text currently text text text")
             self._active = None
             dropped += 1
         self._gen += 1
         return dropped
 
     def _mark_finalized(self, candidate_id: Optional[str]):
-        """ثبت شناسهٔ کاندید به‌عنوان نهایی‌شده (هر کاندید فقط یک بار)"""
+        """register text text to‌textandtext text‌text (text text only text withtext)"""
         if candidate_id is None:
             return
         self._finalized_ids.add(candidate_id)
@@ -839,15 +839,15 @@ class ShotEngine:
             self._finalized_ids.discard(_old)
 
     # -------------------------------------------------------------
-    # شروع ره‌گیری (بدنه مشترک process / شیم سازگاری on_counter_increment)
+    # start technical note‌technical note (technical note shared process / technical note technical notefromtechnical note on_counter_increment)
     # -------------------------------------------------------------
     @staticmethod
     def _seed_from_buffer(buffer_list: List[SnapshotFrame], shot_frame: SnapshotFrame,
                           cap: int = 20) -> Tuple[List, List, List]:
         """
-        نسخهٔ ۱۰٫۱۴ — فریم‌های «پس از» لحظهٔ ضربه در بافر → سربارگذاری مسیر پرواز.
-        برای رزولوشن‌های دیرهنگام (Pending)، ابتدای پرواز توپ از دست نمی‌رود؛
-        سرعت‌ها با همان فرمول update_tracking فیلتر می‌شوند.
+        versiontext 10text14 — frame‌text «text from» momenttext textto in buffer → textwithtext path textandfrom.
+        for textandtextandtext‌text text (Pending)text text textandfrom ball from text text‌textandtext
+        text‌text with same textandtext update_tracking text text‌textandtext.
         """
         idx = None
         for i in range(len(buffer_list) - 1, -1, -1):
@@ -909,7 +909,7 @@ class ShotEngine:
                   candidate_id=cand_id, seeded_frames=len(seed_balls))
 
     # -------------------------------------------------------------
-    # ریکاوری لحظه دقیق ضربه و شوت‌زننده بر پایه جهش بردار سرعت
+    # technical noteandtechnical note moment technical note technical noteto and shot‌technical note technical note technical note jump technical note technical note
     # -------------------------------------------------------------
     @staticmethod
     def find_true_contact_and_shooter(
@@ -941,7 +941,7 @@ class ShotEngine:
             for cand in attackers:
                 d_cand = GeometryEngine.dist_2d((cand["x"], cand["z"]), (f_cur.ball[0], f_cur.ball[1]))
                 if d_cand <= 2.2:
-                    # امتیاز تطابق بردار خروج توپ و حضور بازیکن
+                    # score technical note technical note technical noteandtechnical note ball and technical noteandtechnical note player
                     score = (1.0 / (d_cand + 0.35)) * 40.0 + fwd_speed * 1.5 + (speed * 0.8)
                     if score > max_contact_score:
                         max_contact_score = score
@@ -953,28 +953,28 @@ class ShotEngine:
     def on_counter_increment(self, engine, buffer_list: List[SnapshotFrame],
                              wall_now: float, team: str, att_dir: int) -> bool:
         """
-        شیم سازگاری (۱۰٫۱۴) — مسیر قدیمی «تریگر فوری»: کاندید می‌سازد و
-        همان تیک پردازش می‌کند. مسیر اصلی Worker: push_trigger + process.
-        خروجی: True اگر ره‌گیری آغاز شد (قرارداد قدیمی حفظ شده).
+        text textfromtext (10text14) — path legacy «text immediate»: text text‌textfromtext and
+        same text textfromtext text‌text. path original Worker: push_trigger + process.
+        output: True if text‌text textfrom text (text legacy text text).
         """
         self.push_trigger(None, team, [team], None, wall_now, 0, att_dir)
         return self.process(engine, buffer_list, wall_now, None, 0)
 
     # -------------------------------------------------------------
-    # پردازش صف کاندیدها (۱۰٫۱۴) — هر تیک؛ غیربلاک‌کننده؛ ریکاوری فریم‌محور
+    # technical notefromtechnical note technical note technical note (10technical note14) — technical note technical note technical note‌technical note technical noteandtechnical note frame‌technical noteandtechnical note
     # -------------------------------------------------------------
     def process(self, engine, buffer_list: List[SnapshotFrame], wall_now: float,
                 match_time: Optional[float] = None, frame_seq: int = 0) -> bool:
         """
-        اگر ره‌گیری فعالی در جریان نیست، سرِ صف را برای «یافتن لحظهٔ ضربه +
-        شوت‌زننده» تلاش می‌کند:
-          * کاندیدهای تیم به ترتیب (تیم اصلی → Context قبلی → poss خام →
-            در نبودِ هر کاندیدی: هر دو تیم) امتحان می‌شوند؛
-          * جستجوی اول در پنجرهٔ کالیبره (۲۶ فریم) و تلاش‌های بعدی عمیق‌تر
-            (۱۲۰ فریم) داخل Frame Buffer؛
-          * Drop فقط پس از عبور «پنجرهٔ ریکاوری واقعی» (فریم/زمان بازی) و
-            همیشه با دلیلِ لاگ‌شده — هیچ تریگری بی‌صدا حذف نمی‌شود.
-        خروجی: True اگر ره‌گیری آغاز شد.
+        if text‌text activetext in textortext is nottext text text text for «textdecreasetext momenttext textto +
+        shot‌text» text text‌text:
+          * text team to order (team original → Context beforetext → poss text →
+            in textandtext text text: text textand team) text text‌textandtext
+          * textandtext first in windowtext calibrated (26 frame) and text‌text aftertext text‌text
+            (120 frame) inside Frame Buffertext
+          * Drop only text from textandtext «windowtext textandtext real» (frame/time withtext) and
+            always with text log‌text — text text text‌text text text‌textandtext.
+        output: True if text‌text textfrom text.
         """
         if self.state == "TRACKING":
             return False
@@ -986,10 +986,10 @@ class ShotEngine:
                       team=self._active.get("team"),
                       candidate_id=self._active.get("candidate_id"),
                       buffer_len=len(buffer_list),
-                      note="جستجوی عقب‌روی لحظهٔ ضربه در Frame Buffer")
+                      note="textandtext text‌textandtext momenttext textto in Frame Buffer")
         cand = self._active
 
-        # --- پنجرهٔ ریکاوری واقعی (فریم / زمان بازی — نه تایم‌اوت کوتاه دیواری) ---
+        # --- windowtechnical note technical noteandtechnical note real (frame / time withtechnical note — technical note untiltechnical note‌technical noteandtechnical note technical noteanduntiltechnical note technical noteandtechnical note) ---
         frames_since = max(0, int(frame_seq) - int(cand.get("frame_seq", 0)))
         mt_since = None
         if match_time is not None and cand.get("match_time") is not None:
@@ -1004,19 +1004,19 @@ class ShotEngine:
                       frames_since=frames_since,
                       match_time_since=(round(mt_since, 2) if mt_since is not None else None),
                       attempts=cand.get("attempts", 0),
-                      note="عبور از پنجرهٔ ریکاوری — لحظهٔ ضربه قابل بازیابی نبود")
+                      note="textandtext from windowtext textandtext — momenttext textto text recovery textandtext")
             self._active = None
             return False
 
-        # --- تلاش رزولوشن با کاندیدهای تیم به ترتیب ---
+        # --- technical note technical noteandtechnical noteandtechnical note with technical note team to order ---
         cand["attempts"] = cand.get("attempts", 0) + 1
         teams_to_try: List[str] = []
         for t in ([cand.get("team")] + list(cand.get("alternates") or [])):
             if t and t not in teams_to_try:
                 teams_to_try.append(t)
         if not teams_to_try:
-            # Context مالکیت هیچ کاندیدی نداد → خودِ جستجوی تماس تیم را
-            # تعیین می‌کند (فقط بازیکنان تیمِ شوت‌زننده کنار توپ هستند)
+            # Context possession technical note technical note technical note → technical noteandtechnical note technical noteandtechnical note technical note team technical note
+            # technical note technical note‌technical note (only players teamtechnical note shot‌technical note technical note ball technical note)
             teams_to_try = ["Home", "Away"]
 
         scope = (ShotConfig.SHOT_CONTACT_SCOPE if cand["attempts"] <= 1
@@ -1030,30 +1030,30 @@ class ShotEngine:
                 continue
             self._stat("contact_found")
             self._stat("shooter_found")
-            # فیلتر قطعی شوت: فقط و فقط در نیمه حریف (کالیبره ابزار مستقل)
+            # technical note deterministic shot: only and only in technical note technical note (calibrated tool independent)
             shooter_x_att = shooter["x"] * att_dir
             ball_x_att = shot_frame.ball[0] * att_dir
             if shooter_x_att <= 0.0 or ball_x_att <= 0.0:
                 self._dbg("TRIGGER_FILTER_REJECT", engine_state=self.state, team=team,
                           candidate_id=cand.get("candidate_id"),
-                          note="ضربه در نیمهٔ خودی برای این کاندید تیم — تیم بعدی")
+                          note="textto in text textandtext for text text team — team aftertext")
                 continue
             self._active = None
             self._dbg("CONTACT_FOUND", engine_state=self.state, team=team,
                       candidate_id=cand.get("candidate_id"),
                       shot_match_time=shot_frame.match_time,
                       attempts=cand["attempts"],
-                      note="فریم لحظهٔ ضربه در بافر یافت شد")
+                      note="frame momenttext textto in buffer textdecrease text")
             self._dbg("SHOOTER_FOUND", engine_state=self.state, team=team,
                       candidate_id=cand.get("candidate_id"),
                       shooter_seat=shooter.get("seat"),
                       attempts=cand["attempts"],
-                      note="شوت‌زننده تأیید شد")
+                      note="shot‌text confirmation text")
             if cand["attempts"] > 1:
                 self._dbg("PENDING_RESOLVED", engine_state=self.state, team=team,
                           candidate_id=cand.get("candidate_id"),
                           attempts=cand["attempts"],
-                          note="لحظهٔ ضربه در تلاش‌های بعدی بازیابی شد")
+                          note="momenttext textto in text‌text aftertext recovery text")
             self._start_tracking(engine, team, att_dir, shot_frame, shooter,
                                  buffer_list, wall_now, cand)
             return True
@@ -1062,29 +1062,29 @@ class ShotEngine:
             self._stat("pending")
             self._dbg("PENDING", engine_state=self.state, team=cand.get("team"),
                       candidate_id=cand.get("candidate_id"),
-                      note="لحظهٔ ضربه فوراً یافت نشد — ریکاوری در فریم‌های بعدی")
+                      note="momenttext textto textandtext textdecrease text — textandtext in frame‌text aftertext")
         elif cand["attempts"] % 20 == 0:
             self._dbg("CONTACT_NOT_FOUND", engine_state=self.state,
                       team=cand.get("team"),
                       candidate_id=cand.get("candidate_id"),
                       attempts=cand["attempts"],
-                      note="هنوز بدون نتیجه — جستجو ادامه دارد")
+                      note="still without text — textand resume text")
         return False
 
     def try_pending(self, engine, buffer_list: List[SnapshotFrame], wall_now: float) -> bool:
-        """شیم سازگاری (۱۰٫۱۴) — معادل process بدون زمان بازی."""
+        """text textfromtext (10text14) — text process without time withtext."""
         return self.process(engine, buffer_list, wall_now, None, 0)
 
     def update_tracking(self, engine) -> Optional[ShotEventData]:
         """
-        یک گام از ره‌گیری پرواز (state-based/non-blocking) — در هر Poll یک تکرار
-        از حلقه اصلی نسخه کالیبره اجرا می‌شود؛ منطق و آستانه‌ها دست‌نخورده‌اند.
+        text text from text‌text textandfrom (state-based/non-blocking) — in text Poll text text
+        from text original version calibrated text text‌textandtext text and threshold‌text unchanged‌text.
         """
         if self.state != "TRACKING" or not self._trk:
             return None
         trk = self._trk
 
-        # Timeout نسخه کالیبره (wall clock — فقط برای timeout/performance)
+        # Timeout version calibrated (wall clock — only for timeout/performance)
         if (time.time() - trk["tracking_start"]) >= ShotConfig.MAX_TRACK_TIME:
             return self._finalize()
 
@@ -1109,29 +1109,29 @@ class ShotEngine:
         time_stamps.append(cur_t)
         if b_cur[2] > trk["max_h"]: trk["max_h"] = b_cur[2]
 
-        # --- نسخهٔ ۱۰٫۱۴: لاگ کنترل‌شدهٔ پیشرفت ره‌گیری (هر ۲۵ نقطه) ---
+        # --- versiontechnical note 10technical note14: log technical note‌technical note technical note technical note‌technical note (technical note 25 technical note) ---
         if len(trajectory) % 25 == 0:
             self._dbg("TRACKING_UPDATED", engine_state=self.state,
                       team=trk["team"],
                       candidate_id=trk.get("candidate_id"),
                       points=len(trajectory),
-                      note="ره‌گیری پرواز در جریان است")
+                      note="text‌text textandfrom in textortext is")
 
-        # الف: بررسی برخورد و انحراف با تیرک‌ها
+        # technical note: check technical noteandtechnical note and technical note with post‌technical note
         if not trk["hit_woodwork"] and abs(b_cur[0] - trk["target_goal_x"]) <= (PitchConfig.POST_COLLISION_RADIUS + 0.3):
             p_prev = trajectory[-2]
             vx_att = (b_cur[0] - p_prev[0]) * att_dir
-            # بررسی نزدیکی به تیرهای عمودی یا افقی
+            # check technical note to technical note technical noteandtechnical note or technical note
             d_post_l = math.hypot(b_cur[1] - (-PitchConfig.GOAL_HALF_WIDTH), max(0.0, b_cur[2] - PitchConfig.GOAL_HEIGHT/2))
             d_post_r = math.hypot(b_cur[1] - PitchConfig.GOAL_HALF_WIDTH, max(0.0, b_cur[2] - PitchConfig.GOAL_HEIGHT/2))
             d_bar = abs(b_cur[2] - PitchConfig.GOAL_HEIGHT)
 
             if min(d_post_l, d_post_r, d_bar) <= PitchConfig.POST_COLLISION_RADIUS:
                 trk["hit_woodwork"] = True
-                trk["woodwork_name"] = "تیر افقی" if d_bar < min(d_post_l, d_post_r) else "تیر عمودی"
+                trk["woodwork_name"] = "text text" if d_bar < min(d_post_l, d_post_r) else "text textandtext"
                 if vx_att < -0.2: trk["woodwork_rebound"] = True
 
-        # ب: بررسی مهار یا بلوک واقعی با فیلتر ارتفاع پرش
+        # technical note: check technical note or technical noteandtechnical note real with technical note height technical note
         cur_players = engine.read_players()
         opponents = [p for p in cur_players if p["team"] != team]
         closest_opp = None
@@ -1146,21 +1146,21 @@ class ShotEngine:
             is_gk = (closest_opp["seat"] == trk["opp_gk_seat"])
             reach_limit = ShotConfig.GK_MAX_REACH_HEIGHT if is_gk else ShotConfig.OUTFIELD_MAX_REACH_HEIGHT
 
-            # توپ نباید از بالای سقف دسترس بازیکن رد شود
+            # ball technical notemust from withtechnical note technical note technical note player technical note technical noteandtechnical note
             if b_cur[2] <= reach_limit:
                 vx_now = (b_cur[0] - trajectory[-3][0]) * att_dir
-                # افت سرعت شدید یا برگشت توپ به سمت عقب
+                # decrease technical note technical note or technical note ball to side technical note
                 if vx_now < 0.25:
                     trk["intercepted"] = True
                     trk["intercept_player"] = closest_opp
                     trk["block_dist"] = abs(trk["target_goal_x"] - b_cur[0])
                     return self._finalize()
 
-        # ج: قطع فوری به محض عبور از صفحه خط ۵۲.۵ متر
+        # technical note: technical note immediate to technical note technical noteandtechnical note from technical note line 52.5 technical note
         cur_x_att = b_cur[0] * att_dir
         prev_x_att = trajectory[-2][0] * att_dir
         if cur_x_att >= PitchConfig.HALF_LENGTH:
-            # درون‌یابی دقیق نقطه برخورد با صفحه خط دروازه
+            # inandtechnical note‌ortechnical note technical note technical note technical noteandtechnical note with technical note line inandfromtechnical note
             span = cur_x_att - prev_x_att
             t_ratio = (PitchConfig.HALF_LENGTH - prev_x_att) / span if abs(span) > 1e-4 else 1.0
             t_ratio = max(0.0, min(1.0, t_ratio))
@@ -1169,18 +1169,18 @@ class ShotEngine:
             cross_y = max(0.0, trajectory[-2][2] + t_ratio * (b_cur[2] - trajectory[-2][2]))
             trk["goal_line_point"] = (trk["target_goal_x"], cross_z, cross_y)
 
-            # --- نسخه ۴: ثبت گل از «مسیر توپ + چارچوب دروازه» کاملاً کنار گذاشته شد ---
-            # عبور از صفحهٔ دروازه فقط برای ارزیابی is_on_target / فاصله تیرک /
-            # متن اولیه Outcome استفاده می‌شود. تعیین نهایی «گل» تنها توسط
-            # GoalHooker (شمارندهٔ حافظه: [rcx+0x158] / [rcx+0x15C]) انجام می‌شود
-            # و پس از تأیید هوک، رخداد شوتِ لینک‌شده به‌صورت بازگشتی به «گل»
-            # ارتقا می‌یابد (register_goal_event + سیاست GOAL_LINKED_SHOT_RATIO).
+            # --- version 4: register technical note from «path ball + technical noteandtechnical note inandfromtechnical note» completetechnical note technical note technical note technical note ---
+            # technical noteandtechnical note from technical note inandfromtechnical note only for technical noteortechnical note is_on_target / distance post /
+            # technical note firsttechnical note Outcome istechnical note technical note‌technical noteandtechnical note. technical note technical note «technical note» technical note technical noteandtechnical note
+            # GoalHooker (countertechnical note memory: [rcx+0x158] / [rcx+0x15C]) technical note technical note‌technical noteandtechnical note
+            # and technical note from confirmation hooktechnical note technical note shottechnical note technical note‌technical note to‌technical noteandtechnical note withtechnical note to «technical note»
+            # technical note technical note‌ortechnical note (register_goal_event + technical noteis GOAL_LINKED_SHOT_RATIO).
             return self._finalize()
 
         return None
 
     # -------------------------------------------------------------
-    # ارزیابی نهایی شوت (پورت کامل بلوک ارزیابی نسخه کالیبره)
+    # technical noteortechnical note technical note shot (technical noteandtechnical note complete technical noteandtechnical note technical noteortechnical note version calibrated)
     # -------------------------------------------------------------
     def _finalize(self) -> Optional[ShotEventData]:
         trk = self._trk
@@ -1188,13 +1188,13 @@ class ShotEngine:
         self._trk = None
         if not trk:
             return None
-        # --- نسخهٔ ۱۰٫۱۴: شناسهٔ کاندید نهایی می‌شود (هر کاندید فقط یک بار) ---
+        # --- versiontechnical note 10technical note14: technical note technical note technical note technical note‌technical noteandtechnical note (technical note technical note only technical note withtechnical note) ---
         _cand_id = trk.get("candidate_id")
         self._mark_finalized(_cand_id)
         self._stat("tracking_finalized")
         self._dbg("TRACKING_FINALIZED", engine_state=self.state,
                   team=trk.get("team"), candidate_id=_cand_id,
-                  note="ارزیابی نهایی شوت آغاز شد")
+                  note="textortext text shot textfrom text")
 
         trajectory = trk["trajectory"]
         speeds = trk["speeds"]
@@ -1215,7 +1215,7 @@ class ShotEngine:
         block_dist = trk["block_dist"]
         goal_line_point = trk["goal_line_point"]
 
-        # ارزیابی سرعت واقعی
+        # technical noteortechnical note technical note real
         if speeds:
             sorted_spd = sorted(speeds)
             max_speed = sorted_spd[int(len(sorted_spd) * 0.85)]
@@ -1224,30 +1224,30 @@ class ShotEngine:
             max_speed = None
             speed_valid = False
 
-        # ارزیابی صفحه هدف
+        # technical noteortechnical note technical note technical note
         eval_p = goal_line_point if goal_line_point else trajectory[-1]
         signed_woodwork_dist, is_on_target = GeometryEngine.calculate_signed_woodwork_distance(eval_p[1], eval_p[2])
 
-        # تعیین قطعی فرجام شوت (Outcome)
+        # technical note deterministic technical note shot (Outcome)
         if is_goal:
             is_on_target = True
-            outcome = f"گل با برخورد به {woodwork_name} ⚽💥" if hit_woodwork else "گل قطعی ⚽"
+            outcome = f"text with textandtext to {woodwork_name} ⚽💥" if hit_woodwork else "text deterministic ⚽"
         elif hit_woodwork:
             is_on_target = True
-            outcome = f"برخورد به {woodwork_name} و بازگشت به زمین 💥" if woodwork_rebound else f"برخورد به {woodwork_name} و خروج از زمین 💥"
+            outcome = f"textandtext to {woodwork_name} and withtext to pitch 💥" if woodwork_rebound else f"textandtext to {woodwork_name} and textandtext from pitch 💥"
         elif intercepted and intercept_player:
             is_gk = (intercept_player["seat"] == opp_gk_seat)
-            actor = "دروازه‌بان" if is_gk else "مدافع"
-            outcome = f"مهار توسط {actor} (در چارچوب) 🧤" if is_on_target else f"دفع توسط {actor} (خارج چارچوب)"
+            actor = "inandfromtext‌withtext" if is_gk else "text"
+            outcome = f"text textandtext {actor} (in textandtext) 🧤" if is_on_target else f"text textandtext {actor} (text textandtext)"
         else:
             if is_on_target:
-                outcome = "در چارچوب (مهار / توقف)"
+                outcome = "in textandtext (text / stop)"
             else:
-                if signed_woodwork_dist <= 0.8: outcome = "خارج از چارچوب (اختلاف بسیار کم / مماس)"
-                elif signed_woodwork_dist <= 2.2: outcome = "خارج از چارچوب (اختلاف متوسط)"
-                else: outcome = "خارج از چارچوب (اختلاف زیاد)"
+                if signed_woodwork_dist <= 0.8: outcome = "text from textandtext (text textortext text / text)"
+                elif signed_woodwork_dist <= 2.2: outcome = "text from textandtext (text textandtext)"
+                else: outcome = "text from textandtext (text textortext)"
 
-        # استخراج متغیرهای تاکتیکی و هندسی
+        # istechnical note technical note untiltechnical note and technical note
         dist_to_goal = math.hypot(shooter["x"] - target_goal_x, shooter["z"])
         goal_ang_rad = GeometryEngine.goal_view_angle(shooter["x"], shooter["z"], target_goal_x)
         goal_ang_deg = math.degrees(goal_ang_rad)
@@ -1262,11 +1262,11 @@ class ShotEngine:
         rec_def_dists = sorted([GeometryEngine.dist_2d((shooter["x"], shooter["z"]), (d["x"], d["z"])) for d in defenders]) if defenders else [25.0]
         near_def_dist = rec_def_dists[0]
 
-        # بررسی تک‌به‌تک بر پایه مخروط باز و گلر
+        # check technical note‌to‌technical note technical note technical note technical noteandtechnical note withtechnical note and technical note
         is_1v1 = (corridor_defs == 0 and obstruction_ratio <= 0.08 and dist_to_goal <= 22.0 and near_def_dist >= 2.4)
         is_inside_box = ((shooter["x"] * att_dir) >= PitchConfig.PENALTY_BOX_X and abs(shooter["z"]) <= PitchConfig.PENALTY_BOX_HALF_Z)
 
-        # بررسی مدت سکون توپ برای پنالتی و ضربه آزاد
+        # check technical note technical noteandtechnical note ball for penalty and technical noteto free
         stationary_duration = 0.0
         if len(buffer_list) >= 15:
             sub_buf = [f.ball for f in list(buffer_list)[-45:]]
@@ -1274,7 +1274,7 @@ class ShotEngine:
             if all(GeometryEngine.dist_2d((b[0], b[1]), (ref_b[0], ref_b[1])) <= ShotConfig.STATIONARY_RADIUS for b in sub_buf):
                 stationary_duration = len(sub_buf) * 0.015
 
-        # بررسی پنالتی دقیق
+        # check penalty technical note
         pen_spot_x = PitchConfig.PENALTY_SPOT_X_ATT * att_dir
         is_pen_spot = (abs(shooter["x"] - pen_spot_x) <= 1.8 and abs(shooter["z"]) <= 1.4 and dist_to_goal <= 12.5)
         other_players_clear = all(
@@ -1282,16 +1282,16 @@ class ShotEngine:
             for p in shot_frame.players if p["seat"] not in (shooter["seat"], opp_gk_seat)
         )
 
-        # بررسی ریباند واقعی با شواهد هندسی
+        # check technical notewithtechnical note real with technical noteandtechnical note technical note
         is_rebound = False
         if self.previous_shot_ctx:
             dt_prev = now_t - self.previous_shot_ctx.timestamp
             if dt_prev <= 4.2 and self.previous_shot_ctx.team == team:
                 dist_from_prev_end = GeometryEngine.dist_2d((shooter["x"], shooter["z"]), (self.previous_shot_ctx.end_position[0], self.previous_shot_ctx.end_position[1]))
-                if dist_from_prev_end <= 15.0 and ("مهار" in self.previous_shot_ctx.outcome or "بلوک" in self.previous_shot_ctx.outcome or "تیرک" in self.previous_shot_ctx.outcome):
+                if dist_from_prev_end <= 15.0 and ("text" in self.previous_shot_ctx.outcome or "textandtext" in self.previous_shot_ctx.outcome or "post" in self.previous_shot_ctx.outcome):
                     is_rebound = True
 
-        # ثبت شوت فعلی به عنوان کانتکست قبلی
+        # register shot technical note to technical noteandtechnical note technical note beforetechnical note
         self.previous_shot_ctx = PreviousShotContext(
             timestamp=now_t,
             end_position=eval_p,
@@ -1300,10 +1300,10 @@ class ShotEngine:
             target_goal_x=target_goal_x
         )
 
-        # محاسبه کات توپ
+        # technical noteto technical note ball
         curve_ratio, curve_dir = GeometryEngine.calculate_curve(trajectory)
 
-        # وضعیت پرواز قبلی برای تشخیص سر و والی
+        # andtechnical note technical noteandfrom beforetechnical note for detection technical note and andtechnical note
         prior_aerial = any(f.ball[2] >= 1.35 for f in buffer_list[-20:-5]) if len(buffer_list) >= 20 else False
         ball_descending = (len(trajectory) >= 3 and trajectory[0][2] > trajectory[2][2])
 
@@ -1327,7 +1327,7 @@ class ShotEngine:
 
         primary_type, confidence, tags, cand_scores = ShotClassifierEngine.classify(features)
 
-        # محاسبه تفکیک‌شده تهدید (Pre = Opportunity Value | Final = Momentum Impact)
+        # technical noteto technical note‌technical note technical note (Pre = Opportunity Value | Final = Momentum Impact)
         pre_threat = ShotThreatEngine.calculate_pre_shot_threat(
             dist_to_goal=dist_to_goal,
             goal_angle_rad=goal_ang_rad,
@@ -1353,7 +1353,7 @@ class ShotEngine:
         gk_d = GeometryEngine.dist_2d((opp_gk["x"], opp_gk["z"]), (target_goal_x, 0.0)) if opp_gk else 0.0
 
         shot_data = ShotEventData(
-            event_id=0,  # در لحظه ثبت توسط EventDetectionEngine تخصیص می‌یابد
+            event_id=0,  # in moment register technical noteandtechnical note EventDetectionEngine technical note technical note‌ortechnical note
             match_time=shot_frame.match_time,
             team=team,
             shooter_seat=shooter["seat"],
@@ -1381,19 +1381,19 @@ class ShotEngine:
             gk_dist_to_goal=gk_d,
             is_inside_box=is_inside_box,
             is_1v1=is_1v1,
-            # نسخه ۳: ثبت صریح پرچم گل روی مدل داده
+            # version 3: register technical note technical note technical note technical noteandtechnical note technical note data
             is_goal=is_goal,
-            # نسخهٔ ۱۰٫۱۴: شناسهٔ کاندید شمارنده (مبنای Dedup ثبت نهایی)
+            # versiontechnical note 10technical note14: technical note technical note counter (technical note Dedup register technical note)
             candidate_id=_cand_id,
             tags=tags,
             candidate_scores=cand_scores
         )
-        # --- نسخه ۲: ثبت مرحله نهایی زنجیره شوت (Event ساخته شد) ---
+        # --- version 2: register technical note technical note chain shot (Event technical note technical note) ---
         self._dbg(
             "SHOT_EVENT_CREATED",
             engine_state=self.state,
             team=team,
-            shot_event_id=0,          # پس از register_shot_event توسط Worker تکمیل می‌شود
+            shot_event_id=0,          # technical note from register_shot_event technical noteandtechnical note Worker technical note technical note‌technical noteandtechnical note
             candidate_id=_cand_id,
             shot_match_time=shot_data.match_time,
             outcome=outcome,
@@ -1406,7 +1406,7 @@ class ShotEngine:
         return shot_data
 
 # =====================================================================
-# ۱۹. تحلیل ساختار دفاعی (DefensiveStructureEngine)
+# 19. technical note structure technical note (DefensiveStructureEngine)
 # =====================================================================
 class DefensiveStructureEngine:
     @staticmethod
@@ -1417,16 +1417,16 @@ class DefensiveStructureEngine:
         if not outfield_defs:
             return {"def_line_x_att": 35.0, "is_high_line": False, "is_deep_block": False, "def_area_sqm": 400.0}
 
-        # مرتب‌سازی طولی مدافعان در جهت حمله حریف
+        # technical note‌technical notefromtechnical note lengthtechnical note technical note in technical note technical note technical note
         sorted_x_att = sorted([d["x"] * att_dir for d in outfield_defs])
-        # خط آفساید معمولاً با موقعیت دومین مدافع عمیق مشخص می‌شود
+        # line technical note technical noteandtechnical note with position secondtechnical note technical note technical note technical note technical note‌technical noteandtechnical note
         def_line_x_att = sorted_x_att[-2] if len(sorted_x_att) >= 2 else sorted_x_att[-1]
 
         z_coords = [d["z"] for d in outfield_defs]
         width = max(z_coords) - min(z_coords) if z_coords else 30.0
         length = (sorted_x_att[-1] - sorted_x_att[0]) if len(sorted_x_att) >= 2 else 15.0
 
-        # در مختصات حمله، خط دفاع بالا یعنی مدافعان به سمت میانه زمین جلو کشیده‌اند
+        # in coordinates technical note line technical note withtechnical note technical note technical note to side technical noteortechnical note pitch technical noteand technical note‌technical note
         is_high_line = (def_line_x_att <= 22.0)
         is_deep_block = (def_line_x_att >= 36.0)
 
@@ -1438,7 +1438,7 @@ class DefensiveStructureEngine:
         }
 
 # =====================================================================
-# ۲۰. تشخیص موقعیت‌های گل (OpportunityEngine — Chance و Big Chance)
+# 20. detection position‌technical note technical note (OpportunityEngine — Chance and Big Chance)
 # =====================================================================
 class OpportunityEngine:
     def __init__(self):
@@ -1498,14 +1498,14 @@ class OpportunityEngine:
                 reliability=EventReliability.INFERRED,
                 confidence=0.88 if is_big_chance else 0.80,
                 position=frame.ball,
-                tags=["موقعیت طلایی" if is_big_chance else "موقعیت خطرناک", f"{dist_to_goal:.1f}m"]
+                tags=["position text" if is_big_chance else "position linetext", f"{dist_to_goal:.1f}m"]
             ))
 
 # =====================================================================
-# ۲۱. رخدادنگار مستقل پنالتی (PenaltyDetector — مستقل از شمارنده شوت)
+# 21. technical note independent penalty (PenaltyDetector — independent from counter shot)
 # =====================================================================
 class PenaltyDetector:
-    """تشخیص موقعیت و شلیک ضربه پنالتی بر پایه شواهد نقطه و فیزیک"""
+    """detection position and text textto penalty text text textandtext text and text"""
     def __init__(self):
         self.state = "IDLE"
         self.stationary_start = 0.0
@@ -1550,7 +1550,7 @@ class PenaltyDetector:
                 self.att_team = att_team
 
         elif self.state == "WAITING_KICK":
-            # بررسی خروج ناگهانی از نقطه با سرعت بالا
+            # check technical noteandtechnical note technical note from technical note with technical note withtechnical note
             if len(frame_buffer) >= 2:
                 prev_f = frame_buffer[-2]
                 dt = max(0.005, current_frame.timestamp - prev_f.timestamp)
@@ -1569,11 +1569,11 @@ class PenaltyDetector:
                         reliability=EventReliability.PROBABLE,
                         confidence=0.90,
                         position=current_frame.ball,
-                        tags=["ضربه پنالتی"]
+                        tags=["textto penalty"]
                     ))
 
         elif self.state == "RESOLVING":
-            # بررسی گل شدن پنالتی
+            # check technical note technical note penalty
             reached_line = (self.target_goal_x > 0 and bx >= PitchConfig.HALF_LENGTH) or (self.target_goal_x < 0 and bx <= -PitchConfig.HALF_LENGTH)
             if reached_line:
                 is_goal = (abs(bz) <= PitchConfig.GOAL_HALF_WIDTH and by <= PitchConfig.GOAL_HEIGHT)
@@ -1587,16 +1587,16 @@ class PenaltyDetector:
                     confidence=0.94,
                     position=current_frame.ball,
                     related_event_ids=[self.penalty_id] if self.penalty_id else [],
-                    tags=["گل پنالتی ⚽" if is_goal else "پنالتی از دست رفته ❌"]
+                    tags=["text penalty ⚽" if is_goal else "penalty from text text ❌"]
                 ))
                 self.state = "IDLE"
             elif (current_frame.timestamp - self.stationary_start) > 4.0:
                 self.state = "IDLE"
 
 # =====================================================================
-# ۲۲. آشکارساز اپیزود فشار (PressureEpisodeDetector)
+# 22. technical notefrom technical noteandtechnical note pressure (PressureEpisodeDetector)
 # ---------------------------------------------------------------------
-# Pressure Episode: فشار تدریجی بر حامل توپ؛ impact ملایم و تدریجی با
+# Pressure Episode: pressure technical noteintechnical note technical note technical note balltechnical note impact technical note and technical noteintechnical note with
 # duration / avg_pressure / max_pressure
 # =====================================================================
 class PressureEpisodeDetector:
@@ -1662,13 +1662,13 @@ class PressureEpisodeDetector:
         return finished
 
     def force_finish(self, end_mt: float) -> Optional[Dict[str, float]]:
-        """بستن اپیزود در تغییر مالکیت"""
+        """text textandtext in change possession"""
         if not self.active:
             return None
         return self._collect(end_mt if end_mt is not None else self.last_mt)
 
 # =====================================================================
-# ۲۳. موتور گذارها (TransitionEngine — Counterattack / Attacking Transition)
+# 23. technical noteandtechnical noteandtechnical note technical note (TransitionEngine — Counterattack / Attacking Transition)
 # =====================================================================
 class TransitionEngine:
     def __init__(self):
@@ -1683,7 +1683,7 @@ class TransitionEngine:
         elapsed = frame.match_time - seq.start_time
         bx_att = frame.ball[0] * att_dir
 
-        # ضدحمله: شروع از زمین خودی، رسیدن سریع به یک‌سوم هجومی با پاس‌های محدود
+        # counterattack: start from pitch technical noteandtechnical note technical note fast to third technical noteandtechnical note with pass‌technical note technical noteandtechnical note
         if "counter" not in flags:
             if (elapsed <= cfg.COUNTERATTACK_WINDOW and bx_att >= PitchConfig.FINAL_THIRD_X
                     and seq.pass_count <= 3 and seq.start_ball_x <= 10.0):
@@ -1698,11 +1698,11 @@ class TransitionEngine:
                     reliability=EventReliability.PROBABLE,
                     confidence=0.80,
                     position=frame.ball,
-                    tags=["ضدحمله", f"{elapsed:.1f}s"]
+                    tags=["counterattack", f"{elapsed:.1f}s"]
                 ))
                 return
 
-        # انتقال هجومی عادی (وزن کمتر از ضدحمله)
+        # transition technical noteandtechnical note technical note (weight technical note from counterattack)
         if "transition" not in flags:
             if elapsed <= cfg.TRANSITION_WINDOW and bx_att >= 0.0 and seq.start_ball_x < 0.0:
                 flags.add("transition")
@@ -1715,15 +1715,15 @@ class TransitionEngine:
                     reliability=EventReliability.INFERRED,
                     confidence=0.70,
                     position=frame.ball,
-                    tags=["انتقال هجومی", f"{elapsed:.1f}s"]
+                    tags=["transition textandtext", f"{elapsed:.1f}s"]
                 ))
 
 # =====================================================================
-# ۲۴. موتور یکپارچه Event Detection Engine (لایه مرکزی ثبت و لینک رخداد)
+# 24. technical noteandtechnical noteandtechnical note technical note Event Detection Engine (layer technical note register and technical note technical note)
 # ---------------------------------------------------------------------
-# Pass/Shot فقط از PassEngine و ShotEngine ثبت می‌شوند؛ این موتور هرگز
-# Pass یا Shot را از صفر طبقه‌بندی نمی‌کند. رخدادها از Event Bus منتشر
-# می‌شوند تا MomentumScoring آن‌ها را به Impact تبدیل کند.
+# Pass/Shot only from PassEngine and ShotEngine register technical note‌technical noteandtechnical note technical note technical noteandtechnical noteandtechnical note never
+# Pass or Shot technical note from technical note technical note‌technical note technical note‌technical note. technical notedatatechnical note from Event Bus technical note
+# technical note‌technical noteandtechnical note until MomentumScoring technical note‌technical note technical note to Impact technical note technical note.
 # =====================================================================
 class EventDetectionEngine:
     def __init__(self, config: MomentumScoringConfig):
@@ -1769,18 +1769,18 @@ class EventDetectionEngine:
         return None
 
     def _emit(self, event: GameEvent):
-        """ثبت در Event Stream + انتشار روی Unified Event Bus"""
+        """register in Event Stream + text textandtext Unified Event Bus"""
         self.events.append(event)
-        # --- نسخه ۲: لینک Event → Sequence (متمرکز) ---
-        # هر Chance/Big Chance به زنجیره مالکیت جاری شمارش می‌شود؛
-        # (pass/shot در register_pass_event / register_shot_event شمرده می‌شوند)
+        # --- version 2: technical note Event → Sequence (technical note) ---
+        # technical note Chance/Big Chance to chain possession current technical note technical note‌technical noteandtechnical note
+        # (pass/shot in register_pass_event / register_shot_event technical note technical note‌technical noteandtechnical note)
         if (event.event_type in ("Chance", "Big Chance")
                 and self.current_seq and self.current_seq.is_active):
             self.current_seq.chances_created += 1
         self.event_bus.publish(event)
 
     def _zone_allowed(self, team: str, etype: str, match_time: float, cooldown: Optional[float] = None) -> bool:
-        """Cooldown / Deduplication برای رخدادهای zone-based"""
+        """Cooldown / Deduplication for textdatatext zone-based"""
         cd = cooldown if cooldown is not None else self.cfg.ZONE_EVENT_COOLDOWN
         last = self.zone_last[team].get(etype, -1e9)
         if (match_time - last) >= cd:
@@ -1792,21 +1792,21 @@ class EventDetectionEngine:
     def handle_possession_change(self, new_team: str, match_time: float,
                                  start_x_att: float, timestamp: float,
                                  ball_pos: Tuple[float, float, float]):
-        # بستن اپیزود فشار تیم قبلی (پیش از تعویض زنجیره)
+        # technical note technical noteandtechnical note pressure team beforetechnical note (technical note from technical noteandtechnical note chain)
         prev_team = self.current_seq.team if (self.current_seq and self.current_seq.is_active) else None
         ep = self.pressure_detector.force_finish(match_time)
         if ep and prev_team:
             self._emit_pressure_event(ep, prev_team, timestamp, match_time, ball_pos)
 
-        # پایان زنجیره قبلی
+        # end chain beforetechnical note
         if self.current_seq and self.current_seq.is_active:
             self.current_seq.end_time = match_time
             self.current_seq.duration = max(0.1, match_time - self.current_seq.start_time)
             self.current_seq.territorial_gain = self.current_seq.max_ball_x - self.current_seq.start_ball_x
-            self.current_seq.ending_reason = "از دست دادن مالکیت"
+            self.current_seq.ending_reason = "from text text possession"
             self.current_seq.is_active = False
 
-        # آغاز زنجیره جدید
+        # technical notefrom chain new
         new_seq = PossessionSequence(
             seq_id=len(self.sequences) + 1,
             team=new_team,
@@ -1825,7 +1825,7 @@ class EventDetectionEngine:
         self.sequences.append(new_seq)
         self.current_seq = new_seq
 
-        # ثبت رویداد انتقال مالکیت (وزن بسیار کم/صفر — بیشتر برای زنجیره رویدادها)
+        # register technical noteandtechnical note transition possession (weight technical noteortechnical note technical note/technical note — technical note for chain technical noteandtechnical notedatatechnical note)
         self._emit(GameEvent(
             event_id=self.generate_id(),
             event_type="Possession Change",
@@ -1835,7 +1835,7 @@ class EventDetectionEngine:
             reliability=EventReliability.CERTAIN,
             confidence=1.0,
             position=ball_pos,
-            tags=["تغییر مالکیت", f"تیم جدید: {new_team}"]
+            tags=["change possession", f"team new: {new_team}"]
         ))
 
     # -------------------------------------------------------------
@@ -1857,9 +1857,9 @@ class EventDetectionEngine:
                     "avg_pressure": round(stats["avg_pressure"], 2),
                     "max_pressure": stats["max_pressure"]
                 },
-                tags=[f"فشار {stats['duration']:.0f} ثانیه‌ای",
-                      f"میانگین فشار {stats['avg_pressure']:.1f}",
-                      f"اوج فشار {stats['max_pressure']:.0f}"]
+                tags=[f"pressure {stats['duration']:.0f} second‌text",
+                      f"textortext pressure {stats['avg_pressure']:.1f}",
+                      f"textandtext pressure {stats['max_pressure']:.0f}"]
             ))
 
     # -------------------------------------------------------------
@@ -1867,7 +1867,7 @@ class EventDetectionEngine:
         if not att_team:
             return
         bx, bz, _ = current_frame.ball
-        # توپ در محدوده قوس کرنر سمت حمله تیم مالک
+        # ball in technical noteandtechnical note technical noteandtechnical note technical note side technical note team technical note
         if (bx * att_dir) >= 48.0 and abs(bz) >= 29.0:
             if self._zone_allowed(att_team, "Corner", current_frame.match_time, self.cfg.CORNER_COOLDOWN):
                 self._emit(GameEvent(
@@ -1879,21 +1879,21 @@ class EventDetectionEngine:
                     reliability=EventReliability.INFERRED,
                     confidence=0.65,
                     position=current_frame.ball,
-                    tags=["کرنر (استنباطی)"]
+                    tags=["text (istextwithtext)"]
                 ))
 
     def _detect_goal_kick(self, frame_buffer: deque, current_frame: SnapshotFrame, team1_att_dir: int):
         bx, bz, _ = current_frame.ball
         if abs(bx) < 47.5 or abs(bz) > 9.2:
             return
-        # تیم مدافع دروازه نزدیک توپ
+        # team technical note inandfromtechnical note technical note ball
         if bx < 0:
             defending = "Home" if team1_att_dir == 1 else "Away"
         else:
             defending = "Away" if team1_att_dir == 1 else "Home"
         if current_frame.possession != defending:
             return
-        # سکون نسبی توپ (ضربه دروازه از نقطه ثابت)
+        # technical noteandtechnical note technical note ball (technical noteto inandfromtechnical note from technical note technical note)
         if len(frame_buffer) >= 5:
             prev_f = frame_buffer[-4]
             dt = max(0.01, current_frame.timestamp - prev_f.timestamp)
@@ -1910,7 +1910,7 @@ class EventDetectionEngine:
                 reliability=EventReliability.INFERRED,
                 confidence=0.60,
                 position=current_frame.ball,
-                tags=["ضربه دروازه (استنباطی)"]
+                tags=["textto inandfromtext (istextwithtext)"]
             ))
 
     # -------------------------------------------------------------
@@ -1922,15 +1922,15 @@ class EventDetectionEngine:
         bx, bz, by = current_frame.ball
         bx_att = bx * att_dir
 
-        # به‌روزرسانی زندهٔ زنجیره مالکیت (نسخه ۲ — UI همان Row را Live آپدیت می‌کند)
+        # to‌technical noteandtechnical note livetechnical note chain possession (version 2 — UI same Row technical note Live technical note technical note‌technical note)
         if self.current_seq and self.current_seq.is_active:
             if bx_att > self.current_seq.max_ball_x:
                 self.current_seq.max_ball_x = bx_att
-            # مدت و پیشروی در هر فریم زنده به‌روزرسانی می‌شود (نه فقط هنگام بستن)
+            # technical note and technical noteandtechnical note in technical note frame live to‌technical noteandtechnical note technical note‌technical noteandtechnical note (technical note only technical note technical note)
             self.current_seq.duration = max(0.0, current_frame.match_time - self.current_seq.start_time)
             self.current_seq.territorial_gain = self.current_seq.max_ball_x - self.current_seq.start_ball_x
 
-        # ۱. ورود به مناطق (Zone Entries) با cooldown ضد اشباع
+        # 1. andtechnical noteandtechnical note to technical note (Zone Entries) with cooldown technical note technical notewithtechnical note
         in_f3 = (bx_att >= PitchConfig.FINAL_THIRD_X)
         if in_f3 and not self.prev_ball_in_f3[att_team]:
             if self.current_seq: self.current_seq.final_third_entries += 1
@@ -1944,7 +1944,7 @@ class EventDetectionEngine:
                     reliability=EventReliability.CERTAIN,
                     confidence=0.98,
                     position=current_frame.ball,
-                    tags=["ورود به یک‌سوم هجومی"]
+                    tags=["andtextandtext to third textandtext"]
                 ))
         self.prev_ball_in_f3[att_team] = in_f3
 
@@ -1961,26 +1961,26 @@ class EventDetectionEngine:
                     reliability=EventReliability.CERTAIN,
                     confidence=0.99,
                     position=current_frame.ball,
-                    tags=["ورود به محوطه جریمه"]
+                    tags=["andtextandtext to textandtext text"]
                 ))
         self.prev_ball_in_box[att_team] = in_box
 
-        # ۲. موقعیت‌های خطرناک (Chances)
+        # 2. position‌technical note linetechnical note (Chances)
         self.opportunity_engine.evaluate(current_frame, att_team, att_dir, self._emit, self.generate_id)
 
-        # ۳. پنالتی (مستقل از شمارنده شوت)
+        # 3. penalty (independent from counter shot)
         self.penalty_detector.update(frame_buffer, current_frame, team1_att_dir, self._emit, self.generate_id)
 
-        # ۴. اپیزود فشار
+        # 4. technical noteandtechnical note pressure
         ep = self.pressure_detector.update(current_frame, att_team, att_dir)
         if ep:
             self._emit_pressure_event(ep, att_team, current_frame.timestamp, current_frame.match_time, current_frame.ball)
 
-        # ۵. ضدحمله / انتقال هجومی (یک‌بار در هر زنجیره)
+        # 5. counterattack / transition technical noteandtechnical note (technical note‌withtechnical note in technical note chain)
         if self.current_seq and self.current_seq.is_active:
             self.transition_engine.update(self.current_seq, current_frame, att_dir, self.cfg, self._emit, self.generate_id)
 
-        # ۶. کرنر / ضربه دروازه (استنباطی zone-based)
+        # 6. technical note / technical noteto inandfromtechnical note (istechnical notewithtechnical note zone-based)
         self._detect_corner(current_frame, att_team, att_dir)
         self._detect_goal_kick(frame_buffer, current_frame, team1_att_dir)
 
@@ -2011,12 +2011,12 @@ class EventDetectionEngine:
                 "is_success": pass_data.is_success,
                 "forward_progress": pass_data.forward_progress
             },
-            tags=["موفق ✅" if pass_data.is_success else "ناموفق ❌"] + pass_data.tags
+            tags=["successful ✅" if pass_data.is_success else "failed ❌"] + pass_data.tags
         )
         self._emit(ev)
 
-        # شکستن خط دفاعی: از روی تگ‌های Classifier واقعی پاس (بدون بازسازی منطق پاس)
-        if pass_data.is_success and "پشت دفاع" in pass_data.tags and pass_data.forward_progress >= 6.0:
+        # technical note line technical note: from technical noteandtechnical note technical note‌technical note Classifier real pass (without withtechnical notefromtechnical note technical note pass)
+        if pass_data.is_success and "text text" in pass_data.tags and pass_data.forward_progress >= 6.0:
             if self._zone_allowed(pass_data.team, "Defensive Line Break", pass_data.match_time, self.cfg.LINE_BREAK_COOLDOWN):
                 self._emit(GameEvent(
                     event_id=self.generate_id(),
@@ -2029,7 +2029,7 @@ class EventDetectionEngine:
                     position=pass_data.end_ball,
                     related_event_ids=[ev_id],
                     metadata={"source_pass": ev_id},
-                    tags=["شکست خط دفاعی"]
+                    tags=["text line text"]
                 ))
         return ev
 
@@ -2043,10 +2043,10 @@ class EventDetectionEngine:
         shot_data.event_id = shot_id
         rel_ids = []
 
-        # --- نسخه ۲: پیوند Chance → Shot فقط بر اساس MATCH TIME ---
-        # (Wall Clock بعد از گل/توقف/پخش مجدد حرکت می‌کند ولی ساعت بازی متوقف است؛
-        #  بنابراین رابطه رویدادها فقط با زمان بازی معتبر است.)
-        # شرط: 0 <= shot_match_time - chance_match_time <= 3.0
+        # --- version 2: technical noteandtechnical note Chance → Shot only technical note technical note MATCH TIME ---
+        # (Wall Clock after from technical note/stop/technical note technical note technical note technical note‌technical note andtechnical note game clock technical notestop istechnical note
+        #  technical notefortechnical note technical note technical noteandtechnical notedatatechnical note only with time withtechnical note valid is.)
+        # technical note: 0 <= shot_match_time - chance_match_time <= 3.0
         for ev in reversed(self.events[-10:]):
             if ev.event_type in ("Chance", "Big Chance") and ev.team == shot_data.team:
                 dt_match = shot_data.match_time - ev.match_time
@@ -2080,8 +2080,8 @@ class EventDetectionEngine:
         )
         self._emit(ev)
 
-        # ثبت صریح گل از روی پرچم بولی بدون تکیه بر رشته متنی
-        # (Flag is_goal + related_event_ids → سیاست Contribution جلوی دوبار امتیاز را می‌گیرد)
+        # register technical note technical note from technical noteandtechnical note technical note technical noteandtechnical note without technical note technical note string technical note
+        # (Flag is_goal + related_event_ids → technical noteis Contribution technical noteandtechnical note technical noteandwithtechnical note score technical note technical note‌technical note)
         if shot_data.is_goal:
             self._emit(GameEvent(
                 event_id=self.generate_id(),
@@ -2094,7 +2094,7 @@ class EventDetectionEngine:
                 position=shot_data.contact_ball,
                 related_event_ids=[shot_id],
                 metadata={"source_shot": shot_id, "shooter": shot_data.shooter_seat},
-                tags=["گل مسابقه", f"صندلی {shot_data.shooter_seat}"]
+                tags=["text text", f"text {shot_data.shooter_seat}"]
             ))
         return ev
 
@@ -2103,14 +2103,14 @@ class EventDetectionEngine:
                             source: str = "memory-hook",
                             shooter_seat: Optional[int] = None) -> GameEvent:
         """
-        نسخه ۴ — ثبت گل «فقط» از طریق هوک حافظه (GoalHooker).
-        مسیر قدیمی (عبور توپ از خط + چارچوب دروازه) حذف شده است.
-        مراحل:
-          ۱) پیوند به آخرین شوت همین تیم با پنجرهٔ MATCH TIME:
-             0 <= goal_t - shot_t <= 4.0 (پرواز توپ/دفاع در این بازه است)
-             و ارتقای بازگشتی رخداد شوت به «گل» (metadata + tags).
-          ۲) انتشار "Goal ⚽" روی Event Bus → MomentumEngine خودش پاسخ
-             تأخیری (Goal Pulse) و Dedup با Penalty Goal را اعمال می‌کند.
+        version 4 — register text «only» from text hook memory (GoalHooker).
+        path legacy (textandtext ball from line + textandtext inandfromtext) text text is.
+        text:
+          1) textandtext to latest shot text team with windowtext MATCH TIME:
+             0 <= goal_t - shot_t <= 4.0 (textandfrom ball/text in text withtext is)
+             and text withtext text shot to «text» (metadata + tags).
+          2) text "Goal ⚽" textandtext Event Bus → MomentumEngine textandtext passtext
+             delaytext (Goal Pulse) and Dedup with Penalty Goal text text text‌text.
         """
         ev_id = self.generate_id()
         rel_ids: List[int] = []
@@ -2122,10 +2122,10 @@ class EventDetectionEngine:
                     rel_ids.append(ev.event_id)
                     ev.related_event_ids.append(ev_id)
                     ev.metadata["is_goal"] = True
-                    if "گل" not in str(ev.metadata.get("outcome", "")):
-                        ev.metadata["outcome"] = "گل قطعی ⚽ (تأیید هوک حافظه)"
-                        if "گل قطعی ⚽" not in ev.tags:
-                            ev.tags.append("گل قطعی ⚽ (هوک)")
+                    if "text" not in str(ev.metadata.get("outcome", "")):
+                        ev.metadata["outcome"] = "text deterministic ⚽ (confirmation hook memory)"
+                        if "text deterministic ⚽" not in ev.tags:
+                            ev.tags.append("text deterministic ⚽ (hook)")
                     break
 
         ev = GameEvent(
@@ -2144,22 +2144,22 @@ class EventDetectionEngine:
                 "link_window": "0..4s (Match Time)",
                 "counter": "memory [rcx+0x158]/[rcx+0x15C]"
             },
-            tags=["گل مسابقه", "هوک حافظه ✅"]
+            tags=["text text", "hook memory ✅"]
         )
         self._emit(ev)
         return ev
 
 # =====================================================================
-# ۲۵. Momentum Engine (مدل Threat/Event Decay بر پایه Match Time)
+# 25. Momentum Engine (technical note Threat/Event Decay technical note technical note Match Time)
 # ---------------------------------------------------------------------
 # HomeMomentum(t)  = Σ HomeEventImpact_i × decay(t - event_time_i)
 # AwayMomentum(t)  = Σ AwayEventImpact_i × decay(t - event_time_i)
 # NetMomentum(t)   = HomeMomentum(t) - AwayMomentum(t)
-# decay(Δt) = exp(-λ Δt) ،  λ = ln(2) / MOMENTUM_HALF_LIFE
+# decay(Δt) = exp(-λ Δt) technical note  λ = ln(2) / MOMENTUM_HALF_LIFE
 #
-# نکته حیاتی: Δt همیشه بر حسب GAME TIME است نه Wall Clock.
-# اگر Match Time بین دو فریم تغییر نکند، Momentum نیز تغییری نمی‌کند
-# (Pause / Replay / Stop → نمودار ثابت می‌ماند).
+# technical note technical noteortechnical note: Δt always technical note technical note GAME TIME is technical note Wall Clock.
+# if Match Time technical note technical noteand frame change technical note Momentum technical note changetechnical note technical note‌technical note
+# (Pause / Replay / Stop → chart technical note technical note‌technical note).
 # =====================================================================
 _LN2 = math.log(2.0)
 
@@ -2168,8 +2168,8 @@ class MomentumEngine:
         self.cfg = config
         self.impacts: List[EventImpact] = []
         self._impact_index: Dict[int, EventImpact] = {}
-        # momentum_history ساختار استاندارد:
-        # {"game_time" (زمان خام بازی), "disp_time" (زمان نمایشی با شکاف HT), "home","away","net"}
+        # momentum_history structure istechnical note:
+        # {"game_time" (time technical note withtechnical note), "disp_time" (time displaytechnical note with gap HT), "home","away","net"}
         self.history: List[Dict[str, float]] = [
             {"game_time": 0.0, "disp_time": 0.0, "home": 0.0, "away": 0.0, "net": 0.0,
              "phase": None}
@@ -2177,41 +2177,41 @@ class MomentumEngine:
         self._lock = threading.RLock()
         self._last_t = 0.0
         self._last_sample_t = -1.0
-        # --- نسخه ۲: شکاف نمایشی بین دو نیمه (HT Gap) ---
-        # display_offset = اختافهٔ ثابتی که به زمان بازیِ نیمه دوم برای نمایش
-        # اضافه می‌شود تا بین دو نیمه فضای خالی کوچکی با برچسب HT دیده شود.
+        # --- version 2: gap displaytechnical note technical note technical noteand technical note (HT Gap) ---
+        # display_offset = technical noteuntiltechnical note technical note technical note to time withtechnical note second half for display
+        # technical note technical note‌technical noteandtechnical note until technical note technical noteand technical note technical note empty technical noteandtechnical note with technical note HT technical note technical noteandtechnical note.
         self.display_offset: float = 0.0
-        # (disp_start, disp_end) شکاف HT برای رندر — None تا قبل از HT
+        # (disp_start, disp_end) gap HT for render — None until before from HT
         self.ht_break: Optional[Tuple[float, float]] = None
-        # --- نسخه ۵ ---
-        # نیمهٔ جاری از دید موتور (برای مُهر نیمه روی پالس/مارکر گل‌ها)
+        # --- version 5 ---
+        # technical note current from technical note technical noteandtechnical noteandtechnical note (for technical note technical note technical noteandtechnical note technical note/technical note technical note‌technical note)
         self.half_number: int = 1
-        # مارکرهای مستقیم گل از هوک حافظه (مسیر مستقل از Event Bus) —
-        # هر آیتم: {team, game_time, disp_time (فریز), half, wall}
+        # technical note direct technical note from hook memory (path independent from Event Bus) —
+        # technical note technical note: {team, game_time, disp_time (frozen), half, wall}
         self.hook_goal_markers: List[Dict[str, float]] = []
-        # --- نسخهٔ ۱۰٫۲۷ — مارکرهای مستقیم کارت قرمز (همان الگوی گل) ---
-        # هر آیتم: {team, game_time (=لحظهٔ صدور), disp_time (فریز), half, wall}
+        # --- versiontechnical note 10technical note27 — technical note direct red card (same technical noteandtechnical note technical note) ---
+        # technical note technical note: {team, game_time (=momenttechnical note technical noteandtechnical note), disp_time (frozen), half, wall}
         self.red_card_markers: List[Dict[str, float]] = []
-        # شکاف‌های نمایشی اضافی (تور ایمنی resync_clock) — بدون برچسب HT
+        # gap‌technical note displaytechnical note technical note (technical noteandtechnical note technical note resync_clock) — without technical note HT
         self.extra_breaks: List[Tuple[float, float]] = []
-        # --- نسخه ۱۰٫۲: درزِ چسباندن شکاف توقف (برای صاف‌سازی با خط صاف) ---
-        # {"a": ایندکس آخرین نمونهٔ قبل از توقف, "b": ایندکس اولین نمونهٔ بعد از آن}
+        # --- version 10technical note2: intechnical note technical notewithtechnical note gap stop (for technical note‌technical notefromtechnical note with line technical note) ---
+        # {"a": technical note latest sampletechnical note before from stop, "b": technical note firsttechnical note sampletechnical note after from technical note}
         self._glue_smooth: Optional[Dict[str, int]] = None
-        # --- نسخهٔ ۱۰٫۱۵ — مُهر فاز Lifecycle روی نمونه‌های تاریخچه ---
-        # Worker فاز جاری (HALF_1/HALF_2/ET1/ET2/…) را اینجا می‌نویسد و هر
-        # نمونهٔ جدید (update/set_half_break/resync/reset) آن را حمل می‌کند.
-        # مصرف: گیت فازِ فرودهای «بدون سقوط» ری‌استارت در _tv_timeline.
+        # --- versiontechnical note 10technical note15 — technical note technical notefrom Lifecycle technical noteandtechnical note sample‌technical note untiltechnical note ---
+        # Worker technical notefrom current (HALF_1/HALF_2/ET1/ET2/…) technical note technical note technical note‌technical noteandtechnical note and technical note
+        # sampletechnical note new (update/set_half_break/resync/reset) technical note technical note technical note technical note‌technical note.
+        # technical note: technical note technical notefromtechnical note technical noteandtechnical note «without drop» restart in _tv_timeline.
         self.phase_label: Optional[str] = None
 
     def set_phase_label(self, label: Optional[str]):
-        """تنظیم مُهر فاز جاری (از Worker — با تغییر _match_phase همگام می‌شود)."""
+        """text text textfrom current (from Worker — with change _match_phase synchronized text‌textandtext)."""
         try:
             self.phase_label = (str(label) if label is not None else None)
         except Exception:
             self.phase_label = None
 
     # -------------------------------------------------------------
-    # اشتراک روی Unified Event Bus
+    # technical note technical noteandtechnical note Unified Event Bus
     # -------------------------------------------------------------
     def on_event(self, event: GameEvent):
         with self._lock:
@@ -2219,7 +2219,7 @@ class MomentumEngine:
             if impact is not None:
                 self.impacts.append(impact)
                 self._impact_index[impact.source_event_id] = impact
-            # سیاست Contribution / Deduplication پس از دریافت رویدادهای وابسته
+            # technical noteis Contribution / Deduplication technical note from receive technical noteandtechnical notedatatechnical note andtechnical note
             self._apply_post_links(event)
 
     def get_impact(self, source_event_id: int) -> Optional[EventImpact]:
@@ -2227,7 +2227,7 @@ class MomentumEngine:
             return self._impact_index.get(source_event_id)
 
     # -------------------------------------------------------------
-    # نگاشت Event → EventImpact (تمام وزن‌ها از MomentumScoringConfig)
+    # technical note Event → EventImpact (technical note weight‌technical note from MomentumScoringConfig)
     # -------------------------------------------------------------
     def _reliability_multiplier(self, reliability: EventReliability) -> float:
         if reliability == EventReliability.CERTAIN:
@@ -2241,12 +2241,12 @@ class MomentumEngine:
                      goal_time: float = 0.0, peak_time: float = 0.0,
                      apply_conf: Optional[bool] = None) -> EventImpact:
         rel_mult = self._reliability_multiplier(event.reliability)
-        # نسخهٔ ۱۰٫۱۲ — apply_conf: برای شوت‌ها می‌تواند ApplyConfidence سراسری
-        # را لغو کند (SHOT_APPLY_CONFIDENCE=False → امتیاز شوت = Final Threat).
+        # versiontechnical note 10technical note12 — apply_conf: for shot‌technical note technical note‌technical noteandtechnical note ApplyConfidence global
+        # technical note technical noteand technical note (SHOT_APPLY_CONFIDENCE=False → score shot = Final Threat).
         _apply_conf = self.cfg.APPLY_CONFIDENCE if apply_conf is None else bool(apply_conf)
         conf = event.confidence if _apply_conf else 1.0
         final = base_weight * rel_mult * conf * sign
-        # نسخه ۵: موقعیت نمایشی مارکر گل در لحظهٔ ثبت فریز می‌شود
+        # version 5: position displaytechnical note technical note technical note in momenttechnical note register frozen technical note‌technical noteandtechnical note
         goal_disp = -1.0
         if is_goal_pulse:
             with self._lock:
@@ -2288,27 +2288,27 @@ class MomentumEngine:
             return self._make_impact(ev, raw_threat=threat, base_weight=threat * mult,
                                      note="success" if is_success else "failure")
 
-        # ---- Shot: base = final_threat (pre_shot_threat فقط ذخیره می‌شود) ----
-        # نسخهٔ ۱۰٫۱۲ — سیاست جدید امتیاز شوت (درخواست کاربر):
-        #   * بدون ضریب اطمینان → امتیاز مومنتوم = Final Threat ابزار مستقل؛
-        #   * شوت‌های غیرگل کف معنادار (SHOT_MIN_IMPACT) دارند — حتی شوتِ
-        #     دور از چارچوب نقش مشهود در مومنتوم دارد؛
-        #   * شوت گل‌شده (استثنای کاربر) × GOAL_LINKED_SHOT_RATIO می‌شود چون
-        #     امتیاز اصلی را Goal (پالس ۱۰۰) می‌دهد — بدون شمارهٔ دوگانه.
+        # ---- Shot: base = final_threat (pre_shot_threat only save technical note‌technical noteandtechnical note) ----
+        # versiontechnical note 10technical note12 — technical noteis new score shot (request user):
+        #   * without technical note technical note → score technical noteandtechnical noteandtechnical note = Final Threat tool independenttechnical note
+        #   * shot‌technical note technical note technical note technical note (SHOT_MIN_IMPACT) technical note — technical note shottechnical note
+        #     technical noteandtechnical note from technical noteandtechnical note technical note technical noteandtechnical note in technical noteandtechnical noteandtechnical note technical note
+        #   * shot technical note‌technical note (istechnical note user) × GOAL_LINKED_SHOT_RATIO technical note‌technical noteandtechnical note because
+        #     score original technical note Goal (technical note 100) technical note‌technical note — without numbertechnical note technical noteandtechnical note.
         if t.startswith("Shot"):
             final_threat = float(md.get("final_threat", 0) or 0)
             base = final_threat * cfg.SHOT_WEIGHT
             note = ""
-            # شوتِ گل‌شده سهم کاهش‌یافته می‌گیرد چون Goal Event امتیاز اصلی را می‌دهد
+            # shottechnical note technical note‌technical note technical note technical note‌technical notedecreasetechnical note technical note‌technical note because Goal Event score original technical note technical note‌technical note
             if md.get("is_goal"):
                 base *= cfg.GOAL_LINKED_SHOT_RATIO
                 note = "goal-linked"
             else:
-                # شوت پنالتی با Penalty Goal/Miss رقابتی می‌شود
-                if md.get("primary_type") == "پنالتی":
+                # shot penalty with Penalty Goal/Miss technical note technical note‌technical noteandtechnical note
+                if md.get("primary_type") == "penalty":
                     base *= cfg.PENALTY_SHOT_LINKED_RATIO
                     note = "penalty"
-                # کف معنادار — شوت‌های غیرگل هرگز ناچیز نمی‌مانند
+                # technical note technical note — shot‌technical note technical note never technical note technical note‌technical note
                 if base < cfg.SHOT_MIN_IMPACT:
                     base = float(cfg.SHOT_MIN_IMPACT)
                     note = (note + "+min-floor" if note else "min-floor")
@@ -2316,15 +2316,15 @@ class MomentumEngine:
                                      note=note or "final-threat",
                                      apply_conf=cfg.SHOT_APPLY_CONFIDENCE)
 
-        # ---- Goal: پاسخ تأخیری (Goal Response / Goal Pulse — نسخه ۲) ----
-        # گل دیگر spike لحظه‌ای نیست؛ Contribution آن منحنی پاسخ دارد:
+        # ---- Goal: passtechnical note delaytechnical note (Goal Response / Goal Pulse — version 2) ----
+        # technical note technical note spike moment‌technical note is nottechnical note Contribution technical note technical note passtechnical note technical note:
         #   t < t_goal                     → 0
-        #   t_goal ≤ t < t_goal + DELAY    → افزایش نرم (raised-cosine)
-        #   تا t_goal + DELAY + WIDTH      → فلات اوج (مقدار کامل)
-        #   پس از آن                       → decay نمایی با همان نیم‌عمر مومنتوم
-        # کل منحنی تابعی خالص از MATCH TIME است؛ در Pause خودکار منجمد می‌شود
-        # و هیچ ساعت جعلی (Wall Clock) تولید نمی‌شود.
-        # توجه: تطابق دقیق — «Goal Kick» نباید به‌عنوان گل امتیاز بگیرد
+        #   t_goal ≤ t < t_goal + DELAY    → increment smooth (raised-cosine)
+        #   until t_goal + DELAY + WIDTH      → technical note technical noteandtechnical note (value complete)
+        #   technical note from technical note                       → decay technical note with same technical note‌technical note technical noteandtechnical noteandtechnical note
+        # total technical note untiltechnical note technical note from MATCH TIME istechnical note in Pause automatic frozen technical note‌technical noteandtechnical note
+        # and technical note technical note technical note (Wall Clock) technical noteandtechnical note technical note‌technical noteandtechnical note.
+        # technical noteandtechnical note: technical note technical note — «Goal Kick» technical notemust to‌technical noteandtechnical note technical note score technical note
         if t.startswith("Goal") and "Kick" not in t:
             return self._make_impact(
                 ev, raw_threat=cfg.GOAL_WEIGHT, base_weight=cfg.GOAL_WEIGHT,
@@ -2344,7 +2344,7 @@ class MomentumEngine:
         if t == "Penalty Kick":
             return self._make_impact(ev, raw_threat=cfg.PENALTY_WEIGHT, base_weight=cfg.PENALTY_WEIGHT)
         if t == "Penalty Goal":
-            # Dedup: اگر Goal همین رخداد قبلا ثبت شده، فقط دلتای خاص پنالتی اعمال شود
+            # Dedup: if Goal technical note technical note beforetechnical note registeredtechnical note only technical noteuntiltechnical note technical note penalty technical note technical noteandtechnical note
             has_parallel_goal = any(
                 i.event_type.startswith("Goal") and "Kick" not in i.event_type
                 and i.team == ev.team
@@ -2355,7 +2355,7 @@ class MomentumEngine:
                 w = cfg.PENALTY_GOAL_DELTA_WEIGHT
                 return self._make_impact(ev, raw_threat=w, base_weight=w,
                                          note="delta (goal already counted)")
-            # Penalty Goal مستقل (بدون Goal موازی) → خودش پاسخ گل را حمل می‌کند
+            # Penalty Goal independent (without Goal technical noteandfromtechnical note) → technical noteandtechnical note passtechnical note technical note technical note technical note technical note‌technical note
             return self._make_impact(
                 ev, raw_threat=cfg.PENALTY_GOAL_WEIGHT, base_weight=cfg.PENALTY_GOAL_WEIGHT,
                 note="goal-pulse (penalty, standalone)",
@@ -2368,7 +2368,7 @@ class MomentumEngine:
             return self._make_impact(ev, raw_threat=cfg.PENALTY_MISS_WEIGHT,
                                      base_weight=cfg.PENALTY_MISS_WEIGHT, sign=sign, note="miss")
 
-        # ---- Pressure Episode: impact ملایم و تدریجی ----
+        # ---- Pressure Episode: impact technical note and technical noteintechnical note ----
         if t == "Pressure Episode":
             duration = float(md.get("duration", 0) or 0)
             avg_p = float(md.get("avg_pressure", 0) or 0)
@@ -2398,7 +2398,7 @@ class MomentumEngine:
         if t == "Goal Kick":
             return self._make_impact(ev, raw_threat=cfg.GOAL_KICK_WEIGHT, base_weight=cfg.GOAL_KICK_WEIGHT)
 
-        # ---- Possession Change: بدون impact معنادار (برای زنجیره رویدادها) ----
+        # ---- Possession Change: without impact technical note (for chain technical noteandtechnical notedatatechnical note) ----
         if t == "Possession Change":
             if cfg.POSSESSION_CHANGE_WEIGHT <= 0:
                 return None
@@ -2407,11 +2407,11 @@ class MomentumEngine:
         return None
 
     # -------------------------------------------------------------
-    # سیاست Contribution / Deduplication (جلوگیری از Double Counting)
+    # technical noteis Contribution / Deduplication (technical noteandtechnical note from Double Counting)
     # -------------------------------------------------------------
     def _apply_post_links(self, ev: GameEvent):
         cfg = self.cfg
-        # Shot → Chance لینک‌شده سهم کاهش‌یافته می‌گیرد
+        # Shot → Chance technical note‌technical note technical note technical note‌technical notedecreasetechnical note technical note‌technical note
         if ev.event_type.startswith("Shot") and ev.related_event_ids:
             for rid in ev.related_event_ids:
                 imp = self._impact_index.get(rid)
@@ -2419,7 +2419,7 @@ class MomentumEngine:
                     imp.base_weight *= cfg.SHOT_LINKED_CHANCE_RATIO
                     imp.final_impact *= cfg.SHOT_LINKED_CHANCE_RATIO
                     imp.note = "capped (linked→shot)"
-        # Penalty Goal / Penalty Miss → خود Penalty Kick سهم کاهش‌یافته می‌گیرد
+        # Penalty Goal / Penalty Miss → technical noteandtechnical note Penalty Kick technical note technical note‌technical notedecreasetechnical note technical note‌technical note
         if ev.event_type in ("Penalty Goal", "Penalty Miss") and ev.related_event_ids:
             for rid in ev.related_event_ids:
                 imp = self._impact_index.get(rid)
@@ -2427,13 +2427,13 @@ class MomentumEngine:
                     imp.base_weight *= cfg.PENALTY_KICK_LINKED_RATIO
                     imp.final_impact *= cfg.PENALTY_KICK_LINKED_RATIO
                     imp.note = "linked→penalty-result"
-        # --- نسخه ۲: Dedup دوطرفه — Goal موازی که «بعد از» Penalty Goal مستقل
-        # می‌رسد؛ Penalty Goal قبلی (که pulse کامل داشت) به دلتا تنزیل می‌شود
-        # تا گل هرگز دو بار (و با دو pulse) شمرده نشود.
+        # --- version 2: Dedup technical noteandtechnical note — Goal technical noteandfromtechnical note technical note «after from» Penalty Goal independent
+        # technical note‌technical note Penalty Goal beforetechnical note (technical note pulse complete technical note) to technical noteuntil technical note technical note‌technical noteandtechnical note
+        # until technical note never technical noteand withtechnical note (and with technical noteand pulse) technical note technical noteandtechnical note.
         if ev.event_type.startswith("Goal") and "Kick" not in ev.event_type:
-            # --- نسخه ۴: گلِ تأییدشدهٔ هوک → شوت لینک‌شده سهم کاهش‌یافته
-            # می‌گیرد (GOAL_LINKED_SHOT_RATIO) تا گل هرگز دو بار امتیاز نگیرد؛
-            # دقیقاً همان سیاستی که برای is_goal در لحظهٔ ثبت شوت اعمال می‌شد.
+            # --- version 4: technical note confirmationtechnical note hook → shot technical note‌technical note technical note technical note‌technical notedecreasetechnical note
+            # technical note‌technical note (GOAL_LINKED_SHOT_RATIO) until technical note never technical noteand withtechnical note score technical note
+            # exactly same technical noteistechnical note technical note for is_goal in momenttechnical note register shot technical note technical note‌technical note.
             for rid in ev.related_event_ids:
                 imp = self._impact_index.get(rid)
                 if (imp and imp.event_type.startswith("Shot")
@@ -2449,14 +2449,14 @@ class MomentumEngine:
                     scale = cfg.PENALTY_GOAL_DELTA_WEIGHT / max(1e-6, cfg.PENALTY_GOAL_WEIGHT)
                     imp.base_weight *= scale
                     imp.final_impact *= scale
-                    imp.is_goal_pulse = False      # pulse اصلی را Goal حمل می‌کند
+                    imp.is_goal_pulse = False      # pulse original technical note Goal technical note technical note‌technical note
                     imp.goal_time = 0.0
                     imp.peak_time = 0.0
                     imp.parallel_goal_dedup = True
                     imp.note = "delta (parallel Goal arrived later)"
 
     # -------------------------------------------------------------
-    # Decay و پاسخ گل (فقط بر اساس Match Time)
+    # Decay and passtechnical note technical note (only technical note technical note Match Time)
     # -------------------------------------------------------------
     def decay_factor(self, dt: float) -> float:
         if dt <= 0:
@@ -2465,16 +2465,16 @@ class MomentumEngine:
 
     def goal_response_factor(self, imp: EventImpact, t: float) -> float:
         """
-        منحنی پاسخ گل (Goal Pulse) — تابعی خالص از زمان بازی:
+        text passtext text (Goal Pulse) — untiltext text from time withtext:
           t < t_goal                    → 0.0
-          t_goal ≤ t < peak_time        → raised-cosine از 0 تا 1
-          peak_time ≤ t < peak+W        → 1.0 (فلات اوج)
-          t ≥ peak+W                    → decay نمایی با نیم‌عمر مومنتوم
-        نکته حیاتی (سناریوی Pause بعد از گل):
-          اگر ساعت بازی متوقف بماند، t ثابت است و خروجی این تابع نیز ثابت
-          می‌ماند؛ هیچ اجباری برای جلو بردن زمان وجود ندارد و هرگز از
-          Wall Clock برای جلو بردن محور X استفاده نمی‌شود. وقتی بازی از
-          45:12 به 45:17 برسد، اوج خودبه‌خود در همان Match Time ظاهر می‌شود.
+          t_goal ≤ t < peak_time        → raised-cosine from 0 until 1
+          peak_time ≤ t < peak+W        → 1.0 (text textandtext)
+          t ≥ peak+W                    → decay text with text‌text textandtextandtext
+        text textortext (scenariotext Pause after from text):
+          if game clock textstop text t text is and output text untiltext text text
+          text‌text text textwithtext for textand text time andtextandtext text and never from
+          Wall Clock for textand text textandtext X istext text‌textandtext. when withtext from
+          45:12 to 45:17 text textandtext textandtextto‌textandtext in same Match Time text text‌textandtext.
         """
         dt = t - imp.goal_time
         if dt <= 0:
@@ -2490,7 +2490,7 @@ class MomentumEngine:
         return self.decay_factor(t - hold_end)
 
     def goal_pulse_phase(self, imp: EventImpact, t: float) -> str:
-        """فاز فعلی پاسخ گل برای جدول دیباگ"""
+        """textfrom text passtext text for textandtext textwithtext"""
         if t < imp.goal_time:
             return "WAITING"
         if t < imp.peak_time:
@@ -2506,7 +2506,7 @@ class MomentumEngine:
         away = 0.0
         for imp in self.impacts:
             if imp.is_goal_pulse:
-                # پاسخ تأخیری گل: صفر قبل از t_goal، اوج در peak_time
+                # passtechnical note delaytechnical note technical note: technical note before from t_goaltechnical note technical noteandtechnical note in peak_time
                 f = self.goal_response_factor(imp, t)
                 if f <= 0.0:
                     continue
@@ -2528,38 +2528,38 @@ class MomentumEngine:
 
     def update(self, current_match_time: float):
         """
-        در هر تیک بازی اجرا می‌شود. اگر Match Time جلو نرفته باشد
-        (Pause/Replay/Stop) هیچ نمونه و decay جدیدی ثبت نمی‌شود.
+        in text text withtext text text‌textandtext. if Match Time textand text withtext
+        (Pause/Replay/Stop) text sample and decay newtext register text‌textandtext.
 
-        نسخه ۱۰٫۲ — چسباندن شکاف توقف‌ها (حذف قطعهٔ افقی بعد از گل):
-        اگر بین دو نمونهٔ متوالی، ساعت بازی بیش از MOMENTUM_GLUE_GAP پرش
-        کند (توقف جشن گل/Replay با ساعتِ در حال حرکت)، به‌جای ثبت یک
-        نمونهٔ دور در انتهای شکاف (که روی نمودار «پاره‌خط تخت» می‌ساخت)،
-        فقط آفستِ نمایش به‌اندازهٔ همان بازهٔ مرده جمع می‌شود؛ نمونهٔ
-        بعدی دقیقاً یک interval بعد از آخرین نمونهٔ واقعی می‌نشیند و
-        دو قسمت نمودار بدون تغییر شکلِ منحنی به هم می‌چسبند. درزِ محل
-        اتصال هم به‌محض رسیدن اولین نمونهٔ بعدی با یک پاره‌خط مستقیم صاف
-        می‌شود (_apply_glue_smoothing_locked). شکاف‌های مدیریت‌شدهٔ
-        بالا دستی (HT / resync عقبرو) نگهبان NaN دارند و هرگز چسبانده
-        نمی‌شوند.
+        version 10text2 — textwithtext gap stop‌text (text text text after from text):
+        if text textand sampletext textandtext game clock text from MOMENTUM_GLUE_GAP text
+        text (stop text text/Replay with text currently text)text to‌text register text
+        sampletext textandtext in text gap (text textandtext chart «text‌line text» text‌text)text
+        only text display to‌textfromtext same withtext text text text‌textandtext sampletext
+        aftertext exactly text interval after from latest sampletext real text‌text and
+        textand textside chart unchanged texttotaltext text to text text‌text. intext text
+        text text to‌text text firsttext sampletext aftertext with text text‌line direct text
+        text‌textandtext (_apply_glue_smoothing_locked). gap‌text text‌text
+        withtext text (HT / resync textand) watchdog NaN text and never textwithtext
+        text‌textandtext.
         """
         with self._lock:
             if current_match_time <= self._last_t:
                 self._last_t = current_match_time
                 return
-            # --- نسخه ۱۰٫۲: تشخیص شکاف توقف (فقط وقتی آخرین نمونه واقعی است) ---
+            # --- version 10technical note2: detection gap stop (only when latest sample real is) ---
             glue_anchor = -1
             if self._last_sample_t >= 0.0 and self.history:
                 _last_hist = self.history[-1]
                 _is_nan_guard = _last_hist["net"] != _last_hist["net"]
                 _gap = float(current_match_time) - float(self._last_sample_t)
                 if (not _is_nan_guard) and _gap > self.cfg.MOMENTUM_GLUE_GAP:
-                    # بازهٔ مردهٔ توقف از محور نمایش حذف می‌شود: آفست نمایش
-                    # طوری تنظیم می‌شود که نمونهٔ بعدی بلافاصله بعد از آخرین
-                    # نمونهٔ واقعی بنشیند (دو قسمت می‌چسبند). توجه: انتساب
-                    # «مطلق» است نه افزایشی — last_disp خودش حامل همهٔ
-                    # تنظیمات قبلی (HT و درزهای پیشین) است و فرمول مطلق
-                    # دقیقاً فقط همین بازهٔ مرده را حذف می‌کند.
+                    # withtechnical note technical note stop from technical noteandtechnical note display technical note technical note‌technical noteandtechnical note: technical note display
+                    # technical noteandtechnical note technical note technical note‌technical noteandtechnical note technical note sampletechnical note aftertechnical note technical notedistance after from latest
+                    # sampletechnical note real technical note (technical noteand technical noteside technical note‌technical note). technical noteandtechnical note: assignment
+                    # «technical note» is technical note incrementtechnical note — last_disp technical noteandtechnical note technical note technical note
+                    # technical note beforetechnical note (HT and intechnical note technical note) is and technical noteandtechnical note technical note
+                    # exactly only technical note withtechnical note technical note technical note technical note technical note‌technical note.
                     _last_disp = float(_last_hist["disp_time"])
                     self.display_offset = (_last_disp + self.cfg.HISTORY_SAMPLE_INTERVAL
                                            - float(current_match_time))
@@ -2572,40 +2572,40 @@ class MomentumEngine:
                     "home": home,
                     "away": away,
                     "net": net,
-                    "wall": time.time(),   # نسخهٔ ۱۰٫۱۲ — سکوت واقعی = بریک بزرگ
-                    "phase": self.phase_label   # نسخهٔ ۱۰٫۱۵ — مُهر فاز Lifecycle
+                    "wall": time.time(),   # versiontechnical note 10technical note12 — silence real = technical note technical note
+                    "phase": self.phase_label   # versiontechnical note 10technical note15 — technical note technical notefrom Lifecycle
                 })
                 self._last_sample_t = current_match_time
                 if glue_anchor >= 0:
-                    # درزِ چسباندن — با اولین نمونهٔ بعدی، با خط صاف صاف می‌شود
+                    # intechnical note technical notewithtechnical note — with firsttechnical note sampletechnical note aftertechnical note with line technical note technical note technical note‌technical noteandtechnical note
                     self._glue_smooth = {"a": glue_anchor, "b": len(self.history) - 1}
                 self._apply_glue_smoothing_locked()
             self._last_t = current_match_time
 
     def _apply_glue_smoothing_locked(self):
         """
-        نسخه ۱۰٫۲ — برطرف کردن شکستگیِ محل چسباندن با یک خط صاف.
-        بعد از چسباندن دو قسمت نمودار، به‌محض رسیدن اولین نمونهٔ بعد از
-        درز، دو نمونهٔ محل اتصال روی پاره‌خط مستقیمِ «نمونهٔ قبل از توقف
-        ← نمونهٔ بعد از درز» بازنویسی می‌شوند تا هیچ زاویهٔ تندی در محل
-        درز دیده نشود. فقط همین دو نمونهٔ درز صاف می‌شوند و بقیهٔ
-        نمونه‌ها (و زمان‌ها) دست‌نخورده می‌مانند.
+        version 10text2 — text text text text textwithtext with text line text.
+        after from textwithtext textand textside charttext to‌text text firsttext sampletext after from
+        intext textand sampletext text text textandtext text‌line directtext «sampletext before from stop
+        ← sampletext after from intext» withtextandtext text‌textandtext until text textandtext text in text
+        intext text textandtext. only text textand sampletext intext text text‌textandtext and text
+        sample‌text (and time‌text) unchanged text‌text.
         """
         js = self._glue_smooth
         if js is None:
             return
         a, b = int(js["a"]), int(js["b"])
         if (b + 1) >= len(self.history):
-            return                        # هنوز نمونهٔ بعدی نرسیده — pending می‌ماند
-        self._glue_smooth = None          # یک‌بارمصرف
+            return                        # still sampletechnical note aftertechnical note technical note — pending technical note‌technical note
+        self._glue_smooth = None          # technical note‌withtechnical note
         if a < 1:
-            return                        # لنگرِ قبل از درز وجود ندارد
+            return                        # technical note before from intechnical note andtechnical noteandtechnical note technical note
         L = self.history[a - 1]
         A = self.history[a]
         B = self.history[b]
         R = self.history[b + 1]
         vals = (L["net"], A["net"], B["net"], R["net"])
-        if any(v != v for v in vals):     # نگهبان NaN (شکاف HT) → دست نزن
+        if any(v != v for v in vals):     # watchdog NaN (gap HT) → technical note technical note
             return
         dL = float(L["disp_time"])
         dR = float(R["disp_time"])
@@ -2620,24 +2620,24 @@ class MomentumEngine:
 
     def set_half_break(self, gap_seconds: float, resume_game_t: Optional[float] = None):
         """
-        نسخه ۲ — ثبت انتقال بین دو نیمه (Half-Time):
-        نمودار پاک نمی‌شود؛ فقط یک شکاف نمایشی کوچک (برچسب HT) بین آخرین
-        نمونهٔ نیمه اول و نمونه‌های نیمه دوم درج می‌شود.
-        دو نمونهٔ NaN به‌عنوان نگهبان درج می‌شوند تا خط/ناحیهٔ نمودار روی
-        شکاف «پل» نزند. از این پس به زمان بازیِ نمونه‌های جدید offset اضافه
-        می‌شود. هیچ عملیاتی بر پایه Wall Clock نیست.
-        resume_game_t: اولین زمان بازی نیمه دوم (مثلاً 45:00=2700s) — اگر
-        کمتر از آخرین زمان نیمه اول باشد (وقت حتبه‌جبرانی)، offset بر مبنای
-        همان نقطه محاسبه می‌شود تا نمونه‌های نیمه دوم هرگز وارد شکاف نشوند.
+        version 2 — register transition text textand text (Half-Time):
+        chart text text‌textandtext only text gap displaytext textandtext (text HT) text latest
+        sampletext first half and sample‌text second half intext text‌textandtext.
+        textand sampletext NaN to‌textandtext watchdog intext text‌textandtext until line/text chart textandtext
+        gap «text» text. from text text to time withtext sample‌text new offset text
+        text‌textandtext. text textortext text text Wall Clock is not.
+        resume_game_t: firsttext time withtext second half (text 45:00=2700s) — if
+        text from latest time first half withtext (andtext textto‌text)text offset text text
+        same text textto text‌textandtext until sample‌text second half never andtext gap textandtext.
 
-        نسخه ۵ — رفع باگ «نمودار ابتدای نیمه دوم دیده نمی‌شد»:
-        بازی ساعت را برای شروع نیمه دوم به 45:00 برمی‌گرداند؛ در نسخهٔ ۴
-        _last_t روی انتهای ثبت‌شدهٔ نیمه اول (مثلاً 45:00+جبرانی) باقی
-        می‌ماند و update() تا عبور ساعت بازی از آن نقطه، هیچ نمونه‌ای
-        ثبت نمی‌کرد → ابتدای نیمه دوم روی نمودار خالی می‌ماند.
-        اکنون ساعت داخلی موتور به base_t (نقطهٔ از سرگیری) برده می‌شود و
-        _last_sample_t عمداً یک interval عقب‌تر گذاشته می‌شود تا «اولین
-        ثانیهٔ نیمه دوم» بلافاصله (درست بعد از خط سمت راست شکاف) رسم شود.
+        version 5 — text withtext «chart text second half text text‌text»:
+        withtext text text for start second half to 45:00 text‌text in versiontext 4
+        _last_t textandtext text register‌text first half (text 45:00+text) withtext
+        text‌text and update() until textandtext game clock from text text text sample‌text
+        register text‌text → text second half textandtext chart empty text‌text.
+        textandtext text internal textandtextandtext to base_t (text resume) text text‌textandtext and
+        _last_sample_t text text interval text‌text text text‌textandtext until «firsttext
+        secondtext second half» textdistance (correct after from line side textis gap) text textandtext.
         """
         with self._lock:
             last = self.history[-1] if self.history else None
@@ -2647,7 +2647,7 @@ class MomentumEngine:
             base_t = self._last_t
             if resume_game_t is not None:
                 base_t = min(self._last_t, float(resume_game_t))
-            # نمونه‌های نگهبان NaN — شکست بصری نمودار در شکاف HT
+            # sample‌technical note watchdog NaN — technical note technical note chart in gap HT
             _now_wall = time.time()
             self.history.append({"game_time": last_game, "disp_time": last_disp,
                                  "home": float('nan'), "away": float('nan'), "net": float('nan'),
@@ -2655,22 +2655,22 @@ class MomentumEngine:
             self.history.append({"game_time": base_t, "disp_time": last_disp + gap,
                                  "home": float('nan'), "away": float('nan'), "net": float('nan'),
                                  "wall": _now_wall, "phase": self.phase_label})
-            # از سرگیری نیمه دوم: زمان نمایشی = زمان بازی + offset
+            # resume second half: time displaytechnical note = time withtechnical note + offset
             self.display_offset = (last_disp + gap) - base_t
             self.ht_break = (last_disp, last_disp + gap)
-            # --- نسخه ۵ (قلب فیکس باگ ۲) ---
+            # --- version 5 (technical note technical note withtechnical note 2) ---
             self._last_t = base_t
             self._last_sample_t = base_t - max(0.05, self.cfg.HISTORY_SAMPLE_INTERVAL) - 1e-6
             self.half_number = 2
 
     # -------------------------------------------------------------
-    # نسخه ۵ — مارکر مستقیم گل از هوک حافظه (مسیر مستقل از Event Bus)
+    # version 5 — technical note direct technical note from hook memory (path independent from Event Bus)
     # -------------------------------------------------------------
     def add_hook_goal_marker(self, team: str, game_time: float, half: int = 0):
         """
-        ثبت مستقیم یک مارکر گل روی نمودار — به‌محض تغییر شمارندهٔ گل هر تیم.
-        موقعیت نمایشی (disp_time) در همان لحظه با display_offset جاری فریز
-        می‌شود؛ در نتیجه حتی اگر بعداً آفست تغییر کند، مارکر سر جایش می‌ماند.
+        register direct text text text textandtext chart — to‌text change countertext text text team.
+        position displaytext (disp_time) in same moment with display_offset current frozen
+        text‌textandtext in text text if aftertext text change text text text text text‌text.
         """
         with self._lock:
             self.hook_goal_markers.append({
@@ -2690,16 +2690,16 @@ class MomentumEngine:
             return len(self.hook_goal_markers)
 
     # -------------------------------------------------------------
-    # نسخهٔ ۱۰٫۲۷ — مارکر مستقیم کارت قرمز (همان الگوی گل — عین 2017)
+    # versiontechnical note 10technical note27 — technical note direct red card (same technical noteandtechnical note technical note — technical note 2017)
     # -------------------------------------------------------------
     def add_hook_red_card_marker(self, team: str, game_time: float,
                                  half: int = 0,
                                  disp_time: Optional[float] = None):
         """
-        ثبت مستقیم یک مارکر کارت قرمز — عین قرارداد گل با این تفاوت که
-        disp_time می‌تواند «لحظهٔ صدور» باشد: انتساب تیم کارت چند ثانیه
-        بعد از صدور (تماشای بازیکن اخراجی در z=40) انجام می‌شود اما
-        مارکر باید روی لحظهٔ صدور بنشیند، نه لحظهٔ تشخیص.
+        register direct text text red card — text text text with text textandtext text
+        disp_time text‌textandtext «momenttext textandtext» withtext: assignment team card text second
+        after from textandtext (text player text in z=40) text text‌textandtext text
+        text must textandtext momenttext textandtext text text momenttext detection.
         """
         with self._lock:
             self.red_card_markers.append({
@@ -2720,18 +2720,18 @@ class MomentumEngine:
             return len(self.red_card_markers)
 
     # -------------------------------------------------------------
-    # نسخه ۵ — تور ایمنی: بازگشت ساعت بدون تشخیص HT/بازی جدید
+    # version 5 — technical noteandtechnical note technical note: withtechnical note technical note without detection HT/new match
     # -------------------------------------------------------------
     def resync_clock(self, resume_t: float, gap_seconds: float = 90.0):
         """
-        وقتی بازی از یک توقف بزرگ از سر گرفته می‌شود اما نه HT تشخیص داده
-        شده و نه بازی جدید، ساعت بازی می‌تواند «عقب‌تر از آخرین نمونهٔ»
-        ما باشد. در نسخهٔ ۴ update() در این حالت تا رسیدن ساعت به نقطهٔ قبلی
-        هیچ نمونه‌ای ثبت نمی‌کرد و نمودار عملاً برای بقیهٔ مسابقه می‌مرد.
-        این متد نمونه‌برداری را فوراً از سر می‌گیرد:
-          * ساعت جلوتر زده شده → فقط نمونه‌برداری فوری (بدون شکاف)
-          * ساعت عقب‌تر زده شده → گارد NaN + شکاف نمایشی کوچک + آفست جدید
-            (نمودار قبلی حفظ و نمایش ادامهٔ بازی در ادامهٔ محور درج می‌شود)
+        when withtext from text stop text from text text text‌textandtext text text HT detection data
+        text and text new matchtext game clock text‌textandtext «text‌text from latest sampletext»
+        text withtext. in versiontext 4 update() in text text until text text to text beforetext
+        text sample‌text register text‌text and chart text for text text text‌text.
+        text text sampling text textandtext from text text‌text:
+          * text textandtext text text → only sampling immediate (without gap)
+          * text text‌text text text → text NaN + gap displaytext textandtext + text new
+            (chart beforetext text and display resumetext withtext in resumetext textandtext intext text‌textandtext)
         """
         with self._lock:
             resume_t = float(resume_t)
@@ -2772,21 +2772,21 @@ class MomentumEngine:
             self.display_offset = 0.0
             self.ht_break = None
             self._glue_smooth = None
-            # --- نسخه ۵ ---
+            # --- version 5 ---
             self.half_number = 1
             self.hook_goal_markers.clear()
-            self.red_card_markers.clear()   # نسخهٔ ۱۰٫۲۷ — مارکرهای کارت قرمز
+            self.red_card_markers.clear()   # versiontechnical note 10technical note27 — technical note red card
             self.extra_breaks.clear()
 
 
 # =====================================================================
-# ۲۵.۱ رندر نمودار Momentum (مشترک بین App و Self-Test — نسخه ۲)
+# 25.1 render chart Momentum (shared technical note App and Self-Test — version 2)
 # ---------------------------------------------------------------------
-# نمودار اصلی فقط شامل این موارد است (بدون خطوط جداگانه Home/Away):
-#   ✔ Net Area آینه‌ای: Net>0 → قرمز/بالا (Home) | Net<0 → سفید/پایین (Away)
-#   ✔ خط Zero
-#   ✔ Goal Marker: خط عمودی + ⚽ دقیقاً روی t_goal (نه peak)
-#   ✔ شکاف HT بین دو نیمه (نمونه‌های NaN) + برچسب HT
-#   ✔ Gaussian smoothing واقعی فقط روی لایه نمایش — RAW دست‌نخورده
-# محور X همیشه Game Clock است (هرگز Wall Clock).
+# chart original only technical note technical note technical noteandtechnical note is (without lineandtechnical note technical note Home/Away):
+#   ✔ Net Area technical note‌technical note: Net>0 → technical note/withtechnical note (Home) | Net<0 → technical note/below (Away)
+#   ✔ line Zero
+#   ✔ Goal Marker: line technical noteandtechnical note + ⚽ exactly technical noteandtechnical note t_goal (technical note peak)
+#   ✔ gap HT technical note technical noteand technical note (sample‌technical note NaN) + technical note HT
+#   ✔ Gaussian smoothing real only technical noteandtechnical note layer display — RAW unchanged
+# technical noteandtechnical note X always Game Clock is (never Wall Clock).
 # =====================================================================
